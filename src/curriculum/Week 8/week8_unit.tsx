@@ -5,8 +5,8 @@ const PLATFORMS = ["Android", "iOS"];
 
 const P_C = "#534AB7", PL = "#EEEDFE", PD = "#3C3489";
 const AM = "#633806", AML = "#FAEEDA";
-const BL = "#0C447C", BLL = "#E6F1FB";
-const GR = "#27500A", GRL = "#EAF3DE";
+const BL = "#7F52FF", BLL = "#F0EEFF";
+const GR = "#F05138", GRL = "#FFF2F0";
 const CAP_C = "#993C1D", CAP_BG = "#FAECE7";
 const TEAL_L = "#E1F5EE", TEAL_D = "#0F6E56";
 
@@ -33,7 +33,7 @@ function CodeB({ title, accent, children }) {
 
 function Checkpoint({ num, children }) {
   return (
-    <div style={{ margin: "14px 0", padding: "10px 14px", background: "#E8FCE8", borderRadius: 8, fontSize: 13, lineHeight: 1.6 }}>
+    <div className="callout-checkpoint" style={{ margin: "14px 0", padding: "10px 14px", background: "#E8FCE8", borderRadius: 8, fontSize: 13, lineHeight: 1.6 }}>
       <strong>{"\uD83C\uDFAF Checkpoint " + num + ":"}</strong> {children}
     </div>
   );
@@ -41,7 +41,7 @@ function Checkpoint({ num, children }) {
 
 function AiOpp({ children }) {
   return (
-    <div style={{ margin: "14px 0", padding: "10px 14px", background: "#F9F0FF", borderRadius: 8, fontSize: 13, lineHeight: 1.6 }}>
+    <div className="callout-ai" style={{ margin: "14px 0", padding: "10px 14px", background: "#F9F0FF", borderRadius: 8, fontSize: 13, lineHeight: 1.6 }}>
       <div style={{ fontWeight: 600, fontSize: 14, marginBottom: 4, textAlign: "center" }}>{"\u2728 AI Opportunity"}</div>
       {children}
     </div>
@@ -50,7 +50,7 @@ function AiOpp({ children }) {
 
 function Warn({ children }) {
   return (
-    <div style={{ margin: "12px 0", padding: "10px 14px", background: "#FFF8E6", borderRadius: 8, fontSize: 13, lineHeight: 1.6, borderLeft: "3px solid #EF9F27" }}>
+    <div className="callout-warn" style={{ margin: "12px 0", padding: "10px 14px", background: "#FFF8E6", borderRadius: 8, fontSize: 13, lineHeight: 1.6, borderLeft: "3px solid #EF9F27" }}>
       {"\u26A0\uFE0F "}{children}
     </div>
   );
@@ -67,7 +67,7 @@ function Tip({ children }) {
 function Step({ num, title, children }) {
   return (
     <div style={{ margin: "18px 0" }}>
-      <h4 style={{ fontSize: 15, fontWeight: 600, color: "var(--color-text-primary)", margin: "0 0 8px" }}>Step {num}: {title}</h4>
+      <h4 style={{ fontSize: 15, fontWeight: 600, color: "var(--platform-accent, var(--color-text-primary))", margin: "0 0 8px" }}>Step {num}: {title}</h4>
       <div style={{ fontSize: 13, lineHeight: 1.7 }}>{children}</div>
     </div>
   );
@@ -104,7 +104,7 @@ function Overview({ platform, setPlatform }) {
   var isAndroid = platform === "Android";
   return (
     <div>
-      <div style={{ background: "#E8FCE8", padding: "10px 14px", borderRadius: 8, fontSize: 13, marginBottom: 12 }}>
+      <div className="callout-checkpoint" style={{ background: "#E8FCE8", padding: "10px 14px", borderRadius: 8, fontSize: 13, marginBottom: 12 }}>
         {"Don't forget to fill out the \u270F\uFE0F "}<Link>Session Survey</Link>{" at the end of each class session!"}
       </div>
       <div style={{ background: CAP_BG, padding: "10px 14px", borderRadius: 8, fontSize: 13, marginBottom: 16, color: CAP_C }}>
@@ -162,7 +162,7 @@ function Overview({ platform, setPlatform }) {
         </p>
       </div>
 
-      <div style={{ marginTop: 16, padding: "14px", background: "#F9F0FF", borderRadius: 10, fontSize: 13, lineHeight: 1.7 }}>
+      <div className="callout-ai" style={{ marginTop: 16, padding: "14px", background: "#F9F0FF", borderRadius: 10, fontSize: 13, lineHeight: 1.7 }}>
         <strong>{"\uD83D\uDD04 Cloud AI vs On-Device AI \u2014 the key tradeoffs"}</strong>
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginTop: 10 }}>
           {[
@@ -212,7 +212,7 @@ function Overview({ platform, setPlatform }) {
 function LabSession1({ platform }) {
   var isAndroid = platform === "Android";
   return (
-    <div>
+    <div style={{ '--platform-accent': platform === "Android" ? BL : GR } as React.CSSProperties}>
       <h2 style={{ fontSize: 18, fontWeight: 600, margin: "0 0 4px" }}>Unit 8 Lab \u2014 Session 1: Build the Scanner</h2>
       <p style={{ fontSize: 13, color: "var(--color-text-secondary)", margin: "0 0 8px" }}>
         {"You\u2019re building \u2014 MLScanner \u2014 a single app you\u2019ll extend in Session 2. Today: live camera feed with real-time object labeling and text recognition. No internet required."}
@@ -633,7 +633,7 @@ func processFrame(_ buffer: CMSampleBuffer, mode: ScanMode) {
 function LabSession2({ platform }) {
   var isAndroid = platform === "Android";
   return (
-    <div>
+    <div style={{ '--platform-accent': platform === "Android" ? BL : GR } as React.CSSProperties}>
       <h2 style={{ fontSize: 18, fontWeight: 600, margin: "0 0 4px" }}>Unit 8 Lab \u2014 Session 2: Add the Gallery Analyzer</h2>
       <p style={{ fontSize: 13, color: "var(--color-text-secondary)", margin: "0 0 8px" }}>
         {"Open your MLScanner project from Session 1. Today you\u2019ll fill in the Gallery tab \u2014 pick a photo, run on-device generative AI, verify it works offline, then compare it to the cloud result from Week 7."}
@@ -1061,7 +1061,7 @@ function CapstoneTab({ platform, setPlatform }) {
           <em>{"Use AI to scope what\u2019s left \u2192 "}</em>Ask Claude: <strong>{"\u201COur capstone has these features still to build: [list]. We have 2 weeks left, 3 people, and classes twice a week. Which features are highest priority for a good demo? What\u2019s safe to cut if we run out of time?\u201D"}</strong>
         </AiOpp>
 
-        <div style={{ marginTop: 16, padding: "12px 14px", background: "#F9F0FF", borderRadius: 8 }}>
+        <div className="callout-ai" style={{ marginTop: 16, padding: "12px 14px", background: "#F9F0FF", borderRadius: 8 }}>
           <strong>{"\uD83D\uDCC5 Capstone Timeline"}</strong>
           <ul style={{ paddingLeft: 20, margin: "6px 0 0", lineHeight: 2 }}>
             <li style={{ opacity: 0.5 }}>{"Week 5: Team formation + platform selection \u2705"}</li>

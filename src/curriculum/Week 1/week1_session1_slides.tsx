@@ -42,7 +42,7 @@ const Discussion = ({ children }) => (
 );
 
 const Warn = ({ title, children }) => (
-  <div style={{ background: "#fff3cd", border: "1px solid #f59e0b", borderRadius: 8, padding: "8px 12px", margin: "8px 0" }}>
+  <div className="callout-warn" style={{ background: "#fff3cd", border: "1px solid #f59e0b", borderRadius: 8, padding: "8px 12px", margin: "8px 0" }}>
     <p style={{ fontSize: 12, fontWeight: 600, color: "#92400e", margin: "0 0 2px" }}>{title}</p>
     <p style={{ fontSize: 12, color: "#92400e", margin: 0, lineHeight: 1.5 }}>{children}</p>
   </div>
@@ -1121,7 +1121,7 @@ fun ProfileCard() {
               <span style={{ fontSize: 12, color: TEXT, lineHeight: 1.5 }}>{t}</span>
             </div>
           ))}
-          <div style={{ background: "#fff3cd", border: "1px solid #f59e0b", borderRadius: 8, padding: "8px 12px", marginTop: 8 }}>
+          <div className="callout-warn" style={{ background: "#fff3cd", border: "1px solid #f59e0b", borderRadius: 8, padding: "8px 12px", marginTop: 8 }}>
             <p style={{ fontSize: 12, color: "#92400e", margin: 0, lineHeight: 1.5 }}>When Claude gives you code with an error — that is a learning opportunity. Paste the error back and ask it to explain what went wrong.</p>
           </div>
         </div>

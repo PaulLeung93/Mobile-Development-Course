@@ -7,8 +7,8 @@ const PLATFORMS = ["Android", "iOS"];
 const P = "#534AB7", PL = "#EEEDFE", PD = "#3C3489";
 const G = "#085041", GL = "#E1F5EE";
 const AM = "#633806", AML = "#FAEEDA";
-const BL = "#0C447C", BLL = "#E6F1FB";
-const GR = "#27500A", GRL = "#EAF3DE";
+const BL = "#7F52FF", BLL = "#F0EEFF";
+const GR = "#F05138", GRL = "#FFF2F0";
 const CAP_C = "#993C1D", CAP_BG = "#FAECE7";
 
 /* ── tiny components ── */
@@ -38,20 +38,20 @@ const Code = ({ title, accent, children }) => (
 );
 
 const Checkpoint = ({ num, children }) => (
-  <div style={{ margin: "14px 0", padding: "10px 14px", background: "#E8FCE8", borderRadius: 8, fontSize: 13, lineHeight: 1.6 }}>
+  <div className="callout-checkpoint" style={{ margin: "14px 0", padding: "10px 14px", background: "#E8FCE8", borderRadius: 8, fontSize: 13, lineHeight: 1.6 }}>
     <strong>🎯 Checkpoint {num}:</strong> {children}
   </div>
 );
 
 const AiOpp = ({ children }) => (
-  <div style={{ margin: "14px 0", padding: "10px 14px", background: "#F9F0FF", borderRadius: 8, fontSize: 13, lineHeight: 1.6 }}>
+  <div className="callout-ai" style={{ margin: "14px 0", padding: "10px 14px", background: "#F9F0FF", borderRadius: 8, fontSize: 13, lineHeight: 1.6 }}>
     <div style={{ fontWeight: 600, fontSize: 14, marginBottom: 4, textAlign: "center" }}>✨ AI Opportunity</div>
     {children}
   </div>
 );
 
 const Warn = ({ children }) => (
-  <div style={{ margin: "12px 0", padding: "10px 14px", background: "#FFF8E6", borderRadius: 8, fontSize: 13, lineHeight: 1.6, borderLeft: "3px solid #EF9F27" }}>
+  <div className="callout-warn" style={{ margin: "12px 0", padding: "10px 14px", background: "#FFF8E6", borderRadius: 8, fontSize: 13, lineHeight: 1.6, borderLeft: "3px solid #EF9F27" }}>
     ⚠️ {children}
   </div>
 );
@@ -66,7 +66,7 @@ const Link = ({ children }) => <span style={{ color: P, textDecoration: "underli
 
 const Step = ({ num, title, children }) => (
   <div style={{ margin: "18px 0" }}>
-    <h4 style={{ fontSize: 15, fontWeight: 600, color: "var(--color-text-primary)", margin: "0 0 8px" }}>Step {num}: {title}</h4>
+    <h4 style={{ fontSize: 15, fontWeight: 600, color: "var(--platform-accent, var(--color-text-primary))", margin: "0 0 8px" }}>Step {num}: {title}</h4>
     <div style={{ fontSize: 13, lineHeight: 1.7 }}>{children}</div>
   </div>
 );
@@ -86,10 +86,10 @@ const PlatformToggle = ({ platform, setPlatform }) => (
 /* ══════════════════════════════════════ OVERVIEW ══════════════════════════════════════ */
 const Overview = ({ platform, setPlatform }) => (
   <div>
-    <div style={{ background: "#E8FCE8", padding: "10px 14px", borderRadius: 8, fontSize: 13, marginBottom: 12 }}>
+    <div className="callout-checkpoint" style={{ background: "#E8FCE8", padding: "10px 14px", borderRadius: 8, fontSize: 13, marginBottom: 12 }}>
       Don't forget to fill out the ✏️ <Link>Session Survey</Link> at the end of each class session!
     </div>
-    <div style={{ background: "#FFF8E6", padding: "10px 14px", borderRadius: 8, fontSize: 13, marginBottom: 16 }}>
+    <div className="callout-warn" style={{ background: "#FFF8E6", padding: "10px 14px", borderRadius: 8, fontSize: 13, marginBottom: 16 }}>
       🎯 <strong>REMINDER:</strong> Submit your <Link>capstone proposal</Link> by the end of Session 2 this week. Check the Capstone tab for the template and details.
     </div>
 
@@ -166,7 +166,7 @@ const Lab = ({ platform, setPlatform }) => {
 };
 
 const LabSession1 = ({ platform }) => (
-  <div>
+  <div style={{ '--platform-accent': platform === "Android" ? BL : GR } as React.CSSProperties}>
     <h2 style={{ fontSize: 18, fontWeight: 600, margin: "0 0 4px" }}>Unit 6 Lab: Refactoring to MVVM</h2>
     <p style={{ fontSize: 13, color: "var(--color-text-secondary)", margin: "0 0 12px" }}>
       In this lab, you'll take your Week 4 API app and refactor it into a clean MVVM architecture. By the end, your app will look the same to users — but the code underneath will be dramatically better organized.
@@ -431,7 +431,7 @@ fun AlbumScreen(
 );
 
 const LabSession2 = ({ platform }) => (
-  <div>
+  <div style={{ '--platform-accent': platform === "Android" ? BL : GR } as React.CSSProperties}>
     <h2 style={{ fontSize: 18, fontWeight: 600, margin: "0 0 4px" }}>Unit 6 Lab: AI-Assisted Development</h2>
     <p style={{ fontSize: 13, color: "var(--color-text-secondary)", margin: "0 0 12px" }}>
       In this lab, you'll learn how to use AI coding tools effectively as a mobile developer. The principles apply to any AI assistant — Claude, Copilot, Cursor, ChatGPT — but we'll use <strong>Claude</strong> as our primary example.
@@ -558,7 +558,7 @@ Please explain your decisions as you go. Use ${platform === "Android" ? "Navigat
 /* ══════════════════════════════════════ PROJECT ══════════════════════════════════════ */
 const Project = ({ platform, setPlatform }) => (
   <div>
-    <div style={{ background: "#E8FCE8", padding: "10px 14px", borderRadius: 8, fontSize: 13, marginBottom: 14 }}>
+    <div className="callout-checkpoint" style={{ background: "#E8FCE8", padding: "10px 14px", borderRadius: 8, fontSize: 13, marginBottom: 14 }}>
       📬 Submit this project by the next session using the <strong>Submit</strong> button 👉 <span style={{ float: "right", background: P, color: "#fff", padding: "4px 14px", borderRadius: 6, fontSize: 12, fontWeight: 500, cursor: "pointer" }}>Submit</span>
     </div>
 
@@ -731,7 +731,7 @@ const Capstone = ({ platform, setPlatform }) => (
         <li><strong>Be specific about roles.</strong> "We'll all work on everything" is a red flag. Assign screens or features to individuals — you can always help each other, but clear ownership prevents bottlenecks.</li>
       </ul>
 
-      <div style={{ marginTop: 16, padding: "12px 14px", background: "#F9F0FF", borderRadius: 8 }}>
+      <div className="callout-ai" style={{ marginTop: 16, padding: "12px 14px", background: "#F9F0FF", borderRadius: 8 }}>
         <strong>🗓 Capstone Timeline</strong>
         <ul style={{ paddingLeft: 20, margin: "6px 0 0", lineHeight: 2 }}>
           <li><span style={{ opacity: 0.5 }}>Week 5: Team formation + platform selection ✅</span></li>

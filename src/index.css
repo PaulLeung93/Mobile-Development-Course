@@ -21,6 +21,28 @@
   --font-mono: 'Fira Code', 'Cascadia Code', 'Consolas', monospace;
 }
 
+/* Dark mode — matches Prework palette */
+html.dark,
+.dark {
+  --bg-dark: #0F1117;
+  --bg-sidebar: #1A1D27;
+  --bg-panel: #1A1D27;
+  --text-main: #E8EAF2;
+  --text-muted: #7A8099;
+  --accent: #4F8EF7;
+  --accent-hover: #3a7de8;
+  --border-color: #2E3245;
+
+  /* Curriculum component variables */
+  --color-text-primary: #E8EAF2;
+  --color-text-secondary: #B0B5CC;
+  --color-text-tertiary: #7A8099;
+  --color-text-info: #4F8EF7;
+  --color-background-primary: #1A1D27;
+  --color-background-secondary: #252836;
+  --color-border-tertiary: #2E3245;
+}
+
 * {
   box-sizing: border-box;
   margin: 0;
@@ -60,7 +82,7 @@ body {
   font-size: 16px;
   font-weight: 700;
   letter-spacing: 0.5px;
-  background: linear-gradient(90deg, #1f2937, #2563eb);
+  background: linear-gradient(90deg, var(--text-main), var(--accent));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
@@ -127,6 +149,46 @@ body {
   display: none;
 }
 
+.theme-toggle {
+  margin-left: auto;
+  background: transparent;
+  border: 1px solid var(--border-color);
+  color: var(--text-muted);
+  cursor: pointer;
+  border-radius: 8px;
+  padding: 6px 8px;
+  display: flex;
+  align-items: center;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+
+.theme-toggle:hover {
+  color: var(--text-main);
+  border-color: var(--accent);
+}
+
+/* Callout boxes — dark mode overrides (use !important to beat inline styles) */
+html.dark .callout-warn {
+  background: rgba(239, 159, 39, 0.12) !important;
+  border-left-color: #EF9F27 !important;
+  border-color: #EF9F27 !important;
+  color: var(--color-text-secondary) !important;
+}
+html.dark .callout-note {
+  background: rgba(79, 142, 247, 0.12) !important;
+  border-left-color: #4F8EF7 !important;
+  color: var(--color-text-secondary) !important;
+}
+html.dark .callout-checkpoint {
+  background: rgba(62, 207, 142, 0.12) !important;
+  color: var(--color-text-secondary) !important;
+}
+html.dark .callout-ai {
+  background: rgba(127, 82, 255, 0.12) !important;
+  color: var(--color-text-secondary) !important;
+}
+
 .tab-container {
   display: flex;
   gap: 8px;
@@ -169,8 +231,7 @@ body {
   flex: 1;
   overflow-y: auto;
   position: relative;
-  /* Light background so slides look natural */
-  background: #ffffff; 
+  background: var(--bg-panel);
 }
 
 /* Responsive */

@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { navigationRegistry } from './registry';
-import { Menu, BookOpen, Layers, MonitorPlay } from 'lucide-react';
+import { Menu, BookOpen, Layers, MonitorPlay, Moon, Sun } from 'lucide-react';
 import './index.css';
 
 class ErrorBoundary extends React.Component<
@@ -42,6 +42,12 @@ export default function App() {
   const [selectedWeek, setSelectedWeek] = useState("Week 1");
   const [selectedTab, setSelectedTab] = useState("Unit");
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [isDark, setIsDark] = useState(() => localStorage.getItem('theme') === 'dark');
+
+  useEffect(() => {
+    document.documentElement.classList.toggle('dark', isDark);
+    localStorage.setItem('theme', isDark ? 'dark' : 'light');
+  }, [isDark]);
 
   // If a week changes, reset tab to 'Unit' or whatever is available
   const handleWeekSelect = (week: string) => {
@@ -97,6 +103,9 @@ export default function App() {
               </button>
             ))}
           </div>
+          <button className="theme-toggle" onClick={() => setIsDark(d => !d)} title={isDark ? 'Switch to light mode' : 'Switch to dark mode'}>
+            {isDark ? <Sun size={18} /> : <Moon size={18} />}
+          </button>
         </div>
 
         <div className="content-area">

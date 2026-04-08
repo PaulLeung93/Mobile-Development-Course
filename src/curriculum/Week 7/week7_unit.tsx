@@ -6,8 +6,8 @@ const PLATFORMS = ["Android", "iOS"];
 const P_C = "#534AB7", PL = "#EEEDFE", PD = "#3C3489";
 const G_C = "#085041", GL = "#E1F5EE";
 const AM = "#633806", AML = "#FAEEDA";
-const BL = "#0C447C", BLL = "#E6F1FB";
-const GR = "#27500A", GRL = "#EAF3DE";
+const BL = "#7F52FF", BLL = "#F0EEFF";
+const GR = "#F05138", GRL = "#FFF2F0";
 const CAP_C = "#993C1D", CAP_BG = "#FAECE7";
 
 function Section({ title, children, defaultOpen }) {
@@ -33,7 +33,7 @@ function CodeB({ title, accent, children }) {
 
 function Checkpoint({ num, children }) {
   return (
-    <div style={{ margin: "14px 0", padding: "10px 14px", background: "#E8FCE8", borderRadius: 8, fontSize: 13, lineHeight: 1.6 }}>
+    <div className="callout-checkpoint" style={{ margin: "14px 0", padding: "10px 14px", background: "#E8FCE8", borderRadius: 8, fontSize: 13, lineHeight: 1.6 }}>
       <strong>{"\uD83C\uDFAF"} Checkpoint {num}:</strong> {children}
     </div>
   );
@@ -41,7 +41,7 @@ function Checkpoint({ num, children }) {
 
 function AiOpp({ children }) {
   return (
-    <div style={{ margin: "14px 0", padding: "10px 14px", background: "#F9F0FF", borderRadius: 8, fontSize: 13, lineHeight: 1.6 }}>
+    <div className="callout-ai" style={{ margin: "14px 0", padding: "10px 14px", background: "#F9F0FF", borderRadius: 8, fontSize: 13, lineHeight: 1.6 }}>
       <div style={{ fontWeight: 600, fontSize: 14, marginBottom: 4, textAlign: "center" }}>{"\u2728"} AI Opportunity</div>
       {children}
     </div>
@@ -50,7 +50,7 @@ function AiOpp({ children }) {
 
 function Warn({ children }) {
   return (
-    <div style={{ margin: "12px 0", padding: "10px 14px", background: "#FFF8E6", borderRadius: 8, fontSize: 13, lineHeight: 1.6, borderLeft: "3px solid #EF9F27" }}>
+    <div className="callout-warn" style={{ margin: "12px 0", padding: "10px 14px", background: "#FFF8E6", borderRadius: 8, fontSize: 13, lineHeight: 1.6, borderLeft: "3px solid #EF9F27" }}>
       {"\u26A0\uFE0F"} {children}
     </div>
   );
@@ -67,7 +67,7 @@ function Tip({ children }) {
 function Step({ num, title, children }) {
   return (
     <div style={{ margin: "18px 0" }}>
-      <h4 style={{ fontSize: 15, fontWeight: 600, color: "var(--color-text-primary)", margin: "0 0 8px" }}>Step {num}: {title}</h4>
+      <h4 style={{ fontSize: 15, fontWeight: 600, color: "var(--platform-accent, var(--color-text-primary))", margin: "0 0 8px" }}>Step {num}: {title}</h4>
       <div style={{ fontSize: 13, lineHeight: 1.7 }}>{children}</div>
     </div>
   );
@@ -104,10 +104,10 @@ function Overview({ platform, setPlatform }) {
   var isAndroid = platform === "Android";
   return (
     <div>
-      <div style={{ background: "#E8FCE8", padding: "10px 14px", borderRadius: 8, fontSize: 13, marginBottom: 12 }}>
+      <div className="callout-checkpoint" style={{ background: "#E8FCE8", padding: "10px 14px", borderRadius: 8, fontSize: 13, marginBottom: 12 }}>
         {"Don't forget to fill out the \u270F\uFE0F"} <Link>Session Survey</Link> at the end of each class session!
       </div>
-      <div style={{ background: "#FFF8E6", padding: "10px 14px", borderRadius: 8, fontSize: 13, marginBottom: 16 }}>
+      <div className="callout-warn" style={{ background: "#FFF8E6", padding: "10px 14px", borderRadius: 8, fontSize: 13, marginBottom: 16 }}>
         {"\uD83C\uDFAF"} <strong>REMINDER:</strong> <Link>Capstone Milestone 1</Link> (repo + architecture) is due by the end of this week. See the Capstone tab for details.
       </div>
 
@@ -163,7 +163,7 @@ function Overview({ platform, setPlatform }) {
 function LabSession1({ platform }) {
   var isAndroid = platform === "Android";
   return (
-    <div>
+    <div style={{ '--platform-accent': platform === "Android" ? BL : GR } as React.CSSProperties}>
       <h2 style={{ fontSize: 18, fontWeight: 600, margin: "0 0 4px" }}>Unit 7 Lab: Build a Chat Screen with Claude</h2>
       <p style={{ fontSize: 13, color: "var(--color-text-secondary)", margin: "0 0 4px" }}>
         {"In this lab you'll build a standalone chat app that calls the Claude API and streams the response word by word. This is a new mini-project."}
@@ -469,7 +469,7 @@ for try await line in bytes.lines {
 function LabSession2({ platform }) {
   var isAndroid = platform === "Android";
   return (
-    <div>
+    <div style={{ '--platform-accent': platform === "Android" ? BL : GR } as React.CSSProperties}>
       <h2 style={{ fontSize: 18, fontWeight: 600, margin: "0 0 4px" }}>Unit 7 Lab: AI-Powered Image Description</h2>
       <p style={{ fontSize: 13, color: "var(--color-text-secondary)", margin: "0 0 4px" }}>
         {"In this lab you'll build a standalone mini-app that lets users take a photo or pick one from the gallery and have Claude describe what it sees."}
@@ -801,7 +801,7 @@ function ProjectTab({ platform, setPlatform }) {
   var isAndroid = platform === "Android";
   return (
     <div>
-      <div style={{ background: "#E8FCE8", padding: "10px 14px", borderRadius: 8, fontSize: 13, marginBottom: 14 }}>
+      <div className="callout-checkpoint" style={{ background: "#E8FCE8", padding: "10px 14px", borderRadius: 8, fontSize: 13, marginBottom: 14 }}>
         {"\uD83D\uDCEC"} Submit this project by the next session using the <strong>Submit</strong> button {"\uD83D\uDC49"} <span style={{ float: "right", background: P_C, color: "#fff", padding: "4px 14px", borderRadius: 6, fontSize: 12, fontWeight: 500, cursor: "pointer" }}>Submit</span>
       </div>
 
@@ -924,7 +924,7 @@ function CapstoneTab({ platform, setPlatform }) {
           <li>{"\u2610"} Branch protection \u2014 no direct pushes to main</li>
         </ul>
 
-        <div style={{ marginTop: 16, padding: "12px 14px", background: "#F9F0FF", borderRadius: 8 }}>
+        <div className="callout-ai" style={{ marginTop: 16, padding: "12px 14px", background: "#F9F0FF", borderRadius: 8 }}>
           <strong>{"\uD83D\uDCC5"} Capstone Timeline</strong>
           <ul style={{ paddingLeft: 20, margin: "6px 0 0", lineHeight: 2 }}>
             <li style={{ opacity: 0.5 }}>{"Week 5: Team formation + platform selection \u2705"}</li>

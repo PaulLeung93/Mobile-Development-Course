@@ -5,8 +5,8 @@ const PLATFORMS = ["Android", "iOS"];
 
 const P_C = "#534AB7", PL = "#EEEDFE", PD = "#3C3489";
 const AM = "#633806", AML = "#FAEEDA";
-const BL = "#0C447C", BLL = "#E6F1FB";
-const GR = "#27500A", GRL = "#EAF3DE";
+const BL = "#7F52FF", BLL = "#F0EEFF";
+const GR = "#F05138", GRL = "#FFF2F0";
 const CAP_C = "#993C1D", CAP_BG = "#FAECE7";
 
 function Section({ title, children, defaultOpen }) {
@@ -32,7 +32,7 @@ function CodeB({ title, accent, children }) {
 
 function AiOpp({ children }) {
   return (
-    <div style={{ margin: "14px 0", padding: "10px 14px", background: "#F9F0FF", borderRadius: 8, fontSize: 13, lineHeight: 1.6 }}>
+    <div className="callout-ai" style={{ margin: "14px 0", padding: "10px 14px", background: "#F9F0FF", borderRadius: 8, fontSize: 13, lineHeight: 1.6 }}>
       <div style={{ fontWeight: 600, fontSize: 14, marginBottom: 4, textAlign: "center" }}>✨ AI Opportunity</div>
       {children}
     </div>
@@ -41,7 +41,7 @@ function AiOpp({ children }) {
 
 function Warn({ children }) {
   return (
-    <div style={{ margin: "12px 0", padding: "10px 14px", background: "#FFF8E6", borderRadius: 8, fontSize: 13, lineHeight: 1.6, borderLeft: "3px solid #EF9F27" }}>
+    <div className="callout-warn" style={{ margin: "12px 0", padding: "10px 14px", background: "#FFF8E6", borderRadius: 8, fontSize: 13, lineHeight: 1.6, borderLeft: "3px solid #EF9F27" }}>
       ⚠️ {children}
     </div>
   );
@@ -86,7 +86,7 @@ function Overview({ platform, setPlatform }) {
   var isAndroid = platform === "Android";
   return (
     <div>
-      <div style={{ background: "#E8FCE8", padding: "10px 14px", borderRadius: 8, fontSize: 13, marginBottom: 12 }}>
+      <div className="callout-checkpoint" style={{ background: "#E8FCE8", padding: "10px 14px", borderRadius: 8, fontSize: 13, marginBottom: 12 }}>
         Don{"'"}t forget to fill out the ✏️ <Link>Session Survey</Link> at the end of each class session!
       </div>
       <div style={{ background: CAP_BG, padding: "10px 14px", borderRadius: 8, fontSize: 13, marginBottom: 16, color: CAP_C }}>
@@ -163,7 +163,7 @@ function Overview({ platform, setPlatform }) {
 function LabSession1({ platform }) {
   var isAndroid = platform === "Android";
   return (
-    <div>
+    <div style={{ '--platform-accent': platform === "Android" ? BL : GR } as React.CSSProperties}>
       <h2 style={{ fontSize: 18, fontWeight: 600, margin: "0 0 4px" }}>Session 1 Lab: Writing Unit Tests for a ViewModel</h2>
       <p style={{ fontSize: 13, color: "var(--color-text-secondary)", margin: "0 0 12px" }}>
         Write unit tests for a shared starter ViewModel. Use fakes to isolate dependencies from real network calls. Budget about 50–60 minutes.
@@ -189,7 +189,7 @@ function LabSession1({ platform }) {
 
       {/* Step 0 */}
       <div style={{ margin: "18px 0" }}>
-        <h4 style={{ fontSize: 15, fontWeight: 600, color: "var(--color-text-primary)", margin: "0 0 8px" }}>Step 0: The starter ViewModel (~5 min)</h4>
+        <h4 style={{ fontSize: 15, fontWeight: 600, color: "var(--platform-accent, var(--color-text-primary))", margin: "0 0 8px" }}>Step 0: The starter ViewModel (~5 min)</h4>
         <div style={{ fontSize: 13, lineHeight: 1.7 }}>
           <p>You{"'"}re given a simple ViewModel that loads a list of items. Your job: write tests that verify each UI state transition. The interface it depends on is <IC>ItemRepository</IC> — you{"'"}ll replace that with a fake.</p>
           {isAndroid ? (
@@ -288,7 +288,7 @@ class ItemViewModel: ObservableObject {
     }
 }`}</CodeB>
           )}
-          <div style={{ margin: "14px 0", padding: "10px 14px", background: "#E8FCE8", borderRadius: 8, fontSize: 13, lineHeight: 1.6 }}>
+          <div className="callout-checkpoint" style={{ margin: "14px 0", padding: "10px 14px", background: "#E8FCE8", borderRadius: 8, fontSize: 13, lineHeight: 1.6 }}>
             <strong>🎯 Checkpoint 1:</strong> Fake compiles with no errors. It conforms to the same <IC>ItemRepository</IC> interface as the real implementation.
           </div>
         </div>
@@ -399,7 +399,7 @@ final class ItemViewModelTests: XCTestCase {
     }
 }`}</CodeB>
           )}
-          <div style={{ margin: "14px 0", padding: "10px 14px", background: "#E8FCE8", borderRadius: 8, fontSize: 13, lineHeight: 1.6 }}>
+          <div className="callout-checkpoint" style={{ margin: "14px 0", padding: "10px 14px", background: "#E8FCE8", borderRadius: 8, fontSize: 13, lineHeight: 1.6 }}>
             <strong>🎯 Checkpoint 2:</strong> All three tests pass. Intentionally break one assertion — change an <IC>assertEquals(3, ...)</IC> to <IC>assertEquals(99, ...)</IC> — and see what a failing test output looks like. Then fix it.
           </div>
         </div>
@@ -417,7 +417,7 @@ final class ItemViewModelTests: XCTestCase {
             <br /><br />
             Pick the two most interesting suggestions and write those tests.
           </AiOpp>
-          <div style={{ margin: "14px 0", padding: "10px 14px", background: "#E8FCE8", borderRadius: 8, fontSize: 13, lineHeight: 1.6 }}>
+          <div className="callout-checkpoint" style={{ margin: "14px 0", padding: "10px 14px", background: "#E8FCE8", borderRadius: 8, fontSize: 13, lineHeight: 1.6 }}>
             <strong>🎯 Checkpoint 3:</strong> You have at least 5 tests total. At least 2 were suggested by Claude and test scenarios you hadn{"'"}t thought of.
           </div>
         </div>
@@ -472,7 +472,7 @@ final class ItemViewModelTests: XCTestCase {
 function LabSession2({ platform }) {
   var isAndroid = platform === "Android";
   return (
-    <div>
+    <div style={{ '--platform-accent': platform === "Android" ? BL : GR } as React.CSSProperties}>
       <h2 style={{ fontSize: 18, fontWeight: 600, margin: "0 0 4px" }}>Session 2: App Performance — Profiling, Leaks &amp; AI Scanning</h2>
       <p style={{ fontSize: 13, color: "var(--color-text-secondary)", margin: "0 0 12px" }}>
         This session is a lecture on mobile app performance. You{"'"}ll learn to find and fix jank, memory leaks, and battery drain using profiling tools and AI-assisted code scanning. Lab time after the lecture is for capstone work.
@@ -954,7 +954,7 @@ function CapstoneTab({ platform, setPlatform }) {
           <em>Scope what{"'"}s left → </em>Ask Claude: <strong>{"\"Our capstone has these features still to build: [list]. We have one week left until demo day. Which features are highest priority for a great demo? What's safe to cut?\""}</strong>
         </AiOpp>
 
-        <div style={{ marginTop: 16, padding: "12px 14px", background: "#F9F0FF", borderRadius: 8 }}>
+        <div className="callout-ai" style={{ marginTop: 16, padding: "12px 14px", background: "#F9F0FF", borderRadius: 8 }}>
           <strong>📅 Capstone Timeline</strong>
           <ul style={{ paddingLeft: 20, margin: "6px 0 0", lineHeight: 2 }}>
             <li style={{ opacity: 0.5 }}>Week 5: Team formation + platform selection ✅</li>

@@ -5,8 +5,8 @@ const PLATFORMS = ["Android", "iOS"];
 
 const P_C = "#534AB7", PL = "#EEEDFE", PD = "#3C3489";
 const AM = "#633806", AML = "#FAEEDA";
-const BL = "#0C447C", BLL = "#E6F1FB";
-const GR = "#27500A", GRL = "#EAF3DE";
+const BL = "#7F52FF", BLL = "#F0EEFF";
+const GR = "#F05138", GRL = "#FFF2F0";
 const CAP_C = "#993C1D", CAP_BG = "#FAECE7";
 
 function Section({ title, children, defaultOpen }) {
@@ -32,7 +32,7 @@ function CodeB({ title, accent, children }) {
 
 function AiOpp({ children }) {
   return (
-    <div style={{ margin: "14px 0", padding: "10px 14px", background: "#F9F0FF", borderRadius: 8, fontSize: 13, lineHeight: 1.6 }}>
+    <div className="callout-ai" style={{ margin: "14px 0", padding: "10px 14px", background: "#F9F0FF", borderRadius: 8, fontSize: 13, lineHeight: 1.6 }}>
       <div style={{ fontWeight: 600, fontSize: 14, marginBottom: 4, textAlign: "center" }}>✨ AI Opportunity</div>
       {children}
     </div>
@@ -41,7 +41,7 @@ function AiOpp({ children }) {
 
 function Warn({ children }) {
   return (
-    <div style={{ margin: "12px 0", padding: "10px 14px", background: "#FFF8E6", borderRadius: 8, fontSize: 13, lineHeight: 1.6, borderLeft: "3px solid #EF9F27" }}>
+    <div className="callout-warn" style={{ margin: "12px 0", padding: "10px 14px", background: "#FFF8E6", borderRadius: 8, fontSize: 13, lineHeight: 1.6, borderLeft: "3px solid #EF9F27" }}>
       ⚠️ {children}
     </div>
   );
@@ -94,7 +94,7 @@ function Checkbox({ children }) {
 function Overview({ platform, setPlatform }) {
   return (
     <div>
-      <div style={{ background: "#E8FCE8", padding: "10px 14px", borderRadius: 8, fontSize: 13, marginBottom: 12 }}>
+      <div className="callout-checkpoint" style={{ background: "#E8FCE8", padding: "10px 14px", borderRadius: 8, fontSize: 13, marginBottom: 12 }}>
         🎉 Welcome to the last week of the course. You made it!
       </div>
       <div style={{ background: CAP_BG, padding: "10px 14px", borderRadius: 8, fontSize: 13, marginBottom: 16, color: CAP_C }}>
@@ -144,7 +144,7 @@ function Overview({ platform, setPlatform }) {
 function Session1Lab({ platform }) {
   var isAndroid = platform === "Android";
   return (
-    <div>
+    <div style={{ '--platform-accent': platform === "Android" ? BL : GR } as React.CSSProperties}>
       <h2 style={{ fontSize: 18, fontWeight: 600, margin: "0 0 4px" }}>Session 1: Demo Prep &amp; Polish Sprint</h2>
       <p style={{ fontSize: 13, color: "var(--color-text-secondary)", margin: "0 0 16px" }}>
         The lecture covers what makes a 5-minute demo memorable and how to structure yours. The lab is a structured polish sprint — fix the rough edges in your capstone and rehearse the demo out loud before Session 2. App store publishing steps are in the Resources tab for self-study.
@@ -543,7 +543,7 @@ function ResourcesTab({ platform, setPlatform }) {
                   <p style={{ fontSize: 12, fontWeight: 600, color: BL, margin: "0 0 4px" }}>{item.step}</p>
                   <p style={{ fontSize: 12, color: "var(--color-text-secondary)", margin: 0, lineHeight: 1.5 }}>{item.detail}</p>
                   {item.warn && (
-                    <div style={{ margin: "6px 0 0", padding: "8px 10px", background: "#FFF8E6", borderRadius: 6, fontSize: 12, color: "#633806", lineHeight: 1.5, borderLeft: "3px solid #EF9F27" }}>⚠️ {item.warn}</div>
+                    <div className="callout-warn" style={{ margin: "6px 0 0", padding: "8px 10px", background: "#FFF8E6", borderRadius: 6, fontSize: 12, color: "#633806", lineHeight: 1.5, borderLeft: "3px solid #EF9F27" }}>⚠️ {item.warn}</div>
                   )}
                   {item.code && (
                     <pre style={{ margin: "6px 0 0", background: "#1e1e2e", color: "#cdd6f4", fontSize: 11, padding: "8px 10px", borderRadius: 6, lineHeight: 1.6, fontFamily: "monospace", whiteSpace: "pre-wrap" }}>{item.code}</pre>
@@ -583,7 +583,7 @@ function ResourcesTab({ platform, setPlatform }) {
                   <p style={{ fontSize: 12, fontWeight: 600, color: GR, margin: "0 0 4px" }}>{item.step}</p>
                   <p style={{ fontSize: 12, color: "var(--color-text-secondary)", margin: 0, lineHeight: 1.5 }}>{item.detail}</p>
                   {item.warn && (
-                    <div style={{ margin: "6px 0 0", padding: "8px 10px", background: "#FFF8E6", borderRadius: 6, fontSize: 12, color: "#633806", lineHeight: 1.5, borderLeft: "3px solid #EF9F27" }}>⚠️ {item.warn}</div>
+                    <div className="callout-warn" style={{ margin: "6px 0 0", padding: "8px 10px", background: "#FFF8E6", borderRadius: 6, fontSize: 12, color: "#633806", lineHeight: 1.5, borderLeft: "3px solid #EF9F27" }}>⚠️ {item.warn}</div>
                   )}
                 </div>
               ))}

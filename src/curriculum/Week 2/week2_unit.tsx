@@ -5,8 +5,8 @@ const PLATFORMS = ["Android", "iOS"];
 
 /* ── colors ── */
 const P_C = "#534AB7";
-const BL = "#0C447C", BLL = "#E6F1FB";
-const GR = "#27500A", GRL = "#EAF3DE";
+const BL = "#7F52FF", BLL = "#F0EEFF";
+const GR = "#F05138", GRL = "#FFF2F0";
 
 /* ── shared components ── */
 const Section = ({ title, children, defaultOpen = false }: { title: string; children: React.ReactNode; defaultOpen?: boolean }) => {
@@ -29,20 +29,20 @@ const CodeB = ({ title, accent, children }: { title?: string; accent?: string; c
 );
 
 const Checkpoint = ({ num, children }: { num: number | string; children: React.ReactNode }) => (
-  <div style={{ margin: "14px 0", padding: "10px 14px", background: "#E8FCE8", borderRadius: 8, fontSize: 13, lineHeight: 1.6 }}>
+  <div className="callout-checkpoint" style={{ margin: "14px 0", padding: "10px 14px", background: "#E8FCE8", borderRadius: 8, fontSize: 13, lineHeight: 1.6 }}>
     <strong>{"🎯"} Checkpoint {num}:</strong> {children}
   </div>
 );
 
 const AiOpp = ({ children }: { children: React.ReactNode }) => (
-  <div style={{ margin: "14px 0", padding: "10px 14px", background: "#F9F0FF", borderRadius: 8, fontSize: 13, lineHeight: 1.6 }}>
+  <div className="callout-ai" style={{ margin: "14px 0", padding: "10px 14px", background: "#F9F0FF", borderRadius: 8, fontSize: 13, lineHeight: 1.6 }}>
     <div style={{ fontWeight: 600, fontSize: 14, marginBottom: 4, textAlign: "center" }}>{"✨"} AI Opportunity</div>
     {children}
   </div>
 );
 
 const Warn = ({ children }: { children: React.ReactNode }) => (
-  <div style={{ margin: "12px 0", padding: "10px 14px", background: "#FFF8E6", borderRadius: 8, fontSize: 13, lineHeight: 1.6, borderLeft: "3px solid #EF9F27" }}>
+  <div className="callout-warn" style={{ margin: "12px 0", padding: "10px 14px", background: "#FFF8E6", borderRadius: 8, fontSize: 13, lineHeight: 1.6, borderLeft: "3px solid #EF9F27" }}>
     {"⚠️"} {children}
   </div>
 );
@@ -54,14 +54,14 @@ const Tip = ({ children }: { children: React.ReactNode }) => (
 );
 
 const Note = ({ children }: { children: React.ReactNode }) => (
-  <div style={{ margin: "12px 0", padding: "10px 14px", background: "#E6F1FB", borderRadius: 8, fontSize: 13, lineHeight: 1.6, borderLeft: "3px solid #B5D4F4" }}>
+  <div className="callout-note" style={{ margin: "12px 0", padding: "10px 14px", background: "#E6F1FB", borderRadius: 8, fontSize: 13, lineHeight: 1.6, borderLeft: "3px solid #B5D4F4" }}>
     {"ℹ️"} {children}
   </div>
 );
 
 const Step = ({ num, title, children }: { num: number | string; title: string; children: React.ReactNode }) => (
   <div style={{ margin: "18px 0" }}>
-    <h4 style={{ fontSize: 15, fontWeight: 600, color: "var(--color-text-primary)", margin: "0 0 8px" }}>Step {num}: {title}</h4>
+    <h4 style={{ fontSize: 15, fontWeight: 600, color: "var(--platform-accent, var(--color-text-primary))", margin: "0 0 8px" }}>Step {num}: {title}</h4>
     <div style={{ fontSize: 13, lineHeight: 1.7 }}>{children}</div>
   </div>
 );
@@ -149,7 +149,7 @@ const Overview = () => (
 
 /* ══════════════════════ LAB SESSION 1 ══════════════════════ */
 const LabSession1 = ({ platform }: { platform: string }) => (
-  <div>
+  <div style={{ '--platform-accent': platform === "Android" ? BL : GR } as React.CSSProperties}>
     <h2 style={{ fontSize: 18, fontWeight: 600, margin: "0 0 4px" }}>Session 1 Lab: Trivia App — Home and Question Screens</h2>
     <p style={{ fontSize: 13, color: "var(--color-text-secondary)", margin: "0 0 12px" }}>
       You are going to start building a trivia app from scratch. By the end of this lab you will have a home screen that navigates to a question screen when the user taps a button. No data passing yet — that is Session 2. Budget about 50-60 minutes.
@@ -490,7 +490,7 @@ struct HomeScreen: View {
 
 function Session2Lab({ platform }: { platform: string }) {
   return (
-    <div>
+    <div style={{ '--platform-accent': platform === "Android" ? BL : GR } as React.CSSProperties}>
       <h2 style={{ fontSize: 18, fontWeight: 600, margin: "0 0 4px" }}>Session 2 Lab: Trivia App — Passing Data and Results Screen</h2>
       <p style={{ fontSize: 13, color: "var(--color-text-secondary)", margin: "0 0 12px" }}>
         In this lab you will extend the trivia app from Session 1. You will pass question data between screens, track the user's score, and build a results screen. Budget about 50-60 minutes.
