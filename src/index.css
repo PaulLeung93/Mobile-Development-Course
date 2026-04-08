@@ -8,6 +8,17 @@
   --accent-hover: #1d4ed8;
   --border-color: #e5e7eb;
   --sidebar-width: 260px;
+
+  /* Curriculum component variables */
+  --color-text-primary: #1f2937;
+  --color-text-secondary: #4b5563;
+  --color-text-tertiary: #9ca3af;
+  --color-text-info: #2563eb;
+  --color-background-primary: #ffffff;
+  --color-background-secondary: #f9fafb;
+  --color-border-tertiary: #e5e7eb;
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-mono: 'Fira Code', 'Cascadia Code', 'Consolas', monospace;
 }
 
 * {

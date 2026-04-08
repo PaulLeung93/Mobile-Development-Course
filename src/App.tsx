@@ -3,6 +3,41 @@ import { navigationRegistry } from './registry';
 import { Menu, BookOpen, Layers, MonitorPlay } from 'lucide-react';
 import './index.css';
 
+class ErrorBoundary extends React.Component<
+  { children: React.ReactNode },
+  { error: Error | null }
+> {
+  constructor(props: { children: React.ReactNode }) {
+    super(props);
+    this.state = { error: null };
+  }
+  static getDerivedStateFromError(error: Error) {
+    return { error };
+  }
+  componentDidCatch(error: Error, info: React.ErrorInfo) {
+    console.error('Curriculum component error:', error, info);
+  }
+  render() {
+    if (this.state.error) {
+      return (
+        <div style={{ padding: '40px 32px', color: '#b91c1c', background: '#fff5f5', borderRadius: 12, margin: 24 }}>
+          <p style={{ fontWeight: 700, fontSize: 16, marginBottom: 8 }}>⚠️ This page crashed</p>
+          <p style={{ fontSize: 13, fontFamily: 'monospace', color: '#7f1d1d', whiteSpace: 'pre-wrap' }}>
+            {this.state.error.message}
+          </p>
+          <button
+            onClick={() => this.setState({ error: null })}
+            style={{ marginTop: 16, padding: '6px 16px', background: '#1f2937', color: '#fff', border: 'none', borderRadius: 6, cursor: 'pointer', fontSize: 13 }}
+          >
+            Try again
+          </button>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
+
 export default function App() {
   const [selectedWeek, setSelectedWeek] = useState("Week 1");
   const [selectedTab, setSelectedTab] = useState("Unit");
@@ -65,7 +100,9 @@ export default function App() {
         </div>
 
         <div className="content-area">
-          {ActiveComponent ? <ActiveComponent /> : <div className="empty-state">No content found for {selectedWeek} - {selectedTab}</div>}
+          <ErrorBoundary key={`${selectedWeek}-${selectedTab}`}>
+            {ActiveComponent ? <ActiveComponent /> : <div className="empty-state">No content found for {selectedWeek} - {selectedTab}</div>}
+          </ErrorBoundary>
         </div>
       </div>
     </div>
