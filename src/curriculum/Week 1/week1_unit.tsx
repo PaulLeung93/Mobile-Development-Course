@@ -135,7 +135,7 @@ const Overview = () => (
     </div>
 
     <h2 style={{ fontSize: 18, fontWeight: 600, margin: "24px 0 8px" }}>Upcoming due dates</h2>
-    <UL items={["Assignment 1 due one week after Session 2"]} />
+    <UL items={["Assignment 1 — due before Week 2 Session 1"]} />
     <Note>The session survey is filled out at the end of each lab — after you have finished building. Your feedback shapes the course!</Note>
   </div>
 );

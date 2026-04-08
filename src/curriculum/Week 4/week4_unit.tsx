@@ -136,7 +136,7 @@ function Overview() {
       <h2 style={{ fontSize: 18, fontWeight: 600, margin: "24px 0 8px" }}>Upcoming due dates</h2>
       <UL items={[
         "Assignment 3 (browse app) — due before Session 1 of this week",
-        "Assignment 4 (networked app) — due one week after Session 2",
+        "Assignment 4 (networked app) — due before Week 5 Session 1",
       ]} />
       <Note>Do not forget to fill out the Session Survey at the end of each class session.</Note>
     </div>

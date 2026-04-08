@@ -140,7 +140,7 @@ const Overview = () => (
     <h2 style={{ fontSize: 18, fontWeight: 600, margin: "24px 0 8px" }}>Upcoming due dates</h2>
     <UL items={[
       "Assignment 1 (profile app) — due before Session 1 of this week",
-      "Assignment 2 (trivia app) — due one week after Session 2",
+      "Assignment 2 (trivia app) — due before Week 3 Session 1",
     ]} />
     <Warn>Assignment 1 is due before this week starts. If you have not submitted it yet, do so before coming to Session 1.</Warn>
     <Note>Do not forget to fill out the Session Survey at the end of each class session.</Note>
