@@ -1,12 +1,12 @@
 :root {
-  --bg-dark: #0f0f13;
-  --bg-sidebar: #15151a;
-  --bg-panel: #1e1e24;
-  --text-main: #f0f0f5;
-  --text-muted: #94949e;
-  --accent: #6b4cff;
-  --accent-hover: #5438dc;
-  --border-color: rgba(255, 255, 255, 0.08);
+  --bg-dark: #f0f2f5;
+  --bg-sidebar: #ffffff;
+  --bg-panel: #ffffff;
+  --text-main: #1f2937;
+  --text-muted: #6b7280;
+  --accent: #2563eb;
+  --accent-hover: #1d4ed8;
+  --border-color: #e5e7eb;
   --sidebar-width: 260px;
 }
 
@@ -49,7 +49,7 @@ body {
   font-size: 16px;
   font-weight: 700;
   letter-spacing: 0.5px;
-  background: linear-gradient(90deg, #fff, #a594fd);
+  background: linear-gradient(90deg, #1f2937, #2563eb);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
@@ -80,12 +80,12 @@ body {
 }
 
 .sidebar-link:hover {
-  background-color: rgba(255, 255, 255, 0.05);
+  background-color: rgba(0, 0, 0, 0.04);
   color: var(--text-main);
 }
 
 .sidebar-link.active {
-  background-color: rgba(107, 76, 255, 0.15);
+  background-color: rgba(37, 99, 235, 0.1);
   color: var(--accent);
 }
 
@@ -145,12 +145,12 @@ body {
 
 .tab-link:hover {
   color: var(--text-main);
-  border-color: rgba(255, 255, 255, 0.2);
+  border-color: rgba(0, 0, 0, 0.2);
 }
 
 .tab-link.active {
   background: var(--text-main);
-  color: var(--bg-dark);
+  color: #fff;
   border-color: var(--text-main);
 }
 
@@ -158,8 +158,8 @@ body {
   flex: 1;
   overflow-y: auto;
   position: relative;
-  /* Dark background so slides look natural */
-  background: #000; 
+  /* Light background so slides look natural */
+  background: #ffffff; 
 }
 
 /* Responsive */
