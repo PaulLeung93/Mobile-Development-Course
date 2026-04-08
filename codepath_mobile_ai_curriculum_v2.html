@@ -1,0 +1,278 @@
+
+<style>
+  .wrap { padding: 1.5rem 0; font-family: var(--font-sans); }
+  .course-title { font-size: 20px; font-weight: 500; color: var(--color-text-primary); margin: 0 0 4px; }
+  .course-sub { font-size: 13px; color: var(--color-text-secondary); margin: 0 0 1.5rem; }
+  .phase-pill { font-size: 11px; font-weight: 500; letter-spacing: .05em; text-transform: uppercase; padding: 3px 10px; border-radius: 20px; display: inline-block; margin-bottom: 12px; }
+  .ph1 { background: #EEEDFE; color: #3C3489; }
+  .ph2 { background: #E1F5EE; color: #085041; }
+  .ph3 { background: #FAECE7; color: #712B13; }
+  .week-card { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: 12px; padding: 14px 16px; margin-bottom: 10px; }
+  .week-header { display: flex; align-items: baseline; gap: 10px; margin-bottom: 10px; }
+  .week-num { font-size: 11px; font-weight: 500; color: var(--color-text-tertiary); min-width: 48px; }
+  .week-title { font-size: 14px; font-weight: 500; color: var(--color-text-primary); margin: 0; }
+  .sessions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px; }
+  .session { background: var(--color-background-secondary); border-radius: 8px; padding: 10px 12px; }
+  .s-label { font-size: 11px; font-weight: 500; color: var(--color-text-tertiary); margin: 0 0 4px; text-transform: uppercase; letter-spacing: .04em; }
+  .s-topic { font-size: 13px; font-weight: 500; color: var(--color-text-primary); margin: 0 0 3px; }
+  .s-lab { font-size: 12px; color: var(--color-text-secondary); margin: 0; line-height: 1.4; }
+  .s-lab b { font-weight: 500; }
+  .tag-ai { font-size: 11px; padding: 2px 7px; border-radius: 20px; background: #FAEEDA; color: #633806; margin-left: 5px; vertical-align: middle; }
+  .milestone { display: flex; align-items: flex-start; gap: 8px; padding: 8px 10px; background: var(--color-background-secondary); border-radius: 0 8px 8px 0; }
+  .m-assign { border-left: 2px solid #534AB7; }
+  .m-cap { border-left: 2px solid #993C1D; }
+  .m-final { border-left: 2px solid #993C1D; }
+  .m-label { font-size: 11px; font-weight: 500; white-space: nowrap; margin-top: 1px; }
+  .m-assign .m-label { color: #534AB7; }
+  .m-cap .m-label { color: #993C1D; }
+  .m-text { font-size: 12px; color: var(--color-text-secondary); margin: 0; line-height: 1.4; }
+  .track-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px; }
+  .track { border-radius: 8px; padding: 10px 12px; }
+  .track-a { background: #E6F1FB; }
+  .track-b { background: #EAF3DE; }
+  .t-label { font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: .04em; margin: 0 0 4px; }
+  .track-a .t-label { color: #0C447C; }
+  .track-b .t-label { color: #27500A; }
+  .t-detail { font-size: 12px; margin: 0; line-height: 1.4; }
+  .track-a .t-detail { color: #185FA5; }
+  .track-b .t-detail { color: #3B6D11; }
+  .divider-split { border: none; border-top: 1.5px dashed var(--color-border-secondary); margin: 20px 0 8px; }
+  .split-note { text-align: center; font-size: 12px; color: var(--color-text-secondary); margin: 0 0 16px; }
+  .legend { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 16px; padding-top: 14px; border-top: 0.5px solid var(--color-border-tertiary); }
+  .legend-item { display: flex; align-items: center; gap: 5px; font-size: 12px; color: var(--color-text-secondary); }
+  .legend-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+</style>
+
+<div class="wrap">
+  <p class="course-title">Mobile development in the age of AI</p>
+  <p class="course-sub">CodePath · 10 weeks · 2 sessions/week · Intro level · No prereqs beyond basic programming · Teams of 3 · Android or iOS from Week 6</p>
+
+  <span class="phase-pill ph1">Phase 1 — Mobile fundamentals (Weeks 1–5)</span>
+
+  <div class="week-card">
+    <div class="week-header"><span class="week-num">Week 1</span><p class="week-title">Your first mobile app — screens, layouts & state</p></div>
+    <div class="sessions">
+      <div class="session">
+        <p class="s-label">Session 1</p>
+        <p class="s-topic">What is declarative UI?</p>
+        <p class="s-lab"><b>Lab:</b> Build a "Hello, world" screen in both Compose & SwiftUI side by side. Spot the similarities.</p>
+      </div>
+      <div class="session">
+        <p class="s-label">Session 2</p>
+        <p class="s-topic">State, recomposition & modifiers</p>
+        <p class="s-lab"><b>Lab:</b> Build a counter app — a button increments a number and the UI updates reactively.</p>
+      </div>
+    </div>
+    <div class="milestone m-assign">
+      <span class="m-label">Assignment 1</span>
+      <p class="m-text">Build a personal profile screen with a name, bio, and at least two interactive elements (e.g. a toggle, a button that changes text).</p>
+    </div>
+  </div>
+
+  <div class="week-card">
+    <div class="week-header"><span class="week-num">Week 2</span><p class="week-title">Navigation & multi-screen apps</p></div>
+    <div class="sessions">
+      <div class="session">
+        <p class="s-label">Session 1</p>
+        <p class="s-topic">Navigation fundamentals</p>
+        <p class="s-lab"><b>Lab:</b> Add a second screen to last week's profile app and navigate to it on button tap.</p>
+      </div>
+      <div class="session">
+        <p class="s-label">Session 2</p>
+        <p class="s-topic">Passing data between screens & the back stack</p>
+        <p class="s-lab"><b>Lab:</b> Pass a user's name from a login screen to a welcome screen.</p>
+      </div>
+    </div>
+    <div class="milestone m-assign">
+      <span class="m-label">Assignment 2</span>
+      <p class="m-text">Build a 3-screen mini app of your choice (e.g. onboarding flow, quiz, recipe viewer). Must show forward navigation, data passing, and a back action.</p>
+    </div>
+  </div>
+
+  <div class="week-card">
+    <div class="week-header"><span class="week-num">Week 3</span><p class="week-title">Lists, scrolling & dynamic data</p></div>
+    <div class="sessions">
+      <div class="session">
+        <p class="s-label">Session 1</p>
+        <p class="s-topic">LazyColumn / List & custom row layouts</p>
+        <p class="s-lab"><b>Lab:</b> Render a hardcoded list of 20 items with a custom row layout including an image placeholder, title, and subtitle.</p>
+      </div>
+      <div class="session">
+        <p class="s-label">Session 2</p>
+        <p class="s-topic">Search, filter & empty states</p>
+        <p class="s-lab"><b>Lab:</b> Add a search bar that filters the list in real time as the user types. Handle the empty results state gracefully.</p>
+      </div>
+    </div>
+    <div class="milestone m-assign">
+      <span class="m-label">Assignment 3</span>
+      <p class="m-text">Build a searchable contacts or movie list app. Tapping a row navigates to a detail screen (combining Weeks 2 + 3). Data can be hardcoded.</p>
+    </div>
+  </div>
+
+  <div class="week-card">
+    <div class="week-header"><span class="week-num">Week 4</span><p class="week-title">Networking & REST APIs</p></div>
+    <div class="sessions">
+      <div class="session">
+        <p class="s-label">Session 1</p>
+        <p class="s-topic">HTTP, JSON & async patterns</p>
+        <p class="s-lab"><b>Lab:</b> Fetch a list of posts from JSONPlaceholder and display them in a list.</p>
+      </div>
+      <div class="session">
+        <p class="s-label">Session 2</p>
+        <p class="s-topic">Loading states, errors & image loading</p>
+        <p class="s-lab"><b>Lab:</b> Add a shimmer/skeleton loading state and an error banner to last session's app.</p>
+      </div>
+    </div>
+    <div class="milestone m-assign">
+      <span class="m-label">Assignment 4</span>
+      <p class="m-text">Build an app that fetches real data from a public API of your choice (weather, movies, Pokémon, etc.), shows results in a list with a detail screen, and handles loading and error states.</p>
+    </div>
+  </div>
+
+  <div class="week-card">
+    <div class="week-header"><span class="week-num">Week 5</span><p class="week-title">Local storage, persistence & Git for teams</p></div>
+    <div class="sessions">
+      <div class="session">
+        <p class="s-label">Session 1</p>
+        <p class="s-topic">Local databases & user preferences</p>
+        <p class="s-lab"><b>Lab:</b> Save favourited items from the Week 4 API app to a local database that persists across sessions. <b>Stretch:</b> Persist a user preference (e.g. dark/light mode) using DataStore / UserDefaults.</p>
+      </div>
+      <div class="session">
+        <p class="s-label">Session 2</p>
+        <p class="s-topic">Git for teams — organizations, branches, PRs & code review</p>
+        <p class="s-lab"><b>Lab:</b> Create a GitHub Organization, set up branch protection, create a kanban board, and each team member opens and merges their first PR.</p>
+      </div>
+    </div>
+    <div class="milestone m-assign">
+      <span class="m-label">Assignment 5</span>
+      <p class="m-text">Extend your Week 4 app with offline favourites saved to a local DB and a Favourites tab. Also due: 1-page capstone proposal with team members, platform choice, app concept, and core features.</p>
+    </div>
+  </div>
+
+  <div class="divider-split"></div>
+  <p class="split-note">Teams of 3 form here and commit to Android or iOS for their capstone</p>
+
+  <span class="phase-pill ph2">Phase 2 — Platform depth + AI features (Weeks 6–8)</span>
+
+  <div class="week-card">
+    <div class="week-header"><span class="week-num">Week 6</span><p class="week-title">Architecture, MVVM & AI coding tools</p></div>
+    <div class="track-grid">
+      <div class="track track-a"><p class="t-label">Android</p><p class="t-detail">ViewModel + StateFlow, Hilt basics, project scaffolding in Android Studio</p></div>
+      <div class="track track-b"><p class="t-label">iOS</p><p class="t-detail">ObservableObject + @StateObject, project structure in Xcode, Swift concurrency</p></div>
+    </div>
+    <div class="sessions">
+      <div class="session">
+        <p class="s-label">Session 1</p>
+        <p class="s-topic">MVVM architecture deep dive</p>
+        <p class="s-lab"><b>Lab:</b> Refactor a previous assignment to use proper MVVM — ViewModel holds state, View only renders.</p>
+      </div>
+      <div class="session">
+        <p class="s-label">Session 2 <span class="tag-ai">AI tools</span></p>
+        <p class="s-topic">AI-assisted development, prompting patterns & MCP</p>
+        <p class="s-lab"><b>Lab:</b> Use Claude to scaffold your capstone project boilerplate. Practice prompting for mobile-specific patterns. Live demo: Google Stitch MCP generating UI from a natural language description.</p>
+      </div>
+    </div>
+    <div class="milestone m-cap">
+      <span class="m-label">Capstone M1</span>
+      <p class="m-text">Repo set up inside a GitHub Organization, branch protection on main, architecture scaffolded, at least one screen rendering real or mock data. Team roles defined.</p>
+    </div>
+  </div>
+
+  <div class="week-card">
+    <div class="week-header"><span class="week-num">Week 7</span><p class="week-title">Calling an LLM from a mobile app</p></div>
+    <div class="track-grid">
+      <div class="track track-a"><p class="t-label">Android</p><p class="t-detail">Retrofit + coroutines for streaming, handling chunked responses in Compose</p></div>
+      <div class="track track-b"><p class="t-label">iOS</p><p class="t-detail">URLSession async/await, streaming with AsyncSequence, SwiftUI streaming text</p></div>
+    </div>
+    <div class="sessions">
+      <div class="session">
+        <p class="s-label">Session 1 <span class="tag-ai">AI feature</span></p>
+        <p class="s-topic">Integrating a cloud LLM API</p>
+        <p class="s-lab"><b>Lab:</b> Add a chat screen that calls the OpenAI or Gemini API and streams the response word by word.</p>
+      </div>
+      <div class="session">
+        <p class="s-label">Session 2 <span class="tag-ai">AI feature</span></p>
+        <p class="s-topic">UI patterns for AI-generated content</p>
+        <p class="s-lab"><b>Lab:</b> Add typing indicators, partial render states, and an error fallback UX to last session's chat screen.</p>
+      </div>
+    </div>
+    <div class="milestone m-cap">
+      <span class="m-label">Capstone M2</span>
+      <p class="m-text">Core navigation complete, at least one networking call working end-to-end. Optional: incorporate an LLM feature if it fits your concept.</p>
+    </div>
+  </div>
+
+  <div class="week-card">
+    <div class="week-header"><span class="week-num">Week 8</span><p class="week-title">On-device AI — inference without the cloud</p></div>
+    <div class="track-grid">
+      <div class="track track-a"><p class="t-label">Android</p><p class="t-detail">ML Kit (text recognition, image labeling), Gemini Nano via Android AICore</p></div>
+      <div class="track track-b"><p class="t-label">iOS</p><p class="t-detail">Core ML + Vision framework, Create ML for simple custom models, Apple Intelligence APIs</p></div>
+    </div>
+    <div class="sessions">
+      <div class="session">
+        <p class="s-label">Session 1 <span class="tag-ai">AI feature</span></p>
+        <p class="s-topic">On-device image & text recognition</p>
+        <p class="s-lab"><b>Lab:</b> Use the camera to recognise objects or text in real time — no internet required.</p>
+      </div>
+      <div class="session">
+        <p class="s-label">Session 2 <span class="tag-ai">AI feature</span></p>
+        <p class="s-topic">Running a local model end-to-end</p>
+        <p class="s-lab"><b>Lab:</b> Run a bundled classification model on a photo from the camera roll and display the structured result in the UI.</p>
+      </div>
+    </div>
+    <div class="milestone m-cap">
+      <span class="m-label">Capstone M3</span>
+      <p class="m-text">Meaningful progress on capstone issues. Core screens navigable. Instructor check-in this week — 10 min per team.</p>
+    </div>
+  </div>
+
+  <span class="phase-pill ph3">Phase 3 — Testing, polish & demo day (Weeks 9–10)</span>
+
+  <div class="week-card">
+    <div class="week-header"><span class="week-num">Week 9</span><p class="week-title">Introduction to testing & capstone sprint</p></div>
+    <div class="sessions">
+      <div class="session">
+        <p class="s-label">Session 1</p>
+        <p class="s-topic">Introduction to unit testing</p>
+        <p class="s-lab"><b>Lab:</b> Write unit tests for a shared starter ViewModel using JUnit4 (Android) or XCTest (iOS). Use fakes to isolate dependencies. Find edge cases with Claude.</p>
+      </div>
+      <div class="session">
+        <p class="s-label">Session 2</p>
+        <p class="s-topic">Capstone work session</p>
+        <p class="s-lab"><b>Lab:</b> Unstructured capstone build time with full TA support. Teams work on their highest-priority remaining features. Goal: feature-complete by end of session.</p>
+      </div>
+    </div>
+    <div class="milestone m-cap">
+      <span class="m-label">Capstone M4</span>
+      <p class="m-text">Feature-complete build. All core screens working, data persists, at least one stretch feature implemented. Repo reflects the branching workflow set up in Week 6.</p>
+    </div>
+  </div>
+
+  <div class="week-card">
+    <div class="week-header"><span class="week-num">Week 10</span><p class="week-title">Ship it & demo day</p></div>
+    <div class="sessions">
+      <div class="session">
+        <p class="s-label">Session 1 — Lecture (55 min) + Lab (55 min)</p>
+        <p class="s-topic">App store publishing + polish + demo prep</p>
+        <p class="s-lab"><b>Lecture:</b> App store publishing end-to-end (signing, store listing, review process) for both platforms. Polish checklist. What makes a great 5-minute demo. <b>Lab:</b> Polish sprint — fix empty states, error messages, and app icon. Rehearse the demo out loud with your team at least once.</p>
+      </div>
+      <div class="session">
+        <p class="s-label">Session 2 — Demo day</p>
+        <p class="s-topic">Live capstone presentations</p>
+        <p class="s-lab"><b>Format:</b> Each team has 6 minutes — ~4 min demo, ~2 min Q&amp;A. Structure: Connect, Introductions, Pitch, Demo, Next Steps. Format options: live device, screen share, pre-recorded video, or slide deck.</p>
+      </div>
+    </div>
+    <div class="milestone m-final">
+      <span class="m-label">Capstone final</span>
+      <p class="m-text">Submit GitHub repo, a demo video walkthrough, and a slide presentation deck.</p>
+    </div>
+  </div>
+
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot" style="background:#534AB7"></div>Weekly assignment</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#993C1D"></div>Capstone milestone</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#EF9F27"></div>AI-focused session</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#378ADD"></div>Android track</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#639922"></div>iOS track</div>
+  </div>
+</div>

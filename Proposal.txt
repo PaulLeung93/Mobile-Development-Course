@@ -1,0 +1,17 @@
+To the CodePath Curriculum Team,
+CodePath's pivot toward AI-centric education presents a massive opportunity to redefine how we teach application development. I am proposing a brand-new course—Mobile Development in the Age of AI—that perfectly aligns with this vision while introducing a highly streamlined, high-enrollment format.
+The industry is seeing that mobile engineering hasn't been replaced by AI; it has been supercharged by it. By combining modern AI workflows with the universal shift to Declarative UI, we can offer a cutting-edge course that is highly feasible to run and incredibly relevant to today's tech landscape.
+
+Why This Approach is Feasible and Scalable
+1. A Single, Unified Cohort In the past, offering separate Android and iOS tracks naturally split the student base. This new curriculum solves that by combining all students into a single cohort. Because modern mobile development has universally shifted to declarative UI frameworks (Jetpack Compose and SwiftUI), the foundational concepts—state management, recomposition, and modifiers—are nearly identical. Students learn these universal concepts side-by-side for the first five weeks before forming teams and branching into platform-specific capstones. This maximizes class sizes and streamlines instruction.
+
+Why This Curriculum is Highly Relevant
+2. AI as Both a Tool and a Feature This course goes beyond traditional mobile development by weaving AI directly into the fabric of the curriculum. Students will learn how to be true AI-augmented engineers in two distinct ways:
+
+AI as a Developer Tool: Students will explicitly learn how to leverage tools like Claude and Copilot to bridge syntax gaps, scaffold boilerplate, write unit tests, and accelerate their development velocity.
+AI as a Product Feature: Students will learn how to build AI-native apps. The curriculum includes integrating cloud LLM APIs (managing streaming responses and AI-generated UI states) and utilizing On-Device AI (ML Kit, Core ML) for privacy-first, low-latency inference at the edge.
+
+3. Pragmatic, Industry-Ready Engineering While AI is an incredible force multiplier, developers still need a solid understanding of native platforms to effectively prompt the AI, evaluate its output, and debug complex state issues. This course ensures students still learn critical engineering practices like MVVM architecture and modern Git workflows, making them highly competitive in the job market.
+By adopting this unified curriculum, CodePath can offer a high-demand course that proves we are leading the charge in AI education, all while maintaining the rigorous engineering standards our graduates are known for.
+I have a full 10-week curriculum outline ready to review and would love to discuss how we can bring this to the students.
+
