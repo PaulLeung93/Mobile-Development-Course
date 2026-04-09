@@ -1,4 +1,5 @@
 import PreworkSpec from './curriculum/Prework/prework_spec';
+import CurriculumOverview from './curriculum/Curriculum/CurriculumOverview';
 
 import Week1Unit from './curriculum/Week 1/week1_unit';
 import Week1S1 from './curriculum/Week 1/week1_session1_slides';
@@ -44,6 +45,9 @@ import Week10S2 from './curriculum/Week 10/week10_session2_slides';
 export const navigationRegistry: Record<string, Record<string, React.ElementType>> = {
   "Prework": {
     "Spec": PreworkSpec
+  },
+  "Curriculum": {
+    "Overview": CurriculumOverview
   },
   "Week 1": {
     "Unit": Week1Unit,
