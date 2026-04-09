@@ -13,7 +13,7 @@ const albums = [
 const PLATFORMS = ["Android", "iOS"];
 
 /* -- colors -- */
-const P_C = "#534AB7";
+const P_C = "#534AB7", PL = "#EEEDFE", PD = "#3C3489";
 const BL = "#7F52FF", BLL = "#F0EEFF";
 const GR = "#F05138", GRL = "#FFF2F0";
 
@@ -828,20 +828,16 @@ function Lab() {
 
   return (
     <div>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", borderBottom: "1px solid var(--color-border-tertiary)", paddingBottom: 16, marginBottom: 24, flexWrap: "wrap", gap: 16 }}>
-        <div>
-          <PlatformToggle platform={platform} setPlatform={setPlatform} />
-        </div>
-        
-        <div style={{ display: "flex", background: "var(--color-background-secondary)", padding: 4, borderRadius: 10 }}>
-          {["Session 1", "Session 2"].map((s, i) => (
-            <button key={s} onClick={() => setStep(i)} style={{ padding: "6px 16px", borderRadius: 8, fontSize: 13, fontWeight: 500, cursor: "pointer", background: step === i ? "var(--color-background-primary)" : "transparent", color: step === i ? "var(--color-text-primary)" : "var(--color-text-secondary)", border: "none", boxShadow: step === i ? "0 1px 3px rgba(0,0,0,0.1)" : "none" }}>
-              {s}
-            </button>
-          ))}
-        </div>
+      <div style={{ display: "flex", gap: 0, marginBottom: 12, borderRadius: 8, overflow: "hidden", border: "1px solid var(--color-border-tertiary)", width: "fit-content" }}>
+        {["Session 1", "Session 2"].map((s, i) => (
+          <button key={s} onClick={() => setStep(i)} style={{
+            padding: "8px 20px", fontSize: 13, fontWeight: 500, border: "none", cursor: "pointer",
+            background: step === i ? PL : "var(--color-background-primary)",
+            color: step === i ? PD : "var(--color-text-secondary)"
+          }}>{s}{i === 0 ? " — The List Screen" : " — Search & Detail"}</button>
+        ))}
       </div>
-
+      <PlatformToggle platform={platform} setPlatform={setPlatform} />
       {step === 0 ? <Session1Lab platform={platform} /> : <Session2Lab platform={platform} />}
     </div>
   );
