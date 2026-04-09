@@ -513,7 +513,7 @@ CLAUDE_API_KEY=sk-ant-api03-...
 
 # build.gradle.kts
 buildConfigField("String", "CLAUDE_API_KEY",
-    "\"${properties["CLAUDE_API_KEY"]}\"")
+    "\"\${properties["CLAUDE_API_KEY"]}\"")
 
 # Usage
 BuildConfig.CLAUDE_API_KEY`}</pre>
@@ -571,7 +571,7 @@ sealed class ChatUiState {
 
         client.newCall(request).execute().use { response ->
             if (!response.isSuccessful)
-                throw IOException("API error ${response.code}")
+                throw IOException("API error \${response.code}")
             val source = response.body!!.source()
             while (!source.exhausted()) {
                 val line = source.readUtf8Line() ?: break

@@ -805,7 +805,7 @@ function ProjectTab({ platform, setPlatform }) {
         {"\uD83D\uDCEC"} Submit this project by the next session using the <strong>Submit</strong> button {"\uD83D\uDC49"} <span style={{ float: "right", background: P_C, color: "#fff", padding: "4px 14px", borderRadius: 6, fontSize: 12, fontWeight: 500, cursor: "pointer" }}>Submit</span>
       </div>
 
-      <h2 style={{ fontSize: 18, fontWeight: 600, margin: "0 0 4px" }}>Unit 7: Project \u2014 AI-Powered Apps</h2>
+      <h2 style={{ fontSize: 18, fontWeight: 600, margin: "0 0 4px" }}>Unit 7: Project — AI-Powered Apps</h2>
       <PlatformToggle platform={platform} setPlatform={setPlatform} />
 
       <div style={{ fontSize: 13, lineHeight: 1.7 }}>
