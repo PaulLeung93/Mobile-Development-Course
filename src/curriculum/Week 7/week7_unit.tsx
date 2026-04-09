@@ -114,7 +114,7 @@ function Overview({ platform, setPlatform }) {
       <h2 style={{ fontSize: 20, fontWeight: 600, margin: "0 0 6px" }}>Unit 7: Calling an LLM from a Mobile App</h2>
 
       <p style={{ fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 1.7, margin: "0 0 16px" }}>
-        {"This is the week where your apps start to feel like magic. You'll call a real LLM (Claude) from a mobile app, stream the response word by word, send images for AI analysis, and learn the patterns that make AI features feel polished. Both sessions this week are AI-focused."}
+        {"This is the week where your apps start to feel like magic. You'll call a real LLM (Claude) from a mobile app, stream the response word by word, explore multimodal AI with rich mobile inputs, and learn the patterns that make AI features feel polished. Both sessions this week are AI-focused."}
       </p>
 
       <PlatformToggle platform={platform} setPlatform={setPlatform} />
@@ -125,7 +125,7 @@ function Overview({ platform, setPlatform }) {
           <li>How LLM APIs work: requests, responses, and streaming</li>
           <li>{isAndroid ? "Making API calls with OkHttp + coroutines, handling chunked/streaming responses" : "Making API calls with URLSession async/await, streaming with AsyncSequence"}</li>
           <li>Building a chat screen that streams Claude responses in real time</li>
-          <li>{"Claude's vision API: sending images for multimodal analysis"}</li>
+          <li>{"Multimodal AI: using mobile as a rich input device (camera, microphone, sensors)"}</li>
           <li>{"Camera and photo gallery integration on " + platform}</li>
         </ul>
       </div>
@@ -470,16 +470,16 @@ function LabSession2({ platform }) {
   var isAndroid = platform === "Android";
   return (
     <div style={{ '--platform-accent': platform === "Android" ? BL : GR } as React.CSSProperties}>
-      <h2 style={{ fontSize: 18, fontWeight: 600, margin: "0 0 4px" }}>Unit 7 Lab: AI-Powered Image Description</h2>
+      <h2 style={{ fontSize: 18, fontWeight: 600, margin: "0 0 4px" }}>Unit 7 Lab: Multimodal AI & Image Description</h2>
       <p style={{ fontSize: 13, color: "var(--color-text-secondary)", margin: "0 0 4px" }}>
-        {"In this lab you'll build a standalone mini-app that lets users take a photo or pick one from the gallery and have Claude describe what it sees."}
+        {"In this lab, you'll explore Multimodal AI by treating the mobile device as a rich input sensor. You'll build a standalone mini-app that lets users take a photo or pick one from the gallery and send it to Claude as a multimodal message."}
       </p>
       <div style={{ display: "inline-block", fontSize: 11, fontWeight: 500, padding: "2px 9px", borderRadius: 20, background: AML, color: AM, marginBottom: 12 }}>AI feature</div>
 
       <div style={{ fontSize: 13, lineHeight: 1.7 }}>
         <strong>{"\uD83C\uDFAF"} Goals</strong>
         <ul style={{ paddingLeft: 20, margin: "6px 0 12px" }}>
-          <li>{"Learn how to send images to Claude's vision API (multimodal messages)"}</li>
+          <li>{"Learn how to send multimodal messages (text + image) to Claude"}</li>
           <li>Access the device camera or photo gallery</li>
           <li>Convert an image to base64 for API transmission</li>
           <li>Display AI-generated image descriptions with loading states</li>
@@ -626,7 +626,7 @@ fun PhotoScreen(viewModel: PhotoViewModel = viewModel()) {
         <Checkpoint num={3}>You can convert a selected image to base64. Print the first 50 characters to verify.</Checkpoint>
       </Step>
 
-      <Step num={4} title="Send the image to Claude vision API (~12 min)">
+      <Step num={4} title="Send the image via the multimodal API (~12 min)">
         <p>{"The key difference from Session 1: instead of text-only, you send a multimodal message with both an image and a text prompt."}</p>
         {isAndroid ? (
           <CodeB title="Kotlin \u2014 multimodal API call" accent={BL}>{`fun describeImage() {
@@ -771,7 +771,7 @@ fun PhotoScreen(viewModel: PhotoViewModel = viewModel()) {
 }
 
 /* ====== LAB SWITCHER ====== */
-var SESSION_LABELS = ["Session 1: Chat with Claude", "Session 2: Photo Describer"];
+var SESSION_LABELS = ["Session 1: Chat with Claude", "Session 2: Multimodal Inputs"];
 
 function LabTab({ platform, setPlatform }) {
   var s = useState(1);
@@ -834,7 +834,7 @@ function ProjectTab({ platform, setPlatform }) {
         <ul style={{ paddingLeft: 20, fontSize: 13, lineHeight: 2 }}>
           <li>{"\u2610"} User can <strong>take a photo</strong> or <strong>choose from gallery</strong></li>
           <li>{"\u2610"} Selected photo displayed as <strong>preview</strong></li>
-          <li>{"\u2610"} Tapping Describe sends image to <strong>vision API</strong> and shows description</li>
+          <li>{"\u2610"} Tapping Describe sends image in a <strong>multimodal API</strong> call and shows description</li>
           <li>{"\u2610"} Image <strong>compressed and resized</strong> before base64 encoding</li>
           <li>{"\u2610"} <strong>Loading state</strong> while analyzing</li>
           <li>{"\u2610"} <strong>Error handling</strong> \u2014 friendly messages</li>

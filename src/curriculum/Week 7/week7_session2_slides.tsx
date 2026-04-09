@@ -8,10 +8,13 @@ const TEAL_DARK   = "#0F6E56";
 const TEAL_LIGHT  = "#E1F5EE";
 const AMBER       = "#EF9F27";
 const AMBER_LIGHT = "#FAEEDA";
+const AMBER_DARK  = "#633806";
 const BLUE        = "#185FA5";
 const BLUE_LIGHT  = "#E6F1FB";
 const GREEN       = "#3B6D11";
 const GREEN_LIGHT = "#EAF3DE";
+const CORAL       = "#993C1D";
+const CORAL_LIGHT = "#FAECE7";
 const GRAY        = "#F5F5F7";
 const TEXT        = "#1a1a2e";
 const MUTED       = "#6b7280";
@@ -19,12 +22,11 @@ const MUTED       = "#6b7280";
 const Tag = ({ children, color = "purple" }) => {
   const map = {
     purple: { bg: PURPLE_LIGHT, fg: PURPLE_DARK },
-    teal:   { bg: TEAL_LIGHT,   fg: TEAL_DARK   },
-    amber:  { bg: AMBER_LIGHT,  fg: "#633806"   },
-    blue:   { bg: BLUE_LIGHT,   fg: BLUE        },
-    green:  { bg: GREEN_LIGHT,  fg: GREEN       },
-    ai:     { bg: "#F9F0FF",    fg: "#6B21A8"   },
-    red:    { bg: "#FCEBEB",    fg: "#A32D2D"   },
+    teal:   { bg: TEAL_LIGHT,   fg: TEAL_DARK },
+    amber:  { bg: AMBER_LIGHT,  fg: AMBER_DARK },
+    blue:   { bg: BLUE_LIGHT,   fg: BLUE },
+    green:  { bg: GREEN_LIGHT,  fg: GREEN },
+    coral:  { bg: CORAL_LIGHT,  fg: CORAL },
   };
   const c = map[color] || map.purple;
   return <span style={{ fontSize: 10, fontWeight: 600, letterSpacing: ".06em", textTransform: "uppercase", background: c.bg, color: c.fg, padding: "2px 8px", borderRadius: 20 }}>{children}</span>;
@@ -42,6 +44,17 @@ const Info = ({ children }) => (
     <p style={{ fontSize: 12, color: PURPLE_DARK, margin: 0, lineHeight: 1.5 }}>{children}</p>
   </div>
 );
+
+const Callout = ({ color = "amber", label, children }) => {
+  const map = { amber: { bg: AMBER_LIGHT, fg: AMBER_DARK, border: AMBER }, teal: { bg: TEAL_LIGHT, fg: TEAL_DARK, border: TEAL }, coral: { bg: CORAL_LIGHT, fg: CORAL, border: CORAL }, blue: { bg: BLUE_LIGHT, fg: BLUE, border: BLUE } };
+  const c = map[color] || map.amber;
+  return (
+    <div style={{ background: c.bg, borderLeft: `3px solid ${c.border}`, borderRadius: "0 8px 8px 0", padding: "10px 14px", marginTop: 10 }}>
+      {label && <p style={{ fontSize: 10, fontWeight: 700, color: c.fg, margin: "0 0 3px", textTransform: "uppercase", letterSpacing: ".06em" }}>{label}</p>}
+      <p style={{ fontSize: 12, color: c.fg, margin: 0, lineHeight: 1.5 }}>{children}</p>
+    </div>
+  );
+};
 
 const Discussion = ({ children }) => (
   <div style={{ background: TEAL_LIGHT, borderRadius: 8, padding: "10px 14px", marginTop: 10 }}>
@@ -73,31 +86,48 @@ const Shell = ({ tag, tagColor = "teal", timer, title, subtitle, children, notes
   </div>
 );
 
+const Arrow = ({ label, color = MUTED, horizontal = false }) => (
+  horizontal
+    ? <div style={{ display: "flex", alignItems: "center", margin: "0 6px" }}>
+        <div style={{ height: 2, width: 16, background: color, opacity: 0.5 }} />
+        <div style={{ width: 0, height: 0, borderTop: "5px solid transparent", borderBottom: "5px solid transparent", borderLeft: `6px solid ${color}`, opacity: 0.5 }} />
+        {label && <p style={{ fontSize: 10, color, margin: "0 0 0 4px", opacity: 0.7 }}>{label}</p>}
+      </div>
+    : <div style={{ display: "flex", flexDirection: "column", alignItems: "center", margin: "4px 0" }}>
+        <div style={{ width: 2, height: 10, background: color, opacity: 0.5 }} />
+        <div style={{ width: 0, height: 0, borderLeft: "5px solid transparent", borderRight: "5px solid transparent", borderTop: `6px solid ${color}`, opacity: 0.5 }} />
+        {label && <p style={{ fontSize: 10, color, margin: "2px 0 0", opacity: 0.7 }}>{label}</p>}
+      </div>
+);
+
+// ─── SLIDES ────────────────────────────────────────────────────────────────
+
 const slides = [
-  // 1: Title
+
+  // 1 ─ Title
   () => (
-    <div style={{ background: `linear-gradient(135deg, ${PURPLE_DARK} 0%, ${PURPLE} 100%)`, borderRadius: 12, padding: "44px 40px", minHeight: 360, display: "flex", flexDirection: "column", justifyContent: "space-between", boxSizing: "border-box" }}>
+    <div style={{ background: `linear-gradient(135deg, ${TEAL_DARK} 0%, ${TEAL} 60%, ${PURPLE} 100%)`, borderRadius: 12, padding: "44px 40px", minHeight: 360, display: "flex", flexDirection: "column", justifyContent: "space-between", boxSizing: "border-box" }}>
       <div>
         <div style={{ display: "flex", gap: 8, marginBottom: 12 }}>
           <span style={{ fontSize: 10, fontWeight: 600, background: BLUE_LIGHT, color: BLUE, padding: "2px 10px", borderRadius: 20, letterSpacing: ".05em", textTransform: "uppercase" }}>Android track</span>
           <span style={{ fontSize: 10, fontWeight: 600, background: GREEN_LIGHT, color: GREEN, padding: "2px 10px", borderRadius: 20, letterSpacing: ".05em", textTransform: "uppercase" }}>iOS track</span>
-          <span style={{ fontSize: 10, fontWeight: 600, background: "#F9F0FF", color: "#6B21A8", padding: "2px 10px", borderRadius: 20, letterSpacing: ".05em", textTransform: "uppercase" }}>✨ AI Feature</span>
+          <span style={{ fontSize: 10, fontWeight: 600, background: "rgba(255,255,255,0.2)", color: "#fff", padding: "2px 10px", borderRadius: 20, letterSpacing: ".05em", textTransform: "uppercase" }}>Multimodal</span>
         </div>
         <p style={{ fontSize: 11, fontWeight: 600, color: "rgba(255,255,255,0.5)", margin: "0 0 8px", textTransform: "uppercase", letterSpacing: ".08em" }}>Week 7 · Session 2</p>
-        <h1 style={{ fontSize: 30, fontWeight: 500, color: "#fff", margin: "0 0 8px", lineHeight: 1.2 }}>UI patterns for AI-generated content</h1>
-        <p style={{ fontSize: 16, color: "rgba(255,255,255,0.7)", margin: "0 0 28px" }}>The difference between a working feature and a polished product</p>
+        <h1 style={{ fontSize: 30, fontWeight: 500, color: "#fff", margin: "0 0 8px", lineHeight: 1.2 }}>Mobile as an input device</h1>
+        <p style={{ fontSize: 16, color: "rgba(255,255,255,0.8)", margin: "0 0 28px" }}>Multimodal messages · Camera & gallery · Vision API · What's next</p>
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
           {[
-            "Before vs after — what 'polished' actually means",
-            "The AI UI state machine — all 6 states",
-            "Typing indicators — animated three-dot implementation",
-            "Partial render — blinking cursor + deferred Markdown",
-            "Error taxonomy — 6 types and the right UI for each",
-            "Cancellation — stop button + coroutine/Task cancellation",
-            "Input locking + auto-scroll that respects manual scrolling",
-            "Accessibility for streaming content",
-            "Capstone integration — which patterns your app needs",
-            "Lab: full polish layer on Session 1 chat screen",
+            "Session 1 recap — what we built",
+            "Text is just one modality",
+            "What makes mobile uniquely powerful for AI",
+            "The multimodal message structure",
+            "Base64 — what it is and why APIs use it",
+            "Camera vs. gallery — two UX patterns",
+            "Platform permissions model",
+            "Image size, compression, and cost tradeoffs",
+            "Live demo — PhotoDescriber",
+            "Week 8 preview — what if there's no network?",
           ].map((t, i) => (
             <div key={i} style={{ display: "flex", gap: 8, alignItems: "flex-start" }}>
               <span style={{ color: AMBER, fontWeight: 700, fontSize: 14, flexShrink: 0, marginTop: 1 }}>▸</span>
@@ -110,1004 +140,923 @@ const slides = [
     </div>
   ),
 
-  // 2: Agenda
+  // 2 ─ Session 1 Recap
   () => (
-    <Shell tag="Agenda" title="Today's session — 2 hours" notes="Session 2 is more UX-focused than Session 1. The coding is lighter but the design thinking is harder. Push students to think about what failure looks like — most developers only design the happy path. Emphasise the capstone angle: every team building an AI feature needs these patterns before demo day. The lab is building on Session 1 — make sure everyone has a working streaming screen before starting.">
-      {[
-        { time: "0:00–0:05",  label: "Hook",                   desc: "The gap between 'it works' and 'it feels good' — the polish problem", section: null },
-        { time: "0:05–0:15",  label: "Before vs after",        desc: "Side-by-side comparison of an unpolished vs polished AI chat screen", section: null },
-        { time: "0:15–0:25",  label: "The state machine",      desc: "All 6 states an AI feature can be in — sealed class implementation", section: null },
-        { time: "0:25–0:35",  label: "Typing indicators",      desc: "Animated three-dot — implementation on both platforms", section: null },
-        { time: "0:35–0:48",  label: "Partial render states",  desc: "Blinking cursor, deferred Markdown, Strategy A vs B", section: null },
-        { time: "0:48–1:02",  label: "Error fallback UX",      desc: "6 error types, the error banner pattern, retry logic", section: null },
-        { time: "1:02–1:12",  label: "Cancellation + locking",  desc: "Stop button, Job/Task cancel, Send↔Stop swap, input disabled state", section: null },
-        { time: "1:12–1:22",  label: "Smart auto-scroll",       desc: "derivedStateOf (Android), PreferenceKey scroll detection (iOS)", section: null },
-        { time: "1:22–1:27",  label: "Accessibility + capstone",desc: "TalkBack/VoiceOver APIs + which patterns your app needs", section: null },
-        { time: "1:22–1:27",  label: "Lab intro",              desc: "Polish layer checklist walkthrough", section: null },
-        { time: "1:27–2:22",  label: "Lab — breakout rooms",   desc: "Add typing indicator, error banner, cancel, auto-scroll", section: "lab" },
-        { time: "2:22–2:30",  label: "Wrap-up + survey",       desc: "Week 7 complete · Week 8 preview · Capstone M2 intro", section: "wrapup" },
-      ].map(r => (
-        <div key={r.time} style={{
-          display: "flex", gap: 12, padding: "7px 0",
-          borderBottom: `0.5px solid ${GRAY}`,
-          background: r.section === "lab" ? TEAL_LIGHT : r.section === "wrapup" ? AMBER_LIGHT : "transparent",
-          borderRadius: r.section ? 6 : 0, paddingLeft: r.section ? 8 : 0, marginLeft: r.section ? -8 : 0
-        }}>
-          <span style={{ fontSize: 11, minWidth: 90, flexShrink: 0, color: r.section === "lab" ? TEAL_DARK : r.section === "wrapup" ? "#633806" : MUTED }}>{r.time}</span>
-          <span style={{ fontSize: 11, fontWeight: 600, minWidth: 160, flexShrink: 0, color: r.section === "lab" ? TEAL_DARK : r.section === "wrapup" ? "#633806" : PURPLE }}>{r.label}</span>
-          <span style={{ fontSize: 11, color: r.section === "lab" ? TEAL_DARK : r.section === "wrapup" ? "#633806" : TEXT }}>{r.desc}</span>
+    <Shell tag="Recap" tagColor="blue" timer="5" title="Session 1 recap — what we built" subtitle="A quick look back before we go further">
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+        <div style={{ background: BLUE_LIGHT, borderRadius: 10, padding: "14px 16px" }}>
+          <p style={{ fontSize: 11, fontWeight: 700, color: BLUE, margin: "0 0 8px", textTransform: "uppercase", letterSpacing: ".05em" }}>What we built</p>
+          {[
+            "ChatWithClaude — a streaming chat app",
+            "POST to Claude Messages API",
+            "SSE streaming: response appears word by word",
+            "Secure API key storage",
+            "MVVM with StateFlow / @Published",
+          ].map((t, i) => (
+            <div key={i} style={{ display: "flex", gap: 6, marginBottom: 5 }}>
+              <span style={{ color: BLUE, flexShrink: 0, fontWeight: 700 }}>✓</span>
+              <span style={{ fontSize: 12, color: BLUE, lineHeight: 1.4 }}>{t}</span>
+            </div>
+          ))}
         </div>
-      ))}
-      <div style={{ display: "flex", gap: 14, marginTop: 10 }}>
-        {[{ color: TEAL, label: "Lab" }, { color: AMBER, label: "Wrap-up" }].map(l => (
-          <div key={l.label} style={{ display: "flex", alignItems: "center", gap: 6 }}>
-            <div style={{ width: 10, height: 10, borderRadius: 2, background: l.color }} />
-            <span style={{ fontSize: 11, color: MUTED }}>{l.label}</span>
+        <div style={{ background: PURPLE_LIGHT, borderRadius: 10, padding: "14px 16px" }}>
+          <p style={{ fontSize: 11, fontWeight: 700, color: PURPLE_DARK, margin: "0 0 8px", textTransform: "uppercase", letterSpacing: ".05em" }}>The key insight</p>
+          <p style={{ fontSize: 13, color: PURPLE_DARK, lineHeight: 1.6, margin: "0 0 10px" }}>The Claude API is just HTTP. Request in, response out. Once you know the pattern, you can build anything on top of it.</p>
+          <p style={{ fontSize: 13, color: PURPLE_DARK, lineHeight: 1.6, margin: 0, fontWeight: 600 }}>Today we extend that pattern — but the input changes.</p>
+        </div>
+      </div>
+      <div style={{ marginTop: 12, background: AMBER_LIGHT, borderRadius: 8, padding: "10px 14px" }}>
+        <p style={{ fontSize: 12, color: AMBER_DARK, margin: 0, lineHeight: 1.5 }}>
+          <strong>Session 1 = make it work.</strong> You can talk to Claude from a mobile app. Today: <strong>Session 2 = expand what "talk" means.</strong>
+        </p>
+      </div>
+      <Notes>Spend 2–3 minutes on this. Ask: who got streaming working? Who got stuck? Normalize the struggle — the SSE parsing is genuinely fiddly. Then pivot: "Today we're doing something conceptually different — not a new API trick, but a new idea about what the input to an AI can be."</Notes>
+    </Shell>
+  ),
+
+  // 3 ─ Text is just one modality
+  () => (
+    <Shell tag="Concept" tagColor="purple" timer="5" title="Text is just one modality" subtitle="LLMs didn't start multimodal — they grew into it">
+      <div style={{ display: "flex", gap: 12, alignItems: "flex-start" }}>
+        <div style={{ flex: 1 }}>
+          <p style={{ fontSize: 13, color: TEXT, lineHeight: 1.6, margin: "0 0 12px" }}>
+            When you call the Messages API with a string, you're using the simplest possible input: plain text. But the same API can accept <strong>mixed content</strong> — text, images, and documents combined in a single message.
+          </p>
+          <p style={{ fontSize: 13, color: TEXT, lineHeight: 1.6, margin: "0 0 12px" }}>
+            Each <code style={{ background: GRAY, padding: "1px 5px", borderRadius: 4, fontSize: 12 }}>content</code> block in a message can be a different type:
+          </p>
+          <div style={{ display: "flex", flexDirection: "column", gap: 6, marginBottom: 12 }}>
+            {[
+              { type: "text", desc: "A string — what you used in Session 1", color: BLUE_LIGHT, fg: BLUE },
+              { type: "image", desc: "A base64-encoded image or a URL", color: GREEN_LIGHT, fg: GREEN },
+              { type: "document", desc: "A PDF or plain-text file (Claude 3+)", color: PURPLE_LIGHT, fg: PURPLE_DARK },
+            ].map(r => (
+              <div key={r.type} style={{ display: "flex", gap: 8, alignItems: "center" }}>
+                <span style={{ background: r.color, color: r.fg, fontFamily: "monospace", fontSize: 11, fontWeight: 700, padding: "2px 8px", borderRadius: 6, flexShrink: 0 }}>{r.type}</span>
+                <span style={{ fontSize: 12, color: MUTED }}>{r.desc}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+        <div style={{ width: 180, flexShrink: 0 }}>
+          <div style={{ background: GRAY, borderRadius: 10, padding: "12px", fontSize: 11, fontFamily: "monospace", color: TEXT, lineHeight: 1.7 }}>
+            <span style={{ color: PURPLE }}>messages</span>: [{"\n"}
+            {"  {"}<span style={{ color: TEAL }}>"role"</span>: <span style={{ color: AMBER_DARK }}>"user"</span>,{"\n"}
+            {"   "}<span style={{ color: TEAL }}>"content"</span>: [{"\n"}
+            {"    {"}<span style={{ color: TEAL }}>"type"</span>: <span style={{ color: AMBER_DARK }}>"image"</span>,{"\n"}
+            {"     ..."}{"},\n"}
+            {"    {"}<span style={{ color: TEAL }}>"type"</span>: <span style={{ color: AMBER_DARK }}>"text"</span>,{"\n"}
+            {"     "}<span style={{ color: TEAL }}>"text"</span>: <span style={{ color: AMBER_DARK }}>"Describe this"</span>{"\n"}
+            {"    }"}
+            {"\n   ]\n  }"}
+            {"\n]"}
+          </div>
+          <p style={{ fontSize: 10, color: MUTED, margin: "6px 0 0", textAlign: "center" }}>content is now an array, not a string</p>
+        </div>
+      </div>
+      <Info>The Claude docs call this a "vision" feature, but the underlying mechanism is just: content blocks. Once you understand that, sending an image is just adding one more block to the array.</Info>
+      <Notes>Source: https://docs.anthropic.com/en/api/messages — the content field documentation. Key point to emphasise: in Session 1, messages was [{"{"}role: "user", content: "hello"{"}"}] — content was a plain string. Today content becomes an array. That's the only structural change.</Notes>
+    </Shell>
+  ),
+
+  // 4 ─ Why mobile is uniquely positioned
+  () => (
+    <Shell tag="Concept" tagColor="teal" timer="5" title="Why mobile is uniquely positioned for multimodal AI" subtitle="A phone is a rich input machine — not just a small screen">
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 12 }}>
+        <div>
+          <p style={{ fontSize: 11, fontWeight: 700, color: TEAL_DARK, margin: "0 0 8px", textTransform: "uppercase", letterSpacing: ".05em" }}>What a phone can capture</p>
+          <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+            {[
+              { icon: "📷", label: "Visual", desc: "Photos, video, live frames, screenshots, documents held up to camera" },
+              { icon: "🎙️", label: "Audio", desc: "Voice, ambient sound, recorded speech — transcribed then sent to Claude" },
+              { icon: "📄", label: "Documents", desc: "PDFs and text files from local storage or cloud sync" },
+              { icon: "📍", label: "Context", desc: "Location, time of day, motion state, ambient light" },
+            ].map(s => (
+              <div key={s.label} style={{ display: "flex", gap: 10, background: TEAL_LIGHT, borderRadius: 8, padding: "8px 10px" }}>
+                <span style={{ fontSize: 18, flexShrink: 0 }}>{s.icon}</span>
+                <div>
+                  <p style={{ fontSize: 12, fontWeight: 700, color: TEAL_DARK, margin: "0 0 1px" }}>{s.label}</p>
+                  <p style={{ fontSize: 11, color: TEAL_DARK, margin: 0, lineHeight: 1.4, opacity: 0.85 }}>{s.desc}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+        <div>
+          <p style={{ fontSize: 11, fontWeight: 700, color: MUTED, margin: "0 0 8px", textTransform: "uppercase", letterSpacing: ".05em" }}>What a desktop can capture</p>
+          <div style={{ display: "flex", flexDirection: "column", gap: 6, marginBottom: 12 }}>
+            {[
+              { icon: "⌨️", label: "Text input", desc: "Typed queries, pasted content" },
+              { icon: "📁", label: "File upload", desc: "Manually chosen files from disk" },
+              { icon: "🖥️", label: "Webcam (maybe)", desc: "Not always present, rarely used in apps" },
+            ].map(s => (
+              <div key={s.label} style={{ display: "flex", gap: 10, background: GRAY, borderRadius: 8, padding: "8px 10px" }}>
+                <span style={{ fontSize: 18, flexShrink: 0 }}>{s.icon}</span>
+                <div>
+                  <p style={{ fontSize: 12, fontWeight: 700, color: MUTED, margin: "0 0 1px" }}>{s.label}</p>
+                  <p style={{ fontSize: 11, color: MUTED, margin: 0, lineHeight: 1.4 }}>{s.desc}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+          <div style={{ background: AMBER_LIGHT, borderRadius: 8, padding: "10px 12px" }}>
+            <p style={{ fontSize: 12, color: AMBER_DARK, margin: 0, lineHeight: 1.5 }}>
+              <strong>The gap:</strong> A phone can passively capture rich, real-world context. The AI features most compelling on mobile are the ones that would be impossible anywhere else.
+            </p>
+          </div>
+        </div>
+      </div>
+      <Discussion>{"Think of an app idea that's only possible on mobile — not just because it's on a phone, but because it needs a phone's inputs. Camera? Mic? Location + camera combined?"}</Discussion>
+      <Notes>Reframe from the usual "mobile is just a small screen" narrative. The point is the input surface is qualitatively richer, not just physically different. Good examples to seed: plant ID (camera), voice journaling with AI analysis (mic), receipt scanning (camera + document parsing), "describe my surroundings" accessibility (camera + location). Keep discussion to 60 seconds.</Notes>
+    </Shell>
+  ),
+
+  // 4b ─ Three modalities
+  () => (
+    <Shell tag="Concept" tagColor="purple" timer="6" title="Three input modalities — how they reach Claude" subtitle="Same API pattern, different content block types">
+      <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 12 }}>
+        {[
+          {
+            icon: "📷", label: "Images", tag: "Lab today", tagBg: TEAL_LIGHT, tagFg: TEAL_DARK,
+            what: "A photo, screenshot, or camera frame encoded as base64 JPEG/PNG",
+            code: '{ "type": "image", "source": { "type": "base64",\n  "media_type": "image/jpeg", "data": "..." } }',
+            usecase: "Visual identification, OCR, scene description, document scanning",
+            accent: TEAL_DARK,
+          },
+          {
+            icon: "🎙️", label: "Audio (via transcription)", tag: "Transcribe first", tagBg: BLUE_LIGHT, tagFg: BLUE,
+            what: "Claude does not accept raw audio — transcribe on-device first, then send the transcript as a text block",
+            code: '// 1. Transcribe: Android SpeechRecognizer / iOS SFSpeechRecognizer\n// 2. Send transcript:\n{ "type": "text", "text": "<transcribed speech>" }',
+            usecase: "Voice commands, meeting notes, voice-to-action, dictation",
+            accent: BLUE,
+          },
+          {
+            icon: "📄", label: "Documents", tag: "Claude 3+ only", tagBg: PURPLE_LIGHT, tagFg: PURPLE_DARK,
+            what: "A PDF or plain-text file sent as base64 — Claude reads and reasons over the full content",
+            code: '{ "type": "document", "source": { "type": "base64",\n  "media_type": "application/pdf", "data": "..." } }',
+            usecase: "Contract analysis, study materials, form extraction, report summarisation",
+            accent: PURPLE_DARK,
+          },
+        ].map(r => (
+          <div key={r.label} style={{ display: "flex", gap: 12, background: "var(--color-background-secondary)", borderRadius: 10, padding: "12px 14px", borderLeft: `3px solid ${r.accent}` }}>
+            <div style={{ fontSize: 22, flexShrink: 0, marginTop: 2 }}>{r.icon}</div>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{ display: "flex", gap: 8, alignItems: "center", marginBottom: 4 }}>
+                <p style={{ fontSize: 13, fontWeight: 700, color: TEXT, margin: 0 }}>{r.label}</p>
+                <span style={{ fontSize: 10, fontWeight: 600, background: r.tagBg, color: r.tagFg, padding: "1px 7px", borderRadius: 20 }}>{r.tag}</span>
+              </div>
+              <p style={{ fontSize: 12, color: MUTED, margin: "0 0 5px", lineHeight: 1.4 }}>{r.what}</p>
+              <pre style={{ margin: "0 0 5px", background: "#1e1e2e", color: "#cdd6f4", fontSize: 10, padding: "6px 10px", borderRadius: 6, overflowX: "auto", whiteSpace: "pre-wrap", fontFamily: "monospace" }}>{r.code}</pre>
+              <p style={{ fontSize: 11, color: r.accent, margin: 0, fontWeight: 500 }}>{"Use cases: " + r.usecase}</p>
+            </div>
           </div>
         ))}
       </div>
+      <Callout color="amber" label="Today's focus">The lab uses images — the most universally available mobile input. The document pattern is identical. Audio just needs a transcription step first, then it's plain text.</Callout>
+      <Notes>{"Source for document support: https://docs.anthropic.com/en/docs/build-with-claude/files. Source for vision: https://docs.anthropic.com/en/docs/build-with-claude/vision. Important audio note: as of mid-2025, Claude does not accept raw audio as a content block. The correct pattern is: record on device -> transcribe with Android SpeechRecognizer or iOS SFSpeechRecognizer (or OpenAI Whisper) -> send transcript as a text block. Worth stating explicitly so students don't go looking for an audio content type."}</Notes>
     </Shell>
   ),
 
-  // 3: Hook
+  // 5 ─ The message structure change
   () => (
-    <Shell tag="Hook" timer="5" title="The gap between 'it works' and 'it feels good'" subtitle="Users experience your UI, not your code" notes="Open the Session 1 lab app — or demo one without polish. Show it with zero polish: no typing indicator, input enabled during streaming, no error handling, no auto-scroll. Then describe each fix. The gap between these two states is the entire content of today's session. Ask students to think about apps they use: when did they last notice an AI feature felt broken? Almost always it is one of these five missing patterns.">
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
-        <div>
-          <div style={{ background: "#FCEBEB", borderRadius: 10, padding: "14px" }}>
-            <p style={{ fontSize: 12, fontWeight: 700, color: "#A32D2D", margin: "0 0 10px" }}>Your Session 1 app — it works ✓</p>
-            {[
-              { icon: "⌛", issue: "Nothing visible while waiting for the first token — user thinks it crashed" },
-              { icon: "🔓", issue: "Input stays enabled — user can send another message mid-stream, breaking history" },
-              { icon: "💬", issue: "Long responses scroll off the bottom — manual scrolling required" },
-              { icon: "💥", issue: "Network error shows a crash dialog or a blank screen with no recovery path" },
-              { icon: "🔁", issue: "No way to stop an unhelpful response that keeps generating" },
-            ].map(item => (
-              <div key={item.issue} style={{ display: "flex", gap: 8, margin: "7px 0" }}>
-                <span style={{ fontSize: 16, flexShrink: 0 }}>{item.icon}</span>
-                <span style={{ fontSize: 11, color: "#A32D2D", lineHeight: 1.5 }}>{item.issue}</span>
-              </div>
-            ))}
-          </div>
+    <Shell tag="API" tagColor="blue" timer="6" title="The multimodal message structure" subtitle="One structural change unlocks image input">
+      <div style={{ display: "flex", gap: 14 }}>
+        <div style={{ flex: 1 }}>
+          <p style={{ fontSize: 11, fontWeight: 700, color: BLUE, margin: "0 0 6px", textTransform: "uppercase", letterSpacing: ".05em" }}>Session 1 — text only</p>
+          <CodePane title="Request body" accent={BLUE}>{`{
+  "model": "claude-sonnet-4-20250514",
+  "max_tokens": 1024,
+  "messages": [
+    {
+      "role": "user",
+      "content": "What's the weather like?"
+    }
+  ]
+}`}</CodePane>
+          <p style={{ fontSize: 11, color: MUTED, marginTop: 6 }}>content is a <strong>string</strong></p>
         </div>
-        <div>
-          <div style={{ background: TEAL_LIGHT, borderRadius: 10, padding: "14px" }}>
-            <p style={{ fontSize: 12, fontWeight: 700, color: TEAL_DARK, margin: "0 0 10px" }}>After today's session — it feels good ✨</p>
-            {[
-              { icon: "⋯", feature: "Animated typing indicator appears within 300ms of send" },
-              { icon: "🔒", feature: "Input locked + send disabled during streaming — can't corrupt history" },
-              { icon: "📜", feature: "List auto-scrolls to follow new tokens; stops if user scrolls up" },
-              { icon: "⚠️", feature: "Inline error banner with plain-language message + Retry button" },
-              { icon: "⏹", feature: "Stop button cancels the stream; partial response shown with label" },
-            ].map(item => (
-              <div key={item.feature} style={{ display: "flex", gap: 8, margin: "7px 0" }}>
-                <span style={{ fontSize: 16, flexShrink: 0 }}>{item.icon}</span>
-                <span style={{ fontSize: 11, color: TEAL_DARK, lineHeight: 1.5 }}>{item.feature}</span>
-              </div>
-            ))}
-          </div>
-          <div style={{ background: PURPLE_LIGHT, borderRadius: 8, padding: "10px 12px", marginTop: 10 }}>
-            <p style={{ fontSize: 11, fontWeight: 600, color: PURPLE_DARK, margin: "0 0 4px" }}>Why this matters for your capstone</p>
-            <p style={{ fontSize: 11, color: PURPLE_DARK, margin: 0, lineHeight: 1.5 }}>Demo day judges use your app. A polished AI feature that feels intentional scores significantly higher than one that feels broken — regardless of the underlying code quality. These five patterns are the difference.</p>
-          </div>
-          <Discussion>{"Think about an AI product you use regularly — ChatGPT, Copilot, Notion AI. Identify one specific UI pattern that makes it feel smooth. What would be missing if that pattern wasn't there?"}</Discussion>
+        <div style={{ flex: 1 }}>
+          <p style={{ fontSize: 11, fontWeight: 700, color: TEAL_DARK, margin: "0 0 6px", textTransform: "uppercase", letterSpacing: ".05em" }}>Session 2 — multimodal</p>
+          <CodePane title="Request body" accent={TEAL_DARK}>{`{
+  "model": "claude-sonnet-4-20250514",
+  "max_tokens": 1024,
+  "messages": [
+    {
+      "role": "user",
+      "content": [
+        {
+          "type": "image",
+          "source": {
+            "type": "base64",
+            "media_type": "image/jpeg",
+            "data": "<base64 string>"
+          }
+        },
+        {
+          "type": "text",
+          "text": "Describe this image."
+        }
+      ]
+    }
+  ]
+}`}</CodePane>
+          <p style={{ fontSize: 11, color: MUTED, marginTop: 6 }}>content is now an <strong>array of blocks</strong></p>
         </div>
       </div>
+      <Callout color="teal" label="The only change">content switches from a string to an array. Everything else — API key, model, max_tokens, response parsing — is identical to Session 1. The response is still plain text.</Callout>
+      <Notes>Source: https://docs.anthropic.com/en/api/messages#vision — the vision / multimodal section. Walk through this side-by-side carefully. Students often over-complicate this in their heads. The key message: the response side is unchanged. You still get back a text completion. The only thing that changed is what you put in the content field of your message.</Notes>
     </Shell>
   ),
 
-  // 4: Before vs after side-by-side
+  // 6 ─ Base64
   () => (
-    <Shell tag="Concept" timer="10" title="Before and after — the complete UI transformation" subtitle="The same chat screen, unpolished vs polished" notes="Walk through each row of the comparison table slowly. For each pattern, describe what the user experiences in the 'before' state and why it feels wrong. The before state is not obviously broken — the app works — but each missing pattern creates friction. Students often need to hear the user's perspective articulated explicitly before they internalize why these patterns matter.">
+    <Shell tag="Concept" tagColor="amber" timer="5" title="Base64 — what it is and why APIs use it" subtitle="Images need to travel inside a JSON string">
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
         <div>
-          <div style={{ background: "#FCEBEB", border: "1.5px solid #fca5a5", borderRadius: 10, padding: "14px" }}>
-            <p style={{ fontSize: 12, fontWeight: 700, color: "#A32D2D", margin: "0 0 12px" }}>Before — Session 1 baseline</p>
+          <p style={{ fontSize: 13, color: TEXT, lineHeight: 1.6, margin: "0 0 10px" }}>
+            JSON is text. Images are binary. You can't put raw binary bytes inside a JSON string — they'll corrupt the encoding.
+          </p>
+          <p style={{ fontSize: 13, color: TEXT, lineHeight: 1.6, margin: "0 0 10px" }}>
+            <strong>Base64</strong> is a simple encoding scheme that converts binary data into a safe string of 64 printable ASCII characters. Any JSON parser can handle it.
+          </p>
+          <div style={{ background: AMBER_LIGHT, borderRadius: 8, padding: "10px 14px" }}>
+            <p style={{ fontSize: 11, fontWeight: 700, color: AMBER_DARK, margin: "0 0 4px", textTransform: "uppercase", letterSpacing: ".05em" }}>The math</p>
+            <p style={{ fontSize: 12, color: AMBER_DARK, margin: "0 0 4px", lineHeight: 1.5 }}>Every 3 bytes of binary → 4 base64 characters.</p>
+            <p style={{ fontSize: 12, color: AMBER_DARK, margin: 0, lineHeight: 1.5 }}>A 500 KB JPEG becomes ~667 KB of base64 text — roughly 33% overhead.</p>
+          </div>
+        </div>
+        <div>
+          <p style={{ fontSize: 11, fontWeight: 700, color: MUTED, margin: "0 0 6px", textTransform: "uppercase", letterSpacing: ".05em" }}>What base64 looks like</p>
+          <div style={{ background: "#1e1e2e", borderRadius: 8, padding: "10px 12px", marginBottom: 10 }}>
+            <p style={{ fontSize: 10, color: "#6272a4", margin: "0 0 4px", fontFamily: "monospace" }}>// First ~80 chars of a JPEG encoded as base64</p>
+            <p style={{ fontSize: 10, color: "#cdd6f4", margin: 0, fontFamily: "monospace", wordBreak: "break-all", lineHeight: 1.5 }}>/9j/4AAQSkZJRgABAQEASABIAAD/2wBDAAgGBgcG BQgHBwcJCQgKDBQNDAsLDBkSEw8U...</p>
+          </div>
+          <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
             {[
-              { moment: "User taps Send", experience: "Input disappears. Nothing happens for 300–2000ms. Screen shows no acknowledgement. User re-taps Send thinking it didn't register — now two messages are queued." },
-              { moment: "First token arrives", experience: "A bubble appears suddenly. No progression. No indication that more is coming. If the model is slow, this is the first feedback the user gets — too late." },
-              { moment: "Response streams", experience: "Text appears token by token but the list doesn't scroll. User must manually scroll to follow the response. On a long response they frequently lose their place." },
-              { moment: "API call fails", experience: "An uncaught exception produces an error toast or crash dialog. The user's message may disappear from the list. There is no retry path — the user must retype their question." },
-              { moment: "Response is going wrong", experience: "User realises mid-stream that the model is generating an unhelpful response — 200 tokens and counting. No way to stop it. Must wait for it to finish before trying again." },
+              { label: "Platform support", val: "Built-in on Android and iOS — no dependencies" },
+              { label: "Performance", val: "Fast encode for compressed JPEGs. Resize first." },
+              { label: "Alternatives", val: "URL source type exists but requires public URL" },
             ].map(r => (
-              <div key={r.moment} style={{ marginBottom: 10 }}>
-                <p style={{ fontSize: 11, fontWeight: 600, color: "#A32D2D", margin: "0 0 2px" }}>{r.moment}</p>
-                <p style={{ fontSize: 11, color: "#A32D2D", margin: 0, lineHeight: 1.5, opacity: 0.85 }}>{r.experience}</p>
+              <div key={r.label} style={{ background: GRAY, borderRadius: 6, padding: "6px 10px" }}>
+                <p style={{ fontSize: 11, fontWeight: 700, color: TEXT, margin: "0 0 1px" }}>{r.label}</p>
+                <p style={{ fontSize: 11, color: MUTED, margin: 0 }}>{r.val}</p>
               </div>
             ))}
           </div>
         </div>
+      </div>
+      <Notes>Students don't need to understand base64 deeply — just enough to know why it exists and not be surprised by the string they see. The key practical point: compress and resize your image before encoding, otherwise you'll hit payload size limits and slow down the API call. The Anthropic API accepts JPEG, PNG, GIF, and WebP. Max image size is 5 MB per image. Source: https://docs.anthropic.com/en/api/messages#vision</Notes>
+    </Shell>
+  ),
+
+  // 7 ─ Image size and cost
+  () => (
+    <Shell tag="Cost" tagColor="coral" timer="4" title="Image size, compression, and cost" subtitle="Every pixel you send costs tokens">
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
         <div>
-          <div style={{ background: TEAL_LIGHT, border: `1.5px solid ${TEAL}`, borderRadius: 10, padding: "14px" }}>
-            <p style={{ fontSize: 12, fontWeight: 700, color: TEAL_DARK, margin: "0 0 12px" }}>After — with all 5 polish patterns</p>
+          <p style={{ fontSize: 13, color: TEXT, lineHeight: 1.6, margin: "0 0 10px" }}>
+            Claude counts image input as tokens. A large, uncompressed photo can cost hundreds of tokens just for the image — before you've even added text.
+          </p>
+          <div style={{ background: CORAL_LIGHT, borderRadius: 8, padding: "10px 14px", marginBottom: 10 }}>
+            <p style={{ fontSize: 11, fontWeight: 700, color: CORAL, margin: "0 0 6px", textTransform: "uppercase", letterSpacing: ".05em" }}>Rough cost guide (Sonnet 4)</p>
             {[
-              { moment: "User taps Send", experience: "Input locks immediately — prevents double-send. Within 300ms a typing indicator (animated three dots) appears below the conversation, confirming the request is in flight." },
-              { moment: "First token arrives", experience: "Typing indicator transitions into a message bubble with the first word. A blinking cursor at the end signals that more is coming. The transition is seamless — no layout jump." },
-              { moment: "Response streams", experience: "The list auto-scrolls to keep the streaming bubble in view as each token arrives. If the user scrolls up to re-read earlier messages, auto-scroll pauses and doesn't forcibly snap them back." },
-              { moment: "API call fails", experience: "An inline error banner appears with plain-language text ('Couldn't get a response — check your connection') and a Retry button. The user's message remains in the list. One tap to retry." },
-              { moment: "Response is going wrong", experience: "A Stop button replaces the Send button during streaming. One tap cancels the request, shows the partial response with a [stopped] label, and re-enables the input immediately." },
+              { size: "Small (512×512)", tokens: "~800 tokens" },
+              { size: "Medium (1024×1024)", tokens: "~1600 tokens" },
+              { size: "Large (2048×2048)", tokens: "~6400 tokens" },
             ].map(r => (
-              <div key={r.moment} style={{ marginBottom: 10 }}>
-                <p style={{ fontSize: 11, fontWeight: 600, color: TEAL_DARK, margin: "0 0 2px" }}>{r.moment}</p>
-                <p style={{ fontSize: 11, color: TEAL_DARK, margin: 0, lineHeight: 1.5, opacity: 0.85 }}>{r.experience}</p>
+              <div key={r.size} style={{ display: "flex", justifyContent: "space-between", padding: "3px 0", borderBottom: `1px solid ${CORAL}20` }}>
+                <span style={{ fontSize: 12, color: CORAL }}>{r.size}</span>
+                <span style={{ fontSize: 12, color: CORAL, fontWeight: 600 }}>{r.tokens}</span>
               </div>
             ))}
+            <p style={{ fontSize: 10, color: CORAL, margin: "6px 0 0", opacity: 0.8 }}>Pricing: $3 / M input tokens (claude-sonnet-4). Source: anthropic.com/pricing</p>
           </div>
         </div>
-      </div>
-    </Shell>
-  ),
-
-  // 5: The AI UI state machine
-  () => (
-    <Shell tag="Concept" timer="10" title="The AI UI state machine — all six states" subtitle="Most UI bugs come from an incomplete state model. Define every state explicitly." notes="This is the most important slide in the session. Most students model only 2 states (loading, done) and wonder why their UI behaves strangely when something goes wrong. Walk through each state and what the user sees and can do. The Cancelled state is often overlooked — it is distinct from Error and Done, and needs its own visual treatment. The sealed class code should look familiar from Session 1 — this is the extended version.">
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
         <div>
-          <p style={{ fontSize: 12, fontWeight: 600, color: TEXT, margin: "0 0 10px" }}>The six states and what the user sees</p>
-          {[
-            { state: "Idle",      color: GRAY,        fg: MUTED,       ui: "Input enabled, Send button enabled, no streaming bubble. The default state after every completed interaction." },
-            { state: "Sending",   color: AMBER_LIGHT, fg: "#633806",   ui: "Input locked, Send disabled, typing indicator (three dots) visible. Covers the gap between send and first token." },
-            { state: "Streaming", color: PURPLE_LIGHT,fg: PURPLE_DARK, ui: "Input locked, Stop button visible, partial text in bubble with cursor, auto-scroll active." },
-            { state: "Done",      color: TEAL_LIGHT,  fg: TEAL_DARK,   ui: "Streaming bubble becomes permanent message, cursor removed, input re-enabled, Stop → Send." },
-            { state: "Error",     color: "#FCEBEB",   fg: "#A32D2D",   ui: "Error banner with message + Retry, input re-enabled, failed user message still visible." },
-            { state: "Cancelled", color: BLUE_LIGHT,  fg: BLUE,        ui: "Partial response shown with [stopped] label, input re-enabled. Conversation continues normally." },
-          ].map(s => (
-            <div key={s.state} style={{ display: "flex", gap: 10, marginBottom: 8, alignItems: "flex-start" }}>
-              <span style={{ background: s.color, color: s.fg, fontSize: 10, fontWeight: 700, padding: "3px 9px", borderRadius: 12, flexShrink: 0, marginTop: 2, letterSpacing: ".04em", textTransform: "uppercase", border: `1px solid ${s.fg}20` }}>{s.state}</span>
-              <p style={{ fontSize: 11, color: TEXT, margin: 0, lineHeight: 1.5 }}>{s.ui}</p>
-            </div>
-          ))}
-          <div style={{ background: TEAL_LIGHT, borderRadius: 8, padding: "9px 12px", marginTop: 8 }}>
-            <p style={{ fontSize: 11, fontWeight: 600, color: TEAL_DARK, margin: "0 0 4px" }}>Valid transitions</p>
-            <pre style={{ fontSize: 10, color: TEAL_DARK, margin: 0, fontFamily: "monospace", lineHeight: 1.8, whiteSpace: "pre-wrap", background: "rgba(0,0,0,0.05)", padding: "6px 8px", borderRadius: 4 }}>{`Idle      → Sending    (user taps Send)
-Sending   → Streaming  (first token arrives)
-Streaming → Done       (stream ends naturally)
-Streaming → Cancelled  (user taps Stop)
-Sending / Streaming → Error (exception)
-Done / Cancelled / Error → Idle`}</pre>
-          </div>
-        </div>
-        <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-          <p style={{ fontSize: 12, fontWeight: 600, color: TEXT, margin: 0 }}>Sealed class implementation</p>
-          <CodePane title="ChatUiState (Kotlin) / ChatState (Swift)" accent={PURPLE}>{`// Kotlin — sealed class
-sealed class ChatUiState {
-    object Idle      : ChatUiState()
-    object Sending   : ChatUiState()
-    data class Streaming(val partial: String, val job: Job? = null) : ChatUiState()
-    data class Done(val fullText: String)      : ChatUiState()
-    data class Error(val message: String, val retryable: Boolean = true) : ChatUiState()
-    data class Cancelled(val partial: String)  : ChatUiState()
-
-    val isIdle get() = this is Idle || this is Done || this is Error || this is Cancelled
-}
-
-// Swift — enum
-enum ChatState: Equatable {
-    case idle
-    case sending
-    case streaming(partial: String)
-    case done
-    case error(message: String, retryable: Bool = true)
-    case cancelled(partial: String)
-
-    var isIdle: Bool {
-        switch self {
-        case .idle, .done, .error, .cancelled: return true
-        default: return false
-        }
-    }
-}`}</CodePane>
-          <div style={{ background: BLUE_LIGHT, borderRadius: 8, padding: "10px 12px" }}>
-            <p style={{ fontSize: 11, fontWeight: 700, color: BLUE, margin: "0 0 6px" }}>How sendMessage() drives every transition</p>
-            <pre style={{ fontSize: 10, color: BLUE, margin: 0, fontFamily: "monospace", lineHeight: 1.85, whiteSpace: "pre-wrap", background: "rgba(0,0,0,0.06)", padding: "8px 10px", borderRadius: 4 }}>{`fun sendMessage(text: String) {
-    if (!uiState.isIdle) return          // guard: Idle only
-    history.add(Message("user", text))
-    streamJob = viewModelScope.launch {
-        _uiState.value = Sending         // → Sending
-        repo.streamMessage(history)
-            .catch { e ->
-                history.removeLastOrNull()
-                _uiState.value = Error(e.message ?: "")  // → Error
-            }
-            .collect { token ->
-                accumulated += token
-                _uiState.value = Streaming(accumulated)  // → Streaming (per token)
-            }
-        // Only reach here if no exception and not cancelled
-        if (_uiState.value is Streaming) {
-            history.add(Message("assistant", accumulated))
-            _uiState.value = Idle        // → Idle (Done omitted for brevity)
-        }
-    }
-}
-
-fun cancelStream() {
-    streamJob?.cancel()
-    val partial = (uiState.value as? Streaming)?.partial ?: ""
-    _uiState.value = Cancelled(partial)  // → Cancelled
-}`}</pre>
-          </div>
-        </div>
-      </div>
-    </Shell>
-  ),
-
-  // 6: Typing indicators
-  () => (
-    <Shell tag="UI Pattern" tagColor="ai" timer="10" title="Typing indicators — the three-dot animation" subtitle="Covers the 300–2000ms gap between Send and the first token" notes="The typing indicator is shown during Sending state only — not during Streaming. Once the first token arrives, transition to Streaming and the indicator is replaced by the partial text bubble. The key insight: the transition from indicator to streaming text should be seamless — no layout jump. Both implementations use an infinite animation — Android with InfiniteTransition, iOS with a repeating Timer.">
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
-        <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-          <p style={{ fontSize: 12, fontWeight: 600, color: TEXT, margin: 0 }}>What it looks like and when to show it</p>
-          <div style={{ background: GRAY, borderRadius: 12, padding: "14px", display: "flex", flexDirection: "column", gap: 10 }}>
-            <div style={{ alignSelf: "flex-end", background: PURPLE, color: "#fff", borderRadius: "18px 18px 4px 18px", padding: "9px 14px", fontSize: 13, maxWidth: "80%" }}>What's the best way to learn Kotlin?</div>
-            <div style={{ alignSelf: "flex-start", background: "#e5e7eb", borderRadius: "18px 18px 18px 4px", padding: "12px 16px", display: "flex", gap: 5, alignItems: "center" }}>
-              {[0, 1, 2].map(i => (
-                <div key={i} style={{ width: 9, height: 9, borderRadius: "50%", background: MUTED, opacity: 0.3 + i * 0.35 }} />
-              ))}
-            </div>
-            <div style={{ fontSize: 10, color: MUTED, textAlign: "center", fontStyle: "italic" }}>← shown during Sending state only (~300ms to 2s)</div>
-          </div>
-          <div style={{ background: PURPLE_LIGHT, borderRadius: 8, padding: "10px 12px" }}>
-            <p style={{ fontSize: 11, fontWeight: 600, color: PURPLE_DARK, margin: "0 0 4px" }}>State transitions for the indicator</p>
-            <div style={{ fontSize: 11, color: PURPLE_DARK, fontFamily: "monospace", lineHeight: 1.8 }}>
-              <div><strong>Idle → Sending</strong>: show TypingIndicator()</div>
-              <div><strong>Sending → Streaming</strong>: hide indicator, show StreamingBubble</div>
-              <div><strong>Sending → Error</strong>: hide indicator, show ErrorBanner</div>
-            </div>
-          </div>
-          <div style={{ background: AMBER_LIGHT, borderRadius: 8, padding: "10px 12px" }}>
-            <p style={{ fontSize: 11, fontWeight: 600, color: "#633806", margin: "0 0 3px" }}>⚠️ Don't show the indicator during streaming</p>
-            <p style={{ fontSize: 11, color: "#633806", margin: 0, lineHeight: 1.5 }}>A common mistake is showing the typing indicator whenever content is loading — including during streaming. This creates a confusing UI where both the indicator and the partial text are visible simultaneously.</p>
-          </div>
-        </div>
-        <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-          <CodePane title="Android — Compose InfiniteTransition" accent={BLUE}>{`@Composable
-fun TypingIndicator() {
-    val transition = rememberInfiniteTransition(label = "typing")
-    Row(
-        Modifier
-            .background(Color(0xFFE5E7EB), RoundedCornerShape(18.dp))
-            .padding(horizontal = 16.dp, vertical = 12.dp),
-        horizontalArrangement = Arrangement.spacedBy(5.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        repeat(3) { index ->
-            val alpha by transition.animateFloat(
-                initialValue = 0.2f,
-                targetValue = 1f,
-                animationSpec = infiniteRepeatable(
-                    animation = tween(500, easing = EaseInOut),
-                    repeatMode = RepeatMode.Reverse,
-                    initialStartOffset = StartOffset(index * 180)
-                ),
-                label = "dot-$index"
-            )
-            Box(
-                Modifier
-                    .size(9.dp)
-                    .graphicsLayer { this.alpha = alpha }
-                    .background(Color(0xFF9CA3AF), CircleShape)
-            )
-        }
-    }
-}`}</CodePane>
-          <CodePane title="iOS — SwiftUI repeating Timer" accent={GREEN}>{`struct TypingIndicator: View {
-    @State private var phase = 0
-    let timer = Timer.publish(
-        every: 0.35, on: .main, in: .common
-    ).autoconnect()
-
-    var body: some View {
-        HStack(spacing: 5) {
-            ForEach(0..<3) { i in
-                Circle()
-                    .fill(Color.gray.opacity(
-                        i == phase ? 1.0 : 0.25
-                    ))
-                    .frame(width: 9, height: 9)
-                    .animation(
-                        .easeInOut(duration: 0.3),
-                        value: phase
-                    )
-            }
-        }
-        .padding(.horizontal, 16)
-        .padding(.vertical, 12)
-        .background(
-            Color(.systemGray5),
-            in: RoundedRectangle(cornerRadius: 18)
-        )
-        .onReceive(timer) { _ in
-            phase = (phase + 1) % 3
-        }
-    }
-}`}</CodePane>
-        </div>
-      </div>
-    </Shell>
-  ),
-
-  // 7: Partial render states
-  () => (
-    <Shell tag="UI Pattern" tagColor="ai" timer="13" title="Partial render states — graceful streaming text" subtitle="Half-rendered text is not broken — if you handle it correctly" notes="The core challenge: LLMs often return Markdown, but Markdown only renders correctly when the text is complete. A half-delivered code block or bold marker looks broken if you parse it mid-stream. Two strategies. Strategy A (defer and re-render) is recommended for labs and most production apps. The blinking cursor is a 5-line addition that makes a disproportionate difference — walk through it explicitly.">
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
-        <div>
-          <p style={{ fontSize: 12, fontWeight: 600, color: TEXT, margin: "0 0 8px" }}>The Markdown mid-stream problem</p>
-          <div style={{ background: "#FCEBEB", borderRadius: 8, padding: "12px 14px", marginBottom: 10 }}>
-            <p style={{ fontSize: 11, fontWeight: 600, color: "#A32D2D", margin: "0 0 6px" }}>Stream paused mid-block — if you parse Markdown eagerly</p>
-            <div style={{ fontFamily: "monospace", fontSize: 11, color: "#A32D2D", lineHeight: 1.8 }}>
-              <div>Here is how to reverse a string in Kotlin:</div>
-              <div style={{ background: "rgba(0,0,0,0.08)", borderRadius: 4, padding: "4px 8px", margin: "4px 0" }}>{"`"}`</div>
-              <div>fun reverseString(s: String): S</div>
-              <div style={{ color: "#c0392b", fontStyle: "italic", fontSize: 10 }}>← stream paused here. Code block never closed. Renders as garbage.</div>
-            </div>
-          </div>
-          <div style={{ background: PURPLE_LIGHT, borderRadius: 8, padding: "10px 12px", marginBottom: 10 }}>
-            <p style={{ fontSize: 11, fontWeight: 700, color: PURPLE_DARK, margin: "0 0 6px" }}>Strategy A — defer parsing (recommended for labs)</p>
-            <p style={{ fontSize: 11, color: PURPLE_DARK, margin: "0 0 6px", lineHeight: 1.5 }}>During <code style={{ fontFamily: "monospace", fontSize: 10, background: "rgba(0,0,0,0.08)", borderRadius: 3, padding: "1px 4px" }}>Streaming</code>: render plain text + blinking cursor. On <code style={{ fontFamily: "monospace", fontSize: 10, background: "rgba(0,0,0,0.08)", borderRadius: 3, padding: "1px 4px" }}>Done</code>: re-render as Markdown. Zero dependencies, works for all content types.</p>
-            <pre style={{ fontSize: 10, color: PURPLE_DARK, margin: 0, fontFamily: "monospace", lineHeight: 1.75, background: "rgba(0,0,0,0.06)", padding: "7px 9px", borderRadius: 4, whiteSpace: "pre-wrap" }}>{`// In your LazyColumn / LazyVStack:
-when (msg.role) {
-  "assistant" -> {
-    if (isStreaming && msg == history.last())
-      StreamingBubble(text = msg.content)  // plain text + cursor
-    else
-      MarkdownView(text = msg.content)     // full Markdown render
-  }
-}`}</pre>
-          </div>
-          <div style={{ background: BLUE_LIGHT, borderRadius: 8, padding: "10px 12px" }}>
-            <p style={{ fontSize: 11, fontWeight: 700, color: BLUE, margin: "0 0 6px" }}>Strategy B — streaming Markdown library (capstone stretch goal)</p>
-            <p style={{ fontSize: 11, color: BLUE, margin: "0 0 6px", lineHeight: 1.5 }}>Render Markdown incrementally as tokens arrive. Looks better; adds a dependency. Android: <code style={{ fontFamily: "monospace", fontSize: 10 }}>Markwon</code>. iOS: <code style={{ fontFamily: "monospace", fontSize: 10 }}>MarkdownUI</code>.</p>
-            <pre style={{ fontSize: 10, color: BLUE, margin: 0, fontFamily: "monospace", lineHeight: 1.75, background: "rgba(0,0,0,0.06)", padding: "7px 9px", borderRadius: 4, whiteSpace: "pre-wrap" }}>{`// Android — build.gradle.kts
-implementation("io.noties.markwon:core:4.6.2")
-implementation("io.noties.markwon:syntax-highlight:4.6.2")
-
-// Composable wrapper
-@Composable
-fun MarkdownBubble(text: String) {
-    val markwon = remember { Markwon.create(LocalContext.current) }
-    AndroidView(factory = { ctx ->
-        TextView(ctx).also { markwon.setMarkdown(it, text) }
-    }, update = { markwon.setMarkdown(it, text) })
-}
-
-// iOS — Package.swift or SPM: 'swift-markdown-ui'
-import MarkdownUI
-Markdown(partialText)  // re-renders on every token — simple but can flicker`}</pre>
-          </div>
-        </div>
-        <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-          <p style={{ fontSize: 12, fontWeight: 600, color: TEXT, margin: 0 }}>The blinking cursor — why it matters</p>
-          <div style={{ background: TEAL_LIGHT, borderRadius: 8, padding: "10px 12px" }}>
-            <p style={{ fontSize: 11, color: TEAL_DARK, margin: 0, lineHeight: 1.5 }}>A blinking cursor appended to the streaming text signals: "more is coming." Without it, users sometimes think the stream has stalled, especially when the model pauses between sentences. 5 lines of code, outsized impact.</p>
-          </div>
-          <CodePane title="Android — cursor in Compose" accent={BLUE}>{`@Composable
-fun StreamingBubble(text: String) {
-    val cursorVisible by rememberInfiniteTransition(label = "cursor")
-        .animateFloat(
-            initialValue = 0f, targetValue = 1f,
-            animationSpec = infiniteRepeatable(
-                tween(500), RepeatMode.Reverse
-            ),
-            label = "blink"
-        )
-    // Append block cursor that blinks at ~1Hz
-    Text(
-        text = text + if (cursorVisible > 0.5f) "▋" else " ",
-        style = MaterialTheme.typography.bodyMedium
-    )
-}`}</CodePane>
-          <CodePane title="iOS — cursor in SwiftUI" accent={GREEN}>{`struct StreamingBubble: View {
-    let text: String
-    @State private var showCursor = true
-    let cursorTimer = Timer.publish(
-        every: 0.5, on: .main, in: .common
-    ).autoconnect()
-
-    var body: some View {
-        Text(text + (showCursor ? "▋" : " "))
-            .onReceive(cursorTimer) { _ in
-                showCursor.toggle()
-            }
-    }
-}`}</CodePane>
-          <div style={{ background: PURPLE_LIGHT, borderRadius: 8, padding: "10px 12px" }}>
-            <p style={{ fontSize: 11, fontWeight: 600, color: PURPLE_DARK, margin: "0 0 3px" }}>Strategy A in practice</p>
-            <pre style={{ fontSize: 10, color: PURPLE_DARK, margin: 0, fontFamily: "monospace", lineHeight: 1.7, background: "rgba(0,0,0,0.06)", padding: "6px 8px", borderRadius: 4, whiteSpace: "pre-wrap" }}>{`// During streaming
-if (uiState is Streaming)
-    StreamingBubble(text = partial)  // plain text + cursor
-
-// When done: re-render as Markdown
-if (uiState is Done || msg.role == "assistant")
-    MarkdownView(text = msg.content)  // parsed + formatted`}</pre>
-          </div>
-        </div>
-      </div>
-    </Shell>
-  ),
-
-  // 8: Error fallback UX
-  () => (
-    <Shell tag="UI Pattern" tagColor="red" timer="14" title="Error fallback UX — design the failure mode first" subtitle="Your users will hit every one of these. What do they see?" notes="Most students only think about errors as 'show a toast'. Walk through the six error categories — they require different UI responses. Network errors are transient and retryable. Rate limits require the user to wait. Context overflow is a product decision — should you truncate silently? The error banner pattern is a concrete UI component they can implement in the lab. The design rule at the bottom is the most important takeaway.">
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
-        <div>
-          <p style={{ fontSize: 12, fontWeight: 600, color: TEXT, margin: "0 0 8px" }}>Error taxonomy — 6 types, 6 responses</p>
-          {[
-            { code: "Network timeout", http: "—",   color: AMBER_LIGHT, fg: "#633806", action: "Show retry button. User's message stays in list. The error is transient — most retries succeed.", retryable: true },
-            { code: "401 Unauthorized", http: "401", color: "#FCEBEB", fg: "#A32D2D", action: "API key is invalid or missing. Developer error, not user error. Don't surface the HTTP code — just log it.", retryable: false },
-            { code: "429 Rate limited", http: "429", color: AMBER_LIGHT, fg: "#633806", action: "Show 'Too many requests — try again in a moment.' Check Retry-After header for exact cooldown time.", retryable: true },
-            { code: "400 Context overflow", http: "400", color: PURPLE_LIGHT, fg: PURPLE_DARK, action: "Conversation history too long. Trim oldest messages and retry silently, or tell user to start a new chat.", retryable: true },
-            { code: "5xx Server error", http: "5xx", color: "#FCEBEB", fg: "#A32D2D", action: "Anthropic-side issue. Offer retry. If persistent: 'Service unavailable — try again later.'", retryable: true },
-            { code: "Stream interrupted", http: "—",  color: BLUE_LIGHT, fg: BLUE, action: "Show partial response with [connection lost] label. Offer 'Continue' which resumes from the cut-off.", retryable: true },
-          ].map(e => (
-            <div key={e.code} style={{ background: e.color, borderRadius: 8, padding: "8px 12px", marginBottom: 6, display: "flex", gap: 10 }}>
-              <div style={{ minWidth: 100, flexShrink: 0 }}>
-                <p style={{ fontSize: 11, fontWeight: 700, color: e.fg, margin: 0 }}>{e.code}</p>
-                {e.http !== "—" && <p style={{ fontSize: 10, color: e.fg, margin: 0, opacity: 0.7 }}>HTTP {e.http}</p>}
-                <span style={{ fontSize: 9, fontWeight: 600, background: e.retryable ? TEAL_LIGHT : "#FCEBEB", color: e.retryable ? TEAL_DARK : "#A32D2D", padding: "1px 5px", borderRadius: 8, textTransform: "uppercase" }}>{e.retryable ? "retryable" : "not retryable"}</span>
-              </div>
-              <p style={{ fontSize: 11, color: e.fg, margin: 0, lineHeight: 1.5 }}>{e.action}</p>
-            </div>
-          ))}
-        </div>
-        <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-          <p style={{ fontSize: 12, fontWeight: 600, color: TEXT, margin: 0 }}>The error banner pattern</p>
-          <div style={{ background: GRAY, borderRadius: 12, padding: "14px", display: "flex", flexDirection: "column", gap: 10 }}>
-            <div style={{ alignSelf: "flex-end", background: PURPLE, color: "#fff", borderRadius: "18px 18px 4px 18px", padding: "9px 14px", fontSize: 12 }}>What is the capital of Australia?</div>
-            <div style={{ background: "#FCEBEB", border: "1px solid #fca5a5", borderRadius: 10, padding: "10px 14px" }}>
-              <div style={{ display: "flex", gap: 8, alignItems: "flex-start" }}>
-                <span style={{ fontSize: 16 }}>⚠️</span>
-                <div style={{ flex: 1 }}>
-                  <p style={{ fontSize: 12, fontWeight: 600, color: "#A32D2D", margin: "0 0 2px" }}>Couldn't get a response</p>
-                  <p style={{ fontSize: 11, color: "#A32D2D", margin: "0 0 8px" }}>Network error. Check your connection and try again.</p>
-                  <div style={{ display: "flex", gap: 8 }}>
-                    <div style={{ background: "#A32D2D", color: "#fff", borderRadius: 6, padding: "5px 14px", fontSize: 11, fontWeight: 600 }}>Retry</div>
-                    <div style={{ background: "transparent", border: "1px solid #fca5a5", color: "#A32D2D", borderRadius: 6, padding: "5px 14px", fontSize: 11 }}>Dismiss</div>
-                  </div>
+          <p style={{ fontSize: 11, fontWeight: 700, color: TEXT, margin: "0 0 8px", textTransform: "uppercase", letterSpacing: ".05em" }}>Best practices</p>
+          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+            {[
+              { icon: "📐", title: "Resize before encoding", desc: "Cap at 1024px on the longest side. Claude doesn't need a 12-megapixel photo to describe a coffee cup." },
+              { icon: "📦", title: "Compress to JPEG", desc: "80% quality JPEG is visually indistinguishable and half the size of a lossless PNG." },
+              { icon: "⏱️", title: "Latency scales with size", desc: "A smaller payload reaches the API faster, and the first token returns sooner. Users feel this." },
+              { icon: "🔁", title: "Don't re-encode unnecessarily", desc: "Encode once and cache the base64 string if the user hasn't picked a new image." },
+            ].map(r => (
+              <div key={r.icon} style={{ display: "flex", gap: 8, background: GRAY, borderRadius: 8, padding: "8px 10px" }}>
+                <span style={{ fontSize: 16, flexShrink: 0 }}>{r.icon}</span>
+                <div>
+                  <p style={{ fontSize: 12, fontWeight: 700, color: TEXT, margin: "0 0 1px" }}>{r.title}</p>
+                  <p style={{ fontSize: 11, color: MUTED, margin: 0, lineHeight: 1.4 }}>{r.desc}</p>
                 </div>
               </div>
+            ))}
+          </div>
+        </div>
+      </div>
+      <Notes>Sources: https://docs.anthropic.com/en/docs/build-with-claude/vision#image-costs for token counts, and https://www.anthropic.com/pricing for pricing. The token counts use Claude's "base" image tokenisation. The practical rule: resize to max 1024px, JPEG at 80%. That handles 95% of use cases. This is a good moment to preview the cost/tradeoff discussion that will run throughout Week 8 — if you're calling the API for every photo a user takes, costs add up quickly.</Notes>
+    </Shell>
+  ),
+
+  // 9 ─ The multimodal landscape
+  () => (
+    <Shell tag="Concept" tagColor="purple" timer="6" title="The multimodal landscape" subtitle="Inputs, fusion, AI providers, and outputs — the full picture">
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 10 }}>
+
+        {/* Section 1: Sensor fusion */}
+        <div style={{ background: TEAL_LIGHT, borderRadius: 10, padding: "12px 14px" }}>
+          <p style={{ fontSize: 12, fontWeight: 700, color: TEAL_DARK, margin: "0 0 6px" }}>🔀 Sensor fusion — combining inputs</p>
+          <p style={{ fontSize: 11, color: TEAL_DARK, lineHeight: 1.5, margin: "0 0 8px" }}>
+            The most compelling mobile AI features combine multiple inputs simultaneously. A single Claude call can include an image, a location string, and a text prompt — giving the model richer context than any one input alone.
+          </p>
+          <div style={{ display: "flex", flexDirection: "column", gap: 5 }}>
+            {[
+              { combo: "📷 + 📍", result: "Photo + location → identify local plant species by region" },
+              { combo: "📷 + 🎙️", result: "Photo + voice prompt → answer spoken questions about what you see" },
+              { combo: "📄 + 📍", result: "Scanned receipt + location → categorise expense by city" },
+              { combo: "📷 + 🏃", result: "Camera frame + motion data → context-aware AR overlay" },
+            ].map(r => (
+              <div key={r.combo} style={{ display: "flex", gap: 7, alignItems: "flex-start" }}>
+                <span style={{ fontSize: 11, fontWeight: 700, color: TEAL_DARK, flexShrink: 0, minWidth: 48 }}>{r.combo}</span>
+                <span style={{ fontSize: 11, color: TEAL_DARK, lineHeight: 1.4 }}>{r.result}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Section 2: AI providers */}
+        <div style={{ background: PURPLE_LIGHT, borderRadius: 10, padding: "12px 14px" }}>
+          <p style={{ fontSize: 12, fontWeight: 700, color: PURPLE_DARK, margin: "0 0 6px" }}>🤖 AI providers — Claude is not the only option</p>
+          <p style={{ fontSize: 11, color: PURPLE_DARK, lineHeight: 1.5, margin: "0 0 8px" }}>
+            Different providers have different strengths. Claude excels at reasoning over images and documents. Others are optimised for classification speed, labelling, or specialist tasks.
+          </p>
+          <div style={{ display: "flex", flexDirection: "column", gap: 5 }}>
+            {[
+              { name: "Claude (Anthropic)", strength: "Image reasoning, document Q&A, multimodal chat", tag: "This week" },
+              { name: "GPT-4o (OpenAI)", strength: "Strong vision, function calling, wide model family", tag: "" },
+              { name: "Gemini (Google)", strength: "Long context, native Android integration, Vertex AI", tag: "" },
+              { name: "ML Kit Vision", strength: "On-device, free, fast — text recognition, face, barcode", tag: "Week 8" },
+              { name: "AWS Rekognition", strength: "Object labels, moderation, celebrity recognition at scale", tag: "" },
+            ].map(r => (
+              <div key={r.name} style={{ display: "flex", gap: 6, alignItems: "flex-start" }}>
+                <div style={{ flex: 1 }}>
+                  <span style={{ fontSize: 11, fontWeight: 700, color: PURPLE_DARK }}>{r.name} </span>
+                  {r.tag && <span style={{ fontSize: 9, fontWeight: 700, background: r.tag === "This week" ? TEAL_LIGHT : AMBER_LIGHT, color: r.tag === "This week" ? TEAL_DARK : AMBER_DARK, padding: "1px 5px", borderRadius: 10 }}>{r.tag}</span>}
+                  <p style={{ fontSize: 10, color: PURPLE_DARK, margin: "1px 0 0", opacity: 0.8, lineHeight: 1.3 }}>{r.strength}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Section 3: Output modalities */}
+        <div style={{ background: BLUE_LIGHT, borderRadius: 10, padding: "12px 14px" }}>
+          <p style={{ fontSize: 12, fontWeight: 700, color: BLUE, margin: "0 0 6px" }}>📤 Output modalities — AI responds beyond text</p>
+          <p style={{ fontSize: 11, color: BLUE, lineHeight: 1.5, margin: "0 0 8px" }}>
+            Claude always returns text — but your app decides how to present it. Multimodal output is about what you do with the response, not what the API returns.
+          </p>
+          <div style={{ display: "flex", flexDirection: "column", gap: 5 }}>
+            {[
+              { icon: "🔊", output: "Text-to-speech", how: "AVSpeechSynthesizer (iOS) · TextToSpeech API (Android)" },
+              { icon: "📳", output: "Haptics", how: "Core Haptics (iOS) · VibrationEffect (Android)" },
+              { icon: "🪄", output: "AR overlays", how: "RealityKit / ARKit (iOS) · ARCore / SceneView (Android)" },
+              { icon: "🗺️", output: "Map annotations", how: "MapKit (iOS) · Google Maps SDK (Android)" },
+            ].map(r => (
+              <div key={r.output} style={{ display: "flex", gap: 6, alignItems: "flex-start" }}>
+                <span style={{ fontSize: 14, flexShrink: 0 }}>{r.icon}</span>
+                <div>
+                  <p style={{ fontSize: 11, fontWeight: 700, color: BLUE, margin: 0 }}>{r.output}</p>
+                  <p style={{ fontSize: 10, color: BLUE, margin: 0, opacity: 0.8, lineHeight: 1.3 }}>{r.how}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Section 4: The full pipeline */}
+        <div style={{ background: AMBER_LIGHT, borderRadius: 10, padding: "12px 14px" }}>
+          <p style={{ fontSize: 12, fontWeight: 700, color: AMBER_DARK, margin: "0 0 6px" }}>🔁 The full pipeline</p>
+          <p style={{ fontSize: 11, color: AMBER_DARK, lineHeight: 1.5, margin: "0 0 8px" }}>A mature multimodal app isn't just input → Claude → text. It chains sensors, models, and outputs together.</p>
+          <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+            {[
+              "📷 Camera frame + 📍 GPS",
+              "↓  On-device pre-filter (ML Kit: is there text?)",
+              "↓  If yes: send to Claude with context prompt",
+              "↓  Parse structured response",
+              "↓  🔊 Speak it · 🪄 Overlay it · 📳 Confirm with haptic",
+            ].map((step, i) => (
+              <div key={i} style={{ display: "flex", gap: 6 }}>
+                <span style={{ fontSize: 11, color: AMBER_DARK, lineHeight: 1.5, fontFamily: i === 0 ? "inherit" : "monospace", fontWeight: i === 0 ? 600 : 400 }}>{step}</span>
+              </div>
+            ))}
+          </div>
+          <div style={{ marginTop: 8, background: "rgba(255,255,255,0.5)", borderRadius: 6, padding: "6px 8px" }}>
+            <p style={{ fontSize: 10, color: AMBER_DARK, margin: 0, fontWeight: 600 }}>{"This is what separates a demo from a product."}</p>
+          </div>
+        </div>
+
+      </div>
+      <Notes>{"Sources: AVSpeechSynthesizer — https://developer.apple.com/documentation/avfoundation/avspeechsynthesizer. Android TextToSpeech — https://developer.android.com/reference/android/speech/tts/TextToSpeech. Core Haptics — https://developer.apple.com/documentation/corehaptics. VibrationEffect — https://developer.android.com/reference/android/os/VibrationEffect. RealityKit — https://developer.apple.com/documentation/realitykit. ARCore — https://developers.google.com/ar. ML Kit Vision — https://developers.google.com/ml-kit/vision. AWS Rekognition — https://aws.amazon.com/rekognition. GPT-4o vision — https://platform.openai.com/docs/guides/vision. Gemini — https://ai.google.dev. The sensor fusion and full pipeline sections are conceptual — the goal is to show students the design space, not teach every API. The pipeline example is deliberately concrete so students can imagine building it."}</Notes>
+    </Shell>
+  ),
+
+  // 10 ─ Android: capturing the image
+  () => (
+    <Shell tag="Android" tagColor="blue" timer="5" title="Android: capturing an image" subtitle="ActivityResultContracts — the modern way to launch camera and gallery">
+      <div style={{ marginBottom: 10 }}>
+        <p style={{ fontSize: 13, color: TEXT, lineHeight: 1.6, margin: "0 0 6px" }}>
+          Android's <strong>ActivityResultContracts</strong> API lets you launch the camera or photo picker and receive the result in a clean callback — no <code style={{ background: GRAY, fontSize: 11, padding: "1px 4px", borderRadius: 3 }}>onActivityResult</code> boilerplate. There are two contracts you need:
+        </p>
+      </div>
+      <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 10 }}>
+        <div style={{ background: BLUE_LIGHT, borderRadius: 10, padding: "12px 14px" }}>
+          <div style={{ display: "flex", gap: 8, alignItems: "flex-start" }}>
+            <span style={{ background: BLUE, color: "#fff", fontSize: 11, fontWeight: 700, padding: "2px 8px", borderRadius: 12, flexShrink: 0, marginTop: 2 }}>Camera</span>
+            <div style={{ flex: 1 }}>
+              <p style={{ fontSize: 12, color: BLUE, margin: "0 0 6px", lineHeight: 1.5 }}><strong>TakePicturePreview</strong> — launches the system camera and returns a <code style={{ background: "rgba(0,0,0,0.08)", fontSize: 11, padding: "1px 4px", borderRadius: 3 }}>Bitmap</code> directly in the callback. Simple, no file URI needed. Thumbnail quality — fine for AI analysis.</p>
+              <CodePane title="Register launcher in your Composable" accent={BLUE}>{`val cameraLauncher = rememberLauncherForActivityResult(
+    ActivityResultContracts.TakePicturePreview()
+) { bitmap ->
+    // bitmap is non-null if user took a photo, null if cancelled
+    viewModel.onPhotoCaptured(bitmap)
+}`}</CodePane>
             </div>
           </div>
-          <CodePane title="Android — error state in Compose" accent={BLUE}>{`@Composable
-fun ErrorBanner(message: String, onRetry: () -> Unit) {
-    Card(
-        colors = CardDefaults.cardColors(
-            containerColor = Color(0xFFFCEBEB)
-        ),
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 8.dp, vertical = 4.dp)
-    ) {
-        Row(Modifier.padding(12.dp), verticalAlignment = Alignment.Top) {
-            Text("⚠️", fontSize = 16.sp)
-            Spacer(Modifier.width(8.dp))
-            Column {
-                Text(message, color = Color(0xFFA32D2D),
-                    fontWeight = FontWeight.SemiBold, fontSize = 13.sp)
-                Spacer(Modifier.height(6.dp))
-                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Button(onClick = onRetry,
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = Color(0xFFA32D2D))) {
-                        Text("Retry")
-                    }
-                }
-            }
-        }
-    }
+        </div>
+        <div style={{ background: BLUE_LIGHT, borderRadius: 10, padding: "12px 14px" }}>
+          <div style={{ display: "flex", gap: 8, alignItems: "flex-start" }}>
+            <span style={{ background: BLUE, color: "#fff", fontSize: 11, fontWeight: 700, padding: "2px 8px", borderRadius: 12, flexShrink: 0, marginTop: 2 }}>Gallery</span>
+            <div style={{ flex: 1 }}>
+              <p style={{ fontSize: 12, color: BLUE, margin: "0 0 6px", lineHeight: 1.5 }}><strong>GetContent</strong> — opens the system photo picker and returns a content <code style={{ background: "rgba(0,0,0,0.08)", fontSize: 11, padding: "1px 4px", borderRadius: 3 }}>Uri</code>. You then load it into a Bitmap via ContentResolver — one extra step, but gives you full-resolution images.</p>
+              <CodePane title="Register launcher in your Composable" accent={BLUE}>{`val galleryLauncher = rememberLauncherForActivityResult(
+    ActivityResultContracts.GetContent()
+) { uri ->
+    // uri points to the selected image in the photo library
+    viewModel.onPhotoSelected(uri, context.contentResolver)
 }`}</CodePane>
-          <div style={{ background: TEAL_LIGHT, borderRadius: 8, padding: "10px 12px" }}>
-            <p style={{ fontSize: 11, fontWeight: 600, color: TEAL_DARK, margin: "0 0 3px" }}>Design rule</p>
-            <p style={{ fontSize: 11, color: TEAL_DARK, margin: 0, lineHeight: 1.5 }}>Never show a raw HTTP status code, exception class name, or stack trace to users. Translate every technical failure into plain language with a clear next action. The user doesn't care that it was a <code style={{ fontFamily: "monospace", fontSize: 10 }}>SocketTimeoutException</code>.</p>
+            </div>
           </div>
         </div>
       </div>
-    </Shell>
-  ),
-
-  // 9: Cancellation + input locking
-  () => (
-    <Shell tag="UI Pattern" tagColor="ai" timer="8" title="Cancellation and input locking" subtitle="Let users stop. Prevent them from sending twice." notes="Cancellation and input locking are the same underlying concern: controlling when the ViewModel is busy. Walk through cancellation first — it's the more novel pattern. Then show input locking as a direct consequence: if the ViewModel is busy, the input is disabled and the Send button becomes a Stop button. Both platforms follow the exact same logic; only the cancellation primitive differs (Job vs Task).">
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
-        <div>
-          <p style={{ fontSize: 12, fontWeight: 600, color: TEXT, margin: "0 0 8px" }}>Cancellation — how it works</p>
-          <p style={{ fontSize: 11, color: MUTED, margin: "0 0 10px", lineHeight: 1.5 }}>Store a reference to the in-flight Job (Android) or Task (iOS). When the user taps Stop, cancel it and transition to the <code style={{ fontFamily: "monospace", fontSize: 10, background: GRAY, padding: "1px 4px", borderRadius: 3 }}>Cancelled</code> state with whatever partial text accumulated.</p>
-          <CodePane title="Android — Job cancellation" accent={BLUE}>{`// In ChatViewModel
-private var streamJob: Job? = null
-
-fun sendMessage(text: String) {
-    if (!uiState.value.isIdle) return
-    history.add(Message("user", text))
-    streamJob = viewModelScope.launch {
-        var accumulated = ""
-        _uiState.value = ChatUiState.Sending
-        repo.streamMessage(history)
-            .catch { e ->
-                if (e is CancellationException) return@catch
-                history.removeLastOrNull()
-                _uiState.value = ChatUiState.Error(e.message ?: "")
-            }
-            .collect { token ->
-                accumulated += token
-                _uiState.value = ChatUiState.Streaming(accumulated)
-            }
-        // Reached only if not cancelled, not error
-        if (_uiState.value is ChatUiState.Streaming) {
-            history.add(Message("assistant", accumulated))
-            _uiState.value = ChatUiState.Idle
-        }
-    }
-}
-
-fun cancelStream() {
-    val partial = (_uiState.value as? ChatUiState.Streaming)?.partial ?: ""
-    streamJob?.cancel()
-    // Append partial as a cancelled assistant message
-    if (partial.isNotBlank())
-        history.add(Message("assistant", "$partial [stopped]"))
-    _uiState.value = ChatUiState.Idle
-}`}</CodePane>
-          <CodePane title="iOS — Task cancellation" accent={GREEN}>{`private var streamTask: Task<Void, Never>?
-
-func sendMessage(_ text: String) {
-    guard chatState.isIdle else { return }
-    history.append(Message(role: "user", content: text))
-    streamTask = Task {
-        var accumulated = ""
-        chatState = .sending
-        do {
-            for try await token in repo.streamMessage(history: history) {
-                accumulated += token
-                chatState = .streaming(partial: accumulated)
-            }
-            history.append(Message(role: "assistant", content: accumulated))
-            chatState = .idle
-        } catch is CancellationError {
-            // Handled in cancelStream()
-        } catch {
-            history.removeLast()
-            chatState = .error(message: error.localizedDescription)
-        }
-    }
-}
-
-func cancelStream() {
-    if case .streaming(let partial) = chatState, !partial.isEmpty {
-        history.append(Message(role: "assistant",
-            content: "\(partial) [stopped]"))
-    }
-    streamTask?.cancel()
-    chatState = .idle
-}`}</CodePane>
-        </div>
-        <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-          <p style={{ fontSize: 12, fontWeight: 600, color: TEXT, margin: 0 }}>Input locking — Send ↔ Stop button swap</p>
-          <p style={{ fontSize: 11, color: MUTED, margin: "0 0 4px", lineHeight: 1.5 }}>Drive the entire input row directly from <code style={{ fontFamily: "monospace", fontSize: 10, background: GRAY, padding: "1px 4px", borderRadius: 3 }}>uiState.isIdle</code>. One boolean — no separate flags.</p>
-          <CodePane title="Android — Compose input row" accent={BLUE}>{`@Composable
-fun InputRow(vm: ChatViewModel) {
-    val uiState by vm.uiState.collectAsStateWithLifecycle()
-    var input by remember { mutableStateOf("") }
-
-    Row(Modifier.fillMaxWidth().padding(8.dp),
-        verticalAlignment = Alignment.CenterVertically) {
-        TextField(
-            value = input,
-            onValueChange = { input = it },
-            enabled = uiState.isIdle,
-            placeholder = { Text("Message...") },
-            modifier = Modifier.weight(1f)
-        )
-        Spacer(Modifier.width(8.dp))
-        AnimatedContent(targetState = uiState.isIdle) { idle ->
-            if (idle) {
-                Button(
-                    onClick = { vm.sendMessage(input); input = "" },
-                    enabled = input.isNotBlank()
-                ) { Text("Send") }
-            } else {
-                IconButton(onClick = vm::cancelStream) {
-                    Icon(Icons.Default.Stop, "Stop response",
-                         tint = MaterialTheme.colorScheme.error)
-                }
-            }
-        }
-    }
-}`}</CodePane>
-          <CodePane title="iOS — SwiftUI input row" accent={GREEN}>{`struct InputRow: View {
-    @ObservedObject var vm: ChatViewModel
-    @State private var input = ""
-
-    var body: some View {
-        HStack(spacing: 8) {
-            TextField("Message...", text: $input)
-                .textFieldStyle(.roundedBorder)
-                .disabled(!vm.chatState.isIdle)
-                .submitLabel(.send)
-                .onSubmit(sendIfReady)
-
-            if vm.chatState.isIdle {
-                Button("Send", action: sendIfReady)
-                    .buttonStyle(.borderedProminent)
-                    .disabled(input.trimmingCharacters(
-                        in: .whitespaces).isEmpty)
-            } else {
-                Button(action: vm.cancelStream) {
-                    Image(systemName: "stop.circle.fill")
-                        .foregroundStyle(.red)
-                        .font(.title2)
-                }
-                .accessibilityLabel("Stop response")
-            }
-        }.padding()
-    }
-
-    private func sendIfReady() {
-        guard !input.trimmingCharacters(in: .whitespaces).isEmpty else { return }
-        vm.sendMessage(input)
-        input = ""
-    }
-}`}</CodePane>
-          <div style={{ background: TEAL_LIGHT, borderRadius: 8, padding: "10px 12px" }}>
-            <p style={{ fontSize: 11, fontWeight: 700, color: TEAL_DARK, margin: "0 0 3px" }}>Why AnimatedContent / if-else matters</p>
-            <p style={{ fontSize: 11, color: TEAL_DARK, margin: 0, lineHeight: 1.5 }}>Without animation, Send → Stop is an instant swap that users miss. <code style={{ fontFamily: "monospace", fontSize: 10 }}>AnimatedContent</code> (Compose) and the SwiftUI conditional rendering both crossfade, making the state change visible and intentional.</p>
-          </div>
-        </div>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+        <Callout color="blue" label="Launching the intent">{"Call cameraLauncher.launch(null) or galleryLauncher.launch('image/*') from your Button onClick."}</Callout>
+        <Callout color="amber" label="ViewModel receives the result">{"Both callbacks call into the ViewModel — it stores the Bitmap in a StateFlow so the UI recomposes automatically."}</Callout>
       </div>
+      <Notes>{"Source: https://developer.android.com/reference/androidx/activity/result/contract/ActivityResultContracts. rememberLauncherForActivityResult must be called at the Composable level, not inside a lambda or coroutine — it registers the callback during composition. TakePicturePreview returns a downscaled thumbnail; for full resolution use TakePicture with a FileProvider URI. GetContent with MIME type image/* opens the system photo picker on Android 13+ (PickVisualMedia is preferred on 13+ but GetContent works everywhere)."}</Notes>
     </Shell>
   ),
 
-  // 10: Smart auto-scroll
+  // 10b ─ Android: encode and send
   () => (
-    <Shell tag="UI Pattern" tagColor="ai" timer="7" title="Smart auto-scroll — follow tokens, respect the user" subtitle="Scroll to keep new content visible. Stop when the user scrolls up." notes="This is the subtlest of the three patterns but the one users notice most when it's wrong. The 'snap back' problem — where the user scrolls up to re-read something and gets forcibly scrolled back to the bottom on the next token — is one of the most complained-about UX issues in AI chat products. The Android derivedStateOf detection of 'at the bottom' is genuinely idiomatic Compose — explain why derivedStateOf avoids recomposition.">
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
-        <div>
-          <p style={{ fontSize: 12, fontWeight: 600, color: TEXT, margin: "0 0 8px" }}>The two auto-scroll behaviours</p>
-          <div style={{ background: TEAL_LIGHT, borderRadius: 10, padding: "14px", marginBottom: 10 }}>
-            <p style={{ fontSize: 12, fontWeight: 600, color: TEAL_DARK, margin: "0 0 10px" }}>✅ Smart scroll (what users want)</p>
-            {[
-              { s: "User sends a message", b: "Scroll to bottom immediately" },
-              { s: "Streaming starts", b: "Follow each new token to keep streaming bubble in view" },
-              { s: "User scrolls up mid-stream", b: "Stop auto-scrolling — let them read in peace" },
-              { s: "User scrolls back to bottom", b: "Resume auto-scrolling on next token" },
-              { s: "Stream ends", b: "No forced scroll — user is already where they want to be" },
-            ].map(r => (
-              <div key={r.s} style={{ display: "flex", gap: 8, margin: "5px 0" }}>
-                <span style={{ fontSize: 10, color: TEAL_DARK, fontStyle: "italic", minWidth: 150, flexShrink: 0 }}>{r.s}</span>
-                <span style={{ fontSize: 10, fontWeight: 600, color: TEAL_DARK }}>→ {r.b}</span>
-              </div>
-            ))}
-          </div>
-          <div style={{ background: "#FCEBEB", borderRadius: 10, padding: "14px" }}>
-            <p style={{ fontSize: 12, fontWeight: 600, color: "#A32D2D", margin: "0 0 10px" }}>❌ Naive scroll (what you have now)</p>
-            {[
-              { s: "Streaming starts", b: "Always scroll to bottom on every token" },
-              { s: "User scrolls up mid-stream", b: "Snap back to bottom on the next token" },
-              { s: "User tries to re-read", b: "Impossible — can't hold position during streaming" },
-            ].map(r => (
-              <div key={r.s} style={{ display: "flex", gap: 8, margin: "5px 0" }}>
-                <span style={{ fontSize: 10, color: "#A32D2D", fontStyle: "italic", minWidth: 150, flexShrink: 0 }}>{r.s}</span>
-                <span style={{ fontSize: 10, fontWeight: 600, color: "#A32D2D" }}>→ {r.b}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-        <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-          <CodePane title="Android — derivedStateOf + isAtBottom" accent={BLUE}>{`@Composable
-fun ChatList(history: List<Message>, uiState: ChatUiState) {
-    val listState = rememberLazyListState()
-
-    // derivedStateOf: recomputes only when scroll position changes
-    // NOT on every recomposition — avoids performance issues
-    val isAtBottom by remember {
-        derivedStateOf {
-            val info = listState.layoutInfo
-            val lastVisible = info.visibleItemsInfo.lastOrNull()
-            val total = info.totalItemsCount
-            lastVisible == null || lastVisible.index >= total - 2
-        }
-    }
-
-    // Scroll when a new token arrives, but only if already at bottom
-    LaunchedEffect(uiState) {
-        if (uiState is ChatUiState.Streaming && isAtBottom) {
-            val total = listState.layoutInfo.totalItemsCount
-            if (total > 0) listState.animateScrollToItem(total - 1)
-        }
-    }
-    // Always scroll on a new user message send
-    LaunchedEffect(history.size) {
-        if (uiState is ChatUiState.Idle) {
-            val total = listState.layoutInfo.totalItemsCount
-            if (total > 0) listState.animateScrollToItem(total - 1)
-        }
-    }
-
-    LazyColumn(state = listState, modifier = Modifier.fillMaxSize()) {
-        items(history) { MessageBubble(it) }
-        item {
-            when (uiState) {
-                is ChatUiState.Sending -> TypingIndicator()
-                is ChatUiState.Streaming -> StreamingBubble(uiState.partial)
-                else -> {}
-            }
-        }
-    }
-}`}</CodePane>
-          <CodePane title="iOS — position tracking via preference" accent={GREEN}>{`// iOS approach: track whether content overflows the viewport
-// If content height < scroll height, user can't scroll up — always scroll
-// Otherwise, track position via GeometryReader preference
-
-struct ChatList: View {
-    let history: [Message]
-    let chatState: ChatState
-    @State private var userScrolledUp = false
-
-    var body: some View {
-        ScrollViewReader { proxy in
-            ScrollView {
-                LazyVStack {
-                    ForEach(history) { msg in
-                        MessageBubble(message: msg).id(msg.id)
-                    }
-                    switch chatState {
-                    case .sending: TypingIndicator()
-                    case .streaming(let p):
-                        StreamingBubble(text: p)
-                            .id("streaming")
-                            .onChange(of: p) { _ in
-                                if !userScrolledUp {
-                                    withAnimation(.linear(duration: 0.05)) {
-                                        proxy.scrollTo("streaming",
-                                            anchor: .bottom)
-                                    }
-                                }
-                            }
-                    default: EmptyView()
-                    }
-                }.padding()
-            }
-            // Reset "scrolled up" flag when user sends a new message
-            .onChange(of: history.count) { _ in
-                userScrolledUp = false
-                proxy.scrollTo(history.last?.id, anchor: .bottom)
-            }
-        }
-    }
-}
-
-// Note: Detecting scroll-up in SwiftUI requires a custom PreferenceKey
-// for the scroll offset — see Resources tab for the full implementation.`}</CodePane>
-        </div>
+    <Shell tag="Android" tagColor="blue" timer="5" title="Android: encode and send to Claude" subtitle="Bitmap → compress → base64 → multimodal API call">
+      <div style={{ marginBottom: 8 }}>
+        <p style={{ fontSize: 13, color: TEXT, lineHeight: 1.6 }}>Once you have a <strong>Bitmap</strong>, three steps get it to Claude: resize it, compress it to JPEG, encode as base64. The API call itself is nearly identical to Session 1.</p>
       </div>
-    </Shell>
-  ),
+      <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+        {[
+          {
+            step: "1", label: "Resize + compress",
+            why: "Large images waste tokens and increase latency. Cap at 1024px and compress to JPEG 80% — visually identical, much smaller payload.",
+            code: `// Scale down — keep within 1024px on the longest side
+val scaled = Bitmap.createScaledBitmap(
+    bmp, minOf(bmp.width, 1024), minOf(bmp.height, 1024), true)
 
-  // 11: Accessibility + capstone
-  () => (
-    <Shell tag="Concept + Capstone" tagColor="teal" timer="5" title="Accessibility and capstone integration" subtitle="Screen readers + which patterns your app needs" notes="Two short topics on one slide — 3 min each. The accessibility patterns are often overlooked entirely by students because they don't test with screen readers. Make it concrete by showing the actual API calls rather than just describing intent. The capstone table is a fast planning tool — send students to breakout rooms with it open.">
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
-        <div>
-          <p style={{ fontSize: 12, fontWeight: 600, color: TEXT, margin: "0 0 8px" }}>Accessibility — the actual API calls</p>
-          <p style={{ fontSize: 11, color: MUTED, margin: "0 0 8px", lineHeight: 1.5 }}>A streaming text that updates 10×/sec creates an unusable screen reader experience unless you control what gets announced and when.</p>
-          <CodePane title="Android — TalkBack" accent={BLUE}>{`// 1. Typing indicator: static announcement, no live region
-Box(
-    Modifier.semantics {
-        contentDescription = "Claude is thinking"
-        liveRegion = LiveRegionMode.None
-    }
-) { TypingIndicator() }
-
-// 2. Completed message: announce once when streaming ends
-val isStreaming = uiState is ChatUiState.Streaming
-Text(
-    text = message.content,
-    modifier = Modifier.semantics {
-        // Only mark as live region when it's a completed response
-        if (!isStreaming) liveRegion = LiveRegionMode.Polite
-    }
+// Compress to JPEG at 80% quality
+val stream = ByteArrayOutputStream()
+scaled.compress(Bitmap.CompressFormat.JPEG, 80, stream)`,
+          },
+          {
+            step: "2", label: "Encode to base64",
+            why: "The API only accepts text. Base64 converts binary image bytes into a safe ASCII string that fits inside a JSON field.",
+            code: `val imageBytes = stream.toByteArray()
+val b64 = Base64.encodeToString(imageBytes, Base64.NO_WRAP)
+// Base64.NO_WRAP omits line breaks — required for JSON`,
+          },
+          {
+            step: "3", label: "Build the multimodal content array",
+            why: "Instead of content being a plain string, it's now an array with an image block first, then a text block with your prompt.",
+            code: `// content is now an array of blocks, not a string
+val imageBlock = mapOf(
+    "type" to "image",
+    "source" to mapOf(
+        "type" to "base64",
+        "media_type" to "image/jpeg",
+        "data" to b64
+    )
 )
-
-// 3. Error announcement: post immediately
-LaunchedEffect(uiState) {
-    if (uiState is ChatUiState.Error) {
-        accessibilityManager.interrupt()
-        view.announceForAccessibility(
-            "Error: ${(uiState as ChatUiState.Error).message}"
-        )
-    }
-}`}</CodePane>
-          <CodePane title="iOS — VoiceOver" accent={GREEN}>{`// 1. Typing indicator: static label
-TypingIndicator()
-    .accessibilityLabel("Claude is thinking")
-    .accessibilityHidden(false)  // visible to VoiceOver
-
-// 2. Completed message: post notification once
-.onChange(of: chatState) { newState in
-    if case .idle = newState, let last = history.last,
-       last.role == "assistant" {
-        UIAccessibility.post(
-            notification: .announcement,
-            argument: last.content
-        )
-    }
-}
-
-// 3. Error: immediate announcement
-.onChange(of: chatState) { newState in
-    if case .error(let msg) = newState {
-        UIAccessibility.post(
-            notification: .announcement,
-            argument: "Error: \(msg)"
-        )
-    }
-}`}</CodePane>
-        </div>
-        <div>
-          <p style={{ fontSize: 12, fontWeight: 600, color: TEXT, margin: "0 0 8px" }}>Capstone integration — what does your app need?</p>
-          <p style={{ fontSize: 11, color: MUTED, margin: "0 0 8px", lineHeight: 1.5 }}>Not every app needs all 7 patterns. Use this to plan before the lab.</p>
-          <div style={{ overflowX: "auto" }}>
-            <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 11 }}>
-              <thead>
-                <tr style={{ background: PURPLE_LIGHT }}>
-                  {["Pattern", "Chat", "Q&A", "Image AI", "Assistant"].map(h => (
-                    <th key={h} style={{ padding: "5px 7px", textAlign: "left", color: PURPLE_DARK, fontWeight: 600, fontSize: 10, textTransform: "uppercase" }}>{h}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {[
-                  ["Typing indicator", "✅", "✅", "✅", "✅"],
-                  ["Blinking cursor", "✅", "✅", "⚪", "✅"],
-                  ["Error banner + retry", "✅", "✅", "✅", "✅"],
-                  ["Input locking", "✅", "✅", "✅", "✅"],
-                  ["Cancellation", "✅", "⚪", "⚪", "✅"],
-                  ["Smart auto-scroll", "✅", "⚪", "⛔", "✅"],
-                  ["Markdown render", "✅", "⚪", "⛔", "✅"],
-                  ["a11y announcements", "✅", "⚪", "⚪", "✅"],
-                ].map((row, i) => (
-                  <tr key={i} style={{ background: i % 2 === 0 ? "transparent" : GRAY }}>
-                    {row.map((cell, j) => (
-                      <td key={j} style={{ padding: "4px 7px", color: j === 0 ? TEXT : (cell === "✅" ? TEAL_DARK : cell === "⚪" ? MUTED : "#A32D2D"), fontSize: j === 0 ? 11 : 13, fontWeight: j === 0 ? 600 : 400 }}>{cell}</td>
-                    ))}
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+val textBlock = mapOf("type" to "text", "text" to "Describe this image.")
+// Serialize imageBlock + textBlock into your JSON body`,
+          },
+        ].map(r => (
+          <div key={r.step} style={{ background: "var(--color-background-secondary)", borderRadius: 10, padding: "10px 14px", borderLeft: "3px solid " + BLUE }}>
+            <div style={{ display: "flex", gap: 8, alignItems: "center", marginBottom: 5 }}>
+              <span style={{ background: BLUE, color: "#fff", width: 20, height: 20, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 700, flexShrink: 0 }}>{r.step}</span>
+              <p style={{ fontSize: 13, fontWeight: 700, color: TEXT, margin: 0 }}>{r.label}</p>
+            </div>
+            <p style={{ fontSize: 12, color: MUTED, margin: "0 0 6px", lineHeight: 1.4 }}>{r.why}</p>
+            <CodePane title="" accent={BLUE}>{r.code}</CodePane>
           </div>
-          <div style={{ display: "flex", gap: 10, marginTop: 8, flexWrap: "wrap" }}>
-            {[{ sym: "✅", label: "Essential", color: TEAL_LIGHT, fg: TEAL_DARK }, { sym: "⚪", label: "Optional", color: GRAY, fg: MUTED }, { sym: "⛔", label: "N/A", color: "#FCEBEB", fg: "#A32D2D" }].map(l => (
-              <div key={l.label} style={{ display: "flex", alignItems: "center", gap: 5, background: l.color, borderRadius: 6, padding: "3px 9px" }}>
-                <span style={{ fontSize: 11 }}>{l.sym}</span>
-                <span style={{ fontSize: 11, color: l.fg, fontWeight: 500 }}>{l.label}</span>
-              </div>
-            ))}
-          </div>
-          <div style={{ background: AMBER_LIGHT, borderRadius: 8, padding: "10px 12px", marginTop: 10 }}>
-            <p style={{ fontSize: 11, fontWeight: 600, color: "#633806", margin: "0 0 3px" }}>Minimum viable polish</p>
-            <p style={{ fontSize: 11, color: "#633806", margin: 0, lineHeight: 1.5 }}>Typing indicator + error banner + input locking on every AI feature. These three take ~30 minutes and turn a working prototype into a demo-ready product.</p>
-          </div>
-        </div>
+        ))}
       </div>
+      <Notes>{"Sources: Bitmap.compress — https://developer.android.com/reference/android/graphics/Bitmap#compress. Base64 — https://developer.android.com/reference/android/util/Base64. Claude vision API — https://docs.anthropic.com/en/docs/build-with-claude/vision. The OkHttp POST itself is identical to Session 1 — same headers, same URL, same response parsing. Only the request body changes. Use kotlinx.serialization or Gson to build the JSON body properly rather than string concatenation."}</Notes>
     </Shell>
   ),
 
-  // 11: Lab intro
+  // 11 ─ iOS: capturing the image
   () => (
-    <Shell tag="Lab intro" timer="5" title="Today's lab — add the polish layer" subtitle="55 minutes in breakout rooms — building on Session 1" notes="Students are building on the Session 1 lab. Confirm everyone has a working streaming screen before breakout rooms. Students who didn't finish Session 1 should use the provided starter project. Walk through the four required features and the stretch goals before sending to rooms.">
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+    <Shell tag="iOS" tagColor="green" timer="5" title="iOS: capturing an image" subtitle="PhotosPicker for gallery · UIImagePickerController for camera">
+      <div style={{ marginBottom: 10 }}>
+        <p style={{ fontSize: 13, color: TEXT, lineHeight: 1.6, margin: "0 0 6px" }}>
+          iOS has two separate capture paths. The modern <strong>PhotosPicker</strong> (iOS 16+) handles the gallery declaratively in SwiftUI. For the camera, you still wrap <strong>UIImagePickerController</strong> in a <code style={{ background: GRAY, fontSize: 11, padding: "1px 4px", borderRadius: 3 }}>UIViewControllerRepresentable</code>.
+        </p>
+      </div>
+      <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 10 }}>
+        <div style={{ background: GREEN_LIGHT, borderRadius: 10, padding: "12px 14px" }}>
+          <div style={{ display: "flex", gap: 8, alignItems: "flex-start" }}>
+            <span style={{ background: GREEN, color: "#fff", fontSize: 11, fontWeight: 700, padding: "2px 8px", borderRadius: 12, flexShrink: 0, marginTop: 2 }}>Gallery</span>
+            <div style={{ flex: 1 }}>
+              <p style={{ fontSize: 12, color: GREEN, margin: "0 0 6px", lineHeight: 1.5 }}><strong>PhotosPicker</strong> is a native SwiftUI view — no UIKit bridge needed. Bind it to a <code style={{ background: "rgba(0,0,0,0.08)", fontSize: 11, padding: "1px 4px", borderRadius: 3 }}>PhotosPickerItem</code> state property. When the user picks a photo, load it via <code style={{ background: "rgba(0,0,0,0.08)", fontSize: 11, padding: "1px 4px", borderRadius: 3 }}>loadTransferable</code> to get <code style={{ background: "rgba(0,0,0,0.08)", fontSize: 11, padding: "1px 4px", borderRadius: 3 }}>Data</code>, then convert to <code style={{ background: "rgba(0,0,0,0.08)", fontSize: 11, padding: "1px 4px", borderRadius: 3 }}>UIImage</code>.</p>
+              <CodePane title="PhotoViewModel.swift" accent={GREEN}>{`// In your ViewModel
+@Published var photoItem: PhotosPickerItem? {
+    didSet { Task { await loadImage() } }
+}
+@Published var selectedImage: UIImage?
+
+private func loadImage() async {
+    guard let item = photoItem else { return }
+    if let data = try? await item.loadTransferable(type: Data.self),
+       let image = UIImage(data: data) {
+        selectedImage = image  // triggers UI update
+    }
+}`}</CodePane>
+              <CodePane title="PhotoScreen.swift — PhotosPicker button" accent={GREEN}>{"PhotosPicker(selection: $vm.photoItem, matching: .images) {\n    Label(\"Gallery\", systemImage: \"photo.on.rectangle\")\n}.buttonStyle(.bordered)"}</CodePane>
+            </div>
+          </div>
+        </div>
+        <div style={{ background: GREEN_LIGHT, borderRadius: 10, padding: "12px 14px" }}>
+          <div style={{ display: "flex", gap: 8, alignItems: "flex-start" }}>
+            <span style={{ background: GREEN, color: "#fff", fontSize: 11, fontWeight: 700, padding: "2px 8px", borderRadius: 12, flexShrink: 0, marginTop: 2 }}>Camera</span>
+            <div style={{ flex: 1 }}>
+              <p style={{ fontSize: 12, color: GREEN, margin: "0 0 6px", lineHeight: 1.5 }}><strong>UIImagePickerController</strong> is UIKit-only, so you wrap it in a <code style={{ background: "rgba(0,0,0,0.08)", fontSize: 11, padding: "1px 4px", borderRadius: 3 }}>UIViewControllerRepresentable</code> to use it in SwiftUI. Set <code style={{ background: "rgba(0,0,0,0.08)", fontSize: 11, padding: "1px 4px", borderRadius: 3 }}>sourceType = .camera</code> and implement the delegate to receive the image.</p>
+              <CodePane title="CameraPicker.swift (UIViewControllerRepresentable)" accent={GREEN}>{`struct CameraPicker: UIViewControllerRepresentable {
+    var onImagePicked: (UIImage) -> Void
+
+    func makeUIViewController(context: Context)
+        -> UIImagePickerController {
+        let picker = UIImagePickerController()
+        picker.sourceType = .camera
+        picker.delegate = context.coordinator
+        return picker
+    }
+    // makeCoordinator + Coordinator implement
+    // imagePickerController(_:didFinishPickingMediaWithInfo:)
+    // to call onImagePicked with the selected UIImage
+}`}</CodePane>
+            </div>
+          </div>
+        </div>
+      </div>
+      <Notes>{"Sources: PhotosPicker — https://developer.apple.com/documentation/photokit/photospicker. loadTransferable — https://developer.apple.com/documentation/photokit/photospickeritem/loadtransferable(type:). UIImagePickerController — https://developer.apple.com/documentation/uikit/uiimagepickercontroller. Key gotcha: UIImagePickerController is deprecated for photo library access (use PhotosPicker instead), but it is still the standard and correct API for camera capture. PhotosPicker cannot open the camera — it is gallery-only. This asymmetry is a real SwiftUI limitation; UIViewControllerRepresentable is the right bridge."}</Notes>
+    </Shell>
+  ),
+
+  // 11b ─ iOS: encode and send
+  () => (
+    <Shell tag="iOS" tagColor="green" timer="5" title="iOS: encode and send to Claude" subtitle="UIImage → compress → base64 → multimodal API call">
+      <div style={{ marginBottom: 8 }}>
+        <p style={{ fontSize: 13, color: TEXT, lineHeight: 1.6 }}>Once you have a <strong>UIImage</strong>, the path to Claude mirrors Android: resize, compress to JPEG, encode as base64. The URLSession call is identical to Session 1.</p>
+      </div>
+      <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+        {[
+          {
+            step: "1", label: "Resize + compress",
+            why: "UIGraphicsImageRenderer redraws the image at the target size. jpegData(compressionQuality: 0.8) gives you a small, Claude-ready payload. Skip this and a 12MP photo becomes ~4 MB of base64.",
+            code: `let maxSize = CGSize(width: 1024, height: 1024)
+let renderer = UIGraphicsImageRenderer(size: maxSize)
+let resized = renderer.image { _ in
+    image.draw(in: CGRect(origin: .zero, size: maxSize))
+}
+guard let jpegData = resized.jpegData(compressionQuality: 0.8)
+    else { return }`,
+          },
+          {
+            step: "2", label: "Encode to base64",
+            why: "base64EncodedString() converts the raw JPEG bytes into a safe ASCII string. No external library needed — Foundation provides this.",
+            code: `let b64 = jpegData.base64EncodedString()
+// b64 is now ready to embed in the API request body`,
+          },
+          {
+            step: "3", label: "Build the multimodal content array",
+            why: "The content field switches from a String to an array of dictionaries. Order matters — image first, then the text prompt.",
+            code: `let body: [String: Any] = [
+    "model": "claude-sonnet-4-20250514",
+    "max_tokens": 512,
+    "messages": [[
+        "role": "user",
+        "content": [
+            ["type": "image", "source": [
+                "type": "base64",
+                "media_type": "image/jpeg",
+                "data": b64
+            ]],
+            ["type": "text", "text": "Describe this image."]
+        ]
+    ]]
+]`,
+          },
+        ].map(r => (
+          <div key={r.step} style={{ background: "var(--color-background-secondary)", borderRadius: 10, padding: "10px 14px", borderLeft: "3px solid " + GREEN }}>
+            <div style={{ display: "flex", gap: 8, alignItems: "center", marginBottom: 5 }}>
+              <span style={{ background: GREEN, color: "#fff", width: 20, height: 20, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 700, flexShrink: 0 }}>{r.step}</span>
+              <p style={{ fontSize: 13, fontWeight: 700, color: TEXT, margin: 0 }}>{r.label}</p>
+            </div>
+            <p style={{ fontSize: 12, color: MUTED, margin: "0 0 6px", lineHeight: 1.4 }}>{r.why}</p>
+            <CodePane title="" accent={GREEN}>{r.code}</CodePane>
+          </div>
+        ))}
+      </div>
+      <Notes>{"Sources: UIGraphicsImageRenderer — https://developer.apple.com/documentation/uikit/uigraphicsimagerenderer. jpegData — https://developer.apple.com/documentation/uikit/uiimage/1624115-jpegdata. base64EncodedString — https://developer.apple.com/documentation/foundation/data/1779858-base64encodedstring. Claude vision API — https://docs.anthropic.com/en/docs/build-with-claude/vision. The URLSession POST is exactly the same as Session 1 — same headers (x-api-key, anthropic-version, content-type), same URL, same response parsing. Only the request body dict changes. Note that the resize here does not preserve aspect ratio for simplicity; production code should use AVMakeRect or similar."}</Notes>
+    </Shell>
+  ),
+
+  // 12 ─ Live demo slide
+  () => (
+    <Shell tag="Demo" tagColor="teal" timer="6" title="Live demo — PhotoDescriber" subtitle="Camera → base64 → Claude → description">
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 2fr", gap: 14 }}>
         <div>
-          <p style={{ fontSize: 12, fontWeight: 600, color: TEXT, margin: "0 0 8px" }}>Required features</p>
-          {[
-            { num: "1", feature: "Expand ChatUiState / ChatState", detail: "Add Sending, Cancelled states. Update ViewModel to transition through all states correctly.", color: PURPLE_LIGHT, fg: PURPLE_DARK },
-            { num: "2", feature: "Typing indicator", detail: "Animated three-dot bubble visible during Sending state only. Disappears when first token arrives.", color: AMBER_LIGHT, fg: "#633806" },
-            { num: "3", feature: "Error banner + retry", detail: "Inline error card when API call fails. Retry button re-sends the last user message.", color: "#FCEBEB", fg: "#A32D2D" },
-            { num: "4", feature: "Cancel + input locking", detail: "Stop button replaces Send during streaming. Cancels OkHttp call / Task. Input locked until state is idle.", color: BLUE_LIGHT, fg: BLUE },
-            { num: "5", feature: "Auto-scroll", detail: "List follows new tokens as they arrive. (iOS: always scroll; Android: only when already at bottom.)", color: TEAL_LIGHT, fg: TEAL_DARK },
-          ].map(f => (
-            <div key={f.num} style={{ background: f.color, borderRadius: 8, padding: "9px 12px", marginBottom: 7 }}>
-              <div style={{ display: "flex", gap: 7, alignItems: "center", marginBottom: 3 }}>
-                <span style={{ background: f.fg, color: "#fff", fontSize: 10, fontWeight: 700, borderRadius: "50%", width: 18, height: 18, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>{f.num}</span>
-                <p style={{ fontSize: 12, fontWeight: 600, color: f.fg, margin: 0 }}>{f.feature}</p>
+          <p style={{ fontSize: 13, fontWeight: 600, color: TEXT, margin: "0 0 10px" }}>What to show</p>
+          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+            {[
+              { step: "1", label: "Launch the app", desc: "Show the empty state — image preview placeholder, two buttons" },
+              { step: "2", label: "Gallery pick", desc: "Open gallery, pick a photo, show it load into the preview" },
+              { step: "3", label: "Tap Describe", desc: "Watch the loading state, then the description appear" },
+              { step: "4", label: "Try camera", desc: "Take a live photo — point at something in the room" },
+              { step: "5", label: "Try a hard one", desc: "Point at text (a slide, a whiteboard) — Claude can read it" },
+            ].map(r => (
+              <div key={r.step} style={{ display: "flex", gap: 8, background: TEAL_LIGHT, borderRadius: 8, padding: "8px 10px" }}>
+                <span style={{ background: TEAL_DARK, color: "#fff", width: 20, height: 20, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 700, flexShrink: 0 }}>{r.step}</span>
+                <div>
+                  <p style={{ fontSize: 12, fontWeight: 700, color: TEAL_DARK, margin: "0 0 1px" }}>{r.label}</p>
+                  <p style={{ fontSize: 11, color: TEAL_DARK, margin: 0, lineHeight: 1.4 }}>{r.desc}</p>
+                </div>
               </div>
-              <p style={{ fontSize: 11, color: f.fg, margin: 0, lineHeight: 1.5, paddingLeft: 25 }}>{f.detail}</p>
+            ))}
+          </div>
+        </div>
+        <div>
+          <p style={{ fontSize: 13, fontWeight: 600, color: TEXT, margin: "0 0 10px" }}>What to highlight while demoing</p>
+          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+            {[
+              { icon: "⏱️", point: "Latency is visible", detail: "Students should see the ~1–2 second round trip. This is the cost of cloud AI — the image travels to Anthropic's servers and back. Keep this in mind for Week 8." },
+              { icon: "🔑", point: "API key lives on the device", detail: "In this lab the key is hardcoded in your build. That's fine for a demo, but shipping this to the App Store or Play Store would expose your key. Production apps proxy through a backend." },
+              { icon: "📝", point: "Claude reads text in images", detail: "This is OCR without writing a single OCR line. Point the camera at text in the room and ask Claude to read it. Show students what this unlocks." },
+              { icon: "🌍", point: "Language agnostic", detail: "Point at foreign-language text and ask Claude to translate. You get translation + description for free — the model already knows how." },
+            ].map(r => (
+              <div key={r.icon} style={{ display: "flex", gap: 8, background: GRAY, borderRadius: 8, padding: "8px 10px" }}>
+                <span style={{ fontSize: 18, flexShrink: 0 }}>{r.icon}</span>
+                <div>
+                  <p style={{ fontSize: 12, fontWeight: 700, color: TEXT, margin: "0 0 2px" }}>{r.point}</p>
+                  <p style={{ fontSize: 11, color: MUTED, margin: 0, lineHeight: 1.4 }}>{r.detail}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+      <Notes>Have the demo app built and running on a physical device before class. The emulator camera is awkward for live demos — a real phone is much more compelling. If you're pointing at something in the room, a printed photo or a piece of fruit on the desk works well as a consistent prop. The "Claude reads text in images" moment is reliably impressive and worth spending 30 seconds on.</Notes>
+    </Shell>
+  ),
+
+  // 13 ─ What this unlocks (app ideas)
+  () => (
+    <Shell tag="Applications" tagColor="purple" timer="4" title="What multimodal unlocks" subtitle="A new class of mobile app that couldn't exist before">
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8, marginBottom: 12 }}>
+        {[
+          { icon: "🌿", name: "PlantID", desc: "Point at a plant, get species + care instructions instantly" },
+          { icon: "🍽️", name: "NutriScan", desc: "Photo of a meal → estimated calories, macros, ingredients" },
+          { icon: "♿", name: "Describe", desc: "Accessibility app — photos narrated aloud for vision impaired users" },
+          { icon: "🔧", name: "FixIt", desc: "Photo of a broken appliance → repair steps, parts needed" },
+          { icon: "📄", name: "DocScan", desc: "Photo of a document, invoice, or form → structured data extracted" },
+          { icon: "🗺️", name: "Translate+", desc: "Live camera translation of signs, menus, handwriting" },
+          { icon: "👗", name: "StyleMatch", desc: "Photo of clothing → suggested outfits, where to buy similar items" },
+          { icon: "📦", name: "ShelfCheck", desc: "Photo of a pantry shelf → recipe suggestions from what's visible" },
+          { icon: "🎨", name: "ArtGuide", desc: "Photo at a museum → artist, movement, historical context" },
+        ].map(app => (
+          <div key={app.name} style={{ background: PURPLE_LIGHT, borderRadius: 8, padding: "10px 12px" }}>
+            <div style={{ fontSize: 18, marginBottom: 3 }}>{app.icon}</div>
+            <p style={{ fontSize: 12, fontWeight: 700, color: PURPLE_DARK, margin: "0 0 2px" }}>{app.name}</p>
+            <p style={{ fontSize: 11, color: PURPLE_DARK, margin: 0, lineHeight: 1.4, opacity: 0.85 }}>{app.desc}</p>
+          </div>
+        ))}
+      </div>
+      <Callout color="teal" label="Capstone opportunity">Any of these are viable capstone directions. If your team hasn't locked a concept yet, this is a productive brainstorm source. The pattern is always the same: camera/gallery → base64 → Claude → display.</Callout>
+      <Notes>This slide is energising but keep it brief — students don't need to analyse every app, just get a feeling for the possibility space. The capstone callout is intentional: Milestone 1 is due this week and some teams may still be figuring out what to build. Multimodal opens up a lot of concrete, demonstrable app ideas that work well for a capstone demo.</Notes>
+    </Shell>
+  ),
+
+  // 14 ─ Cloud limitations preview
+  () => (
+    <Shell tag="Bridge → Week 8" tagColor="amber" timer="5" title="The cloud model has real limits" subtitle="Everything you built this week has a hidden assumption">
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
+        <div>
+          <p style={{ fontSize: 13, fontWeight: 600, color: TEXT, margin: "0 0 10px" }}>What we've been doing</p>
+          <div style={{ display: "flex", flexDirection: "column", gap: 6, marginBottom: 10 }}>
+            {[
+              { label: "User takes photo", icon: "📷" },
+              { label: "App encodes to base64", icon: "📦" },
+              { label: "HTTPS POST to Anthropic", icon: "🌐" },
+              { label: "Model runs on Anthropic's GPU", icon: "⚡" },
+              { label: "Response travels back", icon: "↩️" },
+              { label: "UI updates", icon: "📱" },
+            ].map((s, i) => (
+              <div key={i} style={{ display: "flex", gap: 8, alignItems: "center", background: i === 2 || i === 3 ? AMBER_LIGHT : GRAY, borderRadius: 6, padding: "6px 10px" }}>
+                <span style={{ fontSize: 14 }}>{s.icon}</span>
+                <span style={{ fontSize: 12, color: i === 2 || i === 3 ? AMBER_DARK : TEXT, fontWeight: i === 2 || i === 3 ? 600 : 400 }}>{s.label}</span>
+                {(i === 2 || i === 3) && <span style={{ fontSize: 10, color: AMBER_DARK, marginLeft: "auto", fontWeight: 600 }}>← this requires internet</span>}
+              </div>
+            ))}
+          </div>
+        </div>
+        <div>
+          <p style={{ fontSize: 13, fontWeight: 600, color: TEXT, margin: "0 0 10px" }}>The hidden assumption: network</p>
+          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+            {[
+              { icon: "✈️", issue: "Airplane mode", impact: "App completely stops working" },
+              { icon: "🚇", issue: "Subway / tunnel", impact: "Requests time out mid-stream" },
+              { icon: "🏥", issue: "Hospital / secure wifi", impact: "Restricted networks may block API calls" },
+              { icon: "🌍", issue: "International roaming", impact: "Data costs may be prohibitive" },
+              { icon: "🔒", issue: "Privacy-sensitive use cases", impact: "User's photo leaves their device" },
+            ].map(r => (
+              <div key={r.icon} style={{ display: "flex", gap: 8, background: CORAL_LIGHT, borderRadius: 8, padding: "7px 10px" }}>
+                <span style={{ fontSize: 14, flexShrink: 0 }}>{r.icon}</span>
+                <div>
+                  <p style={{ fontSize: 12, fontWeight: 700, color: CORAL, margin: "0 0 1px" }}>{r.issue}</p>
+                  <p style={{ fontSize: 11, color: CORAL, margin: 0 }}>{r.impact}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+      <Notes>This is the Week 8 motivating slide — end Week 7 by making students feel the pain of the cloud dependency. Don't fully answer the question yet. The answer (on-device inference) is what Week 8 is for. A good line: "Everything you built this week is impressive. But it only works if Anthropic's servers are reachable. Next week we ask: what if they're not?"</Notes>
+    </Shell>
+  ),
+
+  // 15 ─ Week 8 preview
+  () => (
+    <div style={{ background: `linear-gradient(135deg, #0F1220 0%, ${PURPLE_DARK} 60%, #0F1220 100%)`, borderRadius: 12, padding: "36px 40px", minHeight: 360, display: "flex", flexDirection: "column", justifyContent: "space-between", boxSizing: "border-box" }}>
+      <div>
+        <div style={{ display: "flex", gap: 8, marginBottom: 16 }}>
+          <Tag color="purple">Week 7 · S2</Tag>
+          <Tag color="amber">Coming up</Tag>
+        </div>
+        <p style={{ fontSize: 12, color: "rgba(255,255,255,0.5)", margin: "0 0 8px", textTransform: "uppercase", letterSpacing: ".08em", fontWeight: 600 }}>Week 8 Preview</p>
+        <h2 style={{ fontSize: 26, fontWeight: 500, color: "#fff", margin: "0 0 6px", lineHeight: 1.2 }}>On-device AI inference</h2>
+        <p style={{ fontSize: 15, color: "rgba(255,255,255,0.7)", margin: "0 0 24px" }}>What if the model ran on the phone itself?</p>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 20 }}>
+          {[
+            { icon: "🚫", label: "No network required", desc: "Inference happens entirely on-device" },
+            { icon: "⚡", label: "Zero latency", desc: "No round trip to a server — results in milliseconds" },
+            { icon: "🔒", label: "Privacy by default", desc: "User data never leaves the device" },
+            { icon: "💸", label: "No API costs", desc: "You pay for the app, not per inference call" },
+          ].map(r => (
+            <div key={r.label} style={{ background: "rgba(255,255,255,0.08)", borderRadius: 10, padding: "12px 14px" }}>
+              <div style={{ fontSize: 20, marginBottom: 4 }}>{r.icon}</div>
+              <p style={{ fontSize: 13, fontWeight: 600, color: "#fff", margin: "0 0 2px" }}>{r.label}</p>
+              <p style={{ fontSize: 11, color: "rgba(255,255,255,0.6)", margin: 0, lineHeight: 1.4 }}>{r.desc}</p>
             </div>
           ))}
         </div>
-        <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-          <div style={{ background: "#F9F0FF", borderRadius: 8, padding: "12px 14px" }}>
-            <p style={{ fontSize: 11, fontWeight: 600, color: "#6B21A8", margin: "0 0 8px" }}>✨ Stretch goals</p>
+        <div style={{ background: "rgba(255,255,255,0.08)", borderRadius: 10, padding: "14px 16px" }}>
+          <p style={{ fontSize: 11, fontWeight: 700, color: AMBER, margin: "0 0 8px", textTransform: "uppercase", letterSpacing: ".06em" }}>What you'll build in Week 8</p>
+          {[
+            "Android: ML Kit for on-device text and image recognition",
+            "iOS: Core ML + Create ML for on-device inference",
+            "Compare latency, accuracy, and capability vs. cloud",
+            "Decide: when to use cloud, when to use on-device, when to use both",
+          ].map(t => (
+            <div key={t} style={{ display: "flex", gap: 8, marginBottom: 4 }}>
+              <span style={{ color: AMBER, fontWeight: 700, flexShrink: 0 }}>▸</span>
+              <span style={{ fontSize: 12, color: "rgba(255,255,255,0.85)", lineHeight: 1.4 }}>{t}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+      <p style={{ fontSize: 12, color: "rgba(255,255,255,0.35)", margin: "24px 0 0" }}>Mobile development in the age of AI · CodePath</p>
+    </div>
+  ),
+
+  // 16 ─ Lab intro
+  () => (
+    <Shell tag="Lab" tagColor="teal" timer="55" title="Lab — build PhotoDescriber" subtitle="Camera + gallery + vision API in one session">
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
+        <div>
+          <p style={{ fontSize: 13, fontWeight: 600, color: TEXT, margin: "0 0 8px" }}>What you're building</p>
+          <p style={{ fontSize: 13, color: MUTED, lineHeight: 1.6, margin: "0 0 12px" }}>A standalone app with an image preview, two input buttons (camera + gallery), and a Describe button that sends the image to Claude's vision API and shows the response.</p>
+          <div style={{ background: TEAL_LIGHT, borderRadius: 8, padding: "10px 14px", marginBottom: 10 }}>
+            <p style={{ fontSize: 11, fontWeight: 700, color: TEAL_DARK, margin: "0 0 6px", textTransform: "uppercase", letterSpacing: ".05em" }}>Steps</p>
             {[
-              "Blinking cursor during streaming (5 lines of code, big visual impact)",
-              "Strategy A: show plain text while streaming, re-render as Markdown when done",
-              "Accessibility: contentDescription on typing indicator and stop button",
-              "Persist conversation history across app restarts with Room / SwiftData",
-              "'Clear conversation' button that resets history and returns to Idle",
-              "System prompt picker: let user choose Claude's persona from a list",
-            ].map(s => (
-              <div key={s} style={{ display: "flex", gap: 6, margin: "4px 0" }}>
-                <span style={{ color: "#6B21A8", fontSize: 11, flexShrink: 0 }}>□</span>
-                <span style={{ fontSize: 11, color: "#6B21A8", lineHeight: 1.4 }}>{s}</span>
+              "New project: PhotoDescriber",
+              "Declare camera + photo permissions",
+              "Build the UI (preview + two buttons + describe)",
+              "Wire up camera launcher / PhotosPicker",
+              "Compress and encode to base64",
+              "POST multimodal request to Claude API",
+              "Display the description",
+            ].map((s, i) => (
+              <div key={i} style={{ display: "flex", gap: 6, marginBottom: 4 }}>
+                <span style={{ background: TEAL_DARK, color: "#fff", width: 16, height: 16, borderRadius: "50%", fontSize: 10, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>{i + 1}</span>
+                <span style={{ fontSize: 12, color: TEAL_DARK, lineHeight: 1.4 }}>{s}</span>
               </div>
             ))}
           </div>
-          <div style={{ background: AMBER_LIGHT, borderRadius: 8, padding: "12px 14px" }}>
-            <p style={{ fontSize: 11, fontWeight: 600, color: "#633806", margin: "0 0 6px" }}>⚠️ Before you start</p>
-            <p style={{ fontSize: 11, color: "#633806", margin: 0, lineHeight: 1.5 }}>Make sure your Session 1 streaming chat screen is working first. If you are blocked, use the starter project from the Unit page — it has the Session 1 solution pre-built so you can focus on the polish layer.</p>
+        </div>
+        <div>
+          <p style={{ fontSize: 13, fontWeight: 600, color: TEXT, margin: "0 0 8px" }}>Checkpoints</p>
+          <div style={{ display: "flex", flexDirection: "column", gap: 6, marginBottom: 12 }}>
+            {[
+              "Project runs. Permissions declared.",
+              "Image preview shows a selected photo.",
+              "Camera and gallery both work.",
+              "base64 string logged to console.",
+              "Claude returns a description.",
+              "Description renders in the UI.",
+            ].map((c, i) => (
+              <div key={i} style={{ display: "flex", gap: 8, background: GRAY, borderRadius: 6, padding: "6px 10px" }}>
+                <span style={{ color: TEAL, fontWeight: 700, flexShrink: 0 }}>☐ {i}</span>
+                <span style={{ fontSize: 12, color: TEXT }}>{c}</span>
+              </div>
+            ))}
           </div>
-          <div style={{ background: GREEN_LIGHT, borderRadius: 8, padding: "12px 14px" }}>
-            <p style={{ fontSize: 11, fontWeight: 600, color: GREEN, margin: "0 0 4px" }}>🤖 AI hint</p>
-            <p style={{ fontSize: 11, color: GREEN, margin: 0, lineHeight: 1.5 }}>Claude writes excellent Compose animations and SwiftUI state machines. If you are stuck on the typing indicator or the auto-scroll logic: describe the exact behavior you want and ask Claude to generate the implementation. Read the output before copying — understand what each line does.</p>
+          <div style={{ background: PURPLE_LIGHT, borderRadius: 8, padding: "10px 14px" }}>
+            <p style={{ fontSize: 11, fontWeight: 700, color: PURPLE_DARK, margin: "0 0 4px", textTransform: "uppercase", letterSpacing: ".05em" }}>🚀 Stretch goals</p>
+            {[
+              "Add a prompt selector (describe / identify / read text / translate)",
+              "Stream the response word by word",
+              "Save photo + description pairs with history view",
+              "Combine with Session 1 — add image attachment to chat app",
+            ].map(s => (
+              <div key={s} style={{ display: "flex", gap: 6, marginBottom: 3 }}>
+                <span style={{ color: PURPLE_DARK, fontWeight: 700 }}>·</span>
+                <span style={{ fontSize: 11, color: PURPLE_DARK }}>{s}</span>
+              </div>
+            ))}
           </div>
         </div>
       </div>
+      <Notes>This is the lab kickoff slide. Read through the steps and checkpoints aloud, answer any setup questions, then let students work. Circulate and watch for: (1) students who haven't got their API key working from Session 1 — the key setup is identical, (2) students confused about the content array vs. string difference — refer back to slide 5, (3) students on iOS confused about the camera path — UIImagePickerController wrapped in UIViewControllerRepresentable is the scaffold in the unit page.</Notes>
     </Shell>
   ),
 
-  // 12: Wrap-up
+  // 17 ─ Wrap-up
   () => (
-    <div style={{ background: `linear-gradient(135deg, ${PURPLE_DARK} 0%, ${PURPLE} 100%)`, borderRadius: 12, padding: "44px 40px", minHeight: 360, display: "flex", flexDirection: "column", justifyContent: "space-between", boxSizing: "border-box" }}>
-      <div>
-        <p style={{ fontSize: 11, fontWeight: 600, color: "rgba(255,255,255,0.5)", margin: "0 0 8px", textTransform: "uppercase", letterSpacing: ".08em" }}>Week 7 complete</p>
-        <h2 style={{ fontSize: 28, fontWeight: 500, color: "#fff", margin: "0 0 8px" }}>Your apps feel intelligent now.</h2>
-        <p style={{ fontSize: 15, color: "rgba(255,255,255,0.7)", margin: "0 0 28px" }}>You did not just call an API. You built the complete AI feature — the plumbing and the polish — on a real mobile platform.</p>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
-          <div style={{ background: "rgba(255,255,255,0.1)", borderRadius: 8, padding: "12px 16px" }}>
-            <p style={{ fontSize: 11, fontWeight: 600, color: "rgba(255,255,255,0.6)", margin: "0 0 8px", textTransform: "uppercase", letterSpacing: ".06em" }}>Week 7 — complete picture</p>
+    <Shell tag="Wrap-up" tagColor="teal" title="Week 7 wrap-up" subtitle="What you can now build">
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14, marginBottom: 14 }}>
+        <div>
+          <p style={{ fontSize: 13, fontWeight: 600, color: TEXT, margin: "0 0 8px" }}>This week you learned</p>
+          <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
             {[
-              "S1: LLM APIs — tokens, statelessness, open connections",
-              "S1: Messages API anatomy — model, system, messages, roles",
-              "S1: SSE wire format and parsing rules",
-              "S1: History management — correct append order",
-              "S1: Secure API key storage on both platforms",
-              "S1: Full 4-file implementation on Android and iOS",
-              "S2: The 6-state AI UI state machine",
-              "S2: Typing indicators — Sending state coverage",
-              "S2: Partial render — blinking cursor + deferred Markdown",
-              "S2: Error taxonomy — 6 types, 6 UI responses",
-              "S2: Cancellation, input locking, smart auto-scroll",
-              "S2: Accessibility for streaming content",
-            ].map(t => (
-              <div key={t} style={{ display: "flex", gap: 6, margin: "3px 0" }}>
-                <span style={{ color: TEAL, flexShrink: 0, fontSize: 11 }}>✓</span>
-                <span style={{ fontSize: 11, color: "rgba(255,255,255,0.8)" }}>{t}</span>
+              { s: "Session 1", t: "Call an LLM from a mobile app. Handle streaming. Build a real-time chat UI." },
+              { s: "Session 2", t: "Send images to an LLM. Access camera and gallery. Understand multimodal message structure." },
+            ].map(r => (
+              <div key={r.s} style={{ background: TEAL_LIGHT, borderRadius: 8, padding: "8px 12px" }}>
+                <p style={{ fontSize: 11, fontWeight: 700, color: TEAL_DARK, margin: "0 0 2px", textTransform: "uppercase", letterSpacing: ".04em" }}>{r.s}</p>
+                <p style={{ fontSize: 12, color: TEAL_DARK, margin: 0, lineHeight: 1.4 }}>{r.t}</p>
               </div>
             ))}
           </div>
-          <div style={{ background: "rgba(255,255,255,0.1)", borderRadius: 8, padding: "12px 16px" }}>
-            <p style={{ fontSize: 11, fontWeight: 600, color: "rgba(255,255,255,0.6)", margin: "0 0 8px", textTransform: "uppercase", letterSpacing: ".06em" }}>Week 8 preview</p>
-            <p style={{ fontSize: 13, color: "rgba(255,255,255,0.95)", margin: "0 0 10px", fontWeight: 500 }}>On-device AI — intelligence without the cloud</p>
-            {[
-              "Run ML models directly on the phone — no internet required",
-              "Android: ML Kit for text recognition and image labeling",
-              "Android: Gemini Nano via Android AICore",
-              "iOS: Core ML + Vision framework",
-              "iOS: Create ML for simple custom models",
-              "Building a camera feature that identifies objects in real time",
-              "On-device vs cloud — when to use which",
-            ].map(t => (
-              <div key={t} style={{ display: "flex", gap: 6, margin: "4px 0" }}>
-                <span style={{ color: "rgba(255,255,255,0.4)", flexShrink: 0 }}>▸</span>
-                <span style={{ fontSize: 11, color: "rgba(255,255,255,0.8)" }}>{t}</span>
-              </div>
-            ))}
-            <div style={{ marginTop: 14, background: "rgba(255,255,255,0.15)", borderRadius: 6, padding: "8px 10px" }}>
-              <p style={{ fontSize: 11, color: "rgba(255,255,255,0.9)", margin: "0 0 3px", fontWeight: 600 }}>📋 Capstone Milestone 2</p>
-              <p style={{ fontSize: 11, color: "rgba(255,255,255,0.7)", margin: 0 }}>Core navigation complete, at least one networking call working end-to-end. Instructor check-in during Week 8 — 10 min per team.</p>
+        </div>
+        <div>
+          <p style={{ fontSize: 13, fontWeight: 600, color: TEXT, margin: "0 0 8px" }}>The bigger picture</p>
+          <p style={{ fontSize: 13, color: MUTED, lineHeight: 1.6, margin: "0 0 10px" }}>You can now put a world-class LLM behind any mobile input: text, photos, documents. The cloud model is powerful but has tradeoffs — latency, cost, and network dependency.</p>
+          <div style={{ background: AMBER_LIGHT, borderRadius: 8, padding: "10px 14px" }}>
+            <p style={{ fontSize: 12, color: AMBER_DARK, margin: 0, lineHeight: 1.5 }}>
+              <strong>Next week:</strong> We flip the model. The intelligence moves from Anthropic's servers onto the phone itself. Same capabilities, radically different tradeoffs.
+            </p>
+          </div>
+        </div>
+      </div>
+      <div style={{ borderTop: `1px solid var(--color-border-tertiary)`, paddingTop: 14 }}>
+        <p style={{ fontSize: 13, fontWeight: 600, color: TEXT, margin: "0 0 8px" }}>Before you leave</p>
+        <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+          {[
+            { icon: "📋", label: "Fill out the session survey", sub: "link in the unit page" },
+            { icon: "📁", label: "Push your PhotoDescriber code", sub: "even if incomplete" },
+            { icon: "🏗️", label: "Capstone M1 due this week", sub: "repo + architecture scaffolded" },
+            { icon: "💭", label: "Reflection", sub: "What would you build with multimodal AI?" },
+          ].map(r => (
+            <div key={r.label} style={{ background: GRAY, borderRadius: 8, padding: "8px 12px", flex: "1 1 40%" }}>
+              <p style={{ fontSize: 16, margin: "0 0 2px" }}>{r.icon}</p>
+              <p style={{ fontSize: 12, fontWeight: 600, color: TEXT, margin: "0 0 1px" }}>{r.label}</p>
+              <p style={{ fontSize: 11, color: MUTED, margin: 0 }}>{r.sub}</p>
             </div>
-          </div>
+          ))}
         </div>
       </div>
-      <div style={{ display: "flex", gap: 12, marginTop: 24 }}>
-        <div style={{ background: "rgba(255,255,255,0.15)", borderRadius: 8, padding: "8px 14px", flex: 1 }}>
-          <p style={{ fontSize: 12, color: "rgba(255,255,255,0.9)", margin: 0 }}>✏️ Please fill out the <strong>session survey</strong> — 2 minutes. Your feedback shapes the course.</p>
-        </div>
-        <div style={{ background: "rgba(255,255,255,0.15)", borderRadius: 8, padding: "8px 14px" }}>
-          <p style={{ fontSize: 12, color: "rgba(255,255,255,0.9)", margin: 0 }}>🏗️ <strong>M1</strong> due end of this week.</p>
-        </div>
-      </div>
-    </div>
+      <Notes>Keep wrap-up to 5 minutes. Survey first (they forget if you save it for last). Remind about Capstone M1 — it's due this week and some teams are still figuring out their architecture. The reflection prompt is optional — good to ask out loud if energy is still high, otherwise just post it in Slack for async responses.</Notes>
+    </Shell>
   ),
 ];
+
+// ─── NAVIGATOR ──────────────────────────────────────────────────────────────
 
 export default function App() {
   const [cur, setCur] = useState(0);
@@ -1115,18 +1064,18 @@ export default function App() {
     <div style={{ fontFamily: "var(--font-sans)", padding: "1rem 0" }}>
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
         <div>
-          <p style={{ fontSize: 11, color: MUTED, margin: 0, textTransform: "uppercase", letterSpacing: ".06em" }}>Week 7 · Session 2 · {slides.length} slides · 2 hrs</p>
-          <p style={{ fontSize: 14, fontWeight: 500, color: TEXT, margin: 0 }}>UI patterns for AI-generated content</p>
+          <p style={{ fontSize: 11, color: MUTED, margin: 0, textTransform: "uppercase", letterSpacing: ".06em" }}>Week 7 · Session 2 · {slides.length} slides</p>
+          <p style={{ fontSize: 14, fontWeight: 500, color: TEXT, margin: 0 }}>Mobile as an input device — Multimodal AI</p>
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          <button onClick={() => setCur(c => Math.max(0, c - 1))} disabled={cur === 0} style={{ padding: "5px 14px", borderRadius: 6, border: `1px solid ${PURPLE_LIGHT}`, background: cur === 0 ? GRAY : PURPLE_LIGHT, color: cur === 0 ? MUTED : PURPLE, cursor: cur === 0 ? "default" : "pointer", fontSize: 13, fontWeight: 500 }}>← Prev</button>
+          <button onClick={() => setCur(c => Math.max(0, c - 1))} disabled={cur === 0} style={{ padding: "5px 14px", borderRadius: 6, border: `1px solid ${TEAL_LIGHT}`, background: cur === 0 ? GRAY : TEAL_LIGHT, color: cur === 0 ? MUTED : TEAL_DARK, cursor: cur === 0 ? "default" : "pointer", fontSize: 13, fontWeight: 500 }}>← Prev</button>
           <span style={{ fontSize: 12, color: MUTED, minWidth: 64, textAlign: "center" }}>{cur + 1} / {slides.length}</span>
-          <button onClick={() => setCur(c => Math.min(slides.length - 1, c + 1))} disabled={cur === slides.length - 1} style={{ padding: "5px 14px", borderRadius: 6, border: `1px solid ${PURPLE_LIGHT}`, background: cur === slides.length - 1 ? GRAY : PURPLE, color: cur === slides.length - 1 ? MUTED : "#fff", cursor: cur === slides.length - 1 ? "default" : "pointer", fontSize: 13, fontWeight: 500 }}>Next →</button>
+          <button onClick={() => setCur(c => Math.min(slides.length - 1, c + 1))} disabled={cur === slides.length - 1} style={{ padding: "5px 14px", borderRadius: 6, border: `1px solid ${TEAL_LIGHT}`, background: cur === slides.length - 1 ? GRAY : TEAL_DARK, color: cur === slides.length - 1 ? MUTED : "#fff", cursor: cur === slides.length - 1 ? "default" : "pointer", fontSize: 13, fontWeight: 500 }}>Next →</button>
         </div>
       </div>
       <div style={{ display: "flex", gap: 4, marginBottom: 12, flexWrap: "wrap" }}>
         {slides.map((_, i) => (
-          <button key={i} onClick={() => setCur(i)} style={{ width: 26, height: 26, borderRadius: 5, border: `1.5px solid ${i === cur ? PURPLE : "#e5e7eb"}`, background: i === cur ? PURPLE : "#fff", color: i === cur ? "#fff" : MUTED, fontSize: 10, fontWeight: 500, cursor: "pointer" }}>{i + 1}</button>
+          <button key={i} onClick={() => setCur(i)} style={{ width: 26, height: 26, borderRadius: 5, border: `1.5px solid ${i === cur ? TEAL_DARK : "#e5e7eb"}`, background: i === cur ? TEAL_DARK : "#fff", color: i === cur ? "#fff" : MUTED, fontSize: 10, fontWeight: 500, cursor: "pointer" }}>{i + 1}</button>
         ))}
       </div>
       {slides[cur]()}
