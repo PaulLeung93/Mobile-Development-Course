@@ -15,8 +15,20 @@ const Tag = ({ children, color = PURPLE }) => (
 
 const CodePane = ({ title, accent = PURPLE, children }) => (
   <div style={{ flex: 1, minWidth: 0 }}>
-    <div style={{ background: accent, color: "#fff", fontSize: 11, fontWeight: 600, padding: "4px 12px", borderRadius: "8px 8px 0 0", letterSpacing: ".04em" }}>{title}</div>
-    <pre style={{ margin: 0, background: "#1e1e2e", color: "#cdd6f4", fontSize: 11, padding: "12px 14px", borderRadius: "0 0 8px 8px", lineHeight: 1.7, overflowX: "auto", whiteSpace: "pre-wrap", fontFamily: "monospace" }}>{children}</pre>
+    {title && <div style={{ background: accent, color: "#fff", fontSize: 11, fontWeight: 600, padding: "4px 12px", borderRadius: "8px 8px 0 0", letterSpacing: ".04em" }}>{title}</div>}
+    <pre style={{ margin: 0, background: "#1e1e2e", color: "#cdd6f4", fontSize: 11, padding: "12px 14px", borderRadius: title ? "0 0 8px 8px" : 8, lineHeight: 1.7, overflowX: "auto", whiteSpace: "pre-wrap", fontFamily: "monospace" }}>{children}</pre>
+  </div>
+);
+
+const Step = ({ n, title, children, accent = PURPLE }) => (
+  <div style={{ marginBottom: 12, paddingLeft: 20, borderLeft: `2px solid #e5e7eb`, position: "relative" }}>
+    <div style={{ position: "absolute", left: -14, top: -2, width: 26, height: 26, borderRadius: "50%", background: "#fff", border: `2px solid ${accent}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 800, color: accent }}>
+      {n}
+    </div>
+    <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8 }}>
+      <p style={{ fontSize: 13, fontWeight: 700, color: TEXT, margin: 0 }}>{title}</p>
+    </div>
+    <div>{children}</div>
   </div>
 );
 
@@ -296,44 +308,72 @@ fun CounterScreen() {
     </Shell>
   ),
 
-  // ─── SLIDE 8: remember + mutableStateOf ───
+  // ─── SLIDE 8a: remember + mutableStateOf (Compose) ───
   () => (
-    <Shell tag="State" timer="10" title="The fix — remember and mutableStateOf" subtitle="Two concepts that solve the two problems from the broken example" notes="Walk through each concept separately before combining them. First: mutableStateOf creates an observable value — Compose watches it. Second: remember tells Compose to hold onto the value across re-renders. Then combine. Show the fixed version running.">
+    <Shell tag="State" timer="10" title="The fix — remember and mutableStateOf" subtitle="Compose: solving the 2 problems from the broken example" notes="Walk through each concept separately before combining them. First: mutableStateOf creates an observable value — Compose watches it. Second: remember tells Compose to hold onto the value across re-renders. Then combine.">
       <div style={{ display: "flex", gap: 10 }}>
-        <CodePane title="Breaking it down — Compose" accent={PURPLE}>
-{`// Problem 1: Compose doesn't know count changed
-// Solution: mutableStateOf() — an observable value
-// Compose watches this and re-renders when it changes
+        <div style={{ flex: 1, display: "flex", flexDirection: "column" }}>
+          <Step n="1" title="Making it Observable" accent={PURPLE}>
+            <CodePane accent={PURPLE}>
+{`// Problem: Compose doesn't know count changed
+// Solution: mutableStateOf()
 
 val count = mutableStateOf(0)
-count.value++   // this triggers a re-render!
-// But count.value syntax is verbose... we'll fix that
-
-// Problem 2: count resets to 0 on every re-render
-// Solution: remember { } — survives recomposition
-// remember tells Compose: hold onto this value
+count.value++   // triggers re-render!
+// (count.value syntax is verbose though)`}
+            </CodePane>
+          </Step>
+          <Step n="2" title="Making it Survive" accent={PURPLE}>
+            <CodePane accent={PURPLE}>
+{`// Problem: count resets to 0 on every render
+// Solution: remember { }
 
 val count = remember { mutableStateOf(0) }
-
-// Combining both — the full solution:
+// remember tells Compose to hold this value`}
+            </CodePane>
+          </Step>
+          <Step n="3" title="The Full Solution" accent={PURPLE}>
+            <CodePane accent={PURPLE}>
+{`// Combining both with 'by' keyword
 var count by remember { mutableStateOf(0) }
-//  ↑ by = delegate syntax — lets us use count directly
-//    instead of count.value
+//  ↑ by = delegates gets/sets to let us use 'count' directly
 
-count++   // works! And triggers re-render!
-Text(text = count.toString())  // always shows current value`}
-        </CodePane>
-        <CodePane title="SwiftUI — @State" accent={TEAL}>
+count++   // works perfectly and re-renders!
+Text(text = count.toString())`}
+            </CodePane>
+          </Step>
+        </div>
+        <div style={{ flex: 0.6, display: "flex", flexDirection: "column", gap: 8 }}>
+          <div style={{ background: PURPLE_LIGHT, borderRadius: 8, padding: "14px 16px" }}>
+            <p style={{ fontSize: 13, fontWeight: 600, color: PURPLE_DARK, margin: "0 0 8px" }}>The golden rule for Compose State</p>
+            <p style={{ fontSize: 13, color: PURPLE, margin: 0, lineHeight: 1.5 }}><code>{`var x by remember { mutableStateOf(...) }`}</code></p>
+            <p style={{ fontSize: 12, color: PURPLE_DARK, margin: "10px 0 0", lineHeight: 1.5 }}>If you forget <code>remember</code>, the variable resets every render. If you forget <code>mutableStateOf</code>, the UI never updates.</p>
+          </div>
+        </div>
+      </div>
+    </Shell>
+  ),
+
+  // ─── SLIDE 8b: @State (SwiftUI) ───
+  () => (
+    <Shell tag="State" timer="0" title="The fix — @State" subtitle="SwiftUI equivalent" notes="Show the fixed version running on iOS. Explain why @State encompasses both 'remember' and observability.">
+      <div style={{ display: "flex", gap: 10 }}>
+        <div style={{ flex: 1, display: "flex", flexDirection: "column" }}>
+          <Step n="1" title="The All-in-one Keyword" accent={TEAL}>
+            <CodePane accent={TEAL}>
 {`// SwiftUI solves both problems with one keyword: @State
+// It handles BOTH observation AND memory.
 
-// @State = tells SwiftUI to watch this property
-//          AND to remember it across re-renders
-//          All in one annotation!
+@State private var count = 0
 
-struct CounterScreen: View {
+// 'private' is good practice — only this View
+// should change this state directly`}
+            </CodePane>
+          </Step>
+          <Step n="2" title="The Full View Structure" accent={TEAL}>
+            <CodePane accent={TEAL}>
+{`struct CounterScreen: View {
     @State private var count = 0
-    //     ↑ private = good practice — only this View
-    //       should change this state directly
 
     var body: some View {
         VStack {
@@ -343,67 +383,75 @@ struct CounterScreen: View {
             }
         }
     }
-}
-
-// No remember needed in SwiftUI!
-// @State handles both observation AND memory.
-// This is one genuine difference between the platforms.`}
-        </CodePane>
-      </div>
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginTop: 10 }}>
-        <div style={{ background: PURPLE_LIGHT, borderRadius: 8, padding: "10px 14px" }}>
-          <p style={{ fontSize: 12, fontWeight: 600, color: PURPLE_DARK, margin: "0 0 3px" }}>Why does Compose need remember but SwiftUI does not?</p>
-          <p style={{ fontSize: 12, color: PURPLE, margin: 0, lineHeight: 1.5 }}>Composables are functions — they re-run completely on recomposition. Without remember, every local variable resets. SwiftUI Views are structs — @State is stored outside the struct, so it naturally survives re-renders.</p>
+}`}
+            </CodePane>
+          </Step>
         </div>
-        <div style={{ background: TEAL_LIGHT, borderRadius: 8, padding: "10px 14px" }}>
-          <p style={{ fontSize: 12, fontWeight: 600, color: TEAL, margin: "0 0 3px" }}>The one-line rule</p>
-          <p style={{ fontSize: 12, color: "#085041", margin: 0, lineHeight: 1.5 }}>In Compose: var x by remember {"{ mutableStateOf(initialValue) }"}. In SwiftUI: @State private var x = initialValue. If you forget either, the UI will not update. Memorize these two patterns.</p>
+        <div style={{ flex: 0.6, display: "flex", flexDirection: "column", gap: 8 }}>
+          <div style={{ background: TEAL_LIGHT, borderRadius: 8, padding: "14px 16px" }}>
+            <p style={{ fontSize: 13, fontWeight: 600, color: TEAL, margin: "0 0 8px" }}>Why does Compose need remember but SwiftUI does not?</p>
+            <p style={{ fontSize: 12, color: "#085041", margin: 0, lineHeight: 1.5 }}>Composables are functions — they re-run completely on recomposition. Without remember, every local variable resets.<br/><br/>SwiftUI Views are structs — @State is stored outside the struct by the framework, so it naturally survives re-renders.</p>
+          </div>
         </div>
       </div>
     </Shell>
   ),
 
-  // ─── SLIDE 9: State types ───
+  // ─── SLIDE 9a: State types (Compose) ───
   () => (
-    <Shell tag="State" title="What types of data can live in state?" notes="Students often assume state only works with numbers. Show them it works with any type — Booleans are especially important because they unlock show/hide behavior which is coming in the next slide.">
+    <Shell tag="State" title="What types of data can live in state?" subtitle="Compose state types" notes="Students often assume state only works with numbers. Show them it works with any type — Booleans are especially important because they unlock show/hide behavior which is coming in the next slide.">
       <p style={{ fontSize: 13, color: MUTED, margin: "0 0 10px" }}>State can hold any data type — numbers, text, booleans, and more.</p>
-      <div style={{ display: "flex", gap: 10 }}>
-        <CodePane title="Compose — different state types" accent={PURPLE}>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+        <CodePane title="Numbers & Text" accent={PURPLE}>
 {`// Int — a counter
 var count by remember { mutableStateOf(0) }
 
 // String — text input or a label
-var username by remember { mutableStateOf("") }
-
-// Boolean — show/hide, on/off, loading/done
+var username by remember { mutableStateOf("") }`}
+        </CodePane>
+        <CodePane title="Booleans" accent={PURPLE}>
+{`// Boolean — show/hide, on/off, loading/done
 var isVisible by remember { mutableStateOf(true) }
-var isLoading by remember { mutableStateOf(false) }
-
-// Multiple state variables — they are independent
+var isLoading by remember { mutableStateOf(false) }`}
+        </CodePane>
+        <div style={{ gridColumn: "1 / -1" }}>
+            <CodePane title="Multiple independent variables" accent={PURPLE}>
+{`// Changing one does not affect the other!
 var likes by remember { mutableStateOf(0) }
 var isLiked by remember { mutableStateOf(false) }
 
-// Using them together:
-Button(onClick = {
-    likes++
-    isLiked = true
+Button(onClick = { 
+    likes++ 
+    isLiked = true 
 }) {
     Text(if (isLiked) "Liked!" else "Like")
 }`}
+            </CodePane>
+        </div>
+      </div>
+    </Shell>
+  ),
+
+  // ─── SLIDE 9b: State types (SwiftUI) ───
+  () => (
+    <Shell tag="State" title="What types of data can live in state?" subtitle="SwiftUI state types" notes="Show the SwiftUI equivalent for different state data types. Mention the ternary operator as a useful tool.">
+      <p style={{ fontSize: 13, color: MUTED, margin: "0 0 10px" }}>In SwiftUI, the type is inferred from the initial value.</p>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+        <CodePane title="Numbers & Text" accent={TEAL}>
+{`// Int — a counter
+@State private var count = 0
+
+// String — text input or a label
+@State private var username = ""`}
         </CodePane>
-        <CodePane title="SwiftUI — different state types" accent={TEAL}>
+        <CodePane title="Booleans" accent={TEAL}>
+{`// Boolean — show/hide, on/off, loading/done
+@State private var isVisible = true
+@State private var isLoading = false`}
+        </CodePane>
+        <div style={{ gridColumn: "1 / -1" }}>
+            <CodePane title="Multiple independent variables" accent={TEAL}>
 {`struct ExampleView: View {
-    // Int — a counter
-    @State private var count = 0
-
-    // String — text input or a label
-    @State private var username = ""
-
-    // Boolean — show/hide, on/off, loading/done
-    @State private var isVisible = true
-    @State private var isLoading = false
-
-    // Multiple state variables — independent
     @State private var likes = 0
     @State private var isLiked = false
 
@@ -416,18 +464,19 @@ Button(onClick = {
         }
     }
 }`}
-        </CodePane>
+            </CodePane>
+        </div>
       </div>
       <Info>{"The ternary operator — condition ? valueIfTrue : valueIfFalse — works the same in both Kotlin and Swift. It is one of the most useful patterns for conditional text in UI."}</Info>
     </Shell>
   ),
 
-  // ─── SLIDE 10: Conditional UI ───
+  // ─── SLIDE 10a: Conditional UI (Base) ───
   () => (
-    <Shell tag="Conditional UI" timer="5" title="Conditional UI — show and hide based on state" subtitle="The if statement inside your UI code" notes="This is where declarative UI starts to feel really powerful. The key insight: in declarative UI, you do not show or hide views by calling .show() or .hide() — you just use an if statement. The framework handles the rest. Show the before (always visible) and after (conditionally visible) side by side.">
+    <Shell tag="Conditional UI" timer="5" title="Conditional UI — before conditionals" subtitle="Start with your base layout" notes="This is where declarative UI starts to feel really powerful. The key insight: in declarative UI, you do not show or hide views by calling .show() or .hide() — you just use an if statement. The framework handles the rest. Let's start with a base Compose setup.">
       <p style={{ fontSize: 13, color: MUTED, margin: "0 0 10px" }}>In declarative UI you do not manually show or hide things — you just write an if statement and the framework handles it.</p>
       <div style={{ display: "flex", gap: 10 }}>
-        <CodePane title="Compose — conditional UI" accent={PURPLE}>
+        <CodePane title="Compose — Setup without conditionals" accent={PURPLE}>
 {`@Composable
 fun CounterScreen() {
     var count by remember { mutableStateOf(0) }
@@ -442,6 +491,28 @@ fun CounterScreen() {
         Button(onClick = { count++ }) {
             Text("Add 1")
         }
+        
+        // Next step: we will conditionally add more elements here...
+    }
+}`}
+        </CodePane>
+      </div>
+    </Shell>
+  ),
+
+  // ─── SLIDE 10b: Conditional UI (Compose) ───
+  () => (
+    <Shell tag="Conditional UI" title="Conditional UI — adding if statements" subtitle="The if statement inside your UI code" notes="Show how to add elements that only render under certain state conditions.">
+      <p style={{ fontSize: 13, color: MUTED, margin: "0 0 10px" }}>Just use a regular if statement. When the condition matches, Compose adds the UI. When it doesn't, Compose removes it completely.</p>
+      <div style={{ display: "flex", gap: 10 }}>
+        <CodePane title="Compose — conditional UI" accent={PURPLE}>
+{`@Composable
+fun CounterScreen() {
+    var count by remember { mutableStateOf(0) }
+
+    Column( /* ... */ ) {
+        Text(text = count.toString(), fontSize = 64.sp)
+        Button(onClick = { count++ }) { Text("Add 1") }
 
         // This Text ONLY appears when count >= 10
         // When count < 10, it does not exist in the UI at all
@@ -456,24 +527,28 @@ fun CounterScreen() {
 
         // Button only appears when count >= 5
         if (count >= 5) {
-            Button(onClick = { count = 0 }) {
-                Text("Reset")
-            }
+            Button(onClick = { count = 0 }) { Text("Reset") }
         }
     }
 }`}
         </CodePane>
+      </div>
+    </Shell>
+  ),
+
+  // ─── SLIDE 10c: Conditional UI (SwiftUI) ───
+  () => (
+    <Shell tag="Conditional UI" title="Conditional UI — SwiftUI equivalent" subtitle="The exact same pattern in Swift" notes="Point out that the logic does not change between platforms. declarative concepts are universal.">
+      <p style={{ fontSize: 13, color: MUTED, margin: "0 0 10px" }}>The syntax in SwiftUI perfectly mirrors Compose. The concepts are identical.</p>
+      <div style={{ display: "flex", gap: 10 }}>
         <CodePane title="SwiftUI — conditional UI" accent={TEAL}>
 {`struct CounterScreen: View {
     @State private var count = 0
 
     var body: some View {
         VStack(spacing: 16) {
-            Text("\\(count)")
-                .font(.system(size: 64, weight: .bold))
-
-            Button("Add 1") { count += 1 }
-                .buttonStyle(.borderedProminent)
+            Text("\\(count)").font(.system(size: 64, weight: .bold))
+            Button("Add 1") { count += 1 }.buttonStyle(.borderedProminent)
 
             // This Text ONLY appears when count >= 10
             // When count < 10, it is not in the tree at all
@@ -489,7 +564,6 @@ fun CounterScreen() {
                     .foregroundColor(.red)
             }
         }
-        .padding()
     }
 }`}
         </CodePane>
@@ -497,10 +571,10 @@ fun CounterScreen() {
     </Shell>
   ),
 
-  // ─── SLIDE 11: if vs when/switch ───
+  // ─── SLIDE 11a: Handling conditions (Kotlin/Compose) ───
   () => (
-    <Shell tag="Conditional UI" title="Handling multiple conditions — when and switch" notes="Students will need this for the milestone system in today's lab. when in Kotlin and switch in Swift serve the same purpose — pattern match against a value and return something different for each case. Walk through the syntax differences carefully. The Kotlin when block inside a Composable returning UI is a pattern students will use constantly.">
-      <p style={{ fontSize: 13, color: MUTED, margin: "0 0 8px" }}>When you have more than two conditions, if/else chains get messy. Both languages have a cleaner solution.</p>
+    <Shell tag="Conditional UI" title="Handling multiple conditions — when" subtitle="The Kotlin way" notes="Students will need this for the milestone system in today's lab. when in Kotlin serves the same purpose as switch — pattern match against a value and return something different for each case. The Kotlin when block inside a Composable returning UI is a pattern students will use constantly.">
+      <p style={{ fontSize: 13, color: MUTED, margin: "0 0 8px" }}>When you have more than two conditions, <code>if/else</code> chains get messy. Kotlin's <code>when</code> expression is the cleaner solution.</p>
       <div style={{ display: "flex", gap: 10 }}>
         <CodePane title="Kotlin — when expression" accent={PURPLE}>
 {`// when = Kotlin's switch — cleaner than if/else chains
@@ -527,6 +601,16 @@ when {
     else        -> Text("Amazing!")
 }`}
         </CodePane>
+      </div>
+      <Info>{"In Kotlin, `when` is an expression — meaning it directly returns a value that can be assigned or used. This makes it very concise."}</Info>
+    </Shell>
+  ),
+
+  // ─── SLIDE 11b: Handling conditions (SwiftUI) ───
+  () => (
+    <Shell tag="Conditional UI" title="Handling multiple conditions — switch" subtitle="The Swift way" notes="Switch serves the exact same purpose in Swift. Compare the syntax to Kotlin when. Note that Switch is a statement in Swift.">
+      <p style={{ fontSize: 13, color: MUTED, margin: "0 0 8px" }}>Swift uses the <code>switch</code> statement for this exact same purpose.</p>
+      <div style={{ display: "flex", gap: 10 }}>
         <CodePane title="Swift — switch statement" accent={TEAL}>
 {`// Computed property — recalculates when count changes
 var milestone: String {
@@ -554,15 +638,15 @@ Text(milestone)
 // and milestone recalculates automatically`}
         </CodePane>
       </div>
-      <Info>{"In Kotlin, when is an expression — it returns a value. In Swift, switch is a statement — it needs explicit returns. Both achieve the same thing. The Kotlin version is slightly more concise."}</Info>
+      <Info>{"Unlike Kotlin's `when`, Swift's `switch` is a statement — it needs explicit `return` instructions. However, both perfectly handle multiple state conditions."}</Info>
     </Shell>
   ),
 
-  // ─── SLIDE 12: Multiple state vars ───
+  // ─── SLIDE 12a: Multiple state vars (Concept) ───
   () => (
-    <Shell tag="State" title="Multiple state variables — they are independent" notes="Students often assume you can only have one piece of state per screen. Make it explicit that you can have as many as you need, and they are completely independent. Changing one does not affect the others unless you write code to connect them. This unlocks the milestone system in the lab.">
+    <Shell tag="State" title="Multiple state variables — they are independent" notes="Students often assume you can only have one piece of state per screen. Make it explicit that you can have as many as you need, and they are completely independent. Changing one does not affect the others unless you write code to connect them.">
       <div style={{ display: "flex", gap: 10 }}>
-        <CodePane title="Compose — multiple independent state vars" accent={PURPLE}>
+        <CodePane title="Compose — declaring multiple independent state vars" accent={PURPLE}>
 {`@Composable
 fun CounterScreen() {
     // Two independent pieces of state
@@ -570,7 +654,39 @@ fun CounterScreen() {
     var highScore by remember { mutableStateOf(0) }
 
     // Changing count does NOT change highScore
-    // unless we write code to do it
+    // unless we explicitly write code to do it!
+    
+    // ... UI goes here ...
+}`}
+        </CodePane>
+        <div style={{ flex: 1.0, display: "flex", flexDirection: "column", gap: 8 }}>
+          <div style={{ background: GRAY, borderRadius: 8, padding: "14px 16px", flex: 1 }}>
+            <p style={{ fontSize: 13, fontWeight: 600, color: TEXT, margin: "0 0 10px" }}>Key rules for multiple state variables</p>
+            {[
+              "Each variable is completely independent",
+              "You can have as many as your screen needs",
+              "They can depend on each other — but only if you write code to connect them",
+              "Changing one only re-renders the parts of the UI that read it",
+              "Name them clearly — isLoading, hasError, count, username — not just state1, state2",
+            ].map(t => (
+              <Bullet key={t} style={{ fontSize: 13 }}>{t}</Bullet>
+            ))}
+          </div>
+          <Warn style={{ fontSize: 13 }} title="Common mistake">{"Putting everything in one state variable when it should be separate. A counter and a high score are different things — give them different variables."}</Warn>
+        </div>
+      </div>
+    </Shell>
+  ),
+
+  // ─── SLIDE 12b: Multiple state vars (Implementation) ───
+  () => (
+    <Shell tag="State" title="Multiple state variables — updating together" notes="Show how we can perform multiple state updates in a single block of logic (e.g. updating the high score when the count clicks over).">
+      <div style={{ display: "flex", gap: 10 }}>
+        <CodePane title="Compose — updating them together" accent={PURPLE}>
+{`@Composable
+fun CounterScreen() {
+    var count by remember { mutableStateOf(0) }
+    var highScore by remember { mutableStateOf(0) }
 
     Column(
         verticalArrangement = Arrangement.Center,
@@ -585,7 +701,7 @@ fun CounterScreen() {
 
         Button(onClick = {
             count++
-            // Update high score if count beats it
+            // Update high score if count beats it!
             if (count > highScore) {
                 highScore = count
             }
@@ -597,26 +713,11 @@ fun CounterScreen() {
             Button(onClick = { count = 0 }) {
                 Text("Reset")
             }
-            // highScore stays — that is intentional!
+            // count resets, but highScore stays — that is intentional!
         }
     }
 }`}
         </CodePane>
-        <div style={{ flex: 0.7, display: "flex", flexDirection: "column", gap: 8 }}>
-          <div style={{ background: GRAY, borderRadius: 8, padding: "14px 16px", flex: 1 }}>
-            <p style={{ fontSize: 12, fontWeight: 600, color: TEXT, margin: "0 0 10px" }}>Key rules for multiple state vars</p>
-            {[
-              "Each var is completely independent",
-              "You can have as many as your screen needs",
-              "They can depend on each other — but only if you write code to connect them",
-              "Changing one only re-renders the parts of the UI that read it",
-              "Name them clearly — isLoading, hasError, count, username — not just state1, state2",
-            ].map(t => (
-              <Bullet key={t}>{t}</Bullet>
-            ))}
-          </div>
-          <Warn title="Common mistake">{"Putting everything in one state variable when it should be separate. A counter and a high score are different things — give them different variables."}</Warn>
-        </div>
       </div>
     </Shell>
   ),
@@ -655,10 +756,10 @@ fun CounterScreen() {
     </Shell>
   ),
 
-  // ─── SLIDE 14: Code-along part 1 ───
+  // ─── SLIDE 14a: Code-along part 1.1 (Setup) ───
   () => (
-    <Shell tag="Live code-along" title="Part 1 — static layout" notes="Type this out and run it. The button does nothing yet — that is intentional. Point out the circular button using clip(CircleShape) from Session 1. Show the preview before wiring up any state. Students should be able to follow this because they already know Column, Text, Button, and Modifier from last session.">
-      <CodePane title="Step 1-2: Project setup and static layout" accent={PURPLE}>
+    <Shell tag="Live code-along" title="Part 1.1 — Scaffold the Activity" notes="Start from the outer shell. They just need an empty Column centered on the screen.">
+      <CodePane title="Step 1: Project setup & Column" accent={PURPLE}>
 {`class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -675,6 +776,20 @@ fun CounterScreen() {
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        // We will add the UI elements here
+    }
+}`}
+      </CodePane>
+    </Shell>
+  ),
+
+  // ─── SLIDE 14b: Code-along part 1.2 (Number) ───
+  () => (
+    <Shell tag="Live code-along" title="Part 1.2 — Big Number" notes="Add the hardcoded 0 and the taps label.">
+      <CodePane title="Step 2: Add the Text elements" accent={PURPLE}>
+{`@Composable
+fun CounterScreen() {
+    Column( /* ... */ ) {
         // The big number
         Text(
             text = "0",
@@ -685,6 +800,21 @@ fun CounterScreen() {
         // "taps" label
         Text(text = "taps", fontSize = 16.sp, color = Color.Gray)
 
+        Spacer(modifier = Modifier.height(32.dp))
+    }
+}`}
+      </CodePane>
+    </Shell>
+  ),
+
+  // ─── SLIDE 14c: Code-along part 1.3 (Button) ───
+  () => (
+    <Shell tag="Live code-along" title="Part 1.3 — The TAP Button" notes="Type this out and run it. The button does nothing yet — that is intentional. Show the preview before wiring up any state.">
+      <CodePane title="Step 3: Circular TAP button" accent={PURPLE}>
+{`@Composable
+fun CounterScreen() {
+    Column( /* ... */ ) {
+        /* Text elements here */
         Spacer(modifier = Modifier.height(32.dp))
 
         // Circular TAP button
@@ -706,11 +836,10 @@ fun CounterScreen() {
     </Shell>
   ),
 
-  // ─── SLIDE 15: Code-along part 2 ───
+  // ─── SLIDE 15a: Code-along part 2.1 (Broken) ───
   () => (
-    <Shell tag="Live code-along" title="Part 2 — broken first, then fixed" notes="This is the most important moment of the demo. Type var count = 0 first (no remember), run it, tap the button multiple times, show it stays at 0. Ask the class: why do you think this is not working? After a few answers, introduce remember + mutableStateOf. Run it again. Watch the room react when the counter actually works.">
-      <div style={{ display: "flex", gap: 10 }}>
-        <CodePane title="Step 3 — the broken attempt" accent="#b91c1c">
+    <Shell tag="Live code-along" title="Part 2.1 — The Broken Attempt" notes="This is the most important moment of the demo. Type var count = 0 first (no remember), run it, tap the button multiple times, show it stays at 0. Ask the class: why do you think this is not working? After a few answers, introduce remember + mutableStateOf.">
+      <CodePane title="Step 3: The naive variable approach" accent="#b91c1c">
 {`@Composable
 fun CounterScreen() {
     // BROKEN — do this first to show why it fails
@@ -733,8 +862,14 @@ fun CounterScreen() {
 }
 // Run this. Tap many times. Watch nothing happen.
 // This is the EXACT mistake every new developer makes.`}
-        </CodePane>
-        <CodePane title="Step 4 — the fix" accent={TEAL}>
+      </CodePane>
+    </Shell>
+  ),
+
+  // ─── SLIDE 15b: Code-along part 2.2 (Fix) ───
+  () => (
+    <Shell tag="Live code-along" title="Part 2.2 — The Fix" notes="Show the fixed version running. Watch the room react when the counter actually works.">
+      <CodePane title="Step 4: The Compose State fix" accent={TEAL}>
 {`@Composable
 fun CounterScreen() {
     // FIXED — two changes from the broken version:
@@ -766,17 +901,16 @@ fun CounterScreen() {
     }
 }
 // Run this. Tap many times. Watch it work.`}
-        </CodePane>
-      </div>
+      </CodePane>
     </Shell>
   ),
 
-  // ─── SLIDE 16: Code-along part 3 ───
+  // ─── SLIDE 16a: Code-along part 3.1 (Milestones) ───
   () => (
-    <Shell tag="Live code-along" title="Part 3 — milestones and conditional Reset" notes="This slide brings it all together. The milestone text uses the when/switch pattern from slide 11. The Reset button uses the conditional if from slide 10. Make sure students see the connection back to those earlier slides — this is not new concepts, it is applying them.">
+    <Shell tag="Live code-along" title="Part 3.1 — Milestones" notes="This milestone text uses the when pattern from earlier. Make sure students see the connection back to those earlier slides.">
       <div style={{ display: "flex", gap: 10 }}>
-        <CodePane title="Step 5-7: Milestone + conditional Reset" accent={PURPLE}>
-{`// Add this helper function outside CounterScreen:
+        <CodePane title="Step 5-6: Milestone Logic Builder" accent={PURPLE}>
+{`// 1. Add this helper function OUTSIDE CounterScreen:
 fun getMilestone(count: Int): String = when {
     count == 0   -> "Start tapping!"
     count < 10   -> "Getting warmed up..."
@@ -785,7 +919,7 @@ fun getMilestone(count: Int): String = when {
     else         -> "Legendary tapper!"
 }
 
-// Inside CounterScreen Column, after the taps label:
+// 2. Inside CounterScreen Column, after the taps label:
 Spacer(modifier = Modifier.height(8.dp))
 
 Text(
@@ -793,14 +927,18 @@ Text(
     fontSize = 14.sp,
     color = Color(0xFF534AB7),
     fontStyle = FontStyle.Italic
-)
+)`}
+        </CodePane>
+      </div>
+    </Shell>
+  ),
 
-Spacer(modifier = Modifier.height(32.dp))
-
-// TAP button (same as before)
-Button(onClick = { count++ }, /* ... */) {
-    Text("TAP", fontWeight = FontWeight.Bold)
-}
+  // ─── SLIDE 16b: Code-along part 3.2 (Reset) ───
+  () => (
+    <Shell tag="Live code-along" title="Part 3.2 — Conditional Reset" notes="The Reset button uses the conditional if from before.">
+      <div style={{ display: "flex", gap: 10 }}>
+        <CodePane title="Step 7: Conditional Reset Button" accent={PURPLE}>
+{`// Inside CounterScreen Column, below the TAP button
 
 // Conditional Reset — only appears at count >= 10
 if (count >= 10) {
