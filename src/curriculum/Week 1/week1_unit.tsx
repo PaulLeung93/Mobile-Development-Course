@@ -718,7 +718,7 @@ action: {
         <p style={{ fontSize: 13, color: "var(--color-text-secondary)", margin: "0 0 8px" }}>As HP drops, the dragon changes its dialogue. The starter code includes a <IC>getMonsterTaunt(hp)</IC> helper function that currently always returns identical text. Fill it in using a <IC>when</IC> / <IC>switch</IC> pattern to return different taunts based on the current HP.</p>
         {platform === "Android" ? (
           <>
-            <p style={{ fontSize: 13, margin: "0 0 6px" }}>Update the <IC>getMonsterTaunt</IC> function <strong>outside</strong> your Composable:</p>
+            <p style={{ fontSize: 13, margin: "0 0 6px" }}><strong>Step 3a:</strong> Update the <IC>getMonsterTaunt</IC> function <strong>outside</strong> your Composable:</p>
             <CodeB title="Kotlin" accent={BL}>{`fun getMonsterTaunt(hp: Int): String = when {
     hp > 14 -> "I will crush you, tiny human!"
     hp > 9  -> "You dare wound me?!"
@@ -726,14 +726,15 @@ action: {
     hp > 0  -> "Please... have mercy..."
     else    -> "You... you beat me..."
 }`}</CodeB>
-            <p style={{ fontSize: 13, margin: "6px 0" }}>The starter code provides an <IC>isMonsterHurt</IC> state. Trigger the hurt animation when attacked:</p>
+            <p style={{ fontSize: 13, margin: "6px 0" }}><strong>Step 3b & 3c:</strong> The starter code provides animation state variables. Trigger the animations when attacked:</p>
             <CodeB title="Kotlin" accent={BL}>{`// Inside your Button onClick, add:
+isHeroAttacking = true
 isMonsterHurt = true`}</CodeB>
-            <p style={{ fontSize: 13, margin: "6px 0" }}>Because the <IC>Sprite</IC> component is already connected to <IC>isMonsterHurt</IC> in the starter body, it will automatically flash the hurt animation.</p>
+            <p style={{ fontSize: 13, margin: "6px 0" }}>Because the <IC>Sprite</IC> components are connected to these variables, they will automatically flash the attack and hurt animations.</p>
           </>
         ) : (
           <>
-            <p style={{ fontSize: 13, margin: "0 0 6px" }}>Update the <IC>monsterTaunt</IC> computed property <strong>inside</strong> your View struct:</p>
+            <p style={{ fontSize: 13, margin: "0 0 6px" }}><strong>Step 3a:</strong> Update the <IC>monsterTaunt</IC> computed property <strong>inside</strong> your View struct:</p>
             <CodeB title="Swift" accent={GR}>{`var monsterTaunt: String {
     switch monsterHp {
     case 15...20: return "I will crush you, tiny human!"
@@ -743,10 +744,11 @@ isMonsterHurt = true`}</CodeB>
     default:      return "You... you beat me..."
     }
 }`}</CodeB>
-            <p style={{ fontSize: 13, margin: "6px 0" }}>The starter code provides an <IC>isMonsterHurt</IC> state. Trigger the hurt animation when attacked:</p>
+            <p style={{ fontSize: 13, margin: "6px 0" }}><strong>Step 3b & 3c:</strong> The starter code provides animation state variables. Trigger the animations when attacked:</p>
             <CodeB title="Swift" accent={GR}>{`// Inside your Button action, add:
+isHeroAttacking = true
 isMonsterHurt = true`}</CodeB>
-            <p style={{ fontSize: 13, margin: "6px 0" }}>The <IC>SpriteView</IC> provided in the starter code will now automatically play its hurt animation.</p>
+            <p style={{ fontSize: 13, margin: "6px 0" }}>The <IC>SpriteView</IC> components will now automatically play their animations.</p>
           </>
         )}
         <Checkpoint num={3}>Attack the dragon past each threshold. Watch its expression and taunts shift in real time — all driven by state variables.</Checkpoint>
