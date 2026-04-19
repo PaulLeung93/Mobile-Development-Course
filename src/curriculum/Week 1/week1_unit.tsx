@@ -153,9 +153,9 @@ const Overview = () => (
         {[
           { label: "Pre-work", val: "Language primer: just enough Kotlin and Swift to follow along. IDE setup." },
           { label: "Session 1", val: "Declarative UI — what it is and why it matters. Live code-along: building a profile card." },
-          { label: "Session 2", val: "State and modifiers. Live code-along: building a tap counter with milestones." },
+          { label: "Session 2", val: "State and modifiers. Live code-along: Monster Slayer battle screen." },
           { label: "Lab (each session)", val: "Build in one platform, use Claude to translate to the other, then compare and extend." },
-          { label: "Assignment 1", val: "Build a personal profile screen with interactive elements. Submit in either platform." },
+          { label: "Assignment 1", val: "Polish your Lab 1 ProfileCard: swap the initials avatar for a real photo, write a bio, and add an interactive button backed by state. Submit via GitHub." },
         ].map(item => (
           <div key={item.label} style={{ background: "var(--color-background-primary)", border: "0.5px solid var(--color-border-tertiary)", borderRadius: 8, padding: "10px 12px" }}>
             <p style={{ fontSize: 11, fontWeight: 500, color: "var(--color-text-tertiary)", margin: "0 0 4px", textTransform: "uppercase", letterSpacing: ".04em" }}>{item.label}</p>
@@ -171,6 +171,7 @@ const Overview = () => (
 const LabSession1 = ({ platform }: { platform: string }) => (
   <div style={{ '--platform-accent': platform === "Android" ? BL : GR } as React.CSSProperties}>
     <h2 style={{ fontSize: 18, fontWeight: 600, margin: "0 0 4px" }}>Session 1 Lab: Hello, Mobile World</h2>
+    <Note>This ProfileCard is also your <strong>Unit 1 Assignment</strong>. The more you personalize it today — real colors, real stats, real you — the less polish work you will have after class. Come back to the Project tab to see what&#39;s required for submission.</Note>
     <p style={{ fontSize: 13, color: "var(--color-text-secondary)", margin: "0 0 12px" }}>
       In this lab you will build your very first mobile screen from scratch — a personal profile card. The instructor will live-code one platform. Your job is to follow along, then use Claude to translate your work to the other platform, and push both further with your own creativity. Budget about 50 minutes.
     </p>
@@ -201,16 +202,22 @@ const LabSession1 = ({ platform }: { platform: string }) => (
     </Step>
 
     <Step num={1} title="Your name on a screen (~8 min)">
-      <p>Follow along with the instructor. Get your name displaying on screen — centered, large, and bold.</p>
+      <p>Follow along with the instructor. You will get your name displaying on screen — centered, large, and bold. We will build this in three small pieces.</p>
+
       {platform === "Android" ? (
-        <CodeB title="Kotlin — MainActivity.kt" accent={BL}>{`class MainActivity : ComponentActivity() {
+        <>
+          <p><strong>Step 1a — Open the right file.</strong> In the Project panel on the left, expand <IC>app → java → com.example.profilecard</IC> and open <IC>MainActivity.kt</IC>. This is the entry point of your app.</p>
+          <p><strong>Step 1b — Call your composable.</strong> Find the <IC>setContent {'{'} ... {'}'}</IC> block inside <IC>onCreate</IC>. Replace whatever is inside it with a call to a function called <IC>ProfileCard()</IC> — we will define that function next.</p>
+          <CodeB title="Kotlin — MainActivity.kt" accent={BL}>{`class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContent { ProfileCard() }
+        setContent {
+            ProfileCard()  // ← call the composable you are about to write
+        }
     }
-}
-
-@Composable
+}`}</CodeB>
+          <p><strong>Step 1c — Define the composable.</strong> Below the closing brace of <IC>MainActivity</IC>, add a new function annotated with <IC>@Composable</IC>. Start with just the name:</p>
+          <CodeB title="Kotlin — add below MainActivity" accent={BL}>{`@Composable
 fun ProfileCard() {
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -222,31 +229,43 @@ fun ProfileCard() {
             fontSize = 32.sp,
             fontWeight = FontWeight.Bold
         )
-        Text(
-            text = "Mobile Dev Cohort 2025",
-            fontSize = 16.sp,
-            color = Color.Gray
-        )
     }
 }`}</CodeB>
+          <p><strong>Step 1d — Add the tagline.</strong> Inside the <IC>Column</IC>, directly after the name <IC>Text</IC>, add a second <IC>Text</IC> for your cohort tagline:</p>
+          <CodeB title="Kotlin — inside the Column" accent={BL}>{`Text(
+    text = "Mobile Dev Cohort 2025",
+    fontSize = 16.sp,
+    color = Color.Gray
+)`}</CodeB>
+        </>
       ) : (
-        <CodeB title="Swift — ContentView.swift" accent={GR}>{`struct ContentView: View {
+        <>
+          <p><strong>Step 1a — Open the right file.</strong> In Xcode's file navigator on the left, click <IC>ContentView.swift</IC>. This is where your UI lives — the preview on the right will update as you edit.</p>
+          <p><strong>Step 1b — Replace the body.</strong> Inside the existing <IC>ContentView</IC> struct, delete the placeholder content and replace the <IC>body</IC> with a <IC>VStack</IC> containing just your name:</p>
+          <CodeB title="Swift — ContentView.swift" accent={GR}>{`struct ContentView: View {
     var body: some View {
         VStack(spacing: 8) {
             Text("Your Name")
                 .font(.largeTitle)
                 .fontWeight(.bold)
-            Text("Mobile Dev Cohort 2025")
-                .font(.subheadline)
-                .foregroundColor(.gray)
         }
     }
 }`}</CodeB>
+          <p><strong>Step 1c — Add the tagline.</strong> Inside the <IC>VStack</IC>, directly after the name <IC>Text</IC>, add a second <IC>Text</IC> for your cohort tagline:</p>
+          <CodeB title="Swift — inside the VStack" accent={GR}>{`Text("Mobile Dev Cohort 2025")
+    .font(.subheadline)
+    .foregroundColor(.gray)`}</CodeB>
+        </>
       )}
-      <Checkpoint num={1}>Run your app. Your name should appear centered on screen.</Checkpoint>
+      <Checkpoint num={1}>Run your app. Your name and tagline should appear centered on screen.</Checkpoint>
       {platform === "Android" && (
         <Section title="💡 Hint: Red squiggles under Color, FontWeight, etc.">
           Android Studio needs to import these. Click the red word and press Alt+Enter (Option+Enter on Mac) to auto-import.
+        </Section>
+      )}
+      {platform === "Android" && (
+        <Section title="💡 Hint: Where exactly do I add the ProfileCard function?">
+          <IC>MainActivity.kt</IC> is just a normal Kotlin file — you can define multiple functions in it. Add <IC>ProfileCard()</IC> on a new line after the closing <IC>{'}'}</IC> of the <IC>MainActivity</IC> class, not inside it.
         </Section>
       )}
     </Step>
@@ -293,72 +312,78 @@ Spacer(modifier = Modifier.height(12.dp))`}</CodeB>
     </Step>
 
     <Step num={3} title="Build out the card layout (~10 min)">
-      <p>Add a card-style background, a divider, and a row of stat items like you would see on a social profile.</p>
+      <p>Now give the profile a proper card shape — a white rounded card on a grey background, with a divider and a row of stat items below it. We will build this in four sub-steps.</p>
+
       {platform === "Android" ? (
-        <CodeB title="Kotlin — wrap your Column in an outer layout" accent={BL}>{`Column(
-    modifier = Modifier
-        .fillMaxSize()
-        .background(Color(0xFFF5F5F5)),
-    verticalArrangement = Arrangement.Center,
-    horizontalAlignment = Alignment.CenterHorizontally
-) {
+        <>
+          <p><strong>Step 3a — Add the grey background.</strong> In <IC>MainActivity.kt</IC>, find your existing <IC>ProfileCard</IC> composable. Wrap the entire <IC>Column</IC> body in a new outer <IC>Column</IC> that fills the screen with a light grey background:</p>
+          <CodeB title="Kotlin — new outer Column" accent={BL}>{`@Composable
+fun ProfileCard() {
     Column(
         modifier = Modifier
-            .fillMaxWidth(0.85f)
-            .background(Color.White, shape = RoundedCornerShape(16.dp))
-            .padding(24.dp),
+            .fillMaxSize()
+            .background(Color(0xFFF5F5F5)),  // grey page background
+        verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // Avatar + name + tagline go here
-
-        Spacer(modifier = Modifier.height(16.dp))
-        HorizontalDivider(color = Color(0xFFEEEEEE))
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceEvenly
-        ) {
-            StatItem(label = "Projects", value = "0")
-            StatItem(label = "Commits", value = "0")
-            StatItem(label = "PRs", value = "0")
-        }
+        // inner card goes here in Step 3b
     }
-}
-
-@Composable
+}`}</CodeB>
+          <p><strong>Step 3b — Add the white card.</strong> Inside the outer Column, add an inner <IC>Column</IC> that gives the card its white background and rounded corners. Move your avatar, name, and tagline content inside it:</p>
+          <CodeB title="Kotlin — inner card Column" accent={BL}>{`Column(
+    modifier = Modifier
+        .fillMaxWidth(0.85f)              // card is 85% of screen width
+        .background(Color.White, shape = RoundedCornerShape(16.dp))
+        .padding(24.dp),
+    horizontalAlignment = Alignment.CenterHorizontally
+) {
+    // Avatar + name + tagline go here
+}`}</CodeB>
+          <p><strong>Step 3c — Add a divider.</strong> Inside the inner card Column, below your tagline, add spacing and a divider line:</p>
+          <CodeB title="Kotlin — inside the inner Column" accent={BL}>{`Spacer(modifier = Modifier.height(16.dp))
+HorizontalDivider(color = Color(0xFFEEEEEE))
+Spacer(modifier = Modifier.height(16.dp))`}</CodeB>
+          <p><strong>Step 3d — Add a StatItem composable and the stats row.</strong> First, define a small reusable composable outside of <IC>ProfileCard</IC>:</p>
+          <CodeB title="Kotlin — add below ProfileCard" accent={BL}>{`@Composable
 fun StatItem(label: String, value: String) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Text(text = value, fontSize = 20.sp, fontWeight = FontWeight.Bold)
         Text(text = label, fontSize = 12.sp, color = Color.Gray)
     }
 }`}</CodeB>
+          <p>Then, back inside the inner card Column (after the second Spacer), add the row of stats:</p>
+          <CodeB title="Kotlin — inside the inner Column, after the second Spacer" accent={BL}>{`Row(
+    modifier = Modifier.fillMaxWidth(),
+    horizontalArrangement = Arrangement.SpaceEvenly
+) {
+    StatItem(label = "Projects", value = "0")
+    StatItem(label = "Commits", value = "0")
+    StatItem(label = "PRs", value = "0")
+}`}</CodeB>
+        </>
       ) : (
-        <CodeB title="Swift — ContentView.swift" accent={GR}>{`struct ContentView: View {
+        <>
+          <p><strong>Step 3a — Add the grey background.</strong> In <IC>ContentView.swift</IC>, wrap your existing <IC>VStack</IC> in a <IC>ZStack</IC> so you can place a full-screen grey background behind the card:</p>
+          <CodeB title="Swift — ContentView.swift" accent={GR}>{`struct ContentView: View {
     var body: some View {
         ZStack {
-            Color(UIColor.systemGray6).ignoresSafeArea()
-            VStack(spacing: 0) {
-                // Avatar + name + tagline here
-                Divider().padding(.vertical, 16)
-                HStack {
-                    StatItem(label: "Projects", value: "0")
-                    Spacer()
-                    StatItem(label: "Commits", value: "0")
-                    Spacer()
-                    StatItem(label: "PRs", value: "0")
-                }
-                .padding(.horizontal, 24)
-            }
-            .padding(24)
-            .background(Color.white)
-            .cornerRadius(16)
-            .padding(.horizontal, 32)
+            Color(UIColor.systemGray6).ignoresSafeArea()  // grey page background
+            // card goes here in Step 3b
         }
     }
+}`}</CodeB>
+          <p><strong>Step 3b — Add the white card.</strong> Inside the <IC>ZStack</IC>, add a <IC>VStack</IC> containing your existing avatar, name, and tagline. Apply padding, a white background, and rounded corners:</p>
+          <CodeB title="Swift — inside ZStack" accent={GR}>{`VStack(spacing: 0) {
+    // Avatar + name + tagline here
 }
-
-struct StatItem: View {
+.padding(24)
+.background(Color.white)
+.cornerRadius(16)
+.padding(.horizontal, 32)`}</CodeB>
+          <p><strong>Step 3c — Add a divider.</strong> Inside the <IC>VStack</IC>, below your tagline, add a divider with padding:</p>
+          <CodeB title="Swift — inside the VStack" accent={GR}>{`Divider().padding(.vertical, 16)`}</CodeB>
+          <p><strong>Step 3d — Add a StatItem view and the stats row.</strong> First, define a small reusable view at the bottom of <IC>ContentView.swift</IC>, outside <IC>ContentView</IC>:</p>
+          <CodeB title="Swift — add below ContentView" accent={GR}>{`struct StatItem: View {
     let label: String
     let value: String
     var body: some View {
@@ -368,8 +393,23 @@ struct StatItem: View {
         }
     }
 }`}</CodeB>
+          <p>Then, back inside the card <IC>VStack</IC> (after the Divider), add the row of stats:</p>
+          <CodeB title="Swift — inside the VStack, after the Divider" accent={GR}>{`HStack {
+    StatItem(label: "Projects", value: "0")
+    Spacer()
+    StatItem(label: "Commits", value: "0")
+    Spacer()
+    StatItem(label: "PRs", value: "0")
+}
+.padding(.horizontal, 24)`}</CodeB>
+        </>
       )}
-      <Checkpoint num={3}>Your profile should now look like a real card with a background, divider, and stat items. Update the values to something real — or funny.</Checkpoint>
+      <Checkpoint num={3}>Your profile should now look like a real card with a grey background, rounded white card, divider, and stat items. Update the stat values to something real — or funny.</Checkpoint>
+      <Section title="💡 Hint: My card content is invisible or off-screen">
+        {platform === "Android"
+          ? "Make sure the inner card Column is inside the outer Column, not alongside it. Both Columns should be nested, not siblings."
+          : "Make sure the card VStack is inside the ZStack — the ZStack is what layers the grey background behind the card."}
+      </Section>
     </Step>
 
     <Step num={4} title="Ask Claude to translate it (~8 min)">
@@ -971,10 +1011,11 @@ const AdvancedStretch = () => {
   const [platform, setPlatform] = useState("Android");
   const isAndroid = platform === "Android";
   return (
-    <Section title="⚡ Advanced Stretch">
+    <Section title="⚡ Required: Card Flip + LinkedIn QR" defaultOpen={false}>
       <div style={{ "--platform-accent": isAndroid ? BL : GR } as React.CSSProperties}>
+        <Warn>The card flip animation and LinkedIn QR code are <strong>required features</strong> for this assignment — not optional. Complete them in order: flip first, then add the QR code to the back face.</Warn>
         <p style={{ fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 1.6, margin: "0 0 4px" }}>
-          These features go well beyond the core requirements. Build them in order — the QR code lives on the back of the flipped card, so complete the flip animation first.
+          Build them in order — the QR code lives on the back of the flipped card, so complete the flip animation first.
         </p>
         <PlatformToggle platform={platform} setPlatform={setPlatform} />
 
@@ -1099,24 +1140,32 @@ Image(uiImage: qrCode(for: "https://linkedin.com/in/YOUR-USERNAME"))
 const ProjectTab = () => (
   <div>
     <Warn>Submit this assignment by the end of Week 2 Session 1 using the Submit button on this page.</Warn>
-    <h2 style={{ fontSize: 18, fontWeight: 600, margin: "0 0 4px" }}>Unit 1 Project: Personal Profile App</h2>
+    <h2 style={{ fontSize: 18, fontWeight: 600, margin: "0 0 4px" }}>Unit 1 Assignment: Polish Your ProfileCard</h2>
     <p style={{ fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 1.7, margin: "0 0 14px" }}>
-      Build a personal profile screen — your first independently-built mobile app. It combines everything from this week: layout, text, state, and basic interactivity. You may build in either Android (Jetpack Compose) or iOS (SwiftUI). You do not need to submit both.
+      You built the foundation in Lab 1 — now make it submission-ready. Take your ProfileCard app and add the three features below. You may submit in either Android (Jetpack Compose) or iOS (SwiftUI). You do not need to submit both.
     </p>
+    <Note>Start from your Lab 1 code — do not create a new project from scratch. The goal is to evolve what you already built, not repeat it.</Note>
 
     <Section title="✅ Required Features" defaultOpen={true}>
-      <Checkbox>Display your name in large, bold text</Checkbox>
-      <Checkbox>Display a short bio or tagline beneath your name</Checkbox>
-      <Checkbox>Include a profile photo</Checkbox>
-      <Checkbox>The app runs without crashing on a simulator or physical device</Checkbox>
+      <Checkbox><strong>Replace the initials avatar with a real profile photo.</strong> Add your photo to the project resources and display it in a circle. The <IC>💡 How do I display a photo?</IC> hint below walks you through it.</Checkbox>
+      <Checkbox><strong>Add a written bio of 2–3 sentences</strong> below your name — something more personal than a tagline. Tell us who you are, what you are studying, or why you are taking this course.</Checkbox>
+      <Checkbox>
+        <strong>Add at least one interactive button backed by state</strong> that visibly changes something on screen when tapped. Pick one of the following — or invent your own:
+        <ul style={{ paddingLeft: 20, margin: "6px 0 2px", lineHeight: 1.8 }}>
+          <li><strong>Collapsible skills section</strong> — a "Show skills ▼" button that reveals a list of your top technologies below the card when tapped, and collapses back on a second tap. The UI shows different content based on a boolean state variable.</li>
+          <li><strong>Read more / less bio</strong> — display only the first sentence of your bio by default. A "Read more" button expands it to the full text; a "Show less" button collapses it again.</li>
+          <li><strong>Theme toggle</strong> — a button that switches your card between two color schemes (e.g. light and dark, or two brand palettes). All colors on the card should update when tapped.</li>
+        </ul>
+        The button must use a state variable — tapping it must visibly change something in the UI. A button that only prints to the console does not count.
+      </Checkbox>
+      <Checkbox><strong>Card flip + LinkedIn QR code.</strong> Tap your card to flip it like a business card — the back face shows a scannable QR code linking to your LinkedIn profile. Step-by-step implementation is in the <IC>⚡ Required: Card Flip + LinkedIn QR</IC> section below.</Checkbox>
+      <Checkbox>The app runs without crashing on a simulator or physical device.</Checkbox>
     </Section>
 
     <Section title="🚀 Stretch Features">
-      <Checkbox>Add an interactive element — a button that visibly changes something on screen when tapped</Checkbox>
-      <Checkbox>Style the screen with a custom color scheme</Checkbox>
-      <Checkbox>Add a dark mode compatible layout</Checkbox>
+      <Checkbox>Style the screen with a fully custom color scheme — pick colors that feel personal to you</Checkbox>
       <Checkbox>
-        Add a shimmer loading effect to your profile card — animates a light sweep across the screen while content "loads".{" "}
+        Add a shimmer loading effect to your profile card — animates a light sweep across the screen while content &ldquo;loads&rdquo;.{" "}
         <a href="https://github.com/valentinilk/compose-shimmer" target="_blank" rel="noreferrer" style={{ color: "var(--platform-accent, var(--color-text-primary))" }}>Compose library</a>
         {" · "}
         <a href="https://github.com/markiv/SwiftUI-Shimmer" target="_blank" rel="noreferrer" style={{ color: "var(--platform-accent, var(--color-text-primary))" }}>SwiftUI library</a>
@@ -1129,7 +1178,7 @@ const ProjectTab = () => (
 
     <Section title="📘 Submitting your project">
       <ol style={{ fontSize: 13, lineHeight: 2, paddingLeft: 20, margin: 0 }}>
-        <li>Create a GitHub repository for your project</li>
+        <li>Create a GitHub repository for your ProfileCard project</li>
         <li>Push your code to the repository</li>
         <li>Create a README using the Unit 1 README template (link below)</li>
         <li>In the README, check off all features you implemented by changing <IC>-[ ]</IC> to <IC>-[x]</IC></li>
@@ -1142,20 +1191,20 @@ const ProjectTab = () => (
     <Section title="💡 Hints">
       <ul style={{ fontSize: 13, lineHeight: 1.6, paddingLeft: 20, margin: 0 }}>
         <li style={{ marginBottom: 10 }}>
-          <strong>I don't know where to start</strong>
-          <p style={{ margin: "4px 0 0", color: "var(--color-text-secondary)" }}>Open the starter code and find the card template. Add a <IC>Text</IC> component for your name first — just get something visible on screen. Once that works, add the bio below it, then tackle the photo last.</p>
-        </li>
-        <li style={{ marginBottom: 10 }}>
-          <strong>My text isn't styled the way I want</strong>
-          <p style={{ margin: "4px 0 0", color: "var(--color-text-secondary)" }}>In Compose, use <IC>fontSize</IC>, <IC>fontWeight</IC>, and <IC>color</IC> parameters directly on <IC>Text()</IC>. In SwiftUI, chain <IC>.font()</IC>, <IC>.fontWeight()</IC>, and <IC>.foregroundColor()</IC> modifiers onto your <IC>Text</IC> view.</p>
-        </li>
-        <li style={{ marginBottom: 10 }}>
           <strong>How do I display a photo?</strong>
-          <p style={{ margin: "4px 0 0", color: "var(--color-text-secondary)" }}>Add your image file to the project resources, then use <IC>Image(painter = painterResource(...))</IC> in Compose or <IC>Image("your-image")</IC> in SwiftUI. Apply a <IC>.clipShape(Circle())</IC> modifier to give it a rounded profile look.</p>
+          <p style={{ margin: "4px 0 0", color: "var(--color-text-secondary)" }}>Add your image file to the project resources (Android: <IC>res/drawable</IC>; iOS: <IC>Assets.xcassets</IC>), then use <IC>Image(painter = painterResource(R.drawable.my_photo))</IC> in Compose or <IC>Image("my-photo")</IC> in SwiftUI. Apply <IC>.clip(CircleShape)</IC> in Compose or <IC>.clipShape(Circle())</IC> in SwiftUI to give it a round profile look. Set <IC>contentScale = ContentScale.Crop</IC> (Compose) or <IC>.scaledToFill()</IC> (SwiftUI) so it fills the circle without distortion.</p>
+        </li>
+        <li style={{ marginBottom: 10 }}>
+          <strong>My image is too large / not the right shape</strong>
+          <p style={{ margin: "4px 0 0", color: "var(--color-text-secondary)" }}>In Compose: chain <IC>.size(80.dp)</IC>, <IC>.clip(CircleShape)</IC>, and <IC>contentScale = ContentScale.Crop</IC>. In SwiftUI: chain <IC>.frame(width: 80, height: 80)</IC>, <IC>.clipShape(Circle())</IC>, and <IC>.scaledToFill()</IC>.</p>
+        </li>
+        <li style={{ marginBottom: 10 }}>
+          <strong>How do I implement the collapsible skills section?</strong>
+          <p style={{ margin: "4px 0 0", color: "var(--color-text-secondary)" }}>Declare a boolean state variable (<IC>var showSkills by remember {'{'} mutableStateOf(false) {'}'}</IC> in Compose; <IC>@State private var showSkills = false</IC> in SwiftUI). Wrap your skills list in an <IC>if (showSkills)</IC> block so it only renders when true. Your button's onClick / action should flip the variable: <IC>showSkills = !showSkills</IC>. Change the button label based on the variable: <IC>if (showSkills) "Hide skills ▲" else "Show skills ▼"</IC>.</p>
         </li>
         <li style={{ marginBottom: 0 }}>
-          <strong>My image is too large / not the right shape</strong>
-          <p style={{ margin: "4px 0 0", color: "var(--color-text-secondary)" }}>In Compose: use <IC>.size()</IC> and <IC>.clip(CircleShape)</IC> modifiers and set <IC>contentScale = ContentScale.Crop</IC>. In SwiftUI: use <IC>.frame()</IC>, <IC>.clipShape(Circle())</IC>, and <IC>.scaledToFill()</IC>.</p>
+          <strong>My text isn&apos;t styled the way I want</strong>
+          <p style={{ margin: "4px 0 0", color: "var(--color-text-secondary)" }}>In Compose, use <IC>fontSize</IC>, <IC>fontWeight</IC>, and <IC>color</IC> parameters directly on <IC>Text()</IC>. In SwiftUI, chain <IC>.font()</IC>, <IC>.fontWeight()</IC>, and <IC>.foregroundColor()</IC> modifiers onto your <IC>Text</IC> view.</p>
         </li>
       </ul>
     </Section>
