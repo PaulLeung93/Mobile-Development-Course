@@ -618,11 +618,11 @@ Text(
 const LabSession2MonsterSlayer = ({ platform }: { platform: string }) => (
   <div style={{ '--platform-accent': platform === "Android" ? BL : GR } as React.CSSProperties}>
 
-    <div style={{ background: "#FFF8E6", border: "1px solid #EF9F27", borderRadius: 8, padding: "10px 14px", marginBottom: 16, fontSize: 13, lineHeight: 1.6 }}>
-      <strong>⚠️ Work in Progress</strong> — This lab is still being finalized. Steps, starter code, and assets may change before it goes live.
-    </div>
-
     <h2 style={{ fontSize: 18, fontWeight: 600, margin: "0 0 4px" }}>Session 2 Lab: Monster Slayer</h2>
+    
+    <div style={{ marginTop: 16, marginBottom: 16, textAlign: "center" }}>
+      <img src="https://raw.githubusercontent.com/PaulLeung93/Mobile-Course-Solutions/main/Android/Week%201/Week1-Lab2_Solutions/MonsterSlayer/images/Monster_Slayer.gif" alt="Monster Slayer Demo" style={{ maxWidth: "100%", borderRadius: 8, border: "1px solid var(--color-border-tertiary)" }} />
+    </div>
     <p style={{ fontSize: 13, color: "var(--color-text-secondary)", margin: "0 0 12px", lineHeight: 1.7 }}>
       A dragon boss is waiting. It has 20 HP and it is not happy to see you. Attack it — watch it react as its health drops, and claim victory when it hits zero. Under the hood, every visual change on screen is driven by state — exactly what this session is about. Budget about 50 minutes.
     </p>
@@ -945,8 +945,7 @@ const LabTab = ({ platform, setPlatform }: { platform: string; setPlatform: (p: 
 
   const tabs = [
     { id: 1, label: "Session 1 — Profile Card" },
-    { id: 2, label: "Session 2 — Tap Counter" },
-    { id: 3, label: "Session 2 — Monster Slayer ⚗️" },
+    { id: 2, label: "Session 2 — Monster Slayer" },
   ];
 
   return (
@@ -955,15 +954,14 @@ const LabTab = ({ platform, setPlatform }: { platform: string; setPlatform: (p: 
         {tabs.map(t => (
           <button key={t.id} onClick={() => setSession(t.id)} style={{
             padding: "8px 20px", fontSize: 13, fontWeight: 500, border: "none", cursor: "pointer",
-            background: session === t.id ? (t.id === 3 ? "#FFF8E6" : PL) : "var(--color-background-primary)",
-            color: session === t.id ? (t.id === 3 ? "#92600A" : PD) : "var(--color-text-secondary)"
+            background: session === t.id ? PL : "var(--color-background-primary)",
+            color: session === t.id ? PD : "var(--color-text-secondary)"
           }}>{t.label}</button>
         ))}
       </div>
       <PlatformToggle platform={platform} setPlatform={setPlatform} />
       {session === 1 && <LabSession1 platform={platform} />}
-      {session === 2 && <LabSession2 platform={platform} />}
-      {session === 3 && <LabSession2MonsterSlayer platform={platform} />}
+      {session === 2 && <LabSession2MonsterSlayer platform={platform} />}
     </div>
   );
 };
