@@ -641,7 +641,7 @@ const LabSession2MonsterSlayer = ({ platform }: { platform: string }) => (
 
     <div style={{ marginTop: 20 }}>
       <VStep num={0} title="Open the starter project (~3 min)">
-        <p style={{ fontSize: 13, color: "var(--color-text-secondary)", margin: "0 0 8px" }}>Open the <IC>MonsterSlayer</IC> starter project provided by your instructor. Run it — you should see a dark screen with a monster sprite, a hardcoded HP display, and an attack button. Nothing reacts yet.</p>
+        <p style={{ fontSize: 13, color: "var(--color-text-secondary)", margin: "0 0 8px" }}>Clone the <a href="https://github.com/PaulLeung93/MonsterSlayer-Starter" style={{ color: "var(--color-text-info)" }}>MonsterSlayer starter project</a>. Run it — you should see a dark screen with a monster sprite, a hardcoded HP display, and an attack button. Nothing reacts yet.</p>
         <Checkbox>Starter project runs on your simulator without errors</Checkbox>
         <Checkpoint num={0}>Monster is on screen. It is judging you. The button does nothing.</Checkpoint>
       </VStep>
