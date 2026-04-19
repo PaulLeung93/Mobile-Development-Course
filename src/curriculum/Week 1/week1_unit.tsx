@@ -643,7 +643,7 @@ const LabSession2MonsterSlayer = ({ platform }: { platform: string }) => (
       <VStep num={0} title="Open the starter project (~3 min)">
         <p style={{ fontSize: 13, color: "var(--color-text-secondary)", margin: "0 0 8px" }}>Open the <IC>MonsterSlayer</IC> starter project provided by your instructor. Run it — you should see a dark screen with a monster sprite, a hardcoded HP display, and an attack button. Nothing reacts yet.</p>
         <Checkbox>Starter project runs on your simulator without errors</Checkbox>
-        <Checkpoint num={0}>Dragon is on screen. It is judging you. The button does nothing.</Checkpoint>
+        <Checkpoint num={0}>Monster is on screen. It is judging you. The button does nothing.</Checkpoint>
       </VStep>
 
       <VStep num={1} title="Wire up the attack button (~5 min)">
@@ -708,9 +708,9 @@ action: {
 }`}</CodeB>
           </>
         )}
-        <Checkpoint num={2}>Attack the dragon. HP counts down on screen. It still looks smug — we fix that next.</Checkpoint>
+        <Checkpoint num={2}>Attack the monster. HP counts down on screen. It still looks smug — we fix that next.</Checkpoint>
         <Section title="💡 Hint: Why check if monsterHp > 0 before subtracting?">
-          Without that guard, HP can go negative — and a dead dragon should not keep taking damage. Only run logic when it makes sense to run it.
+          Without that guard, HP can go negative — and a dead monster should not keep taking damage. Only run logic when it makes sense to run it.
         </Section>
       </VStep>
 
@@ -751,7 +751,7 @@ isMonsterHurt = true`}</CodeB>
             <p style={{ fontSize: 13, margin: "6px 0" }}>The <IC>SpriteView</IC> components will now automatically play their animations.</p>
           </>
         )}
-        <Checkpoint num={3}>Attack the dragon past each threshold. Watch its expression and taunts shift in real time — all driven by state variables.</Checkpoint>
+        <Checkpoint num={3}>Attack the monster past each threshold. Watch its expression and taunts shift in real time — all driven by state variables.</Checkpoint>
         <Section title="💡 Hint: Nothing is changing when I tap">
           Make sure <IC>getMonsterTaunt</IC> / <IC>monsterTaunt</IC> reads from your state variable, not a hardcoded number. If it reads from state, the framework will automatically re-evaluate it whenever HP changes.
         </Section>
@@ -807,11 +807,11 @@ isMonsterHurt = true`}</CodeB>
     }
 }`}</CodeB>
         )}
-        <Checkpoint num={5}>Defeat the dragon. The Attack button vanishes and the Battle Again button appears seamlessly. Tapping it starts a fresh round.</Checkpoint>
+        <Checkpoint num={5}>Defeat the monster. The Attack button vanishes and the Battle Again button appears seamlessly. Tapping it starts a fresh round.</Checkpoint>
       </VStep>
 
       <VStep num={6} title="Dynamic Styling — Reacting to Danger (~10 min)">
-        <p style={{ fontSize: 13, color: "var(--color-text-secondary)", margin: "0 0 8px" }}>State doesn't just control text — it controls colors. Let's make the HP bar turn yellow when the dragon is heavily damaged, and red when it's critical.</p>
+        <p style={{ fontSize: 13, color: "var(--color-text-secondary)", margin: "0 0 8px" }}>State doesn't just control text — it controls colors. Let's make the HP bar turn yellow when the monster is heavily damaged, and red when it's critical.</p>
         {platform === "Android" ? (
           <>
             <p style={{ fontSize: 13, margin: "0 0 6px" }}>Add a helper to determine the color outside your Composable:</p>
@@ -842,7 +842,7 @@ isMonsterHurt = true`}</CodeB>
     .tint(hpColor) // Use state-driven color!`}</CodeB>
           </>
         )}
-        <Checkpoint num={6}>Attack the dragon and watch the HP bar change colors at exactly 10 and 5 HP.</Checkpoint>
+        <Checkpoint num={6}>Attack the monster and watch the HP bar change colors at exactly 10 and 5 HP.</Checkpoint>
       </VStep>
 
       <VStep num={7} title="Ask Claude to translate — focus on state (~8 min)">
@@ -859,7 +859,7 @@ isMonsterHurt = true`}</CodeB>
       <VStep num={8} title="Make one change Claude did not make (~5 min)">
         <p style={{ fontSize: 13, color: "var(--color-text-secondary)", margin: "0 0 8px" }}>Take the translated version and add something Claude did not include. Some ideas:</p>
         <ul style={{ paddingLeft: 20, margin: "6px 0", fontSize: 13 }}>
-          <li>Change the dragon's HP to 30 and add a new phase threshold</li>
+          <li>Change the monster's HP to 30 and add a new phase threshold</li>
           <li>Add a "Damage dealt" label that tracks total damage across the session</li>
           <li>Change the HP text color — red when HP is low, white when full</li>
           <li>Write a custom taunt for one of the phases</li>
@@ -873,7 +873,7 @@ isMonsterHurt = true`}</CodeB>
 // 1. In your own words: what is state, and why does declarative UI need it?
 // 2. What is one thing the monster phase system and a milestone counter have in common?
 // 3. What surprised you most about how the UI reacted to state changes?`}</CodeB>
-        <Checkpoint num="Final">Dragon battered. Both platforms running. Reflection filled in. You are ready for the end-of-session discussion.</Checkpoint>
+        <Checkpoint num="Final">Monster battered. Both platforms running. Reflection filled in. You are ready for the end-of-session discussion.</Checkpoint>
       </VStep>
     </div>
 
@@ -925,7 +925,7 @@ if direction == secretCombo[nextIndex] {
     comboProgress = []        // clean up
 }`}</CodeB>
         )}
-        <Checkpoint num="⚡">Follow the gesture hints on the screen. Swipe correctly to land the Ultimate Attack and instantly defeat the Dragon!</Checkpoint>
+        <Checkpoint num="⚡">Follow the gesture hints on the screen. Swipe correctly to land the Ultimate Attack and instantly defeat the Monster!</Checkpoint>
       </VStep>
     </Section>
 
