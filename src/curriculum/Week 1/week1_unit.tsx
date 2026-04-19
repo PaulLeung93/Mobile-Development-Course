@@ -188,20 +188,21 @@ const LabSession1 = ({ platform }: { platform: string }) => (
       </ul>
     </div>
 
-    <Step num={0} title="Set up your project (~5 min)">
-      <p>Create a new project in Android Studio or Xcode, depending on which platform your instructor is demonstrating today.</p>
-      <Checkbox>Android: New Empty Activity project in Android Studio — name it ProfileCard, language Kotlin, min SDK API 24.</Checkbox>
-      <Checkbox>iOS: New App project in Xcode — name it ProfileCard, interface SwiftUI, language Swift.</Checkbox>
-      <Tip>The emulator/simulator can take a few minutes to boot the very first time. Start it now so it is ready by Step 1.</Tip>
-      <Section title="💡 Hint: I can't find Empty Activity in Android Studio">
-        Make sure you are on the Phone and Tablet tab in the New Project wizard. Select Empty Activity (not Empty Views Activity — that is the older XML-based approach).
-      </Section>
-      <Section title="💡 Hint: Xcode is asking me about a Team for signing">
-        For simulator-only development you can set Team to None or your personal Apple ID. You only need a paid account to deploy to a real device.
-      </Section>
-    </Step>
+    <div style={{ marginTop: 20 }}>
+      <VStep num={0} title="Set up your project (~5 min)">
+        <p>Create a new project in Android Studio or Xcode, depending on which platform your instructor is demonstrating today.</p>
+        <Checkbox>Android: New Empty Activity project in Android Studio — name it ProfileCard, language Kotlin, min SDK API 24.</Checkbox>
+        <Checkbox>iOS: New App project in Xcode — name it ProfileCard, interface SwiftUI, language Swift.</Checkbox>
+        <Tip>The emulator/simulator can take a few minutes to boot the very first time. Start it now so it is ready by Step 1.</Tip>
+        <Section title="💡 Hint: I can't find Empty Activity in Android Studio">
+          Make sure you are on the Phone and Tablet tab in the New Project wizard. Select Empty Activity (not Empty Views Activity — that is the older XML-based approach).
+        </Section>
+        <Section title="💡 Hint: Xcode is asking me about a Team for signing">
+          For simulator-only development you can set Team to None or your personal Apple ID. You only need a paid account to deploy to a real device.
+        </Section>
+      </VStep>
 
-    <Step num={1} title="Your name on a screen (~8 min)">
+      <VStep num={1} title="Your name on a screen (~8 min)">
       <p>Follow along with the instructor. You will get your name displaying on screen — centered, large, and bold. We will build this in three small pieces.</p>
 
       {platform === "Android" ? (
@@ -268,9 +269,9 @@ fun ProfileCard() {
           <IC>MainActivity.kt</IC> is just a normal Kotlin file — you can define multiple functions in it. Add <IC>ProfileCard()</IC> on a new line after the closing <IC>{'}'}</IC> of the <IC>MainActivity</IC> class, not inside it.
         </Section>
       )}
-    </Step>
+      </VStep>
 
-    <Step num={2} title="Add a profile avatar (~8 min)">
+      <VStep num={2} title="Add a profile avatar (~8 min)">
       <p>Add a colored circle with your initials above your name. This is a common pattern in real apps when a user has no photo.</p>
       {platform === "Android" ? (
         <CodeB title="Kotlin — add above your name Text" accent={BL}>{`Box(
@@ -309,9 +310,9 @@ Spacer(modifier = Modifier.height(12.dp))`}</CodeB>
           Use <IC>Color(red:green:blue:)</IC> with values between 0 and 1.
         </Section>
       )}
-    </Step>
+      </VStep>
 
-    <Step num={3} title="Build out the card layout (~10 min)">
+      <VStep num={3} title="Build out the card layout (~10 min)">
       <p>Now give the profile a proper card shape — a white rounded card on a grey background, with a divider and a row of stat items below it. We will build this in four sub-steps.</p>
 
       {platform === "Android" ? (
@@ -410,9 +411,9 @@ fun StatItem(label: String, value: String) {
           ? "Make sure the inner card Column is inside the outer Column, not alongside it. Both Columns should be nested, not siblings."
           : "Make sure the card VStack is inside the ZStack — the ZStack is what layers the grey background behind the card."}
       </Section>
-    </Step>
+      </VStep>
 
-    <Step num={4} title="Ask Claude to translate it (~8 min)">
+      <VStep num={4} title="Ask Claude to translate it (~8 min)">
       <p>Now that you have something worth translating, ask Claude to do it.</p>
       <AiOpp>
         Open Claude at claude.ai. Paste your entire screen code and use this prompt: <em>"I am learning mobile development. This is my [{platform === "Android" ? "Compose" : "SwiftUI"}] profile card. Please translate it to [{platform === "Android" ? "SwiftUI" : "Compose"}]. After the code, briefly explain the 3 biggest structural differences between the two versions."</em> Read the explanation — do not just copy the code.
@@ -423,9 +424,9 @@ fun StatItem(label: String, value: String) {
       <Section title="💡 Hint: Claude gave me code with errors">
         That happens — this is a feature, not a bug. Try asking Claude: "This gave me a compile error: [paste error]. What is wrong and how do I fix it?" Do not just ask it to rewrite everything.
       </Section>
-    </Step>
+      </VStep>
 
-    <Step num={5} title="Make one change Claude did not make (~8 min)">
+      <VStep num={5} title="Make one change Claude did not make (~8 min)">
       <p>Take the translated code and make at least one meaningful change that Claude did not include. This proves you understand the code rather than just running it.</p>
       <ul style={{ paddingLeft: 20, margin: "6px 0" }}>
         <li>Change the avatar color and initials to match your actual name</li>
@@ -436,16 +437,17 @@ fun StatItem(label: String, value: String) {
       </ul>
       <Checkbox>Made at least one original change to the translated code</Checkbox>
       <Checkpoint num={5}>Both versions of your profile card run and have at least one change you made yourself — not Claude.</Checkpoint>
-    </Step>
+      </VStep>
 
-    <Step num={6} title="Reflect (~5 min)">
+      <VStep num={6} title="Reflect (~5 min)" last>
       <p>Add a comment block at the top of your file and answer these three questions in your own words.</p>
       <CodeB title="Lab 1 Reflection">{`// Lab 1 Reflection
 // 1. What is one thing that is identical between Compose and SwiftUI in your code?
 // 2. What is one thing that confused you in the translated version?
 // 3. What did Claude get right? Did it get anything wrong?`}</CodeB>
       <Checkpoint num="Final">Both platform versions run, you have made at least one original change, and your reflection comment block is filled in. You will discuss these questions during the end-of-session reflection.</Checkpoint>
-    </Step>
+      </VStep>
+    </div>
 
     <Section title="🚀 Stretch Features">
       <ul style={{ paddingLeft: 20, fontSize: 13, lineHeight: 1.8 }}>
