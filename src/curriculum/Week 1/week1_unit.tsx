@@ -650,21 +650,21 @@ const LabSession2MonsterSlayer = ({ platform }: { platform: string }) => (
         <p style={{ fontSize: 13, color: "var(--color-text-secondary)", margin: "0 0 8px" }}>The starter gives you a button that does nothing. Connect it — add an <IC>onClick</IC> / <IC>action</IC> that tries to subtract from a regular variable and prints to the console. Run it and tap a few times.</p>
         {platform === "Android" ? (
           <CodeB title="Kotlin — inside your Composable" accent={BL}>{`// Add this at the top of your Composable — a plain variable, no state yet
-var hp = 20
+var monsterHp = 20
 
 // Wire up the button:
 Button(onClick = {
-    hp -= 1
-    println("HP is now: \$hp")  // check Logcat
+    monsterHp -= 1
+    println("HP is now: $monsterHp")  // check Logcat
 }) { ... }`}</CodeB>
         ) : (
           <CodeB title="Swift — inside your View struct body" accent={GR}>{`// Add this at the top of your body — a plain variable, no state yet
-var hp = 20
+var monsterHp = 20
 
 // Wire up the button:
 Button(action: {
-    hp -= 1
-    print("HP is now: \\(hp)")  // check the console
+    monsterHp -= 1
+    print("HP is now: \\(monsterHp)")  // check the console
 }) { ... }`}</CodeB>
         )}
         <Checkpoint num={1}>Tap the button several times. Check the console — HP is changing. But the number on screen stays at 20. Sound familiar?</Checkpoint>
@@ -675,7 +675,7 @@ Button(action: {
         <p style={{ fontSize: 13, color: "var(--color-text-secondary)", margin: "0 0 8px" }}>Now fix it. Replace your plain variable with a state variable and watch the screen come alive.</p>
         {platform === "Android" ? (
           <>
-            <p style={{ fontSize: 13, margin: "0 0 6px" }}>Replace your plain <IC>var hp = 20</IC> with:</p>
+            <p style={{ fontSize: 13, margin: "0 0 6px" }}>Replace your plain <IC>var monsterHp = 20</IC> with:</p>
             <CodeB title="Kotlin" accent={BL}>{`var monsterHp by remember { mutableStateOf(20) }
 var attackCount by remember { mutableStateOf(0) }`}</CodeB>
             <p style={{ fontSize: 13, margin: "6px 0" }}>Update the button and the HP display:</p>
@@ -692,7 +692,7 @@ onClick = {
           </>
         ) : (
           <>
-            <p style={{ fontSize: 13, margin: "0 0 6px" }}>Replace your plain <IC>var hp = 20</IC> with:</p>
+            <p style={{ fontSize: 13, margin: "0 0 6px" }}>Replace your plain <IC>var monsterHp = 20</IC> with:</p>
             <CodeB title="Swift" accent={GR}>{`@State private var monsterHp = 20
 @State private var attackCount = 0`}</CodeB>
             <p style={{ fontSize: 13, margin: "6px 0" }}>Update the button and the HP display:</p>
@@ -714,48 +714,44 @@ action: {
         </Section>
       </VStep>
 
-      <VStep num={3} title="Add a phase system — the dragon reacts (~10 min)">
-        <p style={{ fontSize: 13, color: "var(--color-text-secondary)", margin: "0 0 8px" }}>As HP drops, the dragon changes. Add a helper function that returns a different emoji and taunt based on the current HP. This is the same <IC>when</IC> / <IC>switch</IC> pattern from the lecture.</p>
+      <VStep num={3} title="Add the Monster's Taunts — the dragon reacts (~10 min)">
+        <p style={{ fontSize: 13, color: "var(--color-text-secondary)", margin: "0 0 8px" }}>As HP drops, the dragon changes its dialogue. The starter code includes a <IC>getMonsterTaunt(hp)</IC> helper function that currently always returns identical text. Fill it in using a <IC>when</IC> / <IC>switch</IC> pattern to return different taunts based on the current HP.</p>
         {platform === "Android" ? (
           <>
-            <p style={{ fontSize: 13, margin: "0 0 6px" }}>Add this helper function <strong>outside</strong> your Composable:</p>
-            <CodeB title="Kotlin" accent={BL}>{`data class MonsterPhase(val emoji: String, val taunt: String)
-
-fun getMonsterPhase(hp: Int): MonsterPhase = when {
-    hp > 14 -> MonsterPhase("🐉", "I will crush you, tiny human!")
-    hp > 9  -> MonsterPhase("😠", "You dare wound me?!")
-    hp > 4  -> MonsterPhase("😤", "N-not so fast...")
-    hp > 0  -> MonsterPhase("😰", "Please... have mercy...")
-    else    -> MonsterPhase("💀", "You... you beat me...")
+            <p style={{ fontSize: 13, margin: "0 0 6px" }}>Update the <IC>getMonsterTaunt</IC> function <strong>outside</strong> your Composable:</p>
+            <CodeB title="Kotlin" accent={BL}>{`fun getMonsterTaunt(hp: Int): String = when {
+    hp > 14 -> "I will crush you, tiny human!"
+    hp > 9  -> "You dare wound me?!"
+    hp > 4  -> "N-not so fast..."
+    hp > 0  -> "Please... have mercy..."
+    else    -> "You... you beat me..."
 }`}</CodeB>
-            <p style={{ fontSize: 13, margin: "6px 0" }}>Then use it inside your Composable:</p>
-            <CodeB title="Kotlin" accent={BL}>{`val phase = getMonsterPhase(monsterHp)
-
-// Replace your hardcoded emoji and taunt text:
-Text(text = phase.emoji, fontSize = 80.sp)
-Text(text = "\"${"\${phase.taunt}"}\"", fontStyle = FontStyle.Italic, ...)`}</CodeB>
+            <p style={{ fontSize: 13, margin: "6px 0" }}>The starter code provides an <IC>isMonsterHurt</IC> state. Trigger the hurt animation when attacked:</p>
+            <CodeB title="Kotlin" accent={BL}>{`// Inside your Button onClick, add:
+isMonsterHurt = true`}</CodeB>
+            <p style={{ fontSize: 13, margin: "6px 0" }}>Because the <IC>Sprite</IC> component is already connected to <IC>isMonsterHurt</IC> in the starter body, it will automatically flash the hurt animation.</p>
           </>
         ) : (
           <>
-            <p style={{ fontSize: 13, margin: "0 0 6px" }}>Add this computed property <strong>inside</strong> your View struct:</p>
-            <CodeB title="Swift" accent={GR}>{`var monsterPhase: (emoji: String, taunt: String) {
+            <p style={{ fontSize: 13, margin: "0 0 6px" }}>Update the <IC>monsterTaunt</IC> computed property <strong>inside</strong> your View struct:</p>
+            <CodeB title="Swift" accent={GR}>{`var monsterTaunt: String {
     switch monsterHp {
-    case 15...20: return ("🐉", "I will crush you, tiny human!")
-    case 10...14: return ("😠", "You dare wound me?!")
-    case 5...9:   return ("😤", "N-not so fast...")
-    case 1...4:   return ("😰", "Please... have mercy...")
-    default:      return ("💀", "You... you beat me...")
+    case 15...20: return "I will crush you, tiny human!"
+    case 10...14: return "You dare wound me?!"
+    case 5...9:   return "N-not so fast..."
+    case 1...4:   return "Please... have mercy..."
+    default:      return "You... you beat me..."
     }
 }`}</CodeB>
-            <p style={{ fontSize: 13, margin: "6px 0" }}>Then use it in your View body:</p>
-            <CodeB title="Swift" accent={GR}>{`// Replace your hardcoded emoji and taunt:
-Text(monsterPhase.emoji).font(.system(size: 80))
-Text("\"\\(monsterPhase.taunt)\"").italic()...`}</CodeB>
+            <p style={{ fontSize: 13, margin: "6px 0" }}>The starter code provides an <IC>isMonsterHurt</IC> state. Trigger the hurt animation when attacked:</p>
+            <CodeB title="Swift" accent={GR}>{`// Inside your Button action, add:
+isMonsterHurt = true`}</CodeB>
+            <p style={{ fontSize: 13, margin: "6px 0" }}>The <IC>SpriteView</IC> provided in the starter code will now automatically play its hurt animation.</p>
           </>
         )}
-        <Checkpoint num={3}>Attack the dragon past each threshold. Watch its expression and taunts shift in real time — all driven by a single state variable.</Checkpoint>
+        <Checkpoint num={3}>Attack the dragon past each threshold. Watch its expression and taunts shift in real time — all driven by state variables.</Checkpoint>
         <Section title="💡 Hint: Nothing is changing when I tap">
-          Make sure <IC>getMonsterPhase</IC> / <IC>monsterPhase</IC> reads from your state variable, not a hardcoded number. If it reads from state, the framework will automatically re-evaluate it whenever HP changes.
+          Make sure <IC>getMonsterTaunt</IC> / <IC>monsterTaunt</IC> reads from your state variable, not a hardcoded number. If it reads from state, the framework will automatically re-evaluate it whenever HP changes.
         </Section>
       </VStep>
 
@@ -775,7 +771,79 @@ Text("\"\\(monsterPhase.taunt)\"").italic()...`}</CodeB>
         <Checkpoint num={4}>Both HP and attack count update independently on each tap. Two pieces of state, zero interference.</Checkpoint>
       </VStep>
 
-      <VStep num={5} title="Ask Claude to translate — focus on state (~8 min)">
+      <VStep num={5} title="Conditional UI — Defeat the Monster and Reset (~10 min)">
+        <p style={{ fontSize: 13, color: "var(--color-text-secondary)", margin: "0 0 8px" }}>When the monster's HP reaches 0, the attack button should disappear and a "Battle Again" button should replace it. This is conditional UI — rendering entirely different components based on state.</p>
+        <p style={{ fontSize: 13, color: "var(--color-text-secondary)", margin: "0 0 8px" }}>Find the <IC>Button</IC> code in your file. Wrap it in an <IC>if (!isDefeated)</IC> condition, and add the reset button in the <IC>else</IC> block.</p>
+        {platform === "Android" ? (
+          <CodeB title="Kotlin — wrapping the Button" accent={BL}>{`if (monsterHp > 0) {
+    Button(
+        // your existing attack button code...
+    )
+} else {
+    OutlinedButton(onClick = {
+        monsterHp = 20
+        attackCount = 0
+    }) {
+        Text("🐉 Battle Again")
+    }
+}`}</CodeB>
+        ) : (
+          <CodeB title="Swift — wrapping the Button" accent={GR}>{`if monsterHp > 0 {
+    Button(action: {
+        // your existing attack action...
+    }) { 
+        // your existing attack label...
+    }
+} else {
+    Button(action: {
+        monsterHp = 20
+        attackCount = 0
+    }) {
+        Text("🐉 Battle Again")
+            .padding()
+            .overlay(RoundedRectangle(cornerRadius: 8).stroke(Color.purple, lineWidth: 2))
+    }
+}`}</CodeB>
+        )}
+        <Checkpoint num={5}>Defeat the dragon. The Attack button vanishes and the Battle Again button appears seamlessly. Tapping it starts a fresh round.</Checkpoint>
+      </VStep>
+
+      <VStep num={6} title="Dynamic Styling — Reacting to Danger (~10 min)">
+        <p style={{ fontSize: 13, color: "var(--color-text-secondary)", margin: "0 0 8px" }}>State doesn't just control text — it controls colors. Let's make the HP bar turn yellow when the dragon is heavily damaged, and red when it's critical.</p>
+        {platform === "Android" ? (
+          <>
+            <p style={{ fontSize: 13, margin: "0 0 6px" }}>Add a helper to determine the color outside your Composable:</p>
+            <CodeB title="Kotlin" accent={BL}>{`fun getHpColor(hp: Int): Color = when {
+    hp > 10 -> Color(0xFF4CAF50) // Green
+    hp > 5  -> Color(0xFFFFC107) // Yellow
+    else    -> Color(0xFFF44336) // Red
+}`}</CodeB>
+            <p style={{ fontSize: 13, margin: "6px 0" }}>Update the <IC>LinearProgressIndicator</IC> to use your dynamic color:</p>
+            <CodeB title="Kotlin" accent={BL}>{`LinearProgressIndicator(
+    progress = ...,
+    color = getHpColor(monsterHp), // Use state-driven color!
+    trackColor = ...
+)`}</CodeB>
+          </>
+        ) : (
+          <>
+            <p style={{ fontSize: 13, margin: "0 0 6px" }}>Add a computed property to your View struct:</p>
+            <CodeB title="Swift" accent={GR}>{`var hpColor: Color {
+    switch monsterHp {
+    case 11...20: return .green
+    case 6...10:  return .yellow
+    default:      return .red
+    }
+}`}</CodeB>
+            <p style={{ fontSize: 13, margin: "6px 0" }}>Update the HP bar's progress view <IC>tint</IC> to use your dynamic color:</p>
+            <CodeB title="Swift" accent={GR}>{`ProgressView(...)
+    .tint(hpColor) // Use state-driven color!`}</CodeB>
+          </>
+        )}
+        <Checkpoint num={6}>Attack the dragon and watch the HP bar change colors at exactly 10 and 5 HP.</Checkpoint>
+      </VStep>
+
+      <VStep num={7} title="Ask Claude to translate — focus on state (~8 min)">
         <AiOpp>
           Go to claude.ai and use this prompt: <em>"I built a Monster Slayer battle screen in [{platform === "Android" ? "Jetpack Compose" : "SwiftUI"}]. Please translate the full thing to [{platform === "Android" ? "SwiftUI" : "Jetpack Compose"}]. Then explain in plain English: how does state work in Compose vs SwiftUI? What is the equivalent of @State in Compose, and why does Compose need remember but SwiftUI does not?"</em> Read the explanation before running the code.
         </AiOpp>
@@ -786,7 +854,7 @@ Text("\"\\(monsterPhase.taunt)\"").italic()...`}</CodeB>
         </Section>
       </VStep>
 
-      <VStep num={6} title="Make one change Claude did not make (~5 min)">
+      <VStep num={8} title="Make one change Claude did not make (~5 min)">
         <p style={{ fontSize: 13, color: "var(--color-text-secondary)", margin: "0 0 8px" }}>Take the translated version and add something Claude did not include. Some ideas:</p>
         <ul style={{ paddingLeft: 20, margin: "6px 0", fontSize: 13 }}>
           <li>Change the dragon's HP to 30 and add a new phase threshold</li>
@@ -794,10 +862,10 @@ Text("\"\\(monsterPhase.taunt)\"").italic()...`}</CodeB>
           <li>Change the HP text color — red when HP is low, white when full</li>
           <li>Write a custom taunt for one of the phases</li>
         </ul>
-        <Checkpoint num={6}>Both platform versions run. You have made at least one original change not written by Claude.</Checkpoint>
+        <Checkpoint num={8}>Both platform versions run. You have made at least one original change not written by Claude.</Checkpoint>
       </VStep>
 
-      <VStep num={7} title="Reflect (~5 min)" last>
+      <VStep num={9} title="Reflect (~5 min)" last>
         <p style={{ fontSize: 13, color: "var(--color-text-secondary)", margin: "0 0 8px" }}>Add a comment block at the top of your primary file:</p>
         <CodeB title="Lab 2 Reflection">{`// Lab 2 Reflection
 // 1. In your own words: what is state, and why does declarative UI need it?
@@ -809,56 +877,53 @@ Text("\"\\(monsterPhase.taunt)\"").italic()...`}</CodeB>
 
     <Section title="⚡ Stretch: Ultimate Attack — Swipe Combo">
       <p style={{ fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 1.6, margin: "0 0 12px" }}>
-        The starter code already detects swipe gestures and calls an <IC>onSwipe</IC> callback with a direction string — <IC>"up"</IC>, <IC>"down"</IC>, <IC>"left"</IC>, or <IC>"right"</IC>. Your job is to use state to remember the player's recent swipes and check whether they match the secret combo. If they do — instant kill.
+        The starter code generates a random 5-gesture combo sequence each round, called <IC>secretCombo</IC>, and detects your swipe gestures. Your job is to use state to track the player's recent swipes and check whether they match the secret combo. If they do — instant kill.
       </p>
-      <Note>The combo is: <strong>↑ Up, ↑ Up, ↓ Down</strong>. You can change this to anything you like once it works.</Note>
 
-      <VStep num={1} title="Declare a state variable to track the combo sequence">
+      <VStep num={1} title="Declare a state variable to track progress">
         <p style={{ fontSize: 13, color: "var(--color-text-secondary)", margin: "0 0 8px" }}>You need a list that grows as the player swipes. This is a new kind of state — not a number, but a collection.</p>
         {platform === "Android" ? (
-          <CodeB title="Kotlin — add alongside your other state variables" accent={BL}>{`val COMBO = listOf("up", "up", "down")
-var comboProgress by remember { mutableStateOf(listOf<String>()) }`}</CodeB>
+          <CodeB title="Kotlin — add alongside your other state variables" accent={BL}>{`var comboProgress by remember { mutableStateOf(listOf<String>()) }`}</CodeB>
         ) : (
-          <CodeB title="Swift — add alongside your other @State properties" accent={GR}>{`let combo = ["up", "up", "down"]
-@State private var comboProgress: [String] = []`}</CodeB>
+          <CodeB title="Swift — add alongside your other @State properties" accent={GR}>{`@State private var comboProgress: [String] = []`}</CodeB>
         )}
       </VStep>
 
       <VStep num={2} title="Wire up the onSwipe callback">
-        <p style={{ fontSize: 13, color: "var(--color-text-secondary)", margin: "0 0 8px" }}>Find the <IC>onSwipe</IC> hook in the starter code and fill it in. Each swipe appends a direction to the sequence — but only keep the last N swipes so old inputs fall off.</p>
+        <p style={{ fontSize: 13, color: "var(--color-text-secondary)", margin: "0 0 8px" }}>Find the <IC>handleSwipe</IC> hook in the starter code and fill it in. If the player's swipe matches the next gesture in the secret combo, add it to <IC>comboProgress</IC>. Otherwise, reset the progress to start over.</p>
         {platform === "Android" ? (
-          <CodeB title="Kotlin — inside the onSwipe callback" accent={BL}>{`onSwipe = { direction ->
-    val next = comboProgress + direction
-    comboProgress = if (next.size > COMBO.size) {
-        next.takeLast(COMBO.size)  // drop oldest, keep freshest
-    } else {
-        next
-    }
+          <CodeB title="Kotlin — inside the handleSwipe function" accent={BL}>{`val nextIndex = comboProgress.size
+if (direction == secretCombo[nextIndex]) {
+    comboProgress = comboProgress + direction
+} else {
+    comboProgress = listOf()  // reset on wrong swipe
 }`}</CodeB>
         ) : (
-          <CodeB title="Swift — inside the onSwipe closure" accent={GR}>{`onSwipe: { direction in
+          <CodeB title="Swift — inside the handleSwipe closure" accent={GR}>{`let nextIndex = comboProgress.count
+if direction == secretCombo[nextIndex] {
     comboProgress.append(direction)
-    if comboProgress.count > combo.count {
-        comboProgress.removeFirst()  // drop oldest, keep freshest
-    }
+} else {
+    comboProgress = []  // reset on wrong swipe
 }`}</CodeB>
         )}
       </VStep>
 
       <VStep num={3} title="Check for the combo and trigger the ultimate" last>
-        <p style={{ fontSize: 13, color: "var(--color-text-secondary)", margin: "0 0 8px" }}>After updating the sequence, check if it matches. If it does, set HP to 0 and clear the combo so it can be used again.</p>
+        <p style={{ fontSize: 13, color: "var(--color-text-secondary)", margin: "0 0 8px" }}>After pushing a correct swipe to <IC>comboProgress</IC>, check if the progress list has reached the total size of <IC>secretCombo</IC>. If it matches, the monster is instantly defeated.</p>
         {platform === "Android" ? (
-          <CodeB title="Kotlin — add inside onSwipe, after updating comboProgress" accent={BL}>{`if (comboProgress == COMBO) {
-    monsterHp = 0         // instant kill
-    comboProgress = listOf()  // reset combo
+          <CodeB title="Kotlin — add inside handleSwipe, after updating comboProgress" accent={BL}>{`if (comboProgress.size == secretCombo.size) {
+    monsterHp = 0             // instant kill!
+    isMonsterHurt = true      // trigger animation
+    comboProgress = listOf()  // clean up
 }`}</CodeB>
         ) : (
-          <CodeB title="Swift — add inside onSwipe, after updating comboProgress" accent={GR}>{`if comboProgress == combo {
-    monsterHp = 0         // instant kill
-    comboProgress = []    // reset combo
+          <CodeB title="Swift — add inside handleSwipe, after updating comboProgress" accent={GR}>{`if comboProgress.count == secretCombo.count {
+    monsterHp = 0             // instant kill!
+    isMonsterHurt = true      // trigger animation
+    comboProgress = []        // clean up
 }`}</CodeB>
         )}
-        <Checkpoint num="⚡">Swipe ↑ ↑ ↓ on the monster. It drops to zero instantly. Change the combo to something of your own invention.</Checkpoint>
+        <Checkpoint num="⚡">Follow the gesture hints on the screen. Swipe correctly to land the Ultimate Attack and instantly defeat the Dragon!</Checkpoint>
       </VStep>
     </Section>
 
