@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-const TABS = ["Overview", "Lab", "Project", "Resources"];
+const TABS = ["Overview", "Lab", "Project", "Learning with AI", "Resources"];
 const PLATFORMS = ["Android", "iOS"];
 
 /* ── colors ── */
@@ -879,6 +879,63 @@ function Project() {
   );
 }
 
+/* ══════════════════════ LEARNING WITH AI ══════════════════════ */
+function LearningWithAI() {
+  return (
+    <div>
+      <h2 style={{ fontSize: 18, fontWeight: 600, margin: "0 0 4px" }}>Learning with AI</h2>
+      <p style={{ fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 1.7, margin: "0 0 14px" }}>
+        This week you tackle navigation — the biggest conceptual leap so far. The syntax between Android and iOS diverges significantly here, which makes Claude especially useful. This guide shows you how to use it well.
+      </p>
+      <Note>Navigation has a lot of boilerplate. Claude is great at generating it — but only use it after you understand the concept. If you cannot explain what a NavController does, reading the code first beats generating it.</Note>
+
+      <h2 style={{ fontSize: 18, fontWeight: 600, margin: "24px 0 8px" }}>AI roles</h2>
+      {[
+        { icon: "🎓", title: "Virtual TA", desc: "Ask Claude to explain navigation concepts without writing code for you. Example: What is the navigation back stack? Explain it using an analogy, not code." },
+        { icon: "🌐", title: "Platform translator", desc: "This week has the biggest syntax gap between platforms so far. Use Claude to see how the same navigation pattern looks in both. Example: I set up a NavHost in Compose. Translate this to SwiftUI NavigationStack — then explain the three biggest structural differences." },
+        { icon: "🔍", title: "Debugging partner", desc: "Navigation errors can be cryptic. Paste your error and ask Claude to help you understand it. Example: My app crashes when navigating to the question screen. Here is my NavHost and the error. What is wrong?" },
+        { icon: "📐", title: "Data model reviewer", desc: "Use Claude to review your data class or struct design before building UI on top of it. Example: Here is my Question data class. What would you change to make it easier to extend later?" },
+      ].map(r => (
+        <div key={r.title} style={{ display: "flex", gap: 12, padding: "10px 0", borderBottom: "0.5px solid var(--color-border-tertiary)" }}>
+          <span style={{ fontSize: 20, flexShrink: 0 }}>{r.icon}</span>
+          <div>
+            <p style={{ fontSize: 13, fontWeight: 500, margin: "0 0 2px", color: "var(--color-text-primary)" }}>{r.title}</p>
+            <p style={{ fontSize: 12, color: "var(--color-text-secondary)", margin: 0, lineHeight: 1.5 }}>{r.desc}</p>
+          </div>
+        </div>
+      ))}
+
+      <h2 style={{ fontSize: 18, fontWeight: 600, margin: "24px 0 8px" }}>Green flags — effective AI use</h2>
+      {[
+        { title: "Translating navigation setup", why: "NavHost vs NavigationStack look nothing alike even though they do the same thing. Translating between them with Claude is one of the best ways to understand both.", ex: "Translate this Compose NavHost setup to SwiftUI. Then explain: what is NavController's equivalent in SwiftUI, and why does iOS not need one?" },
+        { title: "Generating sample data", why: "You need realistic trivia questions, RPG classes, or weapon lists to test your UI. Claude can generate these instantly so you can focus on navigation logic.", ex: "Give me a Kotlin data class called Question with text, answers (a list of strings), and correctIndex fields. Then give me 5 sample questions as hardcoded values." },
+        { title: "Understanding back stack behavior", why: "Back stack bugs are subtle — pressing back can go to the wrong screen if your navigation is set up incorrectly. Asking Claude to explain popBackStack vs navigate helps you reason about it before you hit the bug.", ex: "In Compose Navigation, when should I use popBackStack vs navigate? Give me a concrete example of where using navigate instead of popBackStack would cause a bug." },
+        { title: "Explaining error messages", why: "Navigation errors in both platforms tend to be verbose and confusing. Claude is good at cutting through the noise and pointing you to the real issue.", ex: "I am getting this crash when navigating: [paste error]. What is causing it and what do I need to change?" },
+      ].map(item => (
+        <div key={item.title} style={{ background: "#E1F5EE", border: "0.5px solid #9FE1CB", borderRadius: 8, padding: "10px 14px", margin: "8px 0" }}>
+          <p style={{ fontSize: 13, fontWeight: 500, color: "#085041", margin: "0 0 4px" }}>✅ {item.title}</p>
+          <p style={{ fontSize: 12, color: "#0F6E56", margin: "0 0 6px", lineHeight: 1.5 }}><strong>Why:</strong> {item.why}</p>
+          <p style={{ fontSize: 12, color: "#0F6E56", margin: 0, lineHeight: 1.5 }}><strong>Example prompt:</strong> {item.ex}</p>
+        </div>
+      ))}
+
+      <h2 style={{ fontSize: 18, fontWeight: 600, margin: "24px 0 8px" }}>Red flags — common pitfalls</h2>
+      {[
+        { title: "Asking Claude to scaffold your entire navigation before you understand it", why: "Navigation has real structure — destinations, routes, back stack. If you paste in Claude's NavHost without understanding it, the first bug you hit will be impossible to debug." },
+        { title: "Using Claude to skip the platform comparison", why: "The whole point of the translation exercise is to see that NavController and NavigationStack are solving the same problem differently. If you just accept the output without comparing, you miss the concept." },
+        { title: "Asking Claude to fix the planted bugs in the assignment", why: "The WeaponScreen bugs are there to help you practice reading and debugging navigation code. Asking Claude to find them gives you nothing — finding them yourself is the skill." },
+        { title: "Copying data class definitions without reading them", why: "Data classes and structs define the shape of your entire app's data. If you do not read every field, you will be confused when the UI does not show what you expect." },
+      ].map(item => (
+        <div key={item.title} style={{ background: "#FCEBEB", border: "0.5px solid #F7C1C1", borderRadius: 8, padding: "10px 14px", margin: "8px 0" }}>
+          <p style={{ fontSize: 13, fontWeight: 500, color: "#791F1F", margin: "0 0 4px" }}>🚩 {item.title}</p>
+          <p style={{ fontSize: 12, color: "#A32D2D", margin: 0, lineHeight: 1.5 }}><strong>Why it hurts you:</strong> {item.why}</p>
+        </div>
+      ))}
+      <Tip>Remember: Claude is one tool in your toolkit. Your instructor, TAs, classmates, official documentation (developer.android.com, developer.apple.com), and Stack Overflow are all still valuable — and often more reliable.</Tip>
+    </div>
+  );
+}
+
 function Resources() {
   return (
     <div style={{ fontSize: 13, lineHeight: 1.8 }}>
@@ -924,10 +981,11 @@ export default function Week2Unit() {
           }}>{t}</button>
         ))}
       </div>
-      {tab === "Overview"  && <Overview />}
-      {tab === "Lab"       && <Lab />}
-      {tab === "Project"   && <Project />}
-      {tab === "Resources" && <Resources />}
+      {tab === "Overview"         && <Overview />}
+      {tab === "Lab"              && <Lab />}
+      {tab === "Project"          && <Project />}
+      {tab === "Learning with AI" && <LearningWithAI />}
+      {tab === "Resources"        && <Resources />}
     </div>
   );
 }
