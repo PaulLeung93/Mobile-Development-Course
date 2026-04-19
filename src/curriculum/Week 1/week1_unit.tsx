@@ -614,22 +614,289 @@ Text(
   </div>
 );
 
+/* ══════════════════════ LAB SESSION 2: MONSTER SLAYER (WIP) ══════════════════════ */
+const LabSession2MonsterSlayer = ({ platform }: { platform: string }) => (
+  <div style={{ '--platform-accent': platform === "Android" ? BL : GR } as React.CSSProperties}>
+
+    <div style={{ background: "#FFF8E6", border: "1px solid #EF9F27", borderRadius: 8, padding: "10px 14px", marginBottom: 16, fontSize: 13, lineHeight: 1.6 }}>
+      <strong>⚠️ Work in Progress</strong> — This lab is still being finalized. Steps, starter code, and assets may change before it goes live.
+    </div>
+
+    <h2 style={{ fontSize: 18, fontWeight: 600, margin: "0 0 4px" }}>Session 2 Lab: Monster Slayer</h2>
+    <p style={{ fontSize: 13, color: "var(--color-text-secondary)", margin: "0 0 12px", lineHeight: 1.7 }}>
+      A dragon boss is waiting. It has 20 HP and it is not happy to see you. Attack it — watch it react as its health drops, and claim victory when it hits zero. Under the hood, every visual change on screen is driven by state — exactly what this session is about. Budget about 50 minutes.
+    </p>
+
+    <div style={{ fontSize: 13, lineHeight: 1.7 }}>
+      <strong>{"🎯"} Goals</strong>
+      <ul style={{ paddingLeft: 20, margin: "6px 0 12px" }}>
+        <li>Use <IC>remember + mutableStateOf</IC> (Compose) or <IC>@State</IC> (SwiftUI) to track monster HP</li>
+        <li>Use <IC>when</IC> / <IC>switch</IC> to change the monster's appearance and taunts based on HP thresholds</li>
+        <li>Manage two independent state variables — HP and attack count</li>
+        <li>Use Claude to translate stateful code and explain differences across platforms</li>
+      </ul>
+    </div>
+
+    <Note>The starter code provides the 2D character assets and layout — your job is to wire up the state that drives what those assets display. You are writing the brain; the starter provides the body.</Note>
+
+    <div style={{ marginTop: 20 }}>
+      <VStep num={0} title="Open the starter project (~3 min)">
+        <p style={{ fontSize: 13, color: "var(--color-text-secondary)", margin: "0 0 8px" }}>Open the <IC>MonsterSlayer</IC> starter project provided by your instructor. Run it — you should see a dark screen with a dragon sprite, a hardcoded HP display, and an attack button. Nothing reacts yet.</p>
+        <Checkbox>Starter project runs on your simulator without errors</Checkbox>
+        <Checkpoint num={0}>Dragon is on screen. It is judging you. The button does nothing.</Checkpoint>
+      </VStep>
+
+      <VStep num={1} title="Wire up the attack button (~5 min)">
+        <p style={{ fontSize: 13, color: "var(--color-text-secondary)", margin: "0 0 8px" }}>The starter gives you a button that does nothing. Connect it — add an <IC>onClick</IC> / <IC>action</IC> that tries to subtract from a regular variable and prints to the console. Run it and tap a few times.</p>
+        {platform === "Android" ? (
+          <CodeB title="Kotlin — inside your Composable" accent={BL}>{`// Add this at the top of your Composable — a plain variable, no state yet
+var hp = 20
+
+// Wire up the button:
+Button(onClick = {
+    hp -= 1
+    println("HP is now: \$hp")  // check Logcat
+}) { ... }`}</CodeB>
+        ) : (
+          <CodeB title="Swift — inside your View struct body" accent={GR}>{`// Add this at the top of your body — a plain variable, no state yet
+var hp = 20
+
+// Wire up the button:
+Button(action: {
+    hp -= 1
+    print("HP is now: \\(hp)")  // check the console
+}) { ... }`}</CodeB>
+        )}
+        <Checkpoint num={1}>Tap the button several times. Check the console — HP is changing. But the number on screen stays at 20. Sound familiar?</Checkpoint>
+        <Tip>This is the same problem from the lecture. The button works — the tap is registered — but without state, the UI has no reason to redraw.</Tip>
+      </VStep>
+
+      <VStep num={2} title="Add state to make it react (~8 min)">
+        <p style={{ fontSize: 13, color: "var(--color-text-secondary)", margin: "0 0 8px" }}>Now fix it. Replace your plain variable with a state variable and watch the screen come alive.</p>
+        {platform === "Android" ? (
+          <>
+            <p style={{ fontSize: 13, margin: "0 0 6px" }}>Replace your plain <IC>var hp = 20</IC> with:</p>
+            <CodeB title="Kotlin" accent={BL}>{`var monsterHp by remember { mutableStateOf(20) }
+var attackCount by remember { mutableStateOf(0) }`}</CodeB>
+            <p style={{ fontSize: 13, margin: "6px 0" }}>Update the button and the HP display:</p>
+            <CodeB title="Kotlin" accent={BL}>{`// Replace the hardcoded HP text:
+Text(text = "HP: \$monsterHp / 20", ...)
+
+// Update onClick — guard against going below zero:
+onClick = {
+    if (monsterHp > 0) {
+        monsterHp -= 1
+        attackCount += 1
+    }
+}`}</CodeB>
+          </>
+        ) : (
+          <>
+            <p style={{ fontSize: 13, margin: "0 0 6px" }}>Replace your plain <IC>var hp = 20</IC> with:</p>
+            <CodeB title="Swift" accent={GR}>{`@State private var monsterHp = 20
+@State private var attackCount = 0`}</CodeB>
+            <p style={{ fontSize: 13, margin: "6px 0" }}>Update the button and the HP display:</p>
+            <CodeB title="Swift" accent={GR}>{`// Replace the hardcoded HP text:
+Text("HP: \\(monsterHp) / 20")
+
+// Update action — guard against going below zero:
+action: {
+    if monsterHp > 0 {
+        monsterHp -= 1
+        attackCount += 1
+    }
+}`}</CodeB>
+          </>
+        )}
+        <Checkpoint num={2}>Attack the dragon. HP counts down on screen. It still looks smug — we fix that next.</Checkpoint>
+        <Section title="💡 Hint: Why check if monsterHp > 0 before subtracting?">
+          Without that guard, HP can go negative — and a dead dragon should not keep taking damage. Only run logic when it makes sense to run it.
+        </Section>
+      </VStep>
+
+      <VStep num={3} title="Add a phase system — the dragon reacts (~10 min)">
+        <p style={{ fontSize: 13, color: "var(--color-text-secondary)", margin: "0 0 8px" }}>As HP drops, the dragon changes. Add a helper function that returns a different emoji and taunt based on the current HP. This is the same <IC>when</IC> / <IC>switch</IC> pattern from the lecture.</p>
+        {platform === "Android" ? (
+          <>
+            <p style={{ fontSize: 13, margin: "0 0 6px" }}>Add this helper function <strong>outside</strong> your Composable:</p>
+            <CodeB title="Kotlin" accent={BL}>{`data class MonsterPhase(val emoji: String, val taunt: String)
+
+fun getMonsterPhase(hp: Int): MonsterPhase = when {
+    hp > 14 -> MonsterPhase("🐉", "I will crush you, tiny human!")
+    hp > 9  -> MonsterPhase("😠", "You dare wound me?!")
+    hp > 4  -> MonsterPhase("😤", "N-not so fast...")
+    hp > 0  -> MonsterPhase("😰", "Please... have mercy...")
+    else    -> MonsterPhase("💀", "You... you beat me...")
+}`}</CodeB>
+            <p style={{ fontSize: 13, margin: "6px 0" }}>Then use it inside your Composable:</p>
+            <CodeB title="Kotlin" accent={BL}>{`val phase = getMonsterPhase(monsterHp)
+
+// Replace your hardcoded emoji and taunt text:
+Text(text = phase.emoji, fontSize = 80.sp)
+Text(text = "\"${"\${phase.taunt}"}\"", fontStyle = FontStyle.Italic, ...)`}</CodeB>
+          </>
+        ) : (
+          <>
+            <p style={{ fontSize: 13, margin: "0 0 6px" }}>Add this computed property <strong>inside</strong> your View struct:</p>
+            <CodeB title="Swift" accent={GR}>{`var monsterPhase: (emoji: String, taunt: String) {
+    switch monsterHp {
+    case 15...20: return ("🐉", "I will crush you, tiny human!")
+    case 10...14: return ("😠", "You dare wound me?!")
+    case 5...9:   return ("😤", "N-not so fast...")
+    case 1...4:   return ("😰", "Please... have mercy...")
+    default:      return ("💀", "You... you beat me...")
+    }
+}`}</CodeB>
+            <p style={{ fontSize: 13, margin: "6px 0" }}>Then use it in your View body:</p>
+            <CodeB title="Swift" accent={GR}>{`// Replace your hardcoded emoji and taunt:
+Text(monsterPhase.emoji).font(.system(size: 80))
+Text("\"\\(monsterPhase.taunt)\"").italic()...`}</CodeB>
+          </>
+        )}
+        <Checkpoint num={3}>Attack the dragon past each threshold. Watch its expression and taunts shift in real time — all driven by a single state variable.</Checkpoint>
+        <Section title="💡 Hint: Nothing is changing when I tap">
+          Make sure <IC>getMonsterPhase</IC> / <IC>monsterPhase</IC> reads from your state variable, not a hardcoded number. If it reads from state, the framework will automatically re-evaluate it whenever HP changes.
+        </Section>
+      </VStep>
+
+      <VStep num={4} title="Display the attack count (~5 min)">
+        <p style={{ fontSize: 13, color: "var(--color-text-secondary)", margin: "0 0 8px" }}>Show how many attacks the player has landed. This is your second independent state variable — changing it has no effect on HP and vice versa.</p>
+        {platform === "Android" ? (
+          <CodeB title="Kotlin — add below your HP text" accent={BL}>{`Text(
+    text = "Attacks landed: \$attackCount",
+    fontSize = 13.sp,
+    color = Color.Gray
+)`}</CodeB>
+        ) : (
+          <CodeB title="Swift — add below your HP text" accent={GR}>{`Text("Attacks landed: \\(attackCount)")
+    .font(.footnote)
+    .foregroundColor(.gray)`}</CodeB>
+        )}
+        <Checkpoint num={4}>Both HP and attack count update independently on each tap. Two pieces of state, zero interference.</Checkpoint>
+      </VStep>
+
+      <VStep num={5} title="Ask Claude to translate — focus on state (~8 min)">
+        <AiOpp>
+          Go to claude.ai and use this prompt: <em>"I built a Monster Slayer battle screen in [{platform === "Android" ? "Jetpack Compose" : "SwiftUI"}]. Please translate the full thing to [{platform === "Android" ? "SwiftUI" : "Jetpack Compose"}]. Then explain in plain English: how does state work in Compose vs SwiftUI? What is the equivalent of @State in Compose, and why does Compose need remember but SwiftUI does not?"</em> Read the explanation before running the code.
+        </AiOpp>
+        <Checkbox>Received and read the translation and state explanation</Checkbox>
+        <Checkbox>Ran the translated version — HP counts down and phases shift correctly</Checkbox>
+        <Section title="💡 Hint: Claude's translation has errors">
+          Paste the error back: <em>"This line gives me this error: [paste error]. What is wrong, without rewriting the whole file?"</em> Debugging with Claude is more valuable than getting perfect code.
+        </Section>
+      </VStep>
+
+      <VStep num={6} title="Make one change Claude did not make (~5 min)">
+        <p style={{ fontSize: 13, color: "var(--color-text-secondary)", margin: "0 0 8px" }}>Take the translated version and add something Claude did not include. Some ideas:</p>
+        <ul style={{ paddingLeft: 20, margin: "6px 0", fontSize: 13 }}>
+          <li>Change the dragon's HP to 30 and add a new phase threshold</li>
+          <li>Add a "Damage dealt" label that tracks total damage across the session</li>
+          <li>Change the HP text color — red when HP is low, white when full</li>
+          <li>Write a custom taunt for one of the phases</li>
+        </ul>
+        <Checkpoint num={6}>Both platform versions run. You have made at least one original change not written by Claude.</Checkpoint>
+      </VStep>
+
+      <VStep num={7} title="Reflect (~5 min)" last>
+        <p style={{ fontSize: 13, color: "var(--color-text-secondary)", margin: "0 0 8px" }}>Add a comment block at the top of your primary file:</p>
+        <CodeB title="Lab 2 Reflection">{`// Lab 2 Reflection
+// 1. In your own words: what is state, and why does declarative UI need it?
+// 2. What is one thing the monster phase system and a milestone counter have in common?
+// 3. What surprised you most about how the UI reacted to state changes?`}</CodeB>
+        <Checkpoint num="Final">Dragon battered. Both platforms running. Reflection filled in. You are ready for the end-of-session discussion.</Checkpoint>
+      </VStep>
+    </div>
+
+    <Section title="⚡ Stretch: Ultimate Attack — Swipe Combo">
+      <p style={{ fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 1.6, margin: "0 0 12px" }}>
+        The starter code already detects swipe gestures and calls an <IC>onSwipe</IC> callback with a direction string — <IC>"up"</IC>, <IC>"down"</IC>, <IC>"left"</IC>, or <IC>"right"</IC>. Your job is to use state to remember the player's recent swipes and check whether they match the secret combo. If they do — instant kill.
+      </p>
+      <Note>The combo is: <strong>↑ Up, ↑ Up, ↓ Down</strong>. You can change this to anything you like once it works.</Note>
+
+      <VStep num={1} title="Declare a state variable to track the combo sequence">
+        <p style={{ fontSize: 13, color: "var(--color-text-secondary)", margin: "0 0 8px" }}>You need a list that grows as the player swipes. This is a new kind of state — not a number, but a collection.</p>
+        {platform === "Android" ? (
+          <CodeB title="Kotlin — add alongside your other state variables" accent={BL}>{`val COMBO = listOf("up", "up", "down")
+var comboProgress by remember { mutableStateOf(listOf<String>()) }`}</CodeB>
+        ) : (
+          <CodeB title="Swift — add alongside your other @State properties" accent={GR}>{`let combo = ["up", "up", "down"]
+@State private var comboProgress: [String] = []`}</CodeB>
+        )}
+      </VStep>
+
+      <VStep num={2} title="Wire up the onSwipe callback">
+        <p style={{ fontSize: 13, color: "var(--color-text-secondary)", margin: "0 0 8px" }}>Find the <IC>onSwipe</IC> hook in the starter code and fill it in. Each swipe appends a direction to the sequence — but only keep the last N swipes so old inputs fall off.</p>
+        {platform === "Android" ? (
+          <CodeB title="Kotlin — inside the onSwipe callback" accent={BL}>{`onSwipe = { direction ->
+    val next = comboProgress + direction
+    comboProgress = if (next.size > COMBO.size) {
+        next.takeLast(COMBO.size)  // drop oldest, keep freshest
+    } else {
+        next
+    }
+}`}</CodeB>
+        ) : (
+          <CodeB title="Swift — inside the onSwipe closure" accent={GR}>{`onSwipe: { direction in
+    comboProgress.append(direction)
+    if comboProgress.count > combo.count {
+        comboProgress.removeFirst()  // drop oldest, keep freshest
+    }
+}`}</CodeB>
+        )}
+      </VStep>
+
+      <VStep num={3} title="Check for the combo and trigger the ultimate" last>
+        <p style={{ fontSize: 13, color: "var(--color-text-secondary)", margin: "0 0 8px" }}>After updating the sequence, check if it matches. If it does, set HP to 0 and clear the combo so it can be used again.</p>
+        {platform === "Android" ? (
+          <CodeB title="Kotlin — add inside onSwipe, after updating comboProgress" accent={BL}>{`if (comboProgress == COMBO) {
+    monsterHp = 0         // instant kill
+    comboProgress = listOf()  // reset combo
+}`}</CodeB>
+        ) : (
+          <CodeB title="Swift — add inside onSwipe, after updating comboProgress" accent={GR}>{`if comboProgress == combo {
+    monsterHp = 0         // instant kill
+    comboProgress = []    // reset combo
+}`}</CodeB>
+        )}
+        <Checkpoint num="⚡">Swipe ↑ ↑ ↓ on the monster. It drops to zero instantly. Change the combo to something of your own invention.</Checkpoint>
+      </VStep>
+    </Section>
+
+    <Section title="🚀 More Stretch">
+      <ul style={{ paddingLeft: 20, fontSize: 13, lineHeight: 1.8 }}>
+        <li><strong>Critical hit</strong> — 20% chance any tap deals 3 damage instead of 1. Look up <IC>Random.nextInt()</IC> in Kotlin or <IC>Int.random(in:)</IC> in Swift</li>
+        <li><strong>Battles won</strong> — add a counter that increments each time you defeat the dragon and survives when a new one appears. Hint: a third state variable that the New Monster reset does not touch</li>
+        <li><strong>Monster retaliates</strong> — add a player HP bar that decreases at certain monster HP thresholds. Requires a third state variable and more conditional UI</li>
+      </ul>
+    </Section>
+  </div>
+);
+
 /* ══════════════════════ LAB (switcher) ══════════════════════ */
 const LabTab = ({ platform, setPlatform }: { platform: string; setPlatform: (p: string) => void }) => {
   const [session, setSession] = useState(1);
+
+  const tabs = [
+    { id: 1, label: "Session 1 — Profile Card" },
+    { id: 2, label: "Session 2 — Tap Counter" },
+    { id: 3, label: "Session 2 — Monster Slayer ⚗️" },
+  ];
+
   return (
     <div>
       <div style={{ display: "flex", gap: 0, marginBottom: 12, borderRadius: 8, overflow: "hidden", border: "1px solid var(--color-border-tertiary)", width: "fit-content" }}>
-        {[1, 2].map(s => (
-          <button key={s} onClick={() => setSession(s)} style={{
+        {tabs.map(t => (
+          <button key={t.id} onClick={() => setSession(t.id)} style={{
             padding: "8px 20px", fontSize: 13, fontWeight: 500, border: "none", cursor: "pointer",
-            background: session === s ? PL : "var(--color-background-primary)",
-            color: session === s ? PD : "var(--color-text-secondary)"
-          }}>Session {s}{s === 1 ? " — Profile Card" : " — Tap Counter"}</button>
+            background: session === t.id ? (t.id === 3 ? "#FFF8E6" : PL) : "var(--color-background-primary)",
+            color: session === t.id ? (t.id === 3 ? "#92600A" : PD) : "var(--color-text-secondary)"
+          }}>{t.label}</button>
         ))}
       </div>
       <PlatformToggle platform={platform} setPlatform={setPlatform} />
-      {session === 1 ? <LabSession1 platform={platform} /> : <LabSession2 platform={platform} />}
+      {session === 1 && <LabSession1 platform={platform} />}
+      {session === 2 && <LabSession2 platform={platform} />}
+      {session === 3 && <LabSession2MonsterSlayer platform={platform} />}
     </div>
   );
 };
