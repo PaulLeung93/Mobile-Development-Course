@@ -66,13 +66,26 @@ const Step = ({ num, title, children }: { num: number | string; title: string; c
   </div>
 );
 
+const VStep = ({ num, title, children, last = false }: { num: number; title: string; children: React.ReactNode; last?: boolean }) => (
+  <div style={{ display: "flex", gap: 12 }}>
+    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", flexShrink: 0 }}>
+      <div style={{ width: 26, height: 26, borderRadius: "50%", background: "var(--platform-accent, #534AB7)", color: "#fff", fontSize: 12, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center" }}>{num}</div>
+      {!last && <div style={{ width: 2, flex: 1, minHeight: 20, background: "var(--color-border-tertiary)", margin: "3px 0" }} />}
+    </div>
+    <div style={{ paddingBottom: last ? 8 : 24, flex: 1, minWidth: 0 }}>
+      <h4 style={{ fontSize: 13, fontWeight: 600, margin: "3px 0 8px", color: "var(--color-text-primary)" }}>{title}</h4>
+      <div>{children}</div>
+    </div>
+  </div>
+);
+
 const IC = ({ children }: { children: React.ReactNode }) => (
   <code style={{ background: "var(--color-background-secondary)", border: "0.5px solid var(--color-border-tertiary)", borderRadius: 4, padding: "1px 5px", fontSize: 12 }}>{children}</code>
 );
 
 const Checkbox = ({ children }: { children: React.ReactNode }) => (
   <div style={{ display: "flex", alignItems: "flex-start", gap: 8, margin: "6px 0", fontSize: 13, color: "var(--color-text-primary)", lineHeight: 1.5 }}>
-    <div style={{ width: 14, height: 14, border: "1.5px solid var(--color-border-secondary)", borderRadius: 3, flexShrink: 0, marginTop: 2 }} />
+    <div style={{ width: 14, height: 14, border: "2px solid var(--color-text-tertiary)", borderRadius: 3, flexShrink: 0, marginTop: 2 }} />
     <span>{children}</span>
   </div>
 );
@@ -607,6 +620,135 @@ const LabTab = ({ platform, setPlatform }: { platform: string; setPlatform: (p: 
   );
 };
 
+/* ══════════════════════ ADVANCED STRETCH ══════════════════════ */
+const AdvancedStretch = () => {
+  const [platform, setPlatform] = useState("Android");
+  const isAndroid = platform === "Android";
+  return (
+    <Section title="⚡ Advanced Stretch">
+      <div style={{ "--platform-accent": isAndroid ? BL : GR } as React.CSSProperties}>
+        <p style={{ fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 1.6, margin: "0 0 4px" }}>
+          These features go well beyond the core requirements. Build them in order — the QR code lives on the back of the flipped card, so complete the flip animation first.
+        </p>
+        <PlatformToggle platform={platform} setPlatform={setPlatform} />
+
+        <div style={{ borderTop: "0.5px solid var(--color-border-tertiary)", paddingTop: 14, marginTop: 4 }}>
+          <Checkbox><strong>Card flip animation</strong> — on tap, your profile flips like a business card to reveal a back face</Checkbox>
+          <Note>The trick: animate <IC>rotationY</IC> from 0° → 180°. At the 90° midpoint, swap which face is rendered. The back face must be counter-rotated 180° so its text isn't mirrored.</Note>
+          <div style={{ marginTop: 14 }}>
+            <VStep num={1} title="Add flip state and animate the rotation">
+              {isAndroid ? (
+                <CodeB title="Kotlin" accent={BL}>{`var flipped by remember { mutableStateOf(false) }
+val rotation by animateFloatAsState(
+    targetValue = if (flipped) 180f else 0f,
+    animationSpec = tween(durationMillis = 400),
+    label = "cardFlip"
+)`}</CodeB>
+              ) : (
+                <CodeB title="Swift" accent={GR}>{`@State private var flipped = false`}</CodeB>
+              )}
+            </VStep>
+            <VStep num={2} title="Wrap your card in a flippable container">
+              {isAndroid ? (
+                <CodeB title="Kotlin" accent={BL}>{`Box(
+    modifier = Modifier
+        .graphicsLayer {
+            rotationY = rotation
+            cameraDistance = 12f * density  // prevents perspective distortion
+        }
+        .clickable { flipped = !flipped }
+) {
+    // Front and back faces go here (Step 3)
+}`}</CodeB>
+              ) : (
+                <CodeB title="Swift" accent={GR}>{`ZStack {
+    // Front and back faces go here (Step 3)
+}
+.rotation3DEffect(
+    .degrees(flipped ? 180 : 0),
+    axis: (x: 0, y: 1, z: 0)
+)
+.onTapGesture {
+    withAnimation(.easeInOut(duration: 0.4)) {
+        flipped.toggle()
+    }
+}`}</CodeB>
+              )}
+            </VStep>
+            <VStep num={3} title="Show the correct face — and un-mirror the back" last>
+              <p style={{ fontSize: 13, color: "var(--color-text-secondary)", margin: "0 0 8px" }}>Without the counter-rotation, the back face renders as a mirror image.</p>
+              {isAndroid ? (
+                <CodeB title="Kotlin" accent={BL}>{`if (rotation <= 90f) {
+    FrontFace()   // your existing profile content
+} else {
+    // Counter-rotate so back content is not mirrored
+    Box(modifier = Modifier.graphicsLayer { rotationY = 180f }) {
+        BackFace()
+    }
+}`}</CodeB>
+              ) : (
+                <CodeB title="Swift" accent={GR}>{`if !flipped {
+    FrontView()   // your existing profile content
+} else {
+    BackView()
+        .rotation3DEffect(.degrees(180), axis: (x: 0, y: 1, z: 0))
+}`}</CodeB>
+              )}
+            </VStep>
+          </div>
+        </div>
+
+        <div style={{ borderTop: "0.5px solid var(--color-border-tertiary)", paddingTop: 14, marginTop: 4 }}>
+          <Checkbox><strong>LinkedIn QR code on the back</strong> — hardcode your LinkedIn URL and show a scannable QR code on the card's back face</Checkbox>
+          <div style={{ marginTop: 14 }}>
+            <VStep num={1} title={isAndroid ? "Add the QR code library" : "No library needed — CoreImage is built in"}>
+              {isAndroid ? (
+                <>
+                  <CodeB title="build.gradle.kts" accent={BL}>{`implementation("io.github.alexzhirkevich:qrose:1.0.1")`}</CodeB>
+                  <p style={{ fontSize: 13, color: "var(--color-text-secondary)", margin: "4px 0 0" }}>Check <a href="https://github.com/alexzhirkevich/compose-qr-code" target="_blank" rel="noreferrer" style={{ color: BL }}>the repo</a> for the latest version.</p>
+                </>
+              ) : (
+                <Note>QR code generation is built into <IC>CoreImage</IC> — no installation required.</Note>
+              )}
+            </VStep>
+            <VStep num={2} title="Display the QR code in your back face" last>
+              {isAndroid ? (
+                <CodeB title="Kotlin" accent={BL}>{`import io.github.alexzhirkevich.qrose.rememberQrCodePainter
+
+Image(
+    painter = rememberQrCodePainter("https://linkedin.com/in/YOUR-USERNAME"),
+    contentDescription = "LinkedIn QR code",
+    modifier = Modifier.size(200.dp)
+)`}</CodeB>
+              ) : (
+                <CodeB title="Swift" accent={GR}>{`import CoreImage.CIFilterBuiltins
+
+func qrCode(for url: String) -> UIImage {
+    let context = CIContext()
+    let filter = CIFilter.qrCodeGenerator()
+    filter.message = Data(url.utf8)
+    guard let output = filter.outputImage,
+          let cgImage = context.createCGImage(output, from: output.extent)
+    else { return UIImage() }
+    return UIImage(cgImage: cgImage)
+}
+
+// Inside BackView:
+Image(uiImage: qrCode(for: "https://linkedin.com/in/YOUR-USERNAME"))
+    .interpolation(.none)
+    .resizable()
+    .scaledToFit()
+    .frame(width: 200, height: 200)`}</CodeB>
+              )}
+              <Tip>Replace <IC>YOUR-USERNAME</IC> with your actual LinkedIn username — it's the last part of your LinkedIn profile URL.</Tip>
+            </VStep>
+          </div>
+        </div>
+      </div>
+    </Section>
+  );
+};
+
 /* ══════════════════════ PROJECT ══════════════════════ */
 const ProjectTab = () => (
   <div>
@@ -617,23 +759,27 @@ const ProjectTab = () => (
     </p>
 
     <Section title="✅ Required Features" defaultOpen={true}>
-      <Checkbox>Build a screen layout using Column / VStack and basic components</Checkbox>
-      <Checkbox>Display text with different sizes and weights</Checkbox>
-      <Checkbox>Hold a piece of UI state using remember / @State</Checkbox>
-      <Checkbox>Respond to button taps and update the UI reactively</Checkbox>
       <Checkbox>Display your name in large, bold text</Checkbox>
       <Checkbox>Display a short bio or tagline beneath your name</Checkbox>
-      <Checkbox>Include at least one interactive element — a button that visibly changes something on screen when tapped</Checkbox>
-      <Checkbox>Include at least one additional UI element of your choice (image placeholder, second text field, divider, icon, etc.)</Checkbox>
+      <Checkbox>Include a profile photo</Checkbox>
       <Checkbox>The app runs without crashing on a simulator or physical device</Checkbox>
     </Section>
 
     <Section title="🚀 Stretch Features">
-      <Checkbox>Add a profile image placeholder (colored circle with initials)</Checkbox>
-      <Checkbox>Add a second interactive element</Checkbox>
+      <Checkbox>Add an interactive element — a button that visibly changes something on screen when tapped</Checkbox>
       <Checkbox>Style the screen with a custom color scheme</Checkbox>
       <Checkbox>Add a dark mode compatible layout</Checkbox>
+      <Checkbox>
+        Add a shimmer loading effect to your profile card — animates a light sweep across the screen while content "loads".{" "}
+        <a href="https://github.com/valentinilk/compose-shimmer" target="_blank" rel="noreferrer" style={{ color: "var(--platform-accent, var(--color-text-primary))" }}>Compose library</a>
+        {" · "}
+        <a href="https://github.com/markiv/SwiftUI-Shimmer" target="_blank" rel="noreferrer" style={{ color: "var(--platform-accent, var(--color-text-primary))" }}>SwiftUI library</a>
+        {" · "}
+        <a href="https://softwareanders.com/swiftui-skeleton-loading-view-build-a-shimmer-effect-from-scratch/" target="_blank" rel="noreferrer" style={{ color: "var(--platform-accent, var(--color-text-primary))" }}>SwiftUI from-scratch tutorial</a>
+      </Checkbox>
     </Section>
+
+    <AdvancedStretch />
 
     <Section title="📘 Submitting your project">
       <ol style={{ fontSize: 13, lineHeight: 2, paddingLeft: 20, margin: 0 }}>
@@ -648,12 +794,24 @@ const ProjectTab = () => (
     </Section>
 
     <Section title="💡 Hints">
-      <p><strong>I don't know where to start</strong></p>
-      <p style={{ marginLeft: 16 }}>Start with just your name on screen. Once that works, add the bio. Then tackle the interactive element last. Build in small steps and run the app after every change.</p>
-      <p><strong>My button tap doesn't change anything on screen</strong></p>
-      <p style={{ marginLeft: 16 }}>Make sure the value you are changing is stored in state — <IC>remember {"{ mutableStateOf() }"}</IC> in Compose, or <IC>@State</IC> in SwiftUI. A regular variable will not trigger a re-render.</p>
-      <p><strong>How do I show or hide something based on state?</strong></p>
-      <p style={{ marginLeft: 16 }}>In Compose: use an <IC>if</IC> statement inside your Composable. In SwiftUI: use an <IC>if</IC> statement inside your body. When state changes, the element appears or disappears automatically.</p>
+      <ul style={{ fontSize: 13, lineHeight: 1.6, paddingLeft: 20, margin: 0 }}>
+        <li style={{ marginBottom: 10 }}>
+          <strong>I don't know where to start</strong>
+          <p style={{ margin: "4px 0 0", color: "var(--color-text-secondary)" }}>Open the starter code and find the card template. Add a <IC>Text</IC> component for your name first — just get something visible on screen. Once that works, add the bio below it, then tackle the photo last.</p>
+        </li>
+        <li style={{ marginBottom: 10 }}>
+          <strong>My text isn't styled the way I want</strong>
+          <p style={{ margin: "4px 0 0", color: "var(--color-text-secondary)" }}>In Compose, use <IC>fontSize</IC>, <IC>fontWeight</IC>, and <IC>color</IC> parameters directly on <IC>Text()</IC>. In SwiftUI, chain <IC>.font()</IC>, <IC>.fontWeight()</IC>, and <IC>.foregroundColor()</IC> modifiers onto your <IC>Text</IC> view.</p>
+        </li>
+        <li style={{ marginBottom: 10 }}>
+          <strong>How do I display a photo?</strong>
+          <p style={{ margin: "4px 0 0", color: "var(--color-text-secondary)" }}>Add your image file to the project resources, then use <IC>Image(painter = painterResource(...))</IC> in Compose or <IC>Image("your-image")</IC> in SwiftUI. Apply a <IC>.clipShape(Circle())</IC> modifier to give it a rounded profile look.</p>
+        </li>
+        <li style={{ marginBottom: 0 }}>
+          <strong>My image is too large / not the right shape</strong>
+          <p style={{ margin: "4px 0 0", color: "var(--color-text-secondary)" }}>In Compose: use <IC>.size()</IC> and <IC>.clip(CircleShape)</IC> modifiers and set <IC>contentScale = ContentScale.Crop</IC>. In SwiftUI: use <IC>.frame()</IC>, <IC>.clipShape(Circle())</IC>, and <IC>.scaledToFill()</IC>.</p>
+        </li>
+      </ul>
     </Section>
   </div>
 );

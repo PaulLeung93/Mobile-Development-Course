@@ -72,7 +72,7 @@ const IC = ({ children }: { children: React.ReactNode }) => (
 
 const Checkbox = ({ children }: { children: React.ReactNode }) => (
   <div style={{ display: "flex", alignItems: "flex-start", gap: 8, margin: "6px 0", fontSize: 13, color: "var(--color-text-primary)", lineHeight: 1.5 }}>
-    <div style={{ width: 14, height: 14, border: "1.5px solid var(--color-border-secondary)", borderRadius: 3, flexShrink: 0, marginTop: 2 }} />
+    <div style={{ width: 14, height: 14, border: "2px solid var(--color-text-tertiary)", borderRadius: 3, flexShrink: 0, marginTop: 2 }} />
     <span>{children}</span>
   </div>
 );
@@ -824,26 +824,22 @@ function Project() {
       </Section>
 
       <Section title="✅ Required Features" defaultOpen={true}>
-        <UL items={[
-          "HomeScreen navigates to ClassScreen when Begin is tapped",
-          "ClassScreen passes the chosen class to StatScreen",
-          "StatScreen passes both the class and chosen stat to WeaponScreen (TODO)",
-          "WeaponScreen shows weapon options that match the class passed in (bug fix)",
-          "WeaponScreen passes all three selections to CharacterCard in the correct order (bug fix)",
-          "CharacterCard displays the correct class, stat, and weapon from navigation arguments (TODO)",
-          "CharacterCard displays a generated description built from the three choices (TODO)",
-          "The back button works correctly at every screen — pressing back on the weapon screen returns to the stat screen, not home",
-          "The app runs without crashing from start to finish",
-        ]} />
+        <Checkbox>HomeScreen navigates to ClassScreen when Begin is tapped</Checkbox>
+        <Checkbox>ClassScreen passes the chosen class to StatScreen</Checkbox>
+        <Checkbox>StatScreen passes both the class and chosen stat to WeaponScreen (TODO)</Checkbox>
+        <Checkbox>WeaponScreen shows weapon options that match the class passed in (bug fix)</Checkbox>
+        <Checkbox>WeaponScreen passes all three selections to CharacterCard in the correct order (bug fix)</Checkbox>
+        <Checkbox>CharacterCard displays the correct class, stat, and weapon from navigation arguments (TODO)</Checkbox>
+        <Checkbox>CharacterCard displays a generated description built from the three choices (TODO)</Checkbox>
+        <Checkbox>The back button works correctly at every screen — pressing back on the weapon screen returns to the stat screen, not home</Checkbox>
+        <Checkbox>The app runs without crashing from start to finish</Checkbox>
       </Section>
 
       <Section title="🚀 Stretch Features">
-        <UL items={[
-          "Add a fourth selection screen for a character ability (e.g. Fireball, Stealth, Battle Cry) — abilities should also vary by class",
-          'Add a progress indicator (e.g. "Step 2 of 3") to each selection screen',
-          "Style each class option distinctly — different color or icon per class on the selection screen",
-          'Add a "Start Over" button on the CharacterCard that pops back to the home screen and resets all selections',
-        ]} />
+        <Checkbox>Add a fourth selection screen for a character ability (e.g. Fireball, Stealth, Battle Cry) — abilities should also vary by class</Checkbox>
+        <Checkbox>Add a progress indicator (e.g. "Step 2 of 3") to each selection screen</Checkbox>
+        <Checkbox>Style each class option distinctly — different color or icon per class on the selection screen</Checkbox>
+        <Checkbox>Add a "Start Over" button on the CharacterCard that pops back to the home screen and resets all selections</Checkbox>
       </Section>
 
       <Section title="📘 Submitting your project">
