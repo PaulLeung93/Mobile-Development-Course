@@ -1,4 +1,3 @@
-import React from 'react';
 import './CurriculumOverview.css';
 
 export default function CurriculumOverview() {
@@ -34,18 +33,18 @@ export default function CurriculumOverview() {
         <div className="sessions">
           <div className="session">
             <p className="s-label">Session 1</p>
-            <p className="s-topic">Navigation fundamentals</p>
-            <p className="s-lab"><b>Lab:</b> Add a second screen to last week's profile app and navigate to it on button tap.</p>
+            <p className="s-topic">Navigation fundamentals & data classes</p>
+            <p className="s-lab"><b>Lab:</b> Build a trivia app — home screen and question screen connected by a NavHost / NavigationStack.</p>
           </div>
           <div className="session">
             <p className="s-label">Session 2</p>
             <p className="s-topic">Passing data between screens & the back stack</p>
-            <p className="s-lab"><b>Lab:</b> Pass a user's name from a login screen to a welcome screen.</p>
+            <p className="s-lab"><b>Lab:</b> Extend the trivia app — pass question data between screens, track score, and build a results screen.</p>
           </div>
         </div>
         <div className="milestone m-assign">
           <span className="m-label">Assignment 2</span>
-          <p className="m-text">Build a 3-screen mini app of your choice (e.g. onboarding flow, quiz, recipe viewer). Must show forward navigation, data passing, and a back action.</p>
+          <p className="m-text">RPG character creator — starter code provided with TODOs and planted bugs. Fix the weapon screen (class-specific options), wire up data passing through a 5-screen flow, and complete the character card.</p>
         </div>
       </div>
 
