@@ -81,7 +81,7 @@ const IC = ({ children }: { children: React.ReactNode }) => (
 
 const Checkbox = ({ children }: { children: React.ReactNode }) => (
   <div style={{ display: "flex", alignItems: "flex-start", gap: 8, margin: "6px 0", fontSize: 13, color: "var(--color-text-primary)", lineHeight: 1.5 }}>
-    <div style={{ width: 14, height: 14, border: "1.5px solid var(--color-border-secondary)", borderRadius: 3, flexShrink: 0, marginTop: 2 }} />
+    <div style={{ width: 14, height: 14, border: "2px solid var(--color-text-tertiary)", borderRadius: 3, flexShrink: 0, marginTop: 2 }} />
     <span>{children}</span>
   </div>
 );
@@ -846,37 +846,39 @@ function Lab() {
 function Project() {
   return (
     <div>
-      <h1 style={{ fontSize: 20, fontWeight: 500, margin: "0 0 6px", color: "var(--color-text-primary)" }}>Unit 3 Project: Browse App</h1>
+      <h2 style={{ fontSize: 18, fontWeight: 600, margin: "0 0 4px" }}>Unit 3 Project: Browse App</h2>
       <Warn>Submit this assignment by the end of Week 4 Session 1 using the Submit button on this page.</Warn>
-      <p style={{ fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 1.7, margin: "0 0 14px" }}>You are going to build a browse app — a scrollable, searchable list that navigates to a detail screen when a row is tapped. The structure is the same as the album browser you built in lab. The theme and content are entirely yours.</p>
-      <p style={{ fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 1.7, margin: "0 0 14px" }}>You may build in either Android (Jetpack Compose) or iOS (SwiftUI). You do not need to submit both.</p>
+      <p style={{ fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 1.7, margin: "0 0 14px" }}>
+        Build a browse app — a scrollable, searchable list that navigates to a detail screen when a row is tapped. The structure is the same as the album browser you built in lab. The theme and content are entirely yours. You may build in either Android (Jetpack Compose) or iOS (SwiftUI). You do not need to submit both.
+      </p>
 
-      <h2 style={{ fontSize: 18, fontWeight: 600, margin: "24px 0 8px" }}>Step 1 — pick your theme</h2>
-      <p style={{ fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 1.7, margin: "0 0 14px" }}>Choose a category of things you genuinely know about. You need to write at least 8 items, each with at least 4 meaningful fields. The more specific your theme, the more interesting the app.</p>
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8, margin: "10px 0" }}>
-        {[
-          { theme: "Video games", fields: "Title, studio, year, genre, platform, rating" },
-          { theme: "National parks", fields: "Name, state, area (sq mi), established year, best season" },
-          { theme: "Sneakers", fields: "Name, brand, year released, colorway, retail price" },
-          { theme: "Films", fields: "Title, director, year, genre, runtime, Rotten Tomatoes score" },
-          { theme: "Coffee shops", fields: "Name, city, specialty, rating, must-order item" },
-          { theme: "Programming languages", fields: "Name, created year, creator, primary use case, typing" },
-        ].map(ex => (
-          <div key={ex.theme} style={{ background: "var(--color-background-secondary)", border: "0.5px solid var(--color-border-tertiary)", borderRadius: 8, padding: "10px 12px" }}>
-            <p style={{ fontSize: 12, fontWeight: 600, color: "var(--color-text-primary)", margin: "0 0 3px" }}>{ex.theme}</p>
-            <p style={{ fontSize: 11, color: "var(--color-text-secondary)", margin: 0, lineHeight: 1.4 }}>{ex.fields}</p>
-          </div>
-        ))}
-      </div>
-      <Tip>You are not limited to these examples. Any theme works as long as you can write 8 genuine items with real data. Do not make things up — use actual values.</Tip>
+      <Section title="📋 Step 1 — Pick your theme">
+        <p style={{ fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 1.7, margin: "0 0 10px" }}>Choose a category of things you genuinely know about. You need at least 8 items, each with at least 4 meaningful fields. The more specific your theme, the more interesting the app.</p>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8, margin: "10px 0" }}>
+          {[
+            { theme: "Video games", fields: "Title, studio, year, genre, platform, rating" },
+            { theme: "National parks", fields: "Name, state, area (sq mi), established year, best season" },
+            { theme: "Sneakers", fields: "Name, brand, year released, colorway, retail price" },
+            { theme: "Films", fields: "Title, director, year, genre, runtime, Rotten Tomatoes score" },
+            { theme: "Coffee shops", fields: "Name, city, specialty, rating, must-order item" },
+            { theme: "Programming languages", fields: "Name, created year, creator, primary use case, typing" },
+          ].map(ex => (
+            <div key={ex.theme} style={{ background: "var(--color-background-secondary)", border: "0.5px solid var(--color-border-tertiary)", borderRadius: 8, padding: "10px 12px" }}>
+              <p style={{ fontSize: 12, fontWeight: 600, color: "var(--color-text-primary)", margin: "0 0 3px" }}>{ex.theme}</p>
+              <p style={{ fontSize: 11, color: "var(--color-text-secondary)", margin: 0, lineHeight: 1.4 }}>{ex.fields}</p>
+            </div>
+          ))}
+        </div>
+        <Tip>You are not limited to these examples. Any theme works as long as you can write 8 genuine items with real data. Do not make things up — use actual values.</Tip>
+      </Section>
 
-      <h2 style={{ fontSize: 18, fontWeight: 600, margin: "24px 0 8px" }}>Step 2 — define your data model</h2>
-      <p style={{ fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 1.7, margin: "0 0 14px" }}>Before writing any UI, define your data model. It must have:</p>
-      <Checkbox>An <IC>id</IC> field (Int) — required for LazyColumn keys and SwiftUI Identifiable</Checkbox>
-      <Checkbox>At least 4 additional fields with meaningful types (String, Int, Double, Boolean)</Checkbox>
-      <Checkbox>At least 8 hardcoded items in your sample data list</Checkbox>
-      <p style={{ fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 1.7, margin: "0 0 14px" }}>Example for a video games theme:</p>
-      <CodeB>{`data class Game(
+      <Section title="🗂️ Step 2 — Define your data model">
+        <p style={{ fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 1.7, margin: "0 0 10px" }}>Before writing any UI, define your data model. It must have:</p>
+        <Checkbox>An <IC>id</IC> field (Int) — required for LazyColumn keys and SwiftUI <IC>Identifiable</IC></Checkbox>
+        <Checkbox>At least 4 additional fields with meaningful types (String, Int, Double, Boolean)</Checkbox>
+        <Checkbox>At least 8 hardcoded items in your sample data list</Checkbox>
+        <p style={{ fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 1.7, margin: "10px 0 6px" }}>Example for a video games theme:</p>
+        <CodeB>{`data class Game(
     val id: Int,
     val title: String,
     val studio: String,
@@ -884,59 +886,78 @@ function Project() {
     val genre: String,
     val rating: Double
 )`}</CodeB>
+      </Section>
 
-      <h2 style={{ fontSize: 18, fontWeight: 600, margin: "24px 0 8px" }}>Required features</h2>
-      <p style={{ fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 1.7, margin: "0 0 14px" }}>Each feature below has a clear acceptance criterion — what a reviewer will check when grading.</p>
+      <Section title="✅ Required Features" defaultOpen={true}>
+        <p style={{ fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 1.7, margin: "0 0 10px" }}>Each feature below has a clear acceptance criterion — what a reviewer will check when grading.</p>
 
-      <h4 style={{ fontSize: 15, fontWeight: 600, color: "var(--color-text-primary)", margin: "0 0 8px" }}>1. List screen</h4>
-      <Checkbox>Uses LazyColumn (Compose) or List (SwiftUI) — not a Column with forEach</Checkbox>
-      <Checkbox>Shows all 8+ items on launch, each in a custom row layout</Checkbox>
-      <Checkbox>Each row displays at least 3 fields — not just the title</Checkbox>
-      <Checkbox>Rows have a visible background card style (white background, rounded corners) — not plain text on a gray screen</Checkbox>
+        <p style={{ fontSize: 12, fontWeight: 600, color: "var(--color-text-tertiary)", textTransform: "uppercase", letterSpacing: ".04em", margin: "12px 0 6px" }}>1. List screen</p>
+        <Checkbox>Uses <IC>LazyColumn</IC> (Compose) or <IC>List</IC> (SwiftUI) — not a Column with forEach</Checkbox>
+        <Checkbox>Shows all 8+ items on launch, each in a custom row layout</Checkbox>
+        <Checkbox>Each row displays at least 3 fields — not just the title</Checkbox>
+        <Checkbox>Rows have a visible card style (background + rounded corners) — not plain text on a gray screen</Checkbox>
 
-      <h4 style={{ fontSize: 15, fontWeight: 600, color: "var(--color-text-primary)", margin: "0 0 8px" }}>2. Search</h4>
-      <Checkbox>A search bar is visible at the top of the list screen</Checkbox>
-      <Checkbox>Typing filters the list in real time — the list updates on every keystroke without tapping a button</Checkbox>
-      <Checkbox>Search matches at least 2 fields (e.g. title AND artist, not just title)</Checkbox>
-      <Checkbox>Clearing the search restores the full list</Checkbox>
+        <p style={{ fontSize: 12, fontWeight: 600, color: "var(--color-text-tertiary)", textTransform: "uppercase", letterSpacing: ".04em", margin: "12px 0 6px" }}>2. Search</p>
+        <Checkbox>A search bar is visible at the top of the list screen</Checkbox>
+        <Checkbox>Typing filters the list in real time — updates on every keystroke without tapping a button</Checkbox>
+        <Checkbox>Search matches at least 2 fields (e.g. title AND artist, not just title)</Checkbox>
+        <Checkbox>Clearing the search restores the full list</Checkbox>
 
-      <h4 style={{ fontSize: 15, fontWeight: 600, color: "var(--color-text-primary)", margin: "0 0 8px" }}>3. Empty state</h4>
-      <Checkbox>When the search produces no results, a message is shown — not a blank screen</Checkbox>
-      <Checkbox>The empty state includes at least a title ("No results found") and a subtitle ("Try a different search term")</Checkbox>
+        <p style={{ fontSize: 12, fontWeight: 600, color: "var(--color-text-tertiary)", textTransform: "uppercase", letterSpacing: ".04em", margin: "12px 0 6px" }}>3. Empty state</p>
+        <Checkbox>When search produces no results, a message is shown — not a blank screen</Checkbox>
+        <Checkbox>The empty state includes at least a title ("No results found") and a subtitle ("Try a different search term")</Checkbox>
 
-      <h4 style={{ fontSize: 15, fontWeight: 600, color: "var(--color-text-primary)", margin: "0 0 8px" }}>4. Detail screen</h4>
-      <Checkbox>Tapping any row navigates to a detail screen for that item</Checkbox>
-      <Checkbox>The detail screen shows ALL fields from the data model — not just the ones visible in the row</Checkbox>
-      <Checkbox>The detail screen has a visible back button or gesture that returns to the list</Checkbox>
-      <Checkbox>The search query is preserved when returning to the list — it does not reset</Checkbox>
+        <p style={{ fontSize: 12, fontWeight: 600, color: "var(--color-text-tertiary)", textTransform: "uppercase", letterSpacing: ".04em", margin: "12px 0 6px" }}>4. Detail screen</p>
+        <Checkbox>Tapping any row navigates to a detail screen for that item</Checkbox>
+        <Checkbox>The detail screen shows ALL fields from the data model — not just the ones visible in the row</Checkbox>
+        <Checkbox>The detail screen has a visible back button or gesture that returns to the list</Checkbox>
+        <Checkbox>The search query is preserved when returning to the list — it does not reset</Checkbox>
 
-      <h4 style={{ fontSize: 15, fontWeight: 600, color: "var(--color-text-primary)", margin: "0 0 8px" }}>5. Code quality</h4>
-      <Checkbox>The row UI is extracted as a separate Composable or View — not inlined inside items()</Checkbox>
-      <Checkbox>The app does not crash at any point during normal use</Checkbox>
+        <p style={{ fontSize: 12, fontWeight: 600, color: "var(--color-text-tertiary)", textTransform: "uppercase", letterSpacing: ".04em", margin: "12px 0 6px" }}>5. Code quality</p>
+        <Checkbox>The row UI is extracted as a separate Composable or View — not inlined inside <IC>items()</IC></Checkbox>
+        <Checkbox>The app does not crash at any point during normal use</Checkbox>
+      </Section>
 
-      <h2 style={{ fontSize: 18, fontWeight: 600, margin: "24px 0 8px" }}>Stretch features</h2>
-      <Checkbox>Add a second filter dimension — a row of tappable chips (e.g. genre buttons) that filter in addition to the search bar</Checkbox>
-      <Checkbox>Add a sort toggle — e.g. alphabetical vs by rating — that reorders the list without reloading</Checkbox>
-      <Checkbox>Add a favorites feature — a heart or bookmark icon on the detail screen saves the item to a separate favorites list accessible from the main screen</Checkbox>
-      <Checkbox>Add a result count label above the list — "Showing 3 of 8 results" — that updates with the filter</Checkbox>
+      <Section title="🚀 Stretch Features">
+        <Checkbox>Add a second filter dimension — a row of tappable chips (e.g. genre buttons) that filter in addition to the search bar</Checkbox>
+        <Checkbox>Add a sort toggle — e.g. alphabetical vs by rating — that reorders the list without reloading</Checkbox>
+        <Checkbox>Add a favorites feature — a heart or bookmark icon on the detail screen saves the item to a separate favorites list accessible from the main screen</Checkbox>
+        <Checkbox>Add a result count label above the list — "Showing 3 of 8 results" — that updates with the filter</Checkbox>
+      </Section>
 
-      <h2 style={{ fontSize: 18, fontWeight: 600, margin: "24px 0 8px" }}>Submitting your project</h2>
-      <ol style={{ fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 2.2, paddingLeft: 20 }}>
-        <li>Create a GitHub repository for your project</li>
-        <li>Push your code to the repository</li>
-        <li>Create a README using the Unit 3 README template</li>
-        <li>Check off all features you implemented by changing <IC>-[ ]</IC> to <IC>-[x]</IC></li>
-        <li>Record a GIF that shows: the list on launch, typing a search query, the empty state, tapping a row to detail, and pressing back to return to the list</li>
-        <li>Add the GIF to the README</li>
-        <li>Make the repo private and add <IC>codepathreview</IC> as a collaborator</li>
-      </ol>
-      <Note>The GIF is required. A reviewer cannot grade an app they cannot see running. If your GIF is missing, your submission will be returned ungraded.</Note>
+      <Section title="📘 Submitting your project">
+        <ol style={{ fontSize: 13, lineHeight: 2, paddingLeft: 20, margin: 0 }}>
+          <li>Create a GitHub repository for your project</li>
+          <li>Push your code to the repository</li>
+          <li>Create a README using the Unit 3 README template</li>
+          <li>In the README, check off all features you implemented by changing <IC>-[ ]</IC> to <IC>-[x]</IC></li>
+          <li>Record a GIF that shows: the list on launch, typing a search query, the empty state, tapping a row to detail, and pressing back</li>
+          <li>Add the GIF to the README</li>
+          <li>Make the repo private and add <IC>codepathreview</IC> as a collaborator</li>
+        </ol>
+        <Note>The GIF is required. A reviewer cannot grade an app they cannot see running. If your GIF is missing, your submission will be returned ungraded.</Note>
+      </Section>
 
-      <h2 style={{ fontSize: 18, fontWeight: 600, margin: "24px 0 8px" }}>Hints</h2>
-      <Tip><b>My filter is not updating in real time</b> Make sure query is a state variable — remember + mutableStateOf in Compose, or @State in SwiftUI. A regular var does not trigger re-renders, so the list will appear frozen even though the value is changing.</Tip>
-      <Tip><b>My detail screen shows the wrong item</b> In Compose, make sure you are finding the item by ID from your sample list after navigating — not trying to pass the whole object through the route string. Route strings only carry primitive values like Int or String.</Tip>
-      <Tip><b>The search query resets when I navigate back from detail</b> This happens when you navigate() to a new list screen instead of using the system back button or popBackStack(). The system back button pops the detail screen and returns to the existing list screen — with its state intact. Navigate() would create a fresh list screen with an empty query.</Tip>
-      <Tip><b>My row layout looks cramped or misaligned</b> Check that your content Column inside the Row uses Modifier.weight(1f) in Compose, or Spacer() in SwiftUI, to fill remaining space. Without it, the trailing element (rating, badge, etc.) will overlap the content column.</Tip>
+      <Section title="💡 Hints">
+        <ul style={{ fontSize: 13, lineHeight: 1.6, paddingLeft: 20, margin: 0 }}>
+          <li style={{ marginBottom: 10 }}>
+            <strong>My filter is not updating in real time</strong>
+            <p style={{ margin: "4px 0 0", color: "var(--color-text-secondary)" }}>Make sure <IC>query</IC> is a state variable — <IC>remember {"{ mutableStateOf(\"\") }"}</IC> in Compose, or <IC>@State</IC> in SwiftUI. A regular <IC>var</IC> does not trigger re-renders, so the list will appear frozen even though the value is changing.</p>
+          </li>
+          <li style={{ marginBottom: 10 }}>
+            <strong>My detail screen shows the wrong item</strong>
+            <p style={{ margin: "4px 0 0", color: "var(--color-text-secondary)" }}>In Compose, find the item by ID from your sample list after navigating — do not try to pass the whole object through the route string. Route strings only carry primitive values like <IC>Int</IC> or <IC>String</IC>.</p>
+          </li>
+          <li style={{ marginBottom: 10 }}>
+            <strong>The search query resets when I navigate back from detail</strong>
+            <p style={{ margin: "4px 0 0", color: "var(--color-text-secondary)" }}>This happens when you call <IC>navigate()</IC> to a new list screen instead of using <IC>popBackStack()</IC>. Popping returns to the existing list screen with its state intact — navigating creates a fresh one with an empty query.</p>
+          </li>
+          <li style={{ marginBottom: 0 }}>
+            <strong>My row layout looks cramped or misaligned</strong>
+            <p style={{ margin: "4px 0 0", color: "var(--color-text-secondary)" }}>In Compose, use <IC>Modifier.weight(1f)</IC> on the content column inside the row. In SwiftUI, use <IC>Spacer()</IC>. Without it, the trailing element (rating, badge, etc.) will overlap the content.</p>
+          </li>
+        </ul>
+      </Section>
     </div>
   );
 }

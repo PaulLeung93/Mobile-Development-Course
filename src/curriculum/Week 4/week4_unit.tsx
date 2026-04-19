@@ -73,7 +73,7 @@ const IC = ({ children }: { children: React.ReactNode }) => (
 
 const Checkbox = ({ children }: { children: React.ReactNode }) => (
   <div style={{ display: "flex", alignItems: "flex-start", gap: 8, margin: "6px 0", fontSize: 13, color: "var(--color-text-primary)", lineHeight: 1.5 }}>
-    <div style={{ width: 14, height: 14, border: "1.5px solid var(--color-border-secondary)", borderRadius: 3, flexShrink: 0, marginTop: 2 }} />
+    <div style={{ width: 14, height: 14, border: "2px solid var(--color-text-tertiary)", borderRadius: 3, flexShrink: 0, marginTop: 2 }} />
     <span>{children}</span>
   </div>
 );
@@ -879,80 +879,100 @@ function Lab() {
 function Project() {
   return (
     <div>
-      <h1 style={{ fontSize: 20, fontWeight: 500, margin: "0 0 6px", color: "var(--color-text-primary)" }}>Unit 4 Project: Networked Browse App</h1>
+      <h2 style={{ fontSize: 18, fontWeight: 600, margin: "0 0 4px" }}>Unit 4 Project: Networked Browse App</h2>
       <Warn>Submit this assignment by the end of Week 5 Session 1.</Warn>
-      <p style={{ fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 1.7, margin: "0 0 14px" }}>You are going to replace the Last.fm API with a different public API of your choice. The app structure — list, search, detail screen, loading states, error handling, and images — stays the same. Only the data source changes.</p>
-      <p style={{ fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 1.7, margin: "0 0 14px" }}>You may build in either Android (Jetpack Compose) or iOS (SwiftUI). You do not need to submit both.</p>
+      <p style={{ fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 1.7, margin: "0 0 14px" }}>
+        Replace the Last.fm API with a different public API of your choice. The app structure — list, search, detail screen, loading states, error handling, and images — stays the same. Only the data source changes. You may build in either Android (Jetpack Compose) or iOS (SwiftUI). You do not need to submit both.
+      </p>
 
-      <h4 style={{ fontSize: 15, fontWeight: 600, color: "var(--color-text-primary)", margin: "0 0 8px" }}>Step 1: pick your API</h4>
-      <p style={{ fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 1.7, margin: "0 0 14px" }}>Choose any free, public REST API that returns a list of items with at least 4 fields and an image URL. A few starting points:</p>
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8, margin: "10px 0" }}>
-        {[
-          { name: "PokeAPI", url: "pokeapi.co", desc: "Pokémon — no key needed, great for lists" },
-          { name: "Open Library", url: "openlibrary.org/dev/docs/api", desc: "Books — no key, returns covers and metadata" },
-          { name: "The Dog API", url: "thedogapi.com", desc: "Dog breeds — free key, great images" },
-          { name: "Unsplash", url: "unsplash.com/developers", desc: "Photos — free key, high quality images" },
-          { name: "NASA APOD", url: "api.nasa.gov", desc: "Astronomy photos — free key, daily images" },
-          { name: "Open Movie DB", url: "omdbapi.com", desc: "Movies — free key, posters and details" },
-        ].map(api => (
-          <div key={api.name} style={{ background: "var(--color-background-secondary)", border: "0.5px solid var(--color-border-tertiary)", borderRadius: 8, padding: "10px 12px" }}>
-            <p style={{ fontSize: 12, fontWeight: 600, color: "var(--color-text-primary)", margin: "0 0 2px" }}>{api.name}</p>
-            <p style={{ fontSize: 11, color: "var(--color-text-secondary)", margin: "0 0 3px", lineHeight: 1.4 }}>{api.desc}</p>
-            <code style={{ fontSize: 10, color: "var(--color-text-tertiary)", fontFamily: "var(--font-mono)" }}>{api.url}</code>
-          </div>
-        ))}
-      </div>
-      <Tip>Read your chosen API's documentation and paste a sample response URL into your browser before writing any code. Make sure you can see real JSON data before starting.</Tip>
+      <Section title="📋 Step 1 — Pick your API">
+        <p style={{ fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 1.7, margin: "0 0 10px" }}>Choose any free, public REST API that returns a list of items with at least 4 fields and an image URL. A few starting points:</p>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8, margin: "10px 0" }}>
+          {[
+            { name: "PokeAPI", url: "pokeapi.co", desc: "Pokémon — no key needed, great for lists" },
+            { name: "Open Library", url: "openlibrary.org/dev/docs/api", desc: "Books — no key, returns covers and metadata" },
+            { name: "The Dog API", url: "thedogapi.com", desc: "Dog breeds — free key, great images" },
+            { name: "Unsplash", url: "unsplash.com/developers", desc: "Photos — free key, high quality images" },
+            { name: "NASA APOD", url: "api.nasa.gov", desc: "Astronomy photos — free key, daily images" },
+            { name: "Open Movie DB", url: "omdbapi.com", desc: "Movies — free key, posters and details" },
+          ].map(api => (
+            <div key={api.name} style={{ background: "var(--color-background-secondary)", border: "0.5px solid var(--color-border-tertiary)", borderRadius: 8, padding: "10px 12px" }}>
+              <p style={{ fontSize: 12, fontWeight: 600, color: "var(--color-text-primary)", margin: "0 0 2px" }}>{api.name}</p>
+              <p style={{ fontSize: 11, color: "var(--color-text-secondary)", margin: "0 0 3px", lineHeight: 1.4 }}>{api.desc}</p>
+              <code style={{ fontSize: 10, color: "var(--color-text-tertiary)", fontFamily: "var(--font-mono)" }}>{api.url}</code>
+            </div>
+          ))}
+        </div>
+        <Tip>Paste a sample response URL into your browser before writing any code. Make sure you can see real JSON data before starting.</Tip>
+      </Section>
 
-      <h2 style={{ fontSize: 18, fontWeight: 600, margin: "24px 0 8px" }}>Required features</h2>
-      <h4 style={{ fontSize: 15, fontWeight: 600, color: "var(--color-text-primary)", margin: "0 0 8px" }}>1. Networking</h4>
-      <Checkbox>App fetches data from a real public API — no hardcoded lists</Checkbox>
-      <Checkbox>Network call uses Retrofit (Android) or URLSession (iOS)</Checkbox>
-      <Checkbox>API key is stored safely — not hardcoded in source files committed to GitHub</Checkbox>
+      <Section title="✅ Required Features" defaultOpen={true}>
+        <p style={{ fontSize: 12, fontWeight: 600, color: "var(--color-text-tertiary)", textTransform: "uppercase", letterSpacing: ".04em", margin: "0 0 6px" }}>1. Networking</p>
+        <Checkbox>App fetches data from a real public API — no hardcoded lists</Checkbox>
+        <Checkbox>Network call uses Retrofit (Android) or URLSession (iOS)</Checkbox>
+        <Checkbox>API key is stored safely — not hardcoded in source files committed to GitHub</Checkbox>
 
-      <h4 style={{ fontSize: 15, fontWeight: 600, color: "var(--color-text-primary)", margin: "0 0 8px" }}>2. UI states</h4>
-      <Checkbox>A loading indicator is shown while the API call is in progress</Checkbox>
-      <Checkbox>The list appears when data loads successfully</Checkbox>
-      <Checkbox>An error message and retry button are shown when the call fails</Checkbox>
-      <Checkbox>Turning off WiFi and reopening the app triggers the error state</Checkbox>
+        <p style={{ fontSize: 12, fontWeight: 600, color: "var(--color-text-tertiary)", textTransform: "uppercase", letterSpacing: ".04em", margin: "12px 0 6px" }}>2. UI states</p>
+        <Checkbox>A loading indicator is shown while the API call is in progress</Checkbox>
+        <Checkbox>The list appears when data loads successfully</Checkbox>
+        <Checkbox>An error message and retry button are shown when the call fails</Checkbox>
+        <Checkbox>Turning off WiFi and reopening the app triggers the error state</Checkbox>
 
-      <h4 style={{ fontSize: 15, fontWeight: 600, color: "var(--color-text-primary)", margin: "0 0 8px" }}>3. List and search</h4>
-      <Checkbox>A scrollable list of at least 15 items fetched from the API</Checkbox>
-      <Checkbox>Custom row layout showing at least 3 fields per row</Checkbox>
-      <Checkbox>Real-time search filtering the fetched results</Checkbox>
-      <Checkbox>Empty state when search returns no results</Checkbox>
+        <p style={{ fontSize: 12, fontWeight: 600, color: "var(--color-text-tertiary)", textTransform: "uppercase", letterSpacing: ".04em", margin: "12px 0 6px" }}>3. List and search</p>
+        <Checkbox>A scrollable list of at least 15 items fetched from the API</Checkbox>
+        <Checkbox>Custom row layout showing at least 3 fields per row</Checkbox>
+        <Checkbox>Real-time search filtering the fetched results</Checkbox>
+        <Checkbox>Empty state when search returns no results</Checkbox>
 
-      <h4 style={{ fontSize: 15, fontWeight: 600, color: "var(--color-text-primary)", margin: "0 0 8px" }}>4. Images</h4>
-      <Checkbox>Row images loaded from URLs using Coil (Android) or AsyncImage (SwiftUI)</Checkbox>
-      <Checkbox>A fallback is shown when an image URL is empty or fails to load</Checkbox>
+        <p style={{ fontSize: 12, fontWeight: 600, color: "var(--color-text-tertiary)", textTransform: "uppercase", letterSpacing: ".04em", margin: "12px 0 6px" }}>4. Images</p>
+        <Checkbox>Row images loaded from URLs using Coil (Android) or <IC>AsyncImage</IC> (SwiftUI)</Checkbox>
+        <Checkbox>A fallback is shown when an image URL is empty or fails to load</Checkbox>
 
-      <h4 style={{ fontSize: 15, fontWeight: 600, color: "var(--color-text-primary)", margin: "0 0 8px" }}>5. Detail screen</h4>
-      <Checkbox>Tapping a row navigates to a detail screen</Checkbox>
-      <Checkbox>Detail screen shows all available fields from the API response</Checkbox>
+        <p style={{ fontSize: 12, fontWeight: 600, color: "var(--color-text-tertiary)", textTransform: "uppercase", letterSpacing: ".04em", margin: "12px 0 6px" }}>5. Detail screen</p>
+        <Checkbox>Tapping a row navigates to a detail screen</Checkbox>
+        <Checkbox>Detail screen shows all available fields from the API response</Checkbox>
+      </Section>
 
-      <h2 style={{ fontSize: 18, fontWeight: 600, margin: "24px 0 8px" }}>Stretch features</h2>
-      <Checkbox>Add pull-to-refresh to reload the list from the API</Checkbox>
-      <Checkbox>Add pagination — load more items when the user scrolls to the bottom</Checkbox>
-      <Checkbox>Show a shimmer skeleton loading state instead of a spinner</Checkbox>
-      <Checkbox>Cache the last successful response and show it immediately on relaunch while refetching</Checkbox>
+      <Section title="🚀 Stretch Features">
+        <Checkbox>Add pull-to-refresh to reload the list from the API</Checkbox>
+        <Checkbox>Add pagination — load more items when the user scrolls to the bottom</Checkbox>
+        <Checkbox>Show a shimmer skeleton loading state instead of a spinner</Checkbox>
+        <Checkbox>Cache the last successful response and show it immediately on relaunch while refetching</Checkbox>
+      </Section>
 
-      <h2 style={{ fontSize: 18, fontWeight: 600, margin: "24px 0 8px" }}>Submitting your project</h2>
-      <ol style={{ fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 2.2, paddingLeft: 20 }}>
-        <li>Create a GitHub repository for your project</li>
-        <li>Push your code to the repository</li>
-        <li>Create a README using the Unit 4 README template</li>
-        <li>Check off all features by changing <IC>-[ ]</IC> to <IC>-[x]</IC></li>
-        <li>Record a GIF showing: loading spinner, list with images, search filtering, empty state, tapping to detail, and the error state with WiFi off</li>
-        <li>Add the GIF to the README</li>
-        <li>Make the repo private and add <IC>codepathreview</IC> as a collaborator</li>
-      </ol>
-      <Warn>Do not commit your API key to GitHub. Add your local.properties or Config.xcconfig to .gitignore before your first commit. If you accidentally push a key, regenerate it immediately on the API provider's website.</Warn>
+      <Section title="📘 Submitting your project">
+        <ol style={{ fontSize: 13, lineHeight: 2, paddingLeft: 20, margin: 0 }}>
+          <li>Create a GitHub repository for your project</li>
+          <li>Push your code to the repository</li>
+          <li>Create a README using the Unit 4 README template</li>
+          <li>In the README, check off all features by changing <IC>-[ ]</IC> to <IC>-[x]</IC></li>
+          <li>Record a GIF showing: loading spinner, list with images, search filtering, empty state, tapping to detail, and the error state with WiFi off</li>
+          <li>Add the GIF to the README</li>
+          <li>Make the repo private and add <IC>codepathreview</IC> as a collaborator</li>
+        </ol>
+        <Warn>Do not commit your API key to GitHub. Add your <IC>local.properties</IC> or <IC>Config.xcconfig</IC> to <IC>.gitignore</IC> before your first commit. If you accidentally push a key, regenerate it immediately on the API provider's website.</Warn>
+      </Section>
 
-      <h2 style={{ fontSize: 18, fontWeight: 600, margin: "24px 0 8px" }}>Hints</h2>
-      <Tip><b>I am not sure how to read the JSON structure of my API</b> Paste a sample API URL into your browser and look at the raw JSON. Identify the top-level key that contains the list of items. Then trace one item and note every field name and its type. Those become your data class or struct fields.</Tip>
-      <Tip><b>My data class field names do not match the JSON</b> In Kotlin, use @SerializedName("json_key") to map a JSON key to a different property name. In Swift, use CodingKeys enum. This is how we handled the "#text" field in the Last.fm models.</Tip>
-      <Tip><b>The error state is not triggering even when WiFi is off</b> On Android emulator, toggling WiFi on the host machine may not affect the emulator. Go to the emulator's Extended Controls and toggle the network there. On iOS simulator, use the Network Link Conditioner in Xcode.</Tip>
-      <Tip><b>Images are loading but they look stretched or cropped wrong</b> Use contentScale = ContentScale.Crop (Compose) or .aspectRatio(contentMode: .fill) (SwiftUI) to fill the circle without distorting the image. Also make sure your clip modifier comes after the size modifier, not before.</Tip>
+      <Section title="💡 Hints">
+        <ul style={{ fontSize: 13, lineHeight: 1.6, paddingLeft: 20, margin: 0 }}>
+          <li style={{ marginBottom: 10 }}>
+            <strong>I'm not sure how to read the JSON structure of my API</strong>
+            <p style={{ margin: "4px 0 0", color: "var(--color-text-secondary)" }}>Paste a sample API URL into your browser and look at the raw JSON. Identify the top-level key that contains the list of items, then trace one item and note every field name and type — those become your data class or struct fields.</p>
+          </li>
+          <li style={{ marginBottom: 10 }}>
+            <strong>My data class field names don't match the JSON</strong>
+            <p style={{ margin: "4px 0 0", color: "var(--color-text-secondary)" }}>In Kotlin, use <IC>@SerializedName("json_key")</IC> to map a JSON key to a different property name. In Swift, use a <IC>CodingKeys</IC> enum. This is how we handled the <IC>"#text"</IC> field in the Last.fm models.</p>
+          </li>
+          <li style={{ marginBottom: 10 }}>
+            <strong>The error state isn't triggering even when WiFi is off</strong>
+            <p style={{ margin: "4px 0 0", color: "var(--color-text-secondary)" }}>On Android emulator, toggling WiFi on the host machine may not affect the emulator — use the emulator's Extended Controls to toggle network instead. On iOS simulator, use the Network Link Conditioner in Xcode.</p>
+          </li>
+          <li style={{ marginBottom: 0 }}>
+            <strong>Images are loading but look stretched or cropped wrong</strong>
+            <p style={{ margin: "4px 0 0", color: "var(--color-text-secondary)" }}>Use <IC>contentScale = ContentScale.Crop</IC> (Compose) or <IC>.aspectRatio(contentMode: .fill)</IC> (SwiftUI) to fill without distorting. Also make sure your clip modifier comes after the size modifier, not before.</p>
+          </li>
+        </ul>
+      </Section>
     </div>
   );
 }

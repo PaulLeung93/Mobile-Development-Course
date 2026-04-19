@@ -913,6 +913,29 @@ const ResourcesTab = () => (
         <li><a href="https://developer.android.com/courses/android-basics-compose/unit-1" style={{ color: "var(--color-text-info)" }}>Android Basics with Compose — Unit 1 (free, Google)</a></li>
         <li><a href="https://developer.apple.com/tutorials/swiftui/creating-and-combining-views" style={{ color: "var(--color-text-info)" }}>SwiftUI: Creating and combining views (Apple)</a></li>
       </ul>
+
+      <h4 style={{ fontSize: 14, fontWeight: 600, marginTop: 16 }}>{"⚡"} Advanced stretch resources</h4>
+      <ul style={{ paddingLeft: 20 }}>
+        <li style={{ marginBottom: 4 }}><strong>Shimmer effect</strong>
+          <ul style={{ paddingLeft: 16, marginTop: 4 }}>
+            <li><a href="https://github.com/valentinilk/compose-shimmer" style={{ color: "var(--color-text-info)" }}>compose-shimmer library — github.com/valentinilk</a></li>
+            <li><a href="https://github.com/markiv/SwiftUI-Shimmer" style={{ color: "var(--color-text-info)" }}>SwiftUI-Shimmer library — github.com/markiv</a></li>
+            <li><a href="https://softwareanders.com/swiftui-skeleton-loading-view-build-a-shimmer-effect-from-scratch/" style={{ color: "var(--color-text-info)" }}>Build a shimmer effect from scratch in SwiftUI — softwareanders.com</a></li>
+          </ul>
+        </li>
+        <li style={{ marginBottom: 4 }}><strong>Card flip animation</strong>
+          <ul style={{ paddingLeft: 16, marginTop: 4 }}>
+            <li><a href="https://developer.android.com/develop/ui/compose/graphics/draw/modifiers" style={{ color: "var(--color-text-info)" }}>graphicsLayer modifier — developer.android.com</a></li>
+            <li><a href="https://developer.apple.com/documentation/swiftui/view/rotation3deffect(_:axis:anchor:anchorz:perspective:)" style={{ color: "var(--color-text-info)" }}>rotation3DEffect — developer.apple.com</a></li>
+          </ul>
+        </li>
+        <li><strong>QR code generation</strong>
+          <ul style={{ paddingLeft: 16, marginTop: 4 }}>
+            <li><a href="https://github.com/alexzhirkevich/compose-qr-code" style={{ color: "var(--color-text-info)" }}>compose-qr-code (qrose) library — github.com/alexzhirkevich</a></li>
+            <li><a href="https://developer.apple.com/documentation/coreimage/cifilter/3228199-qrcodegenerator" style={{ color: "var(--color-text-info)" }}>CIFilter.qrCodeGenerator — developer.apple.com</a></li>
+          </ul>
+        </li>
+      </ul>
     </div>
   </div>
 );
