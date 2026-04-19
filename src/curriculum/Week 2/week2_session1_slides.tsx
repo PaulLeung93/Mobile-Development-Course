@@ -13,10 +13,20 @@ const Tag = ({ children, color = PURPLE }) => (
   <span style={{ fontSize: 10, fontWeight: 600, letterSpacing: ".06em", textTransform: "uppercase", background: color === PURPLE ? PURPLE_LIGHT : TEAL_LIGHT, color, padding: "2px 8px", borderRadius: 20 }}>{children}</span>
 );
 
-const CodePane = ({ title, accent = PURPLE, children }) => (
+const CodePane = ({ title = undefined, accent = PURPLE, children }) => (
   <div style={{ flex: 1, minWidth: 0 }}>
-    <div style={{ background: accent, color: "#fff", fontSize: 11, fontWeight: 600, padding: "4px 12px", borderRadius: "8px 8px 0 0", letterSpacing: ".04em" }}>{title}</div>
-    <pre style={{ margin: 0, background: "#1e1e2e", color: "#cdd6f4", fontSize: 11, padding: "12px 14px", borderRadius: "0 0 8px 8px", lineHeight: 1.7, overflowX: "auto", whiteSpace: "pre-wrap", fontFamily: "monospace" }}>{children}</pre>
+    {title && <div style={{ background: accent, color: "#fff", fontSize: 11, fontWeight: 600, padding: "4px 12px", borderRadius: "8px 8px 0 0", letterSpacing: ".04em" }}>{title}</div>}
+    <pre style={{ margin: 0, background: "#1e1e2e", color: "#cdd6f4", fontSize: 11, padding: "12px 14px", borderRadius: title ? "0 0 8px 8px" : 8, lineHeight: 1.7, overflowX: "auto", whiteSpace: "pre-wrap", fontFamily: "monospace" }}>{children}</pre>
+  </div>
+);
+
+const Step = ({ n, title, accent = PURPLE, children }) => (
+  <div style={{ marginBottom: 12, paddingLeft: 20, borderLeft: `2px solid #e5e7eb`, position: "relative" }}>
+    <div style={{ position: "absolute", left: -14, top: -2, width: 26, height: 26, borderRadius: "50%", background: "#fff", border: `2px solid ${accent}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 800, color: accent }}>
+      {n}
+    </div>
+    <p style={{ fontSize: 13, fontWeight: 700, color: TEXT, margin: "0 0 8px" }}>{title}</p>
+    <div>{children}</div>
   </div>
 );
 
@@ -179,52 +189,60 @@ val q2 = Question(...)`}</pre>
   // 5: Data class vs struct
   () => (
     <Shell tag="Language basics" title="Data class vs struct — two names, same concept" notes="Students are often surprised at how similar these are. Lean into that. The concept is identical: a named template for a group of related values. The only meaningful difference is that Kotlin data classes get equals(), toString(), and copy() for free — Swift structs do not get them automatically but they are easy to add. Do not go deep on this — just note it and move on.">
-      <div style={{ display: "flex", gap: 10, marginTop: 6 }}>
-        <CodePane title="Kotlin — data class" accent={PURPLE}>
-{`// The 'data' keyword gives you:
-// - equals() for comparison
-// - toString() for printing
-// - copy() for making modified copies
-data class Question(
-    val text: String,           // String field
-    val answers: List<String>,  // List of Strings
-    val correctIndex: Int       // Int field
-)
-
-// Creating an instance:
-val question = Question(
+      <div style={{ display: "flex", flexDirection: "column", gap: 6, marginTop: 6 }}>
+        <p style={{ fontSize: 11, fontWeight: 700, color: PURPLE, textTransform: "uppercase", letterSpacing: ".06em", margin: "0 0 2px" }}>Android · Kotlin</p>
+        <Step n={1} title="Define the data class" accent={PURPLE}>
+          <CodePane accent={PURPLE}>
+{`data class Question(
+    val text: String,
+    val answers: List<String>,
+    val correctIndex: Int
+)`}
+          </CodePane>
+        </Step>
+        <Step n={2} title="Create an instance" accent={PURPLE}>
+          <CodePane accent={PURPLE}>
+{`val question = Question(
     text = "What is 2 + 2?",
     answers = listOf("3", "4", "5", "6"),
     correctIndex = 1
-)
-
-// Accessing fields:
-println(question.text)          // "What is 2 + 2?"
+)`}
+          </CodePane>
+        </Step>
+        <Step n={3} title="Access the fields" accent={PURPLE}>
+          <CodePane accent={PURPLE}>
+{`println(question.text)          // "What is 2 + 2?"
 println(question.answers[1])    // "4"
 println(question.correctIndex)  // 1`}
-        </CodePane>
-        <CodePane title="Swift — struct" accent={TEAL}>
-{`// struct = value type (copied when passed around)
-// class = reference type (shared when passed around)
-// For data models, struct is almost always right
-struct Question {
-    let text: String
-    let answers: [String]   // [String] = Array of Strings
-    let correctIndex: Int
-}
+          </CodePane>
+        </Step>
 
-// Creating an instance:
-let question = Question(
+        <p style={{ fontSize: 11, fontWeight: 700, color: TEAL, textTransform: "uppercase", letterSpacing: ".06em", margin: "8px 0 2px" }}>iOS · Swift</p>
+        <Step n={1} title="Define the struct" accent={TEAL}>
+          <CodePane accent={TEAL}>
+{`struct Question {
+    let text: String
+    let answers: [String]
+    let correctIndex: Int
+}`}
+          </CodePane>
+        </Step>
+        <Step n={2} title="Create an instance" accent={TEAL}>
+          <CodePane accent={TEAL}>
+{`let question = Question(
     text: "What is 2 + 2?",
     answers: ["3", "4", "5", "6"],
     correctIndex: 1
-)
-
-// Accessing fields:
-print(question.text)          // "What is 2 + 2?"
+)`}
+          </CodePane>
+        </Step>
+        <Step n={3} title="Access the fields" accent={TEAL}>
+          <CodePane accent={TEAL}>
+{`print(question.text)          // "What is 2 + 2?"
 print(question.answers[1])    // "4"
 print(question.correctIndex)  // 1`}
-        </CodePane>
+          </CodePane>
+        </Step>
       </div>
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8, marginTop: 10 }}>
         {[
@@ -249,59 +267,59 @@ print(question.correctIndex)  // 1`}
   () => (
     <Shell tag="Language basics" timer="5" title="Passing functions as parameters — the callback pattern" subtitle="This is how screens talk to each other without knowing about navigation" notes="This pattern — passing a lambda as a parameter — is fundamental to how navigation works in both platforms. The key insight: HomeScreen does not need to know anything about NavController. It just calls onStartClicked() and whoever set up the navigation handles what happens. This separation of concerns is good design.">
       <p style={{ fontSize: 13, color: MUTED, margin: "0 0 10px" }}>We saw this in Week 1 — now let us understand WHY it is useful for navigation.</p>
-      <div style={{ display: "flex", gap: 10 }}>
-        <CodePane title="Kotlin — function parameter (callback)" accent={PURPLE}>
-{`// HomeScreen does NOT know about NavController.
-// It just calls onStartClicked() when the button is tapped.
-// The caller decides what onStartClicked does.
-
-@Composable
+      <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+        <p style={{ fontSize: 11, fontWeight: 700, color: PURPLE, textTransform: "uppercase", letterSpacing: ".06em", margin: "0 0 2px" }}>Android · Kotlin</p>
+        <Step n={1} title="Declare the parameter" accent={PURPLE}>
+          <CodePane accent={PURPLE}>
+{`@Composable
 fun HomeScreen(
-    onStartClicked: () -> Unit  // a function with no params, no return
-) {
-    Column( /* ... */ ) {
-        Button(
-            onClick = onStartClicked  // call it when tapped
-        ) {
-            Text("Start Quiz")
-        }
-    }
-}
-
-// The caller (NavHost) decides what happens:
-HomeScreen(
+    onStartClicked: () -> Unit  // () -> Unit = no params, no return
+)`}
+          </CodePane>
+        </Step>
+        <Step n={2} title="Call it on button tap" accent={PURPLE}>
+          <CodePane accent={PURPLE}>
+{`Button(onClick = onStartClicked) {
+    Text("Start Quiz")
+}`}
+          </CodePane>
+        </Step>
+        <Step n={3} title="Pass it from the caller" accent={PURPLE}>
+          <CodePane accent={PURPLE}>
+{`HomeScreen(
     onStartClicked = {
         navController.navigate("question")
-        // HomeScreen has no idea this is here!
+        // HomeScreen has no idea this is here
     }
 )`}
-        </CodePane>
-        <CodePane title="Swift — closure parameter (callback)" accent={TEAL}>
-{`// Same pattern in SwiftUI:
-// HomeScreen does not know about NavigationStack.
-// It calls onStartClicked when the button is tapped.
+          </CodePane>
+        </Step>
 
-struct HomeScreen: View {
+        <p style={{ fontSize: 11, fontWeight: 700, color: TEAL, textTransform: "uppercase", letterSpacing: ".06em", margin: "8px 0 2px" }}>iOS · Swift</p>
+        <Step n={1} title="Declare the property" accent={TEAL}>
+          <CodePane accent={TEAL}>
+{`struct HomeScreen: View {
     var onStartClicked: () -> Void
-    // () -> Void = function that takes nothing, returns nothing
-
-    var body: some View {
-        VStack {
-            Button(action: onStartClicked) {
-                Text("Start Quiz")
-            }
-        }
-    }
-}
-
-// The caller decides what happens:
-HomeScreen(onStartClicked: {
+    // () -> Void = a closure that takes nothing, returns nothing`}
+          </CodePane>
+        </Step>
+        <Step n={2} title="Call it on button tap" accent={TEAL}>
+          <CodePane accent={TEAL}>
+{`Button(action: onStartClicked) {
+    Text("Start Quiz")
+}`}
+          </CodePane>
+        </Step>
+        <Step n={3} title="Pass it from the caller" accent={TEAL}>
+          <CodePane accent={TEAL}>
+{`HomeScreen(onStartClicked: {
     // navigate to question screen
-    // HomeScreen has no idea this is here!
+    // HomeScreen has no idea this is here
 })`}
-        </CodePane>
+          </CodePane>
+        </Step>
       </div>
-      <Info>{"This pattern is called a callback. It is used everywhere in mobile development — not just navigation. Whenever a child component needs to tell its parent something happened, it calls a function that the parent passed in."}</Info>
+      <Info>{"Callback pattern: whenever a child component needs to tell its parent something happened, it calls a function the parent passed in. Used everywhere in mobile development — not just navigation."}</Info>
     </Shell>
   ),
 
@@ -370,65 +388,57 @@ HomeScreen(onStartClicked: {
   () => (
     <Shell tag="Navigation setup" timer="8" title="Setting up navigation — NavHost and NavigationStack" notes="This is where the syntax diverges most visibly. Acknowledge it directly: these look very different. But look at what they both do: define a set of screens and which one is first. The concept is identical. After showing this slide, ask students to describe what the NavHost is doing in plain English before you explain it.">
       <p style={{ fontSize: 13, color: MUTED, margin: "0 0 10px" }}>Both platforms need a container that knows about all the screens in your app. The syntax looks different — the concept is the same.</p>
-      <div style={{ display: "flex", gap: 10 }}>
-        <CodePane title="Android — NavHost in Compose" accent={PURPLE}>
-{`// 1. Create a NavController — manages the back stack
-val navController = rememberNavController()
-
-// 2. NavHost — defines all the screens and routes
-NavHost(
+      <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+        <p style={{ fontSize: 11, fontWeight: 700, color: PURPLE, textTransform: "uppercase", letterSpacing: ".06em", margin: "0 0 2px" }}>Android · Kotlin</p>
+        <Step n={1} title="Create the controller" accent={PURPLE}>
+          <CodePane accent={PURPLE}>
+{`val navController = rememberNavController()
+// NavController manages the back stack`}
+          </CodePane>
+        </Step>
+        <Step n={2} title="Declare the NavHost" accent={PURPLE}>
+          <CodePane accent={PURPLE}>
+{`NavHost(
     navController = navController,
-    startDestination = "home"   // first screen
+    startDestination = "home"   // first screen shown
 ) {
-    // 3. Each composable() defines one screen
     composable("home") {
         HomeScreen(
-            onStartClicked = {
-                navController.navigate("question")
-            }
+            onStartClicked = { navController.navigate("question") }
         )
     }
     composable("question") {
         QuestionScreen()
     }
-}
+}`}
+          </CodePane>
+        </Step>
 
-// Think of NavHost as the app's map:
-// - It knows all the destinations ("home", "question")
-// - It knows which one to show first
-// - NavController is the GPS — it moves between them`}
-        </CodePane>
-        <CodePane title="iOS — NavigationStack in SwiftUI" accent={TEAL}>
-{`// NavigationStack is simpler — wrap your root view in it
-// SwiftUI handles the back stack automatically
-
-struct ContentView: View {
+        <p style={{ fontSize: 11, fontWeight: 700, color: TEAL, textTransform: "uppercase", letterSpacing: ".06em", margin: "8px 0 2px" }}>iOS · Swift</p>
+        <Step n={1} title="Wrap in NavigationStack" accent={TEAL}>
+          <CodePane accent={TEAL}>
+{`struct ContentView: View {
     var body: some View {
-        // NavigationStack = the navigation container
         NavigationStack {
-            // The view inside is the start destination
-            HomeScreen()
+            HomeScreen()   // start destination
         }
     }
-}
-
-// Navigation is driven by NavigationLink in the UI
-// rather than a central controller:
-struct HomeScreen: View {
+}`}
+          </CodePane>
+        </Step>
+        <Step n={2} title="Add a NavigationLink" accent={TEAL}>
+          <CodePane accent={TEAL}>
+{`struct HomeScreen: View {
     var body: some View {
         VStack {
-            // NavigationLink = a tappable link to another screen
             NavigationLink(destination: QuestionScreen()) {
                 Text("Start Quiz")
             }
         }
     }
-}
-
-// SwiftUI's approach: links live in the UI
-// Compose's approach: routes live in a central map
-// Same result — different philosophy`}
-        </CodePane>
+}`}
+          </CodePane>
+        </Step>
       </div>
     </Shell>
   ),
@@ -509,18 +519,20 @@ struct HomeScreen: View {
   // 12: Code-along part 1 — data model
   () => (
     <Shell tag="Live code-along" title="Part 1 — the data model" notes="Type the data class first before any UI. Ask students: why do we define the data model before the screens? The answer: the screens depend on the data structure. If you change the data model later, you have to update every screen. Define it once, cleanly, at the start.">
-      <div style={{ display: "flex", gap: 10, marginTop: 6 }}>
-        <CodePane title="Question.kt — data class and sample data" accent={PURPLE}>
-{`// The data model — one Question has 3 fields
-data class Question(
+      <div style={{ display: "flex", flexDirection: "column", gap: 6, marginTop: 6 }}>
+        <p style={{ fontSize: 11, fontWeight: 700, color: PURPLE, textTransform: "uppercase", letterSpacing: ".06em", margin: "0 0 2px" }}>Android · Kotlin — Question.kt</p>
+        <Step n={1} title="Define the data class" accent={PURPLE}>
+          <CodePane accent={PURPLE}>
+{`data class Question(
     val text: String,
     val answers: List<String>,
     val correctIndex: Int
-)
-
-// Sample questions — hardcoded for now
-// (Week 4 we will fetch these from an API)
-val sampleQuestions = listOf(
+)`}
+          </CodePane>
+        </Step>
+        <Step n={2} title="Create sample data" accent={PURPLE}>
+          <CodePane accent={PURPLE}>
+{`val sampleQuestions = listOf(
     Question(
         text = "What is the capital of France?",
         answers = listOf("London","Berlin","Paris","Madrid"),
@@ -537,17 +549,22 @@ val sampleQuestions = listOf(
         correctIndex = 1
     )
 )`}
-        </CodePane>
-        <CodePane title="Question.swift — struct and sample data" accent={TEAL}>
-{`// The data model
-struct Question {
+          </CodePane>
+        </Step>
+
+        <p style={{ fontSize: 11, fontWeight: 700, color: TEAL, textTransform: "uppercase", letterSpacing: ".06em", margin: "8px 0 2px" }}>iOS · Swift — Question.swift</p>
+        <Step n={1} title="Define the struct" accent={TEAL}>
+          <CodePane accent={TEAL}>
+{`struct Question {
     let text: String
     let answers: [String]
     let correctIndex: Int
-}
-
-// Sample questions — hardcoded for now
-let sampleQuestions: [Question] = [
+}`}
+          </CodePane>
+        </Step>
+        <Step n={2} title="Create sample data" accent={TEAL}>
+          <CodePane accent={TEAL}>
+{`let sampleQuestions: [Question] = [
     Question(
         text: "What is the capital of France?",
         answers: ["London","Berlin","Paris","Madrid"],
@@ -564,20 +581,27 @@ let sampleQuestions: [Question] = [
         correctIndex: 1
     )
 ]`}
-        </CodePane>
+          </CodePane>
+        </Step>
       </div>
-      <Info>{"Notice that the data class and struct look nearly identical. The field names and types are the same — just the syntax differs slightly. This is by design: good data models are platform-agnostic."}</Info>
+      <Info>{"The data class and struct look nearly identical — field names and types are the same. Good data models are platform-agnostic."}</Info>
     </Shell>
   ),
 
   // 13: Code-along part 2 — home screen
   () => (
     <Shell tag="Live code-along" title="Part 2 — the home screen" notes="Point out the onStartClicked parameter explicitly. Ask students: why is it a parameter instead of NavController? Answer: so the screen does not need to know about navigation at all. It just says 'something happened' and the caller decides what to do. This is called separation of concerns and it is a key design principle.">
-      <div style={{ display: "flex", gap: 10, marginTop: 6 }}>
-        <CodePane title="HomeScreen — Compose" accent={PURPLE}>
+      <div style={{ display: "flex", flexDirection: "column", gap: 6, marginTop: 6 }}>
+        <p style={{ fontSize: 11, fontWeight: 700, color: PURPLE, textTransform: "uppercase", letterSpacing: ".06em", margin: "0 0 2px" }}>Android · Kotlin</p>
+        <Step n={1} title="Accept a callback" accent={PURPLE}>
+          <CodePane accent={PURPLE}>
 {`@Composable
-fun HomeScreen(onStartClicked: () -> Unit) {
-    Column(
+fun HomeScreen(onStartClicked: () -> Unit) {`}
+          </CodePane>
+        </Step>
+        <Step n={2} title="Build the column" accent={PURPLE}>
+          <CodePane accent={PURPLE}>
+{`    Column(
         modifier = Modifier
             .fillMaxSize()
             .background(Color(0xFFF5F5F5))
@@ -585,60 +609,55 @@ fun HomeScreen(onStartClicked: () -> Unit) {
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text(
-            text = "Trivia Challenge",
-            fontSize = 32.sp,
-            fontWeight = FontWeight.Bold,
-            color = Color(0xFF534AB7)
-        )
+        Text("Trivia Challenge", fontSize = 32.sp,
+            fontWeight = FontWeight.Bold, color = Color(0xFF534AB7))
         Spacer(modifier = Modifier.height(8.dp))
-        Text(
-            text = "Test your knowledge!",
-            fontSize = 16.sp,
-            color = Color.Gray
-        )
-        Spacer(modifier = Modifier.height(48.dp))
-        Button(
-            onClick = onStartClicked,
+        Text("Test your knowledge!", fontSize = 16.sp, color = Color.Gray)
+        Spacer(modifier = Modifier.height(48.dp))`}
+          </CodePane>
+        </Step>
+        <Step n={3} title="Wire the button" accent={PURPLE}>
+          <CodePane accent={PURPLE}>
+{`        Button(
+            onClick = onStartClicked,   // call the callback
             modifier = Modifier.fillMaxWidth(),
             colors = ButtonDefaults.buttonColors(
                 containerColor = Color(0xFF534AB7)
             )
-        ) {
-            Text("Start Quiz", fontSize = 16.sp)
-        }
+        ) { Text("Start Quiz", fontSize = 16.sp) }
     }
 }`}
-        </CodePane>
-        <CodePane title="HomeScreen — SwiftUI" accent={TEAL}>
-{`struct HomeScreen: View {
-    // Closure parameter — same callback pattern
-    var onStartClicked: () -> Void
+          </CodePane>
+        </Step>
 
-    var body: some View {
+        <p style={{ fontSize: 11, fontWeight: 700, color: TEAL, textTransform: "uppercase", letterSpacing: ".06em", margin: "8px 0 2px" }}>iOS · Swift</p>
+        <Step n={1} title="Declare the closure" accent={TEAL}>
+          <CodePane accent={TEAL}>
+{`struct HomeScreen: View {
+    var onStartClicked: () -> Void`}
+          </CodePane>
+        </Step>
+        <Step n={2} title="Build the VStack" accent={TEAL}>
+          <CodePane accent={TEAL}>
+{`    var body: some View {
         ZStack {
-            Color(UIColor.systemGray6)
-                .ignoresSafeArea()
+            Color(UIColor.systemGray6).ignoresSafeArea()
             VStack(spacing: 8) {
                 Text("Trivia Challenge")
-                    .font(.largeTitle)
-                    .fontWeight(.bold)
-                    .foregroundColor(
-                        Color(red:0.33,green:0.29,blue:0.72)
-                    )
+                    .font(.largeTitle).fontWeight(.bold)
+                    .foregroundColor(Color(red:0.33,green:0.29,blue:0.72))
                 Text("Test your knowledge!")
-                    .font(.subheadline)
-                    .foregroundColor(.gray)
-                Spacer().frame(height: 48)
-                Button(action: onStartClicked) {
+                    .font(.subheadline).foregroundColor(.gray)
+                Spacer().frame(height: 48)`}
+          </CodePane>
+        </Step>
+        <Step n={3} title="Wire the button" accent={TEAL}>
+          <CodePane accent={TEAL}>
+{`                Button(action: onStartClicked) {  // call the closure
                     Text("Start Quiz")
-                        .font(.headline)
-                        .foregroundColor(.white)
-                        .frame(maxWidth: .infinity)
-                        .padding()
-                        .background(
-                            Color(red:0.33,green:0.29,blue:0.72)
-                        )
+                        .font(.headline).foregroundColor(.white)
+                        .frame(maxWidth: .infinity).padding()
+                        .background(Color(red:0.33,green:0.29,blue:0.72))
                         .cornerRadius(10)
                 }
             }
@@ -646,7 +665,8 @@ fun HomeScreen(onStartClicked: () -> Unit) {
         }
     }
 }`}
-        </CodePane>
+          </CodePane>
+        </Step>
       </div>
     </Shell>
   ),
@@ -654,87 +674,86 @@ fun HomeScreen(onStartClicked: () -> Unit) {
   // 14: Code-along part 3 — question screen
   () => (
     <Shell tag="Live code-along" title="Part 3 — the question screen" notes="Introduce forEachIndexed / ForEach here. Students may not have seen loops before. Explain it simply: it goes through the answers list and creates a Button for each one. This is the precursor to the full list concepts in Week 3. Keep it simple — do not go deep on loop mechanics now.">
-      <div style={{ display: "flex", gap: 10, marginTop: 6 }}>
-        <CodePane title="QuestionScreen — Compose" accent={PURPLE}>
+      <div style={{ display: "flex", flexDirection: "column", gap: 6, marginTop: 6 }}>
+        <p style={{ fontSize: 11, fontWeight: 700, color: PURPLE, textTransform: "uppercase", letterSpacing: ".06em", margin: "0 0 2px" }}>Android · Kotlin</p>
+        <Step n={1} title="Load the first question" accent={PURPLE}>
+          <CodePane accent={PURPLE}>
 {`@Composable
 fun QuestionScreen() {
-    val question = sampleQuestions[0]  // hardcoded for now
-
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color(0xFFF5F5F5))
-            .padding(24.dp),
+    val question = sampleQuestions[0]`}
+          </CodePane>
+        </Step>
+        <Step n={2} title="Render question text" accent={PURPLE}>
+          <CodePane accent={PURPLE}>
+{`    Column(
+        modifier = Modifier.fillMaxSize()
+            .background(Color(0xFFF5F5F5)).padding(24.dp),
         verticalArrangement = Arrangement.Center
     ) {
         Text("Question 1 of ${"\${sampleQuestions.size}"}",
             fontSize = 14.sp, color = Color.Gray)
         Spacer(Modifier.height(12.dp))
-        Text(question.text,
-            fontSize = 22.sp,
-            fontWeight = FontWeight.Bold,
-            lineHeight = 30.sp)
-        Spacer(Modifier.height(32.dp))
-
-        // Loop through answers and create a button for each
-        question.answers.forEachIndexed { index, answer ->
+        Text(question.text, fontSize = 22.sp,
+            fontWeight = FontWeight.Bold, lineHeight = 30.sp)
+        Spacer(Modifier.height(32.dp))`}
+          </CodePane>
+        </Step>
+        <Step n={3} title="Loop answer buttons" accent={PURPLE}>
+          <CodePane accent={PURPLE}>
+{`        question.answers.forEachIndexed { index, answer ->
             Button(
                 onClick = { /* handle in Session 2 */ },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 4.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color.White),
+                modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = Color.White),
                 border = BorderStroke(1.dp, Color(0xFF534AB7))
-            ) {
-                Text(answer, color = Color(0xFF534AB7))
-            }
+            ) { Text(answer, color = Color(0xFF534AB7)) }
         }
     }
 }`}
-        </CodePane>
-        <CodePane title="QuestionScreen — SwiftUI" accent={TEAL}>
-{`struct QuestionScreen: View {
-    let question = sampleQuestions[0]  // hardcoded for now
+          </CodePane>
+        </Step>
 
-    var body: some View {
+        <p style={{ fontSize: 11, fontWeight: 700, color: TEAL, textTransform: "uppercase", letterSpacing: ".06em", margin: "8px 0 2px" }}>iOS · Swift</p>
+        <Step n={1} title="Load the first question" accent={TEAL}>
+          <CodePane accent={TEAL}>
+{`struct QuestionScreen: View {
+    let question = sampleQuestions[0]`}
+          </CodePane>
+        </Step>
+        <Step n={2} title="Render question text" accent={TEAL}>
+          <CodePane accent={TEAL}>
+{`    var body: some View {
         ZStack {
             Color(UIColor.systemGray6).ignoresSafeArea()
             VStack(alignment: .leading, spacing: 12) {
                 Text("Question 1 of \\(sampleQuestions.count)")
-                    .font(.subheadline)
-                    .foregroundColor(.gray)
+                    .font(.subheadline).foregroundColor(.gray)
                 Text(question.text)
-                    .font(.title2).fontWeight(.bold)
-                    .lineSpacing(6)
-                Spacer().frame(height: 20)
-
-                // Loop through answers
-                ForEach(
+                    .font(.title2).fontWeight(.bold).lineSpacing(6)
+                Spacer().frame(height: 20)`}
+          </CodePane>
+        </Step>
+        <Step n={3} title="Loop answer buttons" accent={TEAL}>
+          <CodePane accent={TEAL}>
+{`                ForEach(
                     Array(question.answers.enumerated()),
                     id: \\.offset
                 ) { index, answer in
                     Button(action: { /* Session 2 */ }) {
                         Text(answer)
-                            .foregroundColor(
-                                Color(red:0.33,green:0.29,blue:0.72))
+                            .foregroundColor(Color(red:0.33,green:0.29,blue:0.72))
                             .frame(maxWidth: .infinity).padding()
-                            .background(Color.white)
-                            .cornerRadius(10)
-                            .overlay(
-                                RoundedRectangle(cornerRadius:10)
-                                .stroke(
-                                    Color(red:0.33,green:0.29,blue:0.72),
-                                    lineWidth: 1)
-                            )
+                            .background(Color.white).cornerRadius(10)
+                            .overlay(RoundedRectangle(cornerRadius:10)
+                                .stroke(Color(red:0.33,green:0.29,blue:0.72), lineWidth:1))
                     }
                 }
-            }
-            .padding(24)
+            }.padding(24)
         }
     }
 }`}
-        </CodePane>
+          </CodePane>
+        </Step>
       </div>
     </Shell>
   ),
@@ -742,75 +761,76 @@ fun QuestionScreen() {
   // 15: Code-along part 4 — wiring navigation
   () => (
     <Shell tag="Live code-along" title="Part 4 — wiring it all together" notes="This is the payoff of the whole session. Type the NavHost / NavigationStack setup and run it. Navigate forward, then back. Do this several times while narrating: 'I am pushing a screen onto the stack... I am popping it off.' The physical metaphor with the visual action reinforces the mental model.">
-      <div style={{ display: "flex", gap: 10, marginTop: 6 }}>
-        <CodePane title="MainActivity.kt — NavHost wiring" accent={PURPLE}>
+      <div style={{ display: "flex", flexDirection: "column", gap: 6, marginTop: 6 }}>
+        <p style={{ fontSize: 11, fontWeight: 700, color: PURPLE, textTransform: "uppercase", letterSpacing: ".06em", margin: "0 0 2px" }}>Android · Kotlin — MainActivity.kt</p>
+        <Step n={1} title="Create the NavController" accent={PURPLE}>
+          <CodePane accent={PURPLE}>
 {`class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            val navController = rememberNavController()
-
-            NavHost(
+            val navController = rememberNavController()`}
+          </CodePane>
+        </Step>
+        <Step n={2} title="Define the route map" accent={PURPLE}>
+          <CodePane accent={PURPLE}>
+{`            NavHost(
                 navController = navController,
                 startDestination = "home"
             ) {
                 composable("home") {
                     HomeScreen(
                         onStartClicked = {
-                            // Navigate forward — push question
-                            navController.navigate("question")
+                            navController.navigate("question")  // push
                         }
                     )
                 }
                 composable("question") {
-                    QuestionScreen()
-                    // Back button handled automatically —
-                    // pops question off the stack
+                    QuestionScreen()  // back button pops automatically
                 }
             }
         }
     }
 }`}
-        </CodePane>
-        <CodePane title="ContentView.swift — NavigationStack wiring" accent={TEAL}>
+          </CodePane>
+        </Step>
+
+        <p style={{ fontSize: 11, fontWeight: 700, color: TEAL, textTransform: "uppercase", letterSpacing: ".06em", margin: "8px 0 2px" }}>iOS · Swift — ContentView.swift</p>
+        <Step n={1} title="Wrap in NavigationStack" accent={TEAL}>
+          <CodePane accent={TEAL}>
 {`struct ContentView: View {
     var body: some View {
         NavigationStack {
-            // NavigationStack wraps the home screen
-            // It automatically manages the back stack
-            HomeScreenWithNav()
+            HomeScreenWithNav()   // back stack managed automatically
         }
     }
-}
-
-// HomeScreen uses NavigationLink instead of a callback:
-struct HomeScreenWithNav: View {
+}`}
+          </CodePane>
+        </Step>
+        <Step n={2} title="Push via NavigationLink" accent={TEAL}>
+          <CodePane accent={TEAL}>
+{`struct HomeScreenWithNav: View {
     var body: some View {
         ZStack {
             Color(UIColor.systemGray6).ignoresSafeArea()
             VStack(spacing: 8) {
-                Text("Trivia Challenge")
-                    .font(.largeTitle).fontWeight(.bold)
-                Text("Test your knowledge!")
-                    .foregroundColor(.gray)
+                Text("Trivia Challenge").font(.largeTitle).fontWeight(.bold)
+                Text("Test your knowledge!").foregroundColor(.gray)
                 Spacer().frame(height: 48)
-
-                // NavigationLink handles the push automatically
                 NavigationLink(destination: QuestionScreen()) {
                     Text("Start Quiz")
                         .font(.headline).foregroundColor(.white)
                         .frame(maxWidth:.infinity).padding()
-                        .background(
-                            Color(red:0.33,green:0.29,blue:0.72))
+                        .background(Color(red:0.33,green:0.29,blue:0.72))
                         .cornerRadius(10)
                 }
             }
-            .padding(32)
-            .navigationBarHidden(true)
+            .padding(32).navigationBarHidden(true)
         }
     }
 }`}
-        </CodePane>
+          </CodePane>
+        </Step>
       </div>
     </Shell>
   ),
@@ -852,46 +872,64 @@ struct HomeScreenWithNav: View {
     </Shell>
   ),
 
-  // 17: Lab intro
+  // 17: Lab — part 1
   () => (
-    <Shell tag="Lab intro" timer="5" title="Lab time — what you are building" subtitle="Go to the Lab tab on the course site — Session 1 Lab." notes="Keep this short. Students are ready to build. Remind them to start the emulator now while you are talking. The most common time waster in lab is waiting for the emulator to boot.">
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginTop: 6 }}>
-        <div>
-          <p style={{ fontSize: 12, fontWeight: 600, color: TEXT, margin: "0 0 8px" }}>Lab steps — Session 1</p>
-          {[
-            { n: 0, t: "New project — TriviaApp", time: "3 min" },
-            { n: 1, t: "Data model — Question data class/struct + sample data", time: "8 min" },
-            { n: 2, t: "HomeScreen — title, tagline, Start button", time: "10 min" },
-            { n: 3, t: "QuestionScreen — question text + answer buttons", time: "10 min" },
-            { n: 4, t: "Wire navigation — NavHost or NavigationStack", time: "12 min" },
-            { n: 5, t: "Ask Claude to translate + compare navigation", time: "8 min" },
-            { n: 6, t: "Reflection — 3 questions", time: "5 min" },
-          ].map(s => (
-            <div key={s.n} style={{ display: "flex", gap: 8, margin: "4px 0", alignItems: "center" }}>
-              <span style={{ background: PURPLE, color: "#fff", borderRadius: 4, fontSize: 10, fontWeight: 700, padding: "1px 5px", flexShrink: 0 }}>Step {s.n}</span>
-              <span style={{ fontSize: 12, color: TEXT, flex: 1 }}>{s.t}</span>
-              <span style={{ fontSize: 11, color: MUTED, flexShrink: 0 }}>{s.time}</span>
+    <Shell tag="Lab intro" title="Lab — part 1: build the foundation" subtitle="~31 min · Start the emulator now while I am talking." notes="Tell students to start their emulator immediately — it takes 2 minutes to boot and is the most common time waster. Walk through each step name but do not read the descriptions. Students have the lab spec open.">
+      <div style={{ display: "flex", flexDirection: "column", marginTop: 8 }}>
+        {[
+          { n: 0, t: "New project", desc: "Create a new TriviaApp project in Android Studio or Xcode", time: "3 min" },
+          { n: 1, t: "Data model", desc: "Write the Question data class / struct and 3 sample questions", time: "8 min" },
+          { n: 2, t: "HomeScreen", desc: "Title, tagline, and a Start Quiz button that calls onStartClicked", time: "10 min" },
+          { n: 3, t: "QuestionScreen", desc: "Question text and 4 answer buttons looped from the answers list", time: "10 min" },
+        ].map(s => (
+          <div key={s.n} style={{ display: "flex", gap: 12, padding: "10px 0", borderBottom: `1px solid ${GRAY}`, alignItems: "flex-start" }}>
+            <span style={{ background: PURPLE, color: "#fff", borderRadius: "50%", width: 24, height: 24, fontSize: 11, fontWeight: 800, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, marginTop: 1 }}>{s.n}</span>
+            <div style={{ flex: 1 }}>
+              <p style={{ fontSize: 13, fontWeight: 600, color: TEXT, margin: "0 0 2px" }}>{s.t}</p>
+              <p style={{ fontSize: 12, color: MUTED, margin: 0, lineHeight: 1.4 }}>{s.desc}</p>
             </div>
-          ))}
-        </div>
-        <div style={{ background: GRAY, borderRadius: 10, padding: 14 }}>
-          <p style={{ fontSize: 12, fontWeight: 600, color: TEXT, margin: "0 0 8px" }}>Before you leave, show a TA</p>
-          {[
-            "Home screen renders correctly",
-            "Tapping Start Quiz navigates to the question screen",
-            "Back button returns to the home screen",
-            "Both platform versions working",
-            "Reflection comment block complete",
-          ].map(t => (
-            <div key={t} style={{ display: "flex", gap: 6, margin: "5px 0" }}>
-              <span style={{ color: TEAL, fontWeight: 700, flexShrink: 0 }}>✓</span>
-              <span style={{ fontSize: 12, color: TEXT }}>{t}</span>
-            </div>
-          ))}
-          <div style={{ marginTop: 10, background: PURPLE_LIGHT, borderRadius: 6, padding: "8px 10px" }}>
-            <p style={{ fontSize: 11, color: PURPLE_DARK, margin: 0, lineHeight: 1.5 }}>Start the emulator NOW while I am still talking.</p>
+            <span style={{ fontSize: 11, color: MUTED, flexShrink: 0, marginTop: 2 }}>{s.time}</span>
           </div>
-        </div>
+        ))}
+      </div>
+      <div style={{ background: PURPLE_LIGHT, borderRadius: 6, padding: "8px 12px", marginTop: 10 }}>
+        <p style={{ fontSize: 11, color: PURPLE_DARK, margin: 0, lineHeight: 1.5 }}>Start the emulator or simulator <strong>now</strong> — it takes 2 minutes to boot.</p>
+      </div>
+    </Shell>
+  ),
+
+  // 18: Lab — part 2
+  () => (
+    <Shell tag="Lab intro" title="Lab — part 2: wire it up and reflect" subtitle="~25 min · Then show a TA before you leave." notes="Circulate while students work on navigation — this is where most bugs appear. Common mistake: calling navigate() to go back instead of popBackStack(). Watch for it and correct it early.">
+      <div style={{ display: "flex", flexDirection: "column", marginTop: 8 }}>
+        {[
+          { n: 4, t: "Wire navigation", desc: "Set up NavHost or NavigationStack and connect the Start button", time: "12 min" },
+          { n: 5, t: "Ask Claude", desc: "Translate your navigation setup to the other platform. Ask Claude to explain what is the same and what is different", time: "8 min" },
+          { n: 6, t: "Reflection", desc: "Answer the 3 reflection questions in a comment block at the top of your main file", time: "5 min" },
+        ].map(s => (
+          <div key={s.n} style={{ display: "flex", gap: 12, padding: "10px 0", borderBottom: `1px solid ${GRAY}`, alignItems: "flex-start" }}>
+            <span style={{ background: PURPLE, color: "#fff", borderRadius: "50%", width: 24, height: 24, fontSize: 11, fontWeight: 800, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, marginTop: 1 }}>{s.n}</span>
+            <div style={{ flex: 1 }}>
+              <p style={{ fontSize: 13, fontWeight: 600, color: TEXT, margin: "0 0 2px" }}>{s.t}</p>
+              <p style={{ fontSize: 12, color: MUTED, margin: 0, lineHeight: 1.4 }}>{s.desc}</p>
+            </div>
+            <span style={{ fontSize: 11, color: MUTED, flexShrink: 0, marginTop: 2 }}>{s.time}</span>
+          </div>
+        ))}
+      </div>
+      <div style={{ background: GRAY, borderRadius: 10, padding: "12px 14px", marginTop: 12 }}>
+        <p style={{ fontSize: 12, fontWeight: 600, color: TEXT, margin: "0 0 8px" }}>Before you leave — show a TA</p>
+        {[
+          "Home screen renders correctly",
+          "Tapping Start Quiz navigates to the question screen",
+          "Back button returns to the home screen",
+          "Reflection comment block complete",
+        ].map(t => (
+          <div key={t} style={{ display: "flex", gap: 6, margin: "5px 0" }}>
+            <span style={{ color: TEAL, fontWeight: 700, flexShrink: 0 }}>✓</span>
+            <span style={{ fontSize: 12, color: TEXT }}>{t}</span>
+          </div>
+        ))}
       </div>
     </Shell>
   ),

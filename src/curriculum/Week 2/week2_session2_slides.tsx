@@ -13,10 +13,20 @@ const Tag = ({ children, color = PURPLE }) => (
   <span style={{ fontSize: 10, fontWeight: 600, letterSpacing: ".06em", textTransform: "uppercase", background: color === PURPLE ? PURPLE_LIGHT : TEAL_LIGHT, color, padding: "2px 8px", borderRadius: 20 }}>{children}</span>
 );
 
-const CodePane = ({ title, accent = PURPLE, children }) => (
+const CodePane = ({ title = undefined, accent = PURPLE, children }) => (
   <div style={{ flex: 1, minWidth: 0 }}>
-    <div style={{ background: accent, color: "#fff", fontSize: 11, fontWeight: 600, padding: "4px 12px", borderRadius: "8px 8px 0 0", letterSpacing: ".04em" }}>{title}</div>
-    <pre style={{ margin: 0, background: "#1e1e2e", color: "#cdd6f4", fontSize: 11, padding: "12px 14px", borderRadius: "0 0 8px 8px", lineHeight: 1.7, overflowX: "auto", whiteSpace: "pre-wrap", fontFamily: "monospace" }}>{children}</pre>
+    {title && <div style={{ background: accent, color: "#fff", fontSize: 11, fontWeight: 600, padding: "4px 12px", borderRadius: "8px 8px 0 0", letterSpacing: ".04em" }}>{title}</div>}
+    <pre style={{ margin: 0, background: "#1e1e2e", color: "#cdd6f4", fontSize: 11, padding: "12px 14px", borderRadius: title ? "0 0 8px 8px" : 8, lineHeight: 1.7, overflowX: "auto", whiteSpace: "pre-wrap", fontFamily: "monospace" }}>{children}</pre>
+  </div>
+);
+
+const Step = ({ n, title, accent = PURPLE, children }) => (
+  <div style={{ marginBottom: 12, paddingLeft: 20, borderLeft: `2px solid #e5e7eb`, position: "relative" }}>
+    <div style={{ position: "absolute", left: -14, top: -2, width: 26, height: 26, borderRadius: "50%", background: "#fff", border: `2px solid ${accent}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 800, color: accent }}>
+      {n}
+    </div>
+    <p style={{ fontSize: 13, fontWeight: 700, color: TEXT, margin: "0 0 8px" }}>{title}</p>
+    <div>{children}</div>
   </div>
 );
 
@@ -164,67 +174,52 @@ const slides = [
 
   // 5: Passing data — in code
   () => (
-    <Shell tag="Data passing" title="Passing data — how it looks in code" notes="Walk through each approach carefully. Compose embeds data in the route string like a URL path — /question/0, /question/1. SwiftUI passes data directly as an initializer parameter. Both are valid approaches. SwiftUI's approach is more type-safe. Compose's approach is more flexible for deep linking. Students do not need to understand the tradeoffs — just understand what each is doing.">
-      <div style={{ display: "flex", gap: 10, marginTop: 6 }}>
-        <CodePane title="Compose — data in the route string" accent={PURPLE}>
-{`// Route with an argument: "question/{questionIndex}"
-// {questionIndex} is a placeholder — like a URL parameter
+    <Shell tag="Data passing" title="Passing data — how it looks in code" notes="Walk through each approach carefully. Compose embeds data in the route string like a URL path — /question/0, /question/1. SwiftUI passes data directly as an initializer parameter. Both are valid approaches. SwiftUI's approach is more type-safe. Compose's approach is more flexible for deep linking.">
+      <div style={{ display: "flex", flexDirection: "column", gap: 6, marginTop: 6 }}>
+        <p style={{ fontSize: 11, fontWeight: 700, color: PURPLE, textTransform: "uppercase", letterSpacing: ".06em", margin: "0 0 2px" }}>Android · Kotlin</p>
+        <Step n={1} title="Define a route with a placeholder" accent={PURPLE}>
+          <CodePane accent={PURPLE}>
+{`// {questionIndex} is a variable slot — like a URL parameter
+composable("question/{questionIndex}") { backStackEntry ->
+    ...
+}`}
+          </CodePane>
+        </Step>
+        <Step n={2} title="Navigate with a value" accent={PURPLE}>
+          <CodePane accent={PURPLE}>
+{`navController.navigate("question/0")  // passes index 0
+navController.navigate("question/1")  // passes index 1`}
+          </CodePane>
+        </Step>
+        <Step n={3} title="Extract from the back stack entry" accent={PURPLE}>
+          <CodePane accent={PURPLE}>
+{`val index = backStackEntry
+    .arguments
+    ?.getString("questionIndex")
+    ?.toInt() ?: 0
 
-NavHost(navController, startDestination = "home") {
-    composable("home") {
-        HomeScreen(onStartClicked = {
-            navController.navigate("question/0")
-            //                               ↑ pass index 0
-        })
-    }
-    composable("question/{questionIndex}") { backStackEntry ->
-        // Extract the argument from the back stack entry
-        val index = backStackEntry
-            .arguments
-            ?.getString("questionIndex")
-            ?.toInt() ?: 0
+QuestionScreen(questionIndex = index)`}
+          </CodePane>
+        </Step>
 
-        QuestionScreen(questionIndex = index)
-    }
-}
-
-// Think of it like a URL:
-// navigate("question/0")  →  /question/0
-// navigate("question/1")  →  /question/1
-// navigate("question/2")  →  /question/2`}
-        </CodePane>
-        <CodePane title="SwiftUI — data as initialiser parameter" accent={TEAL}>
-{`// SwiftUI passes data directly — no string encoding needed
-// NavigationLink takes the destination view as a parameter
-// and you can pass data into its initialiser
-
-// In HomeScreen:
-NavigationLink(
+        <p style={{ fontSize: 11, fontWeight: 700, color: TEAL, textTransform: "uppercase", letterSpacing: ".06em", margin: "8px 0 2px" }}>iOS · Swift</p>
+        <Step n={1} title="Add an init parameter to the view" accent={TEAL}>
+          <CodePane accent={TEAL}>
+{`struct QuestionScreen: View {
+    let questionIndex: Int   // received from the caller
+    var question: Question { sampleQuestions[questionIndex] }
+}`}
+          </CodePane>
+        </Step>
+        <Step n={2} title="Pass the value via NavigationLink" accent={TEAL}>
+          <CodePane accent={TEAL}>
+{`NavigationLink(
     destination: QuestionScreen(questionIndex: 0)
-    //                                        ↑ pass index 0
 ) {
     Text("Start Quiz")
-}
-
-// QuestionScreen accepts it as a let property:
-struct QuestionScreen: View {
-    let questionIndex: Int  // received from the caller
-
-    // Computed property — looks up the question from the index
-    var question: Question {
-        sampleQuestions[questionIndex]
-    }
-
-    var body: some View {
-        // use question.text, question.answers, etc.
-    }
-}
-
-// Navigate to question 1:
-NavigationLink(destination: QuestionScreen(questionIndex: 1)) {
-    Text("Next")
 }`}
-        </CodePane>
+          </CodePane>
+        </Step>
       </div>
     </Shell>
   ),
@@ -337,120 +332,134 @@ NavHost(navController, startDestination = "home") {
   // 9: Answer feedback pattern
   () => (
     <Shell tag="Patterns" title="Answer feedback — showing correct and incorrect" notes="This pattern — selectedIndex state + conditional color — is a very common UI pattern students will use in many contexts beyond trivia. The key: once an answer is selected, disable further taps (selectedIndex != -1 check). Otherwise users can tap multiple answers.">
-      <p style={{ fontSize: 13, color: MUTED, margin: "0 0 8px" }}>When a user taps an answer, we want to highlight it green or red and then move on.</p>
-      <div style={{ display: "flex", gap: 10 }}>
-        <CodePane title="Compose — answer highlight state" accent={PURPLE}>
-{`@Composable
-fun QuestionScreen(
-    questionIndex: Int,
-    onAnswerSelected: (correct: Boolean) -> Unit
-) {
-    val question = sampleQuestions[questionIndex]
-    // -1 = no answer selected yet
-    var selectedIndex by remember { mutableStateOf(-1) }
-
-    question.answers.forEachIndexed { index, answer ->
-        // Color logic:
-        val bgColor = when {
-            selectedIndex == -1 -> Color.White    // not answered
-            index == question.correctIndex -> Color(0xFF1D9E75)  // correct = green
-            index == selectedIndex -> Color(0xFFE24B4A)  // wrong = red
-            else -> Color.White  // other options stay white
-        }
-        Button(
-            onClick = {
-                // Only respond if no answer selected yet
-                if (selectedIndex == -1) {
-                    selectedIndex = index
-                    // Brief delay, then navigate
-                    onAnswerSelected(index == question.correctIndex)
-                }
-            },
-            colors = ButtonDefaults.buttonColors(containerColor = bgColor)
-        ) {
-            Text(answer)
-        }
-    }
+      <p style={{ fontSize: 13, color: MUTED, margin: "0 0 8px" }}>When a user taps an answer, highlight it green or red — then move on.</p>
+      <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+        <p style={{ fontSize: 11, fontWeight: 700, color: PURPLE, textTransform: "uppercase", letterSpacing: ".06em", margin: "0 0 2px" }}>Android · Kotlin</p>
+        <Step n={1} title="Track the selected answer" accent={PURPLE}>
+          <CodePane accent={PURPLE}>
+{`// -1 means no answer tapped yet
+var selectedIndex by remember { mutableStateOf(-1) }`}
+          </CodePane>
+        </Step>
+        <Step n={2} title="Compute button color" accent={PURPLE}>
+          <CodePane accent={PURPLE}>
+{`val bgColor = when {
+    selectedIndex == -1              -> Color.White           // not answered
+    index == question.correctIndex   -> Color(0xFF1D9E75)    // correct = green
+    index == selectedIndex           -> Color(0xFFE24B4A)    // wrong = red
+    else                             -> Color.White           // others unchanged
 }`}
-        </CodePane>
-        <div style={{ flex: 0.7, display: "flex", flexDirection: "column", gap: 6, justifyContent: "center" }}>
-          <p style={{ fontSize: 12, fontWeight: 600, color: TEXT, margin: "0 0 8px" }}>Visual result</p>
-          {[
-            { label: "London", state: "white" },
-            { label: "Berlin", state: "white" },
-            { label: "Paris", state: "correct" },
-            { label: "Madrid", state: "selected-wrong" },
-          ].map(a => (
-            <div key={a.label} style={{
-              background: a.state === "correct" ? "#E1F5EE" : a.state === "selected-wrong" ? "#FCEBEB" : "#fff",
-              border: `1px solid ${a.state === "correct" ? TEAL : a.state === "selected-wrong" ? "#E24B4A" : "#534AB744"}`,
-              borderRadius: 8, padding: "7px 12px"
-            }}>
-              <p style={{ fontSize: 12, color: a.state === "correct" ? TEAL : a.state === "selected-wrong" ? "#E24B4A" : PURPLE, margin: 0, fontWeight: a.state !== "white" ? 600 : 400 }}>{a.label}</p>
-            </div>
-          ))}
-          <p style={{ fontSize: 11, color: MUTED, margin: "4px 0 0", fontStyle: "italic" }}>User tapped Madrid (wrong). Paris highlighted green, Madrid highlighted red.</p>
-        </div>
+          </CodePane>
+        </Step>
+        <Step n={3} title="Guard against double-tap" accent={PURPLE}>
+          <CodePane accent={PURPLE}>
+{`Button(onClick = {
+    if (selectedIndex == -1) {          // only respond once
+        selectedIndex = index
+        onAnswerSelected(index == question.correctIndex)
+    }
+}, colors = ButtonDefaults.buttonColors(containerColor = bgColor)) {
+    Text(answer)
+}`}
+          </CodePane>
+        </Step>
+
+        <p style={{ fontSize: 11, fontWeight: 700, color: TEAL, textTransform: "uppercase", letterSpacing: ".06em", margin: "8px 0 2px" }}>iOS · Swift</p>
+        <Step n={1} title="Track the selected answer" accent={TEAL}>
+          <CodePane accent={TEAL}>
+{`@State private var selectedIndex = -1
+// -1 means no answer tapped yet`}
+          </CodePane>
+        </Step>
+        <Step n={2} title="Color helper functions" accent={TEAL}>
+          <CodePane accent={TEAL}>
+{`func buttonBgColor(_ index: Int) -> Color {
+    if selectedIndex == -1 { return .white }
+    if index == question.correctIndex { return Color(red:0.11,green:0.62,blue:0.46) }
+    if index == selectedIndex { return Color(red:0.89,green:0.29,blue:0.29) }
+    return .white
+}`}
+          </CodePane>
+        </Step>
+        <Step n={3} title="Guard against double-tap" accent={TEAL}>
+          <CodePane accent={TEAL}>
+{`Button(action: {
+    if selectedIndex == -1 {            // only respond once
+        selectedIndex = index
+        onAnswerSelected(index == question.correctIndex)
+    }
+}) {
+    Text(answer).background(buttonBgColor(index))
+}`}
+          </CodePane>
+        </Step>
       </div>
     </Shell>
   ),
 
   // 10: Results screen pattern
   () => (
-    <Shell tag="Patterns" title="The results screen — a natural use of when/switch" notes="Connect this back to the when/switch pattern from Week 1 Session 2. Students have seen this before — it should feel familiar. The new thing here is using a computed percentage to drive both the display and the message. Walk through the percentage calculation explicitly — integer division is a common gotcha.">
-      <div style={{ display: "flex", gap: 10, marginTop: 6 }}>
-        <CodePane title="ResultsScreen — Compose" accent={PURPLE}>
-{`@Composable
-fun ResultsScreen(
-    score: Int,
-    total: Int,
-    onPlayAgain: () -> Unit
+    <Shell tag="Patterns" title="The results screen — score, message, and Play Again" notes="Connect the when/switch pattern to what students saw in Week 1 Session 2. The new concept here is using a computed percentage to drive both the display and the message. Walk through the percentage calculation explicitly — integer division is a common gotcha.">
+      <div style={{ display: "flex", flexDirection: "column", gap: 6, marginTop: 6 }}>
+        <p style={{ fontSize: 11, fontWeight: 700, color: PURPLE, textTransform: "uppercase", letterSpacing: ".06em", margin: "0 0 2px" }}>Android · Kotlin</p>
+        <Step n={1} title="Calculate percentage" accent={PURPLE}>
+          <CodePane accent={PURPLE}>
+{`// toFloat() prevents integer division truncating to 0
+val percentage = (score.toFloat() / total * 100).toInt()`}
+          </CodePane>
+        </Step>
+        <Step n={2} title="Pick the feedback message" accent={PURPLE}>
+          <CodePane accent={PURPLE}>
+{`val message = when {
+    percentage == 100 -> "Perfect score!"
+    percentage >= 70  -> "Great job!"
+    percentage >= 40  -> "Good effort!"
+    else              -> "Keep practicing!"
+}`}
+          </CodePane>
+        </Step>
+        <Step n={3} title="Wire Play Again" accent={PURPLE}>
+          <CodePane accent={PURPLE}>
+{`Button(
+    onClick = onPlayAgain,
+    modifier = Modifier.fillMaxWidth()
 ) {
-    // Calculate percentage — note: toFloat() prevents integer division
-    val percentage = (score.toFloat() / total * 100).toInt()
+    Text("Play Again")
+}`}
+          </CodePane>
+        </Step>
 
-    // Message depends on how well they did
-    val message = when {
-        percentage == 100 -> "Perfect score!"
-        percentage >= 70  -> "Great job!"
-        percentage >= 40  -> "Good effort!"
-        else              -> "Keep practicing!"
-    }
-
-    Column(
-        modifier = Modifier.fillMaxSize().padding(32.dp),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text("Quiz Complete!", fontSize = 28.sp,
-            fontWeight = FontWeight.Bold,
-            color = Color(0xFF534AB7))
-        Spacer(Modifier.height(24.dp))
-        Text("${"$"}score / ${"$"}total", fontSize = 64.sp,
-            fontWeight = FontWeight.Bold)
-        Text("${"$"}percentage% correct", color = Color.Gray)
-        Text(message, fontSize = 18.sp,
-            color = Color(0xFF1D9E75))
-        Spacer(Modifier.height(40.dp))
-        Button(onClick = onPlayAgain,
-            modifier = Modifier.fillMaxWidth()) {
-            Text("Play Again")
-        }
+        <p style={{ fontSize: 11, fontWeight: 700, color: TEAL, textTransform: "uppercase", letterSpacing: ".06em", margin: "8px 0 2px" }}>iOS · Swift</p>
+        <Step n={1} title="Calculate percentage" accent={TEAL}>
+          <CodePane accent={TEAL}>
+{`var percentage: Int {
+    Int(Double(score) / Double(total) * 100)
+}`}
+          </CodePane>
+        </Step>
+        <Step n={2} title="Pick the feedback message" accent={TEAL}>
+          <CodePane accent={TEAL}>
+{`var message: String {
+    switch percentage {
+    case 100:   return "Perfect score!"
+    case 70...: return "Great job!"
+    case 40...: return "Good effort!"
+    default:    return "Keep practicing!"
     }
 }`}
-        </CodePane>
-        <div style={{ flex: 0.6, display: "flex", flexDirection: "column", gap: 8 }}>
-          <div style={{ background: GRAY, borderRadius: 10, padding: 16, display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}>
-            <p style={{ fontSize: 16, fontWeight: 700, color: PURPLE, margin: 0 }}>Quiz Complete!</p>
-            <p style={{ fontSize: 40, fontWeight: 800, color: TEXT, margin: "8px 0 0" }}>2 / 3</p>
-            <p style={{ fontSize: 12, color: MUTED, margin: 0 }}>67% correct</p>
-            <p style={{ fontSize: 14, color: TEAL, fontWeight: 600, margin: "4px 0 12px" }}>Good effort!</p>
-            <div style={{ background: PURPLE, borderRadius: 8, padding: "8px 24px", width: "80%" }}>
-              <p style={{ fontSize: 13, fontWeight: 700, color: "#fff", margin: 0, textAlign: "center" }}>Play Again</p>
-            </div>
-          </div>
-          <Warn>{"Integer division gotcha: score / total * 100 where score and total are both Int will give 0 if score is less than total. Cast to Float first: (score.toFloat() / total * 100).toInt()"}</Warn>
-        </div>
+          </CodePane>
+        </Step>
+        <Step n={3} title="Wire Play Again" accent={TEAL}>
+          <CodePane accent={TEAL}>
+{`Button(action: onPlayAgain) {
+    Text("Play Again")
+        .font(.headline).foregroundColor(.white)
+        .frame(maxWidth: .infinity).padding()
+        .background(Color(red:0.33,green:0.29,blue:0.72))
+        .cornerRadius(10)
+}`}
+          </CodePane>
+        </Step>
       </div>
     </Shell>
   ),
@@ -492,157 +501,143 @@ fun ResultsScreen(
 
   // 12: Code-along part 1 — updated NavHost
   () => (
-    <Shell tag="Live code-along" title="Part 1 — updated NavHost with score and data passing" notes="Type this out carefully. The score variable lives above the NavHost — make sure students see WHERE it is declared. This is the key architectural decision: score is hoisted to the level that needs to share it across all screens.">
-      <CodePane title="MainActivity.kt — full NavHost with score and routing" accent={PURPLE}>
-{`class MainActivity : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContent {
-            val navController = rememberNavController()
-            // Score lives here — shared across all screens
-            var score by remember { mutableStateOf(0) }
-
-            NavHost(navController, startDestination = "home") {
-                composable("home") {
-                    score = 0  // reset score every time home appears
-                    HomeScreen(
-                        onStartClicked = {
-                            navController.navigate("question/0")
-                        }
-                    )
-                }
-                composable("question/{questionIndex}") { entry ->
-                    val index = entry.arguments
-                        ?.getString("questionIndex")?.toInt() ?: 0
-                    QuestionScreen(
-                        questionIndex = index,
-                        onAnswerSelected = { correct ->
-                            if (correct) score++
-                            val next = index + 1
-                            if (next < sampleQuestions.size) {
-                                navController.navigate("question/${"$"}{next}")
-                            } else {
-                                navController.navigate("results/${"$"}{score}")
-                            }
-                        }
-                    )
-                }
-                composable("results/{finalScore}") { entry ->
-                    val finalScore = entry.arguments
-                        ?.getString("finalScore")?.toInt() ?: 0
-                    ResultsScreen(
-                        score = finalScore,
-                        total = sampleQuestions.size,
-                        onPlayAgain = {
-                            navController.popBackStack("home", inclusive = false)
-                        }
-                    )
-                }
+    <Shell tag="Live code-along" title="Part 1 — NavHost with score state and routes" notes="Type this out carefully. The score variable lives above the NavHost — make sure students see WHERE it is declared. This is the key architectural decision: score is hoisted to the level that needs to share it across all screens.">
+      <div style={{ display: "flex", flexDirection: "column", gap: 6, marginTop: 6 }}>
+        <p style={{ fontSize: 11, fontWeight: 700, color: PURPLE, textTransform: "uppercase", letterSpacing: ".06em", margin: "0 0 2px" }}>Android · Kotlin — MainActivity.kt</p>
+        <Step n={1} title="Lift score above the NavHost" accent={PURPLE}>
+          <CodePane accent={PURPLE}>
+{`val navController = rememberNavController()
+// Declared here so ALL screens can read and update it
+var score by remember { mutableStateOf(0) }`}
+          </CodePane>
+        </Step>
+        <Step n={2} title="Home route — reset score on arrival" accent={PURPLE}>
+          <CodePane accent={PURPLE}>
+{`composable("home") {
+    score = 0   // fresh start every time home appears
+    HomeScreen(
+        onStartClicked = { navController.navigate("question/0") }
+    )
+}`}
+          </CodePane>
+        </Step>
+        <Step n={3} title="Question route — extract index, handle answer" accent={PURPLE}>
+          <CodePane accent={PURPLE}>
+{`composable("question/{questionIndex}") { entry ->
+    val index = entry.arguments?.getString("questionIndex")?.toInt() ?: 0
+    QuestionScreen(
+        questionIndex = index,
+        onAnswerSelected = { correct ->
+            if (correct) score++
+            val next = index + 1
+            if (next < sampleQuestions.size) {
+                navController.navigate("question/${"$"}{next}")
+            } else {
+                navController.navigate("results/${"$"}{score}")
             }
         }
-    }
+    )
 }`}
-      </CodePane>
+          </CodePane>
+        </Step>
+        <Step n={4} title="Results route — pop back to home on Play Again" accent={PURPLE}>
+          <CodePane accent={PURPLE}>
+{`composable("results/{finalScore}") { entry ->
+    val finalScore = entry.arguments?.getString("finalScore")?.toInt() ?: 0
+    ResultsScreen(
+        score = finalScore,
+        total = sampleQuestions.size,
+        onPlayAgain = {
+            navController.popBackStack("home", inclusive = false)
+        }
+    )
+}`}
+          </CodePane>
+        </Step>
+      </div>
     </Shell>
   ),
 
   // 13: Code-along part 2 — updated QuestionScreen
   () => (
     <Shell tag="Live code-along" title="Part 2 — QuestionScreen with answer feedback" notes="The selectedIndex state is the key new concept here. Walk through the color logic slowly. Ask students: when selectedIndex is -1, what color do all buttons show? When the user taps button 2, what happens to button 2's color? What happens to button 3 (the correct answer)?">
-      <div style={{ display: "flex", gap: 10, marginTop: 6 }}>
-        <CodePane title="QuestionScreen — with answer handling" accent={PURPLE}>
+      <div style={{ display: "flex", flexDirection: "column", gap: 6, marginTop: 6 }}>
+        <p style={{ fontSize: 11, fontWeight: 700, color: PURPLE, textTransform: "uppercase", letterSpacing: ".06em", margin: "0 0 2px" }}>Android · Kotlin</p>
+        <Step n={1} title="Accept index and callback" accent={PURPLE}>
+          <CodePane accent={PURPLE}>
 {`@Composable
 fun QuestionScreen(
     questionIndex: Int,
     onAnswerSelected: (correct: Boolean) -> Unit
 ) {
     val question = sampleQuestions[questionIndex]
-    var selectedIndex by remember { mutableStateOf(-1) }
-
-    Column(
-        modifier = Modifier.fillMaxSize()
-            .background(Color(0xFFF5F5F5)).padding(24.dp),
-        verticalArrangement = Arrangement.Center
-    ) {
-        Text("Question ${"$"}{questionIndex + 1} of ${"$"}{sampleQuestions.size}",
-            fontSize = 14.sp, color = Color.Gray)
-        Spacer(Modifier.height(12.dp))
-        Text(question.text, fontSize = 22.sp,
-            fontWeight = FontWeight.Bold, lineHeight = 30.sp)
-        Spacer(Modifier.height(32.dp))
-
-        question.answers.forEachIndexed { index, answer ->
-            val bgColor = when {
-                selectedIndex == -1 -> Color.White
-                index == question.correctIndex -> Color(0xFF1D9E75)
-                index == selectedIndex -> Color(0xFFE24B4A)
-                else -> Color.White
+    var selectedIndex by remember { mutableStateOf(-1) }`}
+          </CodePane>
+        </Step>
+        <Step n={2} title="Color logic per button" accent={PURPLE}>
+          <CodePane accent={PURPLE}>
+{`question.answers.forEachIndexed { index, answer ->
+    val bgColor = when {
+        selectedIndex == -1            -> Color.White
+        index == question.correctIndex -> Color(0xFF1D9E75)  // green
+        index == selectedIndex         -> Color(0xFFE24B4A)  // red
+        else                           -> Color.White
+    }`}
+          </CodePane>
+        </Step>
+        <Step n={3} title="Tap handler — fire once only" accent={PURPLE}>
+          <CodePane accent={PURPLE}>
+{`    Button(
+        onClick = {
+            if (selectedIndex == -1) {
+                selectedIndex = index
+                onAnswerSelected(index == question.correctIndex)
             }
-            Button(
-                onClick = {
-                    if (selectedIndex == -1) {
-                        selectedIndex = index
-                        onAnswerSelected(index == question.correctIndex)
-                    }
-                },
-                modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = bgColor)
-            ) { Text(answer) }
-        }
-    }
+        },
+        modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
+        colors = ButtonDefaults.buttonColors(containerColor = bgColor)
+    ) { Text(answer) }
 }`}
-        </CodePane>
-        <CodePane title="SwiftUI equivalent" accent={TEAL}>
+          </CodePane>
+        </Step>
+
+        <p style={{ fontSize: 11, fontWeight: 700, color: TEAL, textTransform: "uppercase", letterSpacing: ".06em", margin: "8px 0 2px" }}>iOS · Swift</p>
+        <Step n={1} title="Accept index and callback" accent={TEAL}>
+          <CodePane accent={TEAL}>
 {`struct QuestionScreen: View {
     let questionIndex: Int
     let onAnswerSelected: (Bool) -> Void
     var question: Question { sampleQuestions[questionIndex] }
-
-    @State private var selectedIndex = -1
-
-    var body: some View {
-        ZStack {
-            Color(UIColor.systemGray6).ignoresSafeArea()
-            VStack(alignment: .leading, spacing: 12) {
-                Text("Question \\(questionIndex+1) of \\(sampleQuestions.count)")
-                    .foregroundColor(.gray)
-                Text(question.text)
-                    .font(.title2).fontWeight(.bold)
-                Spacer().frame(height: 20)
-                ForEach(Array(question.answers.enumerated()),
-                    id: \\.offset) { index, answer in
-                    Button(action: {
-                        if selectedIndex == -1 {
-                            selectedIndex = index
-                            onAnswerSelected(
-                                index == question.correctIndex
-                            )
-                        }
-                    }) {
-                        Text(answer)
-                            .foregroundColor(buttonTextColor(index))
-                            .frame(maxWidth:.infinity).padding()
-                            .background(buttonBgColor(index))
-                            .cornerRadius(10)
-                    }
-                }
-            }.padding(24)
+    @State private var selectedIndex = -1`}
+          </CodePane>
+        </Step>
+        <Step n={2} title="Color helper functions" accent={TEAL}>
+          <CodePane accent={TEAL}>
+{`func buttonBgColor(_ index: Int) -> Color {
+    if selectedIndex == -1 { return .white }
+    if index == question.correctIndex { return Color(red:0.11,green:0.62,blue:0.46) }
+    if index == selectedIndex { return Color(red:0.89,green:0.29,blue:0.29) }
+    return .white
+}`}
+          </CodePane>
+        </Step>
+        <Step n={3} title="Tap handler — fire once only" accent={TEAL}>
+          <CodePane accent={TEAL}>
+{`ForEach(Array(question.answers.enumerated()), id: \\.offset) { index, answer in
+    Button(action: {
+        if selectedIndex == -1 {
+            selectedIndex = index
+            onAnswerSelected(index == question.correctIndex)
         }
-    }
-
-    func buttonBgColor(_ index: Int) -> Color {
-        if selectedIndex == -1 { return .white }
-        if index == question.correctIndex { return Color(red:0.11,green:0.62,blue:0.46) }
-        if index == selectedIndex { return Color(red:0.89,green:0.29,blue:0.29) }
-        return .white
-    }
-    func buttonTextColor(_ index: Int) -> Color {
-        if selectedIndex == -1 { return Color(red:0.33,green:0.29,blue:0.72) }
-        if index == question.correctIndex || index == selectedIndex { return .white }
-        return Color(red:0.33,green:0.29,blue:0.72)
+    }) {
+        Text(answer)
+            .foregroundColor(buttonTextColor(index))
+            .frame(maxWidth:.infinity).padding()
+            .background(buttonBgColor(index)).cornerRadius(10)
     }
 }`}
-        </CodePane>
+          </CodePane>
+        </Step>
       </div>
     </Shell>
   ),
@@ -650,146 +645,158 @@ fun QuestionScreen(
   // 14: Code-along part 3 — results screen
   () => (
     <Shell tag="Live code-along" title="Part 3 — ResultsScreen" notes="Build this last. It is the payoff — run the full quiz and land here. Then tap Play Again and watch the app pop all the way back to home. Students should feel the satisfaction of a complete, working app at this moment. Let them tap through it themselves before explaining anything.">
-      <div style={{ display: "flex", gap: 10, marginTop: 6 }}>
-        <CodePane title="ResultsScreen — Compose" accent={PURPLE}>
+      <div style={{ display: "flex", flexDirection: "column", gap: 6, marginTop: 6 }}>
+        <p style={{ fontSize: 11, fontWeight: 700, color: PURPLE, textTransform: "uppercase", letterSpacing: ".06em", margin: "0 0 2px" }}>Android · Kotlin</p>
+        <Step n={1} title="Accept score and callback" accent={PURPLE}>
+          <CodePane accent={PURPLE}>
 {`@Composable
 fun ResultsScreen(
     score: Int,
     total: Int,
     onPlayAgain: () -> Unit
 ) {
-    val percentage = (score.toFloat() / total * 100).toInt()
-    val message = when {
-        percentage == 100 -> "Perfect score!"
-        percentage >= 70  -> "Great job!"
-        percentage >= 40  -> "Good effort!"
-        else              -> "Keep practicing!"
-    }
-
-    Column(
-        modifier = Modifier.fillMaxSize()
-            .background(Color(0xFFF5F5F5)).padding(32.dp),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text("Quiz Complete!", fontSize = 28.sp,
-            fontWeight = FontWeight.Bold,
-            color = Color(0xFF534AB7))
-        Spacer(Modifier.height(24.dp))
-        Text("${"$"}score / ${"$"}total", fontSize = 64.sp,
-            fontWeight = FontWeight.Bold)
-        Text("${"$"}percentage% correct", color = Color.Gray)
-        Spacer(Modifier.height(8.dp))
-        Text(message, fontSize = 18.sp,
-            color = Color(0xFF1D9E75))
-        Spacer(Modifier.height(40.dp))
-        Button(
-            onClick = onPlayAgain,
-            modifier = Modifier.fillMaxWidth(),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = Color(0xFF534AB7))
-        ) {
-            Text("Play Again", fontSize = 16.sp)
-        }
+    val percentage = (score.toFloat() / total * 100).toInt()`}
+          </CodePane>
+        </Step>
+        <Step n={2} title="Pick the feedback message" accent={PURPLE}>
+          <CodePane accent={PURPLE}>
+{`val message = when {
+    percentage == 100 -> "Perfect score!"
+    percentage >= 70  -> "Great job!"
+    percentage >= 40  -> "Good effort!"
+    else              -> "Keep practicing!"
+}`}
+          </CodePane>
+        </Step>
+        <Step n={3} title="Render score and Play Again" accent={PURPLE}>
+          <CodePane accent={PURPLE}>
+{`Column(
+    modifier = Modifier.fillMaxSize().padding(32.dp),
+    verticalArrangement = Arrangement.Center,
+    horizontalAlignment = Alignment.CenterHorizontally
+) {
+    Text("Quiz Complete!", fontSize = 28.sp, fontWeight = FontWeight.Bold)
+    Spacer(Modifier.height(24.dp))
+    Text("${"$"}score / ${"$"}total", fontSize = 64.sp, fontWeight = FontWeight.Bold)
+    Text("${"$"}percentage% correct — ${"$"}message",
+        fontSize = 18.sp, color = Color(0xFF1D9E75))
+    Spacer(Modifier.height(40.dp))
+    Button(onClick = onPlayAgain, modifier = Modifier.fillMaxWidth()) {
+        Text("Play Again", fontSize = 16.sp)
     }
 }`}
-        </CodePane>
-        <CodePane title="ResultsScreen — SwiftUI" accent={TEAL}>
+          </CodePane>
+        </Step>
+
+        <p style={{ fontSize: 11, fontWeight: 700, color: TEAL, textTransform: "uppercase", letterSpacing: ".06em", margin: "8px 0 2px" }}>iOS · Swift</p>
+        <Step n={1} title="Accept score and callback" accent={TEAL}>
+          <CodePane accent={TEAL}>
 {`struct ResultsScreen: View {
     let score: Int
     let total: Int
     let onPlayAgain: () -> Void
-    @Environment(\\.dismiss) var dismiss
-
-    var percentage: Int {
-        Int(Double(score) / Double(total) * 100)
-    }
-    var message: String {
-        switch percentage {
-        case 100:   return "Perfect score!"
-        case 70...: return "Great job!"
-        case 40...: return "Good effort!"
-        default:    return "Keep practicing!"
-        }
-    }
-    var body: some View {
-        ZStack {
-            Color(UIColor.systemGray6).ignoresSafeArea()
-            VStack(spacing: 8) {
-                Text("Quiz Complete!")
-                    .font(.largeTitle).fontWeight(.bold)
-                    .foregroundColor(
-                        Color(red:0.33,green:0.29,blue:0.72))
-                Spacer().frame(height: 24)
-                Text("\\(score) / \\(total)")
-                    .font(.system(size:64, weight:.bold))
-                Text("\\(percentage)% correct").foregroundColor(.gray)
-                Text(message).font(.title3)
-                    .foregroundColor(
-                        Color(red:0.11,green:0.62,blue:0.46))
-                Spacer().frame(height: 40)
-                Button(action: onPlayAgain) {
-                    Text("Play Again").font(.headline)
-                        .foregroundColor(.white)
-                        .frame(maxWidth:.infinity).padding()
-                        .background(
-                            Color(red:0.33,green:0.29,blue:0.72))
-                        .cornerRadius(10)
-                }
-            }.padding(32)
-        }
-        .navigationBarBackButtonHidden(true)
+    var percentage: Int { Int(Double(score) / Double(total) * 100) }`}
+          </CodePane>
+        </Step>
+        <Step n={2} title="Pick the feedback message" accent={TEAL}>
+          <CodePane accent={TEAL}>
+{`var message: String {
+    switch percentage {
+    case 100:   return "Perfect score!"
+    case 70...: return "Great job!"
+    case 40...: return "Good effort!"
+    default:    return "Keep practicing!"
     }
 }`}
-        </CodePane>
+          </CodePane>
+        </Step>
+        <Step n={3} title="Render score and Play Again" accent={TEAL}>
+          <CodePane accent={TEAL}>
+{`var body: some View {
+    VStack(spacing: 8) {
+        Text("Quiz Complete!").font(.largeTitle).fontWeight(.bold)
+        Spacer().frame(height: 24)
+        Text("\\(score) / \\(total)").font(.system(size:64, weight:.bold))
+        Text("\\(percentage)% — \\(message)")
+            .font(.title3).foregroundColor(Color(red:0.11,green:0.62,blue:0.46))
+        Spacer().frame(height: 40)
+        Button(action: onPlayAgain) {
+            Text("Play Again").font(.headline).foregroundColor(.white)
+                .frame(maxWidth:.infinity).padding()
+                .background(Color(red:0.33,green:0.29,blue:0.72)).cornerRadius(10)
+        }
+    }.padding(32)
+    .navigationBarBackButtonHidden(true)
+}`}
+          </CodePane>
+        </Step>
       </div>
     </Shell>
   ),
 
-  // 15: Lab intro
+  // 15: Lab — part 1
   () => (
-    <Shell tag="Lab intro" timer="4" title="Lab time — completing the trivia app" subtitle="Go to the Lab tab on the course site — Session 2 Lab." notes="Remind students this lab builds directly on Session 1 — they need their Session 1 code working before starting. Anyone who does not have it working should pair with someone who does. The lab ends with a full quiz flow, which they should record as a GIF for Assignment 2.">
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginTop: 6 }}>
-        <div>
-          <p style={{ fontSize: 12, fontWeight: 600, color: TEXT, margin: "0 0 8px" }}>Lab steps — Session 2</p>
-          {[
-            { n: 0, t: "Open TriviaApp from Session 1", time: "3 min" },
-            { n: 1, t: "Pass questionIndex through the route", time: "10 min" },
-            { n: 2, t: "Add score state + onAnswerSelected callback", time: "12 min" },
-            { n: 3, t: "Build ResultsScreen with score and Play Again", time: "8 min" },
-            { n: 4, t: "Ask Claude about data passing differences", time: "7 min" },
-            { n: 5, t: "Reflection — 3 questions", time: "5 min" },
-          ].map(s => (
-            <div key={s.n} style={{ display: "flex", gap: 8, margin: "4px 0", alignItems: "center" }}>
-              <span style={{ background: PURPLE, color: "#fff", borderRadius: 4, fontSize: 10, fontWeight: 700, padding: "1px 5px", flexShrink: 0 }}>Step {s.n}</span>
-              <span style={{ fontSize: 12, color: TEXT, flex: 1 }}>{s.t}</span>
-              <span style={{ fontSize: 11, color: MUTED, flexShrink: 0 }}>{s.time}</span>
+    <Shell tag="Lab intro" title="Lab — part 1: data passing and score" subtitle="~25 min · Open your TriviaApp from Session 1." notes="Remind students this lab builds directly on Session 1 code. Anyone who does not have working navigation should pair up first. The biggest bug to watch for: calling navigate('home') instead of popBackStack() for Play Again.">
+      <div style={{ display: "flex", flexDirection: "column", marginTop: 8 }}>
+        {[
+          { n: 0, t: "Open TriviaApp from Session 1", desc: "Make sure home → question navigation still works", time: "3 min" },
+          { n: 1, t: "Pass questionIndex through the route", desc: "Update the route to 'question/{questionIndex}' and navigate with index 0", time: "10 min" },
+          { n: 2, t: "Add score state + onAnswerSelected callback", desc: "Hoist score above NavHost, wire the answer callback to increment and advance", time: "12 min" },
+        ].map(s => (
+          <div key={s.n} style={{ display: "flex", gap: 12, padding: "10px 0", borderBottom: `1px solid ${GRAY}`, alignItems: "flex-start" }}>
+            <span style={{ background: PURPLE, color: "#fff", borderRadius: "50%", width: 24, height: 24, fontSize: 11, fontWeight: 800, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, marginTop: 1 }}>{s.n}</span>
+            <div style={{ flex: 1 }}>
+              <p style={{ fontSize: 13, fontWeight: 600, color: TEXT, margin: "0 0 2px" }}>{s.t}</p>
+              <p style={{ fontSize: 12, color: MUTED, margin: 0, lineHeight: 1.4 }}>{s.desc}</p>
             </div>
-          ))}
-        </div>
-        <div style={{ background: GRAY, borderRadius: 10, padding: 14 }}>
-          <p style={{ fontSize: 12, fontWeight: 600, color: TEXT, margin: "0 0 8px" }}>Before you leave, show a TA</p>
-          {[
-            "Full quiz flow — home → questions → results",
-            "Correct/wrong answer highlighting works",
-            "Play Again resets and returns to home",
-            "Both platform versions working",
-            "Reflection comment block complete",
-          ].map(t => (
-            <div key={t} style={{ display: "flex", gap: 6, margin: "5px 0" }}>
-              <span style={{ color: TEAL, fontWeight: 700, flexShrink: 0 }}>✓</span>
-              <span style={{ fontSize: 12, color: TEXT }}>{t}</span>
-            </div>
-          ))}
-          <div style={{ marginTop: 10, background: TEAL_LIGHT, borderRadius: 6, padding: "8px 10px" }}>
-            <p style={{ fontSize: 11, color: "#085041", margin: 0, lineHeight: 1.5 }}>Record a GIF of your full quiz run before leaving — you will need it for Assignment 2.</p>
+            <span style={{ fontSize: 11, color: MUTED, flexShrink: 0, marginTop: 2 }}>{s.time}</span>
           </div>
+        ))}
+      </div>
+      <Warn title="Common mistake">{"Using navigate('home') for Play Again instead of popBackStack(). This pushes a new home screen — the back button will go back to results. Always use popBackStack() to go backwards."}</Warn>
+    </Shell>
+  ),
+
+  // 16: Lab — part 2
+  () => (
+    <Shell tag="Lab intro" title="Lab — part 2: results, Claude, and reflection" subtitle="~20 min · Then show a TA the full flow before leaving." notes="Circulate while students build the ResultsScreen. The most satisfying moment is when they run the full quiz for the first time. Make sure they see the Play Again button pop them back to home cleanly. Remind them to record their GIF walkthrough for Assignment 2.">
+      <div style={{ display: "flex", flexDirection: "column", marginTop: 8 }}>
+        {[
+          { n: 3, t: "Build ResultsScreen", desc: "Score display, percentage calculation, feedback message, and Play Again using popBackStack()", time: "8 min" },
+          { n: 4, t: "Ask Claude about data passing", desc: "Translate your Compose route-argument approach to SwiftUI (or vice versa). Ask Claude to explain the architectural difference", time: "7 min" },
+          { n: 5, t: "Reflection", desc: "Answer the 3 reflection questions in a comment block at the top of your main file", time: "5 min" },
+        ].map(s => (
+          <div key={s.n} style={{ display: "flex", gap: 12, padding: "10px 0", borderBottom: `1px solid ${GRAY}`, alignItems: "flex-start" }}>
+            <span style={{ background: PURPLE, color: "#fff", borderRadius: "50%", width: 24, height: 24, fontSize: 11, fontWeight: 800, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, marginTop: 1 }}>{s.n}</span>
+            <div style={{ flex: 1 }}>
+              <p style={{ fontSize: 13, fontWeight: 600, color: TEXT, margin: "0 0 2px" }}>{s.t}</p>
+              <p style={{ fontSize: 12, color: MUTED, margin: 0, lineHeight: 1.4 }}>{s.desc}</p>
+            </div>
+            <span style={{ fontSize: 11, color: MUTED, flexShrink: 0, marginTop: 2 }}>{s.time}</span>
+          </div>
+        ))}
+      </div>
+      <div style={{ background: GRAY, borderRadius: 10, padding: "12px 14px", marginTop: 12 }}>
+        <p style={{ fontSize: 12, fontWeight: 600, color: TEXT, margin: "0 0 8px" }}>Before you leave — show a TA</p>
+        {[
+          "Full quiz flow — home → questions → results",
+          "Correct / wrong answer highlighting works",
+          "Play Again resets and returns to home cleanly",
+          "Reflection comment block complete",
+        ].map(t => (
+          <div key={t} style={{ display: "flex", gap: 6, margin: "5px 0" }}>
+            <span style={{ color: TEAL, fontWeight: 700, flexShrink: 0 }}>✓</span>
+            <span style={{ fontSize: 12, color: TEXT }}>{t}</span>
+          </div>
+        ))}
+        <div style={{ marginTop: 10, background: TEAL_LIGHT, borderRadius: 6, padding: "8px 10px" }}>
+          <p style={{ fontSize: 11, color: "#085041", margin: 0, lineHeight: 1.5 }}>Record a GIF of your full quiz run before leaving — you will need it for Assignment 2.</p>
         </div>
       </div>
     </Shell>
   ),
 
-  // 16: Assignment 2 overview
+  // 17: Assignment 2 overview
   () => (
     <Shell tag="Assignment 2" title="Assignment 2 — your own trivia app" subtitle="Same structure, your own theme and questions." notes="Spend 3 minutes on this. The key message: the structure is provided, the creativity is theirs. Encourage unusual themes — the more specific the better. A trivia app about a specific TV show episode, or about their hometown, or about a niche hobby is far more interesting to review than generic geography questions.">
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginTop: 6 }}>
@@ -820,7 +827,7 @@ fun ResultsScreen(
     </Shell>
   ),
 
-  // 17: Closing
+  // 18: Closing
   () => (
     <div style={{ background: `linear-gradient(135deg, ${PURPLE_DARK} 0%, ${PURPLE} 100%)`, borderRadius: 12, padding: "44px 40px", minHeight: 360, display: "flex", flexDirection: "column", justifyContent: "space-between", boxSizing: "border-box" }}>
       <div>
