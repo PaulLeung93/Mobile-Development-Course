@@ -109,18 +109,21 @@ function Overview({ platform, setPlatform }) {
 
       <PlatformToggle platform={platform} setPlatform={setPlatform} />
 
-      <div style={{ marginTop: 16, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
-        {[
-          { label: "Session 1 — Lecture + Lab", val: "What makes a great 5-minute demo. Polish sprint — fix crashes, empty states, and app icon. Rehearse with your team at least once." },
-          { label: "Session 2 — Demo Day", val: "Live capstone presentations. Each team: ~4 min demo + 2 min Q&A. 6 minutes total." },
-          { label: "Final submission", val: "GitHub repo + demo video + slide deck. Due before demo day." },
-          { label: "Individual reflection", val: "~300 words, submitted individually alongside the team submission." },
-        ].map(item => (
-          <div key={item.label} style={{ background: "var(--color-background-primary)", border: "0.5px solid var(--color-border-tertiary)", borderRadius: 8, padding: "10px 12px" }}>
-            <p style={{ fontSize: 11, fontWeight: 500, color: "var(--color-text-tertiary)", margin: "0 0 4px", textTransform: "uppercase", letterSpacing: ".04em" }}>{item.label}</p>
-            <p style={{ fontSize: 12, color: "var(--color-text-secondary)", margin: 0, lineHeight: 1.5 }}>{item.val}</p>
-          </div>
-        ))}
+      <div style={{ marginTop: 16, padding: "12px 14px", background: "var(--color-background-secondary)", borderRadius: 10, fontSize: 13, lineHeight: 1.7 }}>
+        <strong>{"📦 This unit at a glance"}</strong>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginTop: 10 }}>
+          {[
+            { label: "Session 1 — Lecture + Lab", val: "What makes a great 5-minute demo. Polish sprint — fix crashes, empty states, and app icon. Rehearse with your team at least once." },
+            { label: "Session 2 — Demo Day", val: "Live capstone presentations. Each team: ~4 min demo + 2 min Q&A. 6 minutes total." },
+            { label: "Final submission", val: "GitHub repo + demo video + slide deck. Due before demo day." },
+            { label: "Individual reflection", val: "~300 words, submitted individually alongside the team submission." },
+          ].map(item => (
+            <div key={item.label} style={{ background: "var(--color-background-primary)", border: "0.5px solid var(--color-border-tertiary)", borderRadius: 8, padding: "10px 12px" }}>
+              <p style={{ fontSize: 11, fontWeight: 500, color: "var(--color-text-tertiary)", margin: "0 0 4px", textTransform: "uppercase", letterSpacing: ".04em" }}>{item.label}</p>
+              <p style={{ fontSize: 12, color: "var(--color-text-secondary)", margin: 0, lineHeight: 1.5 }}>{item.val}</p>
+            </div>
+          ))}
+        </div>
       </div>
 
       <div style={{ marginTop: 16, padding: "14px", background: "var(--color-background-secondary)", borderRadius: 10, fontSize: 13, lineHeight: 1.7 }}>

@@ -111,6 +111,9 @@ const PlatformToggle = ({ platform, setPlatform }: { platform: string; setPlatfo
 /* ══════════════════════ OVERVIEW ══════════════════════ */
 const Overview = () => (
   <div>
+    <div className="callout-checkpoint" style={{ background: "#E8FCE8", padding: "10px 14px", borderRadius: 8, fontSize: 13, marginBottom: 12 }}>
+      Don{"'"}t forget to fill out the {"✏️"} Session Survey at the end of each class session!
+    </div>
     <Warn>Before Session 1, complete two things: the IDE Setup (Android Studio or Xcode) and the Language Primer in the pre-work. Session 1 assumes you have done both.</Warn>
     <h2 style={{ fontSize: 20, fontWeight: 600, margin: "0 0 6px" }}>Unit 1: Your first mobile app</h2>
     <p style={{ fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 1.7, margin: "0 0 16px" }}>
@@ -131,25 +134,36 @@ const Overview = () => (
     ]} />
     <Note>Kotlin and Swift language basics (variables, functions, lambdas/closures) are covered in the pre-work, not in this unit.</Note>
 
-    <h2 style={{ fontSize: 18, fontWeight: 600, margin: "24px 0 8px" }}>This unit at a glance</h2>
-    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, margin: "8px 0" }}>
-      {[
-        { label: "Pre-work", val: "Language primer: just enough Kotlin and Swift to follow along. IDE setup." },
-        { label: "Session 1", val: "Declarative UI — what it is and why it matters. Live code-along: building a profile card." },
-        { label: "Session 2", val: "State and modifiers. Live code-along: building a tap counter with milestones." },
-        { label: "Lab (each session)", val: "Build in one platform, use Claude to translate to the other, then compare and extend." },
-        { label: "Assignment 1", val: "Build a personal profile screen with interactive elements. Submit in either platform." },
-      ].map(item => (
-        <div key={item.label} style={{ background: "var(--color-background-primary)", border: "0.5px solid var(--color-border-tertiary)", borderRadius: 8, padding: "10px 12px" }}>
-          <p style={{ fontSize: 11, fontWeight: 500, color: "var(--color-text-tertiary)", margin: "0 0 4px", textTransform: "uppercase", letterSpacing: ".04em" }}>{item.label}</p>
-          <p style={{ fontSize: 12, color: "var(--color-text-secondary)", margin: 0, lineHeight: 1.5 }}>{item.val}</p>
-        </div>
-      ))}
+    <div style={{ marginTop: 20, padding: "14px", background: "var(--color-background-secondary)", borderRadius: 10, fontSize: 13, lineHeight: 1.7 }}>
+      <strong>Session Info</strong>
+      <ul style={{ margin: "6px 0 0", paddingLeft: 20 }}>
+        <li>{"📅"} See your cohort{"'"}s schedule for session times</li>
+        <li>{"↗"} Session Zoom Link | Passcode: <strong>codepath</strong></li>
+        <li>{"📊"} Link to Slides</li>
+      </ul>
+      <strong style={{ display: "block", marginTop: 10 }}>Upcoming Due Dates</strong>
+      <ul style={{ margin: "6px 0 0", paddingLeft: 20 }}>
+        <li>{"📬"} Assignment 1 — due before Week 2 Session 1</li>
+      </ul>
     </div>
 
-    <h2 style={{ fontSize: 18, fontWeight: 600, margin: "24px 0 8px" }}>Upcoming due dates</h2>
-    <UL items={["Assignment 1 — due before Week 2 Session 1"]} />
-    <Note>The session survey is filled out at the end of each lab — after you have finished building. Your feedback shapes the course!</Note>
+    <div style={{ marginTop: 16, padding: "12px 14px", background: "var(--color-background-secondary)", borderRadius: 10, fontSize: 13, lineHeight: 1.7 }}>
+      <strong>{"📦 This unit at a glance"}</strong>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginTop: 10 }}>
+        {[
+          { label: "Pre-work", val: "Language primer: just enough Kotlin and Swift to follow along. IDE setup." },
+          { label: "Session 1", val: "Declarative UI — what it is and why it matters. Live code-along: building a profile card." },
+          { label: "Session 2", val: "State and modifiers. Live code-along: building a tap counter with milestones." },
+          { label: "Lab (each session)", val: "Build in one platform, use Claude to translate to the other, then compare and extend." },
+          { label: "Assignment 1", val: "Build a personal profile screen with interactive elements. Submit in either platform." },
+        ].map(item => (
+          <div key={item.label} style={{ background: "var(--color-background-primary)", border: "0.5px solid var(--color-border-tertiary)", borderRadius: 8, padding: "10px 12px" }}>
+            <p style={{ fontSize: 11, fontWeight: 500, color: "var(--color-text-tertiary)", margin: "0 0 4px", textTransform: "uppercase", letterSpacing: ".04em" }}>{item.label}</p>
+            <p style={{ fontSize: 12, color: "var(--color-text-secondary)", margin: 0, lineHeight: 1.5 }}>{item.val}</p>
+          </div>
+        ))}
+      </div>
+    </div>
   </div>
 );
 

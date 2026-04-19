@@ -105,6 +105,9 @@ const sampleQuestions = [
 /* ══════════════════════ OVERVIEW ══════════════════════ */
 const Overview = () => (
   <div>
+    <div className="callout-checkpoint" style={{ background: "#E8FCE8", padding: "10px 14px", borderRadius: 8, fontSize: 13, marginBottom: 12 }}>
+      Don{"'"}t forget to fill out the {"✏️"} Session Survey at the end of each class session!
+    </div>
     <h2 style={{ fontSize: 20, fontWeight: 600, margin: "0 0 6px" }}>Unit 2: Navigation — building multi-screen apps</h2>
     <p style={{ fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 1.7, margin: "0 0 14px" }}>
       Every real app has more than one screen. This week you learn how to connect them. By the end of Week 2 you will be able to push a new screen onto the stack, pass data to it, and navigate back — the foundation of every app you will ever build.
@@ -122,28 +125,35 @@ const Overview = () => (
       "The back stack — what happens when the user presses back",
     ]} />
 
-    <h2 style={{ fontSize: 18, fontWeight: 600, margin: "24px 0 8px" }}>This unit at a glance</h2>
-    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, margin: "8px 0" }}>
-      {[
-        { label: "Session 1", val: "Data classes, navigation setup, and navigating forward. Lab: build the trivia app home and question screens." },
-        { label: "Session 2", val: "Passing data between screens and back stack behavior. Lab: wire up real question data and result screen." },
-        { label: "Lab (each session)", val: "Build the trivia app in one platform, use Claude to translate to the other, then compare navigation patterns." },
-        { label: "Assignment 2", val: "RPG character creator — starter code provided with TODOs and planted bugs. Fix the weapon screen, wire up data passing, and complete the character card." },
-      ].map(item => (
-        <div key={item.label} style={{ background: "var(--color-background-primary)", border: "0.5px solid var(--color-border-tertiary)", borderRadius: 8, padding: "10px 12px" }}>
-          <p style={{ fontSize: 11, fontWeight: 500, color: "var(--color-text-tertiary)", margin: "0 0 4px", textTransform: "uppercase", letterSpacing: ".04em" }}>{item.label}</p>
-          <p style={{ fontSize: 12, color: "var(--color-text-secondary)", margin: 0, lineHeight: 1.5 }}>{item.val}</p>
-        </div>
-      ))}
+    <div style={{ marginTop: 20, padding: "14px", background: "var(--color-background-secondary)", borderRadius: 10, fontSize: 13, lineHeight: 1.7 }}>
+      <strong>Session Info</strong>
+      <ul style={{ margin: "6px 0 0", paddingLeft: 20 }}>
+        <li>{"📅"} See your cohort{"'"}s schedule for session times</li>
+        <li>{"↗"} Session Zoom Link | Passcode: <strong>codepath</strong></li>
+        <li>{"📊"} Link to Slides</li>
+      </ul>
+      <strong style={{ display: "block", marginTop: 10 }}>Upcoming Due Dates</strong>
+      <ul style={{ margin: "6px 0 0", paddingLeft: 20 }}>
+        <li>{"📬"} Assignment 2 (character creator) — due before Week 3 Session 1</li>
+      </ul>
     </div>
 
-    <h2 style={{ fontSize: 18, fontWeight: 600, margin: "24px 0 8px" }}>Upcoming due dates</h2>
-    <UL items={[
-      "Assignment 1 (profile app) — due before Session 1 of this week",
-      "Assignment 2 (character creator) — due before Week 3 Session 1",
-    ]} />
-    <Warn>Assignment 1 is due before this week starts. If you have not submitted it yet, do so before coming to Session 1.</Warn>
-    <Note>Do not forget to fill out the Session Survey at the end of each class session.</Note>
+    <div style={{ marginTop: 16, padding: "12px 14px", background: "var(--color-background-secondary)", borderRadius: 10, fontSize: 13, lineHeight: 1.7 }}>
+      <strong>{"📦 This unit at a glance"}</strong>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginTop: 10 }}>
+        {[
+          { label: "Session 1", val: "Data classes, navigation setup, and navigating forward. Lab: build the trivia app home and question screens." },
+          { label: "Session 2", val: "Passing data between screens and back stack behavior. Lab: wire up real question data and result screen." },
+          { label: "Lab (each session)", val: "Build the trivia app in one platform, use Claude to translate to the other, then compare navigation patterns." },
+          { label: "Assignment 2", val: "RPG character creator — starter code provided with TODOs and planted bugs. Fix the weapon screen, wire up data passing, and complete the character card." },
+        ].map(item => (
+          <div key={item.label} style={{ background: "var(--color-background-primary)", border: "0.5px solid var(--color-border-tertiary)", borderRadius: 8, padding: "10px 12px" }}>
+            <p style={{ fontSize: 11, fontWeight: 500, color: "var(--color-text-tertiary)", margin: "0 0 4px", textTransform: "uppercase", letterSpacing: ".04em" }}>{item.label}</p>
+            <p style={{ fontSize: 12, color: "var(--color-text-secondary)", margin: 0, lineHeight: 1.5 }}>{item.val}</p>
+          </div>
+        ))}
+      </div>
+    </div>
   </div>
 );
 

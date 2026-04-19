@@ -99,6 +99,9 @@ const PlatformToggle = ({ platform, setPlatform }: { platform: string; setPlatfo
 function Overview() {
   return (
     <div>
+      <div className="callout-checkpoint" style={{ background: "#E8FCE8", padding: "10px 14px", borderRadius: 8, fontSize: 13, marginBottom: 12 }}>
+        Don{"'"}t forget to fill out the {"✏️"} Session Survey at the end of each class session!
+      </div>
       <h1 style={{ fontSize: 20, fontWeight: 500, margin: "0 0 12px", color: "var(--color-text-primary)" }}>Unit 4: Networking and REST APIs</h1>
       <p style={{ fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 1.7, margin: "0 0 14px" }}>Until now every app you have built uses hardcoded data. This week that changes. You will make your album browser fetch real data from the internet — replacing the static sampleAlbums list with live results from the Last.fm API. By the end of Week 4 your app will work like a real production app.</p>
       <div style={{ background: "var(--color-background-secondary)", border: "0.5px solid var(--color-border-tertiary)", borderRadius: 8, padding: "12px 16px", margin: "12px 0" }}>
@@ -118,27 +121,35 @@ function Overview() {
         "Image loading from URLs using Coil (Android) and AsyncImage (SwiftUI)",
       ]} />
 
-      <h2 style={{ fontSize: 18, fontWeight: 600, margin: "24px 0 8px" }}>This unit at a glance</h2>
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, margin: "8px 0" }}>
-        {[
-          { label: "Session 1", val: "HTTP basics, REST APIs, JSON parsing, coroutines/async-await. Lab: make your first Last.fm API call and display results." },
-          { label: "Session 2", val: "Loading states, error handling, and image loading from URLs. Lab: polish the album browser with real album art and proper error UX." },
-          { label: "Lab (each session)", val: "Both sessions extend the album browser from Week 3. Use Claude to translate networking code between Compose and SwiftUI." },
-          { label: "Assignment 4", val: "Guided starter — same album browser structure, replace Last.fm with a different public API of your choice." },
-        ].map(item => (
-          <div key={item.label} style={{ background: "var(--color-background-primary)", border: "0.5px solid var(--color-border-tertiary)", borderRadius: 8, padding: "10px 12px" }}>
-            <p style={{ fontSize: 11, fontWeight: 500, color: "var(--color-text-tertiary)", margin: "0 0 4px", textTransform: "uppercase", letterSpacing: ".04em" }}>{item.label}</p>
-            <p style={{ fontSize: 12, color: "var(--color-text-secondary)", margin: 0, lineHeight: 1.5 }}>{item.val}</p>
-          </div>
-        ))}
+      <div style={{ marginTop: 20, padding: "14px", background: "var(--color-background-secondary)", borderRadius: 10, fontSize: 13, lineHeight: 1.7 }}>
+        <strong>Session Info</strong>
+        <ul style={{ margin: "6px 0 0", paddingLeft: 20 }}>
+          <li>{"📅"} See your cohort{"'"}s schedule for session times</li>
+          <li>{"↗"} Session Zoom Link | Passcode: <strong>codepath</strong></li>
+          <li>{"📊"} Link to Slides</li>
+        </ul>
+        <strong style={{ display: "block", marginTop: 10 }}>Upcoming Due Dates</strong>
+        <ul style={{ margin: "6px 0 0", paddingLeft: 20 }}>
+          <li>{"📬"} Assignment 4 (networked app) — due before Week 5 Session 1</li>
+        </ul>
       </div>
 
-      <h2 style={{ fontSize: 18, fontWeight: 600, margin: "24px 0 8px" }}>Upcoming due dates</h2>
-      <UL items={[
-        "Assignment 3 (browse app) — due before Session 1 of this week",
-        "Assignment 4 (networked app) — due before Week 5 Session 1",
-      ]} />
-      <Note>Do not forget to fill out the Session Survey at the end of each class session.</Note>
+      <div style={{ marginTop: 16, padding: "12px 14px", background: "var(--color-background-secondary)", borderRadius: 10, fontSize: 13, lineHeight: 1.7 }}>
+        <strong>{"📦 This unit at a glance"}</strong>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginTop: 10 }}>
+          {[
+            { label: "Session 1", val: "HTTP basics, REST APIs, JSON parsing, coroutines/async-await. Lab: make your first Last.fm API call and display results." },
+            { label: "Session 2", val: "Loading states, error handling, and image loading from URLs. Lab: polish the album browser with real album art and proper error UX." },
+            { label: "Lab (each session)", val: "Both sessions extend the album browser from Week 3. Use Claude to translate networking code between Compose and SwiftUI." },
+            { label: "Assignment 4", val: "Guided starter — same album browser structure, replace Last.fm with a different public API of your choice." },
+          ].map(item => (
+            <div key={item.label} style={{ background: "var(--color-background-primary)", border: "0.5px solid var(--color-border-tertiary)", borderRadius: 8, padding: "10px 12px" }}>
+              <p style={{ fontSize: 11, fontWeight: 500, color: "var(--color-text-tertiary)", margin: "0 0 4px", textTransform: "uppercase", letterSpacing: ".04em" }}>{item.label}</p>
+              <p style={{ fontSize: 12, color: "var(--color-text-secondary)", margin: 0, lineHeight: 1.5 }}>{item.val}</p>
+            </div>
+          ))}
+        </div>
+      </div>
     </div>
   );
 }

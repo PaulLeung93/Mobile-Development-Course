@@ -119,24 +119,26 @@ const Overview = () => (
       </ul>
       <strong style={{ display: "block", marginTop: 10 }}>Upcoming Due Dates</strong>
       <ul style={{ margin: "6px 0 0", paddingLeft: 20 }}>
-        <li>{"📬"} <Link>Assignment 4</Link> due before Session 1</li>
         <li>{"📬"} <Link>Assignment 5</Link> (persistence) due end of Week 6 Session 1</li>
         <li>{"🤝"} Team formation + platform selection due by end of Session 2</li>
       </ul>
     </div>
 
-    <div style={{ marginTop: 16, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
-      {[
-        { label: "Session 1", val: "Room / SwiftData basics. Define an entity, insert and read data, build a favourites feature on the album browser." },
-        { label: "Session 2", val: "Offline-first pattern — cache API responses locally. DataStore / UserDefaults for user preferences." },
-        { label: "Lab (each session)", val: "Both sessions extend the album browser from Week 4. Toggle between Android and iOS code." },
-        { label: "Assignment 5", val: "Add persistence to your own Week 4 networked app. Last individual assignment before the capstone." },
-      ].map(item => (
-        <div key={item.label} style={{ background: "var(--color-background-primary)", border: "0.5px solid var(--color-border-tertiary)", borderRadius: 8, padding: "10px 12px" }}>
-          <p style={{ fontSize: 11, fontWeight: 500, color: "var(--color-text-tertiary)", margin: "0 0 4px", textTransform: "uppercase", letterSpacing: ".04em" }}>{item.label}</p>
-          <p style={{ fontSize: 12, color: "var(--color-text-secondary)", margin: 0, lineHeight: 1.5 }}>{item.val}</p>
-        </div>
-      ))}
+    <div style={{ marginTop: 16, padding: "12px 14px", background: "var(--color-background-secondary)", borderRadius: 10, fontSize: 13, lineHeight: 1.7 }}>
+      <strong>{"📦 This unit at a glance"}</strong>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginTop: 10 }}>
+        {[
+          { label: "Session 1", val: "Room / SwiftData basics. Define an entity, insert and read data, build a favourites feature on the album browser." },
+          { label: "Session 2", val: "Offline-first pattern — cache API responses locally. DataStore / UserDefaults for user preferences." },
+          { label: "Lab (each session)", val: "Both sessions extend the album browser from Week 4. Toggle between Android and iOS code." },
+          { label: "Assignment 5", val: "Add persistence to your own Week 4 networked app. Last individual assignment before the capstone." },
+        ].map(item => (
+          <div key={item.label} style={{ background: "var(--color-background-primary)", border: "0.5px solid var(--color-border-tertiary)", borderRadius: 8, padding: "10px 12px" }}>
+            <p style={{ fontSize: 11, fontWeight: 500, color: "var(--color-text-tertiary)", margin: "0 0 4px", textTransform: "uppercase", letterSpacing: ".04em" }}>{item.label}</p>
+            <p style={{ fontSize: 12, color: "var(--color-text-secondary)", margin: 0, lineHeight: 1.5 }}>{item.val}</p>
+          </div>
+        ))}
+      </div>
     </div>
   </div>
 );

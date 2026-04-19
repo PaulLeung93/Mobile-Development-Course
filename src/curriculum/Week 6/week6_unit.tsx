@@ -140,6 +140,23 @@ const Overview = ({ platform, setPlatform }) => (
         }
       </p>
     </div>
+
+    <div style={{ marginTop: 16, padding: "12px 14px", background: "var(--color-background-secondary)", borderRadius: 10, fontSize: 13, lineHeight: 1.7 }}>
+      <strong>{"📦 This unit at a glance"}</strong>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginTop: 10 }}>
+        {[
+          { label: "Session 1", val: "MVVM architecture refactor — separate Model, ViewModel, and View layers in your Week 4 API app." },
+          { label: "Session 2", val: "AI-assisted development — use Claude, Copilot, or Cursor to scaffold your capstone project." },
+          { label: "Project 6", val: "MVVM refactor of your Week 4 networked app. First platform-specific independent project." },
+          { label: "Capstone Proposal", val: "1-page proposal due by end of Session 2. Defines your app idea, team roles, and feature scope." },
+        ].map(item => (
+          <div key={item.label} style={{ background: "var(--color-background-primary)", border: "0.5px solid var(--color-border-tertiary)", borderRadius: 8, padding: "10px 12px" }}>
+            <p style={{ fontSize: 11, fontWeight: 500, color: "var(--color-text-tertiary)", margin: "0 0 4px", textTransform: "uppercase", letterSpacing: ".04em" }}>{item.label}</p>
+            <p style={{ fontSize: 12, color: "var(--color-text-secondary)", margin: 0, lineHeight: 1.5 }}>{item.val}</p>
+          </div>
+        ))}
+      </div>
+    </div>
   </div>
 );
 
