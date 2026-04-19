@@ -621,10 +621,10 @@ const LabSession2MonsterSlayer = ({ platform }: { platform: string }) => (
     <h2 style={{ fontSize: 18, fontWeight: 600, margin: "0 0 4px" }}>Session 2 Lab: Monster Slayer</h2>
     
     <div style={{ marginTop: 16, marginBottom: 16, textAlign: "center" }}>
-      <img src="https://raw.githubusercontent.com/PaulLeung93/Mobile-Course-Solutions/main/Android/Week%201/Week1-Lab2_Solutions/MonsterSlayer/images/Monster_Slayer.gif" alt="Monster Slayer Demo" style={{ maxWidth: "100%", borderRadius: 8, border: "1px solid var(--color-border-tertiary)" }} />
+      <img src="https://raw.githubusercontent.com/PaulLeung93/Mobile-Course-Solutions/main/Android/Week%201/Week1-Lab2_Solutions/MonsterSlayer/images/Monster_Slayer.gif" alt="Monster Slayer Demo" style={{ maxWidth: 260, borderRadius: 8, border: "1px solid var(--color-border-tertiary)" }} />
     </div>
     <p style={{ fontSize: 13, color: "var(--color-text-secondary)", margin: "0 0 12px", lineHeight: 1.7 }}>
-      A dragon boss is waiting. It has 20 HP and it is not happy to see you. Attack it — watch it react as its health drops, and claim victory when it hits zero. Under the hood, every visual change on screen is driven by state — exactly what this session is about. Budget about 50 minutes.
+      A monster boss is waiting. It has 20 HP and it is not happy to see you. Attack it — watch it react as its health drops, and claim victory when it hits zero. Under the hood, every visual change on screen is driven by state — exactly what this session is about. Budget about 50 minutes.
     </p>
 
     <div style={{ fontSize: 13, lineHeight: 1.7 }}>
@@ -641,7 +641,7 @@ const LabSession2MonsterSlayer = ({ platform }: { platform: string }) => (
 
     <div style={{ marginTop: 20 }}>
       <VStep num={0} title="Open the starter project (~3 min)">
-        <p style={{ fontSize: 13, color: "var(--color-text-secondary)", margin: "0 0 8px" }}>Open the <IC>MonsterSlayer</IC> starter project provided by your instructor. Run it — you should see a dark screen with a dragon sprite, a hardcoded HP display, and an attack button. Nothing reacts yet.</p>
+        <p style={{ fontSize: 13, color: "var(--color-text-secondary)", margin: "0 0 8px" }}>Open the <IC>MonsterSlayer</IC> starter project provided by your instructor. Run it — you should see a dark screen with a monster sprite, a hardcoded HP display, and an attack button. Nothing reacts yet.</p>
         <Checkbox>Starter project runs on your simulator without errors</Checkbox>
         <Checkpoint num={0}>Dragon is on screen. It is judging you. The button does nothing.</Checkpoint>
       </VStep>
@@ -714,8 +714,8 @@ action: {
         </Section>
       </VStep>
 
-      <VStep num={3} title="Add the Monster's Taunts — the dragon reacts (~10 min)">
-        <p style={{ fontSize: 13, color: "var(--color-text-secondary)", margin: "0 0 8px" }}>As HP drops, the dragon changes its dialogue. The starter code includes a <IC>getMonsterTaunt(hp)</IC> helper function that currently always returns identical text. Fill it in using a <IC>when</IC> / <IC>switch</IC> pattern to return different taunts based on the current HP.</p>
+      <VStep num={3} title="Add the Monster's Taunts — the monster reacts (~10 min)">
+        <p style={{ fontSize: 13, color: "var(--color-text-secondary)", margin: "0 0 8px" }}>As HP drops, the monster changes its dialogue. The starter code includes a <IC>getMonsterTaunt(hp)</IC> helper function that currently always returns identical text. Fill it in using a <IC>when</IC> / <IC>switch</IC> pattern to return different taunts based on the current HP.</p>
         {platform === "Android" ? (
           <>
             <p style={{ fontSize: 13, margin: "0 0 6px" }}><strong>Step 3a:</strong> Update the <IC>getMonsterTaunt</IC> function <strong>outside</strong> your Composable:</p>
@@ -932,7 +932,7 @@ if direction == secretCombo[nextIndex] {
     <Section title="🚀 More Stretch">
       <ul style={{ paddingLeft: 20, fontSize: 13, lineHeight: 1.8 }}>
         <li><strong>Critical hit</strong> — 20% chance any tap deals 3 damage instead of 1. Look up <IC>Random.nextInt()</IC> in Kotlin or <IC>Int.random(in:)</IC> in Swift</li>
-        <li><strong>Battles won</strong> — add a counter that increments each time you defeat the dragon and survives when a new one appears. Hint: a third state variable that the New Monster reset does not touch</li>
+        <li><strong>Battles won</strong> — add a counter that increments each time you defeat the monster and survives when a new one appears. Hint: a third state variable that the New Monster reset does not touch</li>
         <li><strong>Monster retaliates</strong> — add a player HP bar that decreases at certain monster HP thresholds. Requires a third state variable and more conditional UI</li>
       </ul>
     </Section>
