@@ -128,7 +128,7 @@ const Overview = () => (
         { label: "Session 1", val: "Data classes, navigation setup, and navigating forward. Lab: build the trivia app home and question screens." },
         { label: "Session 2", val: "Passing data between screens and back stack behavior. Lab: wire up real question data and result screen." },
         { label: "Lab (each session)", val: "Build the trivia app in one platform, use Claude to translate to the other, then compare navigation patterns." },
-        { label: "Assignment 2", val: "A guided trivia app starter — choose your own theme and questions. Must show forward navigation and data passing." },
+        { label: "Assignment 2", val: "RPG character creator — starter code provided with TODOs and planted bugs. Fix the weapon screen, wire up data passing, and complete the character card." },
       ].map(item => (
         <div key={item.label} style={{ background: "var(--color-background-primary)", border: "0.5px solid var(--color-border-tertiary)", borderRadius: 8, padding: "10px 12px" }}>
           <p style={{ fontSize: 11, fontWeight: 500, color: "var(--color-text-tertiary)", margin: "0 0 4px", textTransform: "uppercase", letterSpacing: ".04em" }}>{item.label}</p>
@@ -140,7 +140,7 @@ const Overview = () => (
     <h2 style={{ fontSize: 18, fontWeight: 600, margin: "24px 0 8px" }}>Upcoming due dates</h2>
     <UL items={[
       "Assignment 1 (profile app) — due before Session 1 of this week",
-      "Assignment 2 (trivia app) — due before Week 3 Session 1",
+      "Assignment 2 (character creator) — due before Week 3 Session 1",
     ]} />
     <Warn>Assignment 1 is due before this week starts. If you have not submitted it yet, do so before coming to Session 1.</Warn>
     <Note>Do not forget to fill out the Session Survey at the end of each class session.</Note>
@@ -785,47 +785,90 @@ function Lab() {
 function Project() {
   return (
     <div>
-      <h1 style={{ fontSize: 20, fontWeight: 500, margin: "0 0 6px", color: "var(--color-text-primary)" }}>Unit 2 Project: Trivia App</h1>
       <Warn>Submit this assignment by the end of Week 3 Session 1 using the Submit button on this page.</Warn>
-      <p style={{ fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 1.7, margin: "0 0 14px" }}>You are going to build your own trivia app. We provide the structure — you provide the theme and questions. This is your first multi-screen app, and it should feel like something you actually want to play.</p>
-      <p style={{ fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 1.7, margin: "0 0 14px" }}>You may build in either Android (Jetpack Compose) or iOS (SwiftUI). You do not need to submit both.</p>
+      <h2 style={{ fontSize: 18, fontWeight: 600, margin: "0 0 4px" }}>Unit 2 Project: Character Creator</h2>
+      <p style={{ fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 1.7, margin: "0 0 14px" }}>
+        You are going to build an RPG character creator — a multi-screen app that walks the user through a series of choices and assembles a character card from their selections. We provide starter code with some screens complete, some with TODOs to fill in, and one with deliberate bugs to find and fix. You may build in either Android (Jetpack Compose) or iOS (SwiftUI). You do not need to submit both.
+      </p>
 
-      <h2 style={{ fontSize: 18, fontWeight: 600, margin: "24px 0 8px" }}>Your theme</h2>
-      <p style={{ fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 1.7, margin: "0 0 14px" }}>Pick a topic you are genuinely interested in. The questions must be your own — do not copy the sample questions from lab. Good themes from past cohorts: a specific TV show, a sport, a country, a music genre, video games, food, history. The more specific the better.</p>
+      <Section title="🗺️ The App" defaultOpen={true}>
+        <p style={{ margin: "0 0 6px" }}>The finished app has five screens connected by navigation:</p>
+        <UL items={[
+          <><strong>Home</strong> — app title, a short description, and a Begin button.</>,
+          <><strong>Choose Class</strong> — four options: Warrior, Mage, Rogue, Ranger. Tapping one navigates forward and passes the chosen class.</>,
+          <><strong>Choose Stat</strong> — four stat boosts: Strength, Intelligence, Agility, Luck. Receives the class from the previous screen and passes both forward.</>,
+          <><strong>Choose Weapon</strong> — four options that change based on the class chosen earlier. Warrior gets bladed weapons; Mage gets arcane implements; Rogue gets stealth tools; Ranger gets ranged gear.</>,
+          <><strong>Character Card</strong> — displays the completed character: class, stat boost, weapon, and a generated one-line description built from the three choices.</>,
+        ]} />
+      </Section>
 
-      <h2 style={{ fontSize: 18, fontWeight: 600, margin: "24px 0 8px" }}>Required features</h2>
-      <Checkbox>A home screen with your app name, a brief description, and a Start button</Checkbox>
-      <Checkbox>At least 5 trivia questions — all original, all on your chosen theme</Checkbox>
-      <Checkbox>Each question has exactly 4 answer options</Checkbox>
-      <Checkbox>Tapping an answer visually indicates whether it was correct or incorrect</Checkbox>
-      <Checkbox>After selecting an answer, the app navigates to the next question</Checkbox>
-      <Checkbox>A results screen showing the final score and a Play Again button</Checkbox>
-      <Checkbox>Play Again navigates back to the home screen and resets the score</Checkbox>
-      <Checkbox>The app runs without crashing from start to finish</Checkbox>
+      <Section title="🔧 Starter Code" defaultOpen={true}>
+        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+          <div style={{ display: "flex", gap: 10, alignItems: "flex-start" }}>
+            <span style={{ background: "#E8FCE8", color: "#1D7A1D", fontWeight: 600, fontSize: 11, padding: "2px 8px", borderRadius: 20, flexShrink: 0, marginTop: 2 }}>COMPLETE</span>
+            <span style={{ fontSize: 13, color: "var(--color-text-secondary)" }}><strong>HomeScreen and ClassScreen</strong> — fully working. Read these carefully. They show the navigation pattern and data-passing style the rest of the app follows.</span>
+          </div>
+          <div style={{ display: "flex", gap: 10, alignItems: "flex-start" }}>
+            <span style={{ background: "#E6F1FB", color: "#1A5C8A", fontWeight: 600, fontSize: 11, padding: "2px 8px", borderRadius: 20, flexShrink: 0, marginTop: 2 }}>TODOs</span>
+            <span style={{ fontSize: 13, color: "var(--color-text-secondary)" }}><strong>StatScreen</strong> — the UI is built, but the navigation call that passes the class and chosen stat to the next screen is missing. You fill it in.</span>
+          </div>
+          <div style={{ display: "flex", gap: 10, alignItems: "flex-start" }}>
+            <span style={{ background: "#FFF8E6", color: "#92400E", fontWeight: 600, fontSize: 11, padding: "2px 8px", borderRadius: 20, flexShrink: 0, marginTop: 2 }}>BUGS</span>
+            <span style={{ fontSize: 13, color: "var(--color-text-secondary)" }}><strong>WeaponScreen</strong> — two bugs are planted. The weapon list ignores the class that was passed in and always shows the same options. The navigation call also passes the arguments in the wrong order. Find and fix both.</span>
+          </div>
+          <div style={{ display: "flex", gap: 10, alignItems: "flex-start" }}>
+            <span style={{ background: "#E6F1FB", color: "#1A5C8A", fontWeight: 600, fontSize: 11, padding: "2px 8px", borderRadius: 20, flexShrink: 0, marginTop: 2 }}>TODOs</span>
+            <span style={{ fontSize: 13, color: "var(--color-text-secondary)" }}><strong>CharacterCard screen</strong> — the layout is built, but all four text fields (class, stat, weapon, description) read from placeholder strings. You wire them up to the real data passed through navigation.</span>
+          </div>
+        </div>
+      </Section>
 
-      <h2 style={{ fontSize: 18, fontWeight: 600, margin: "24px 0 8px" }}>Stretch features</h2>
-      <Checkbox>Add a difficulty level to each question and display it on the question screen</Checkbox>
-      <Checkbox>Add a progress indicator showing which question the user is on</Checkbox>
-      <Checkbox>Add a timer per question — runs out means wrong answer</Checkbox>
-      <Checkbox>Show the correct answer after a wrong selection before moving on</Checkbox>
-      <Checkbox>Add a high score that persists for the session</Checkbox>
+      <Section title="✅ Required Features" defaultOpen={true}>
+        <UL items={[
+          "HomeScreen navigates to ClassScreen when Begin is tapped",
+          "ClassScreen passes the chosen class to StatScreen",
+          "StatScreen passes both the class and chosen stat to WeaponScreen (TODO)",
+          "WeaponScreen shows weapon options that match the class passed in (bug fix)",
+          "WeaponScreen passes all three selections to CharacterCard in the correct order (bug fix)",
+          "CharacterCard displays the correct class, stat, and weapon from navigation arguments (TODO)",
+          "CharacterCard displays a generated description built from the three choices (TODO)",
+          "The back button works correctly at every screen — pressing back on the weapon screen returns to the stat screen, not home",
+          "The app runs without crashing from start to finish",
+        ]} />
+      </Section>
 
-      <h2 style={{ fontSize: 18, fontWeight: 600, margin: "24px 0 8px" }}>Submitting your project</h2>
-      <ol style={{ fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 2.2, paddingLeft: 20 }}>
-        <li>Create a GitHub repository for your project</li>
-        <li>Push your code to the repository</li>
-        <li>Create a README using the Unit 2 README template (link below)</li>
-        <li>Check off all features you implemented by changing <IC>-[ ]</IC> to <IC>-[x]</IC></li>
-        <li>Record a GIF or screen recording of a full quiz run — home to results</li>
-        <li>Add the GIF to the README</li>
-        <li>Make the repo private and add <IC>codepathreview</IC> as a collaborator</li>
-      </ol>
+      <Section title="🚀 Stretch Features">
+        <UL items={[
+          "Add a fourth selection screen for a character ability (e.g. Fireball, Stealth, Battle Cry) — abilities should also vary by class",
+          'Add a progress indicator (e.g. "Step 2 of 3") to each selection screen',
+          "Style each class option distinctly — different color or icon per class on the selection screen",
+          'Add a "Start Over" button on the CharacterCard that pops back to the home screen and resets all selections',
+        ]} />
+      </Section>
 
-      <h2 style={{ fontSize: 18, fontWeight: 600, margin: "24px 0 8px" }}>Hints</h2>
-      <Section title="How do I add more than 3 questions?">Add more Question objects to your sampleQuestions list. The navigation code already handles any number of questions — it checks if the next index is less than sampleQuestions.size.</Section>
-      <Section title="Play Again is going to the wrong screen">Make sure you are using popBackStack back to home rather than navigating to a new home screen. If you navigate instead of popping, you will keep stacking home screens on the back stack and the score will not reset.</Section>
-      <Section title="My score is not resetting when I play again">Reset the score variable when you arrive back at the home screen. In Compose, set score = 0 at the top of the home composable block in the NavHost.</Section>
-      <Section title="I want to show the correct answer after a wrong tap">Add a state variable isAnswered and set it to true when an answer is tapped. Use conditional styling: if isAnswered, highlight the correct answer green regardless of which button was tapped.</Section>
+      <Section title="📘 Submitting your project">
+        <ol style={{ fontSize: 13, lineHeight: 2, paddingLeft: 20, margin: 0 }}>
+          <li>Fork the starter code repository (link below)</li>
+          <li>Complete the TODOs and fix the bugs</li>
+          <li>Create a README using the Unit 2 README template</li>
+          <li>In the README, check off all features you implemented by changing <IC>-[ ]</IC> to <IC>-[x]</IC></li>
+          <li>Record a GIF or screen recording — home screen through the completed character card</li>
+          <li>Add the GIF to the README</li>
+          <li>Make the repo private and add <IC>codepathreview</IC> as a collaborator</li>
+        </ol>
+        <Note>Not sure how to record a GIF? On Mac use QuickTime plus a GIF converter. On Windows use ShareX. There are also browser extensions that can capture simulator screens.</Note>
+      </Section>
+
+      <Section title="💡 Hints">
+        <p><strong>How do I make the weapon list change based on class?</strong></p>
+        <p style={{ marginLeft: 16 }}>Use a <IC>when</IC> expression (Kotlin) or <IC>switch</IC> statement (Swift) on the <IC>characterClass</IC> argument. Each class returns a different list of four weapon strings. Look at how ClassScreen renders its four options — WeaponScreen should do the same thing but with a dynamic list.</p>
+        <p><strong>My weapon screen shows the same options for every class</strong></p>
+        <p style={{ marginLeft: 16 }}>This is one of the planted bugs. WeaponScreen is not using the <IC>characterClass</IC> argument when building the weapon list — it is using a hardcoded list instead. Find where the weapons are defined and replace it with the <IC>when</IC> / <IC>switch</IC> expression.</p>
+        <p><strong>The character card is showing the wrong stat or weapon</strong></p>
+        <p style={{ marginLeft: 16 }}>This is the second planted bug. Check the order of arguments in WeaponScreen's <IC>navigate</IC> call, then check the order they are extracted in CharacterCard's <IC>backStackEntry</IC>. One of them has stat and weapon swapped.</p>
+        <p><strong>Start Over is going to the wrong screen</strong></p>
+        <p style={{ marginLeft: 16 }}>Use <IC>popBackStack</IC> back to home rather than navigating to a new home screen. If you navigate instead of popping, you will keep stacking home screens on the back stack.</p>
+      </Section>
     </div>
   );
 }
