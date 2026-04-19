@@ -331,7 +331,12 @@ export default function PreworkSpec() {
 
           <Step n="2" title="Clone the starter repo" time="10 min" accent={color}>
             <p style={{ margin: "0 0 10px" }}>
-              If you don't have a GitHub account, create one at github.com — it's free. Then use the template link your instructor shared to create your own private copy of the prework repo.
+              If you don't have a GitHub account, create one at github.com — it's free.{" "}
+              {lang === "kotlin" ? (
+                <>Then use the <a href="https://github.com/PaulLeung93/KotlinPrimerApp" target="_blank" rel="noreferrer" style={{ color: color, textDecoration: "none", fontWeight: 600 }}>template repo</a> to create your own private copy of the prework repo.</>
+              ) : (
+                <>Then use the template link your instructor shared to create your own private copy of the prework repo.</>
+              )}
             </p>
             <ol style={{ margin: "0 0 14px", paddingLeft: 20, lineHeight: 2.1 }}>
               <li>Click the template link → <strong style={{ color: TEXT }}>Use this template</strong> → <strong style={{ color: TEXT }}>Create a new repository</strong></li>
