@@ -726,7 +726,7 @@ action: {
     hp > 0  -> "Please... have mercy..."
     else    -> "You... you beat me..."
 }`}</CodeB>
-            <p style={{ fontSize: 13, margin: "6px 0" }}><strong>Step 3b & 3c:</strong> The starter code provides animation state variables. Trigger the animations when attacked:</p>
+            <p style={{ fontSize: 13, margin: "6px 0" }}><strong>Step 3b:</strong> The starter code provides animation state variables. Trigger the animations when attacked:</p>
             <CodeB title="Kotlin" accent={BL}>{`// Inside your Button onClick, add:
 isHeroAttacking = true
 isMonsterHurt = true`}</CodeB>
@@ -744,7 +744,7 @@ isMonsterHurt = true`}</CodeB>
     default:      return "You... you beat me..."
     }
 }`}</CodeB>
-            <p style={{ fontSize: 13, margin: "6px 0" }}><strong>Step 3b & 3c:</strong> The starter code provides animation state variables. Trigger the animations when attacked:</p>
+            <p style={{ fontSize: 13, margin: "6px 0" }}><strong>Step 3b:</strong> The starter code provides animation state variables. Trigger the animations when attacked:</p>
             <CodeB title="Swift" accent={GR}>{`// Inside your Button action, add:
 isHeroAttacking = true
 isMonsterHurt = true`}</CodeB>
