@@ -190,7 +190,7 @@ const LabSession1 = ({ platform }: { platform: string }) => (
 
     <div style={{ marginTop: 20 }}>
       <VStep num={0} title="Set up your project (~5 min)">
-        <p>Create a new project in Android Studio or Xcode, depending on which platform your instructor is demonstrating today.</p>
+        <p style={{ fontSize: 13, color: "var(--color-text-secondary)", margin: "0 0 8px" }}>Create a new project in Android Studio or Xcode, depending on which platform your instructor is demonstrating today.</p>
         <Checkbox>Android: New Empty Activity project in Android Studio — name it ProfileCard, language Kotlin, min SDK API 24.</Checkbox>
         <Checkbox>iOS: New App project in Xcode — name it ProfileCard, interface SwiftUI, language Swift.</Checkbox>
         <Tip>The emulator/simulator can take a few minutes to boot the very first time. Start it now so it is ready by Step 1.</Tip>
@@ -203,13 +203,13 @@ const LabSession1 = ({ platform }: { platform: string }) => (
       </VStep>
 
       <VStep num={1} title="Your name on a screen (~8 min)">
-      <p>Follow along with the instructor. You will get your name displaying on screen — centered, large, and bold. We will build this in three small pieces.</p>
+        <p style={{ fontSize: 13, color: "var(--color-text-secondary)", margin: "0 0 8px" }}>Follow along with the instructor. You will get your name displaying on screen — centered, large, and bold. We will build this in three small pieces.</p>
 
-      {platform === "Android" ? (
-        <>
-          <p><strong>Step 1a — Open the right file.</strong> In the Project panel on the left, expand <IC>app → java → com.example.profilecard</IC> and open <IC>MainActivity.kt</IC>. This is the entry point of your app.</p>
-          <p><strong>Step 1b — Call your composable.</strong> Find the <IC>setContent {'{'} ... {'}'}</IC> block inside <IC>onCreate</IC>. Replace whatever is inside it with a call to a function called <IC>ProfileCard()</IC> — we will define that function next.</p>
-          <CodeB title="Kotlin — MainActivity.kt" accent={BL}>{`class MainActivity : ComponentActivity() {
+        {platform === "Android" ? (
+          <>
+            <p style={{ fontSize: 13, margin: "0 0 6px" }}><strong>Step 1a — Open the right file.</strong> In the Project panel on the left, expand <IC>app → java → com.example.profilecard</IC> and open <IC>MainActivity.kt</IC>. This is the entry point of your app.</p>
+            <p style={{ fontSize: 13, margin: "6px 0 6px" }}><strong>Step 1b — Call your composable.</strong> Find the <IC>setContent {'{'} ... {'}'}</IC> block inside <IC>onCreate</IC>. Replace whatever is inside it with a call to a function called <IC>ProfileCard()</IC> — we will define that function next.</p>
+            <CodeB title="Kotlin — MainActivity.kt" accent={BL}>{`class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -217,8 +217,8 @@ const LabSession1 = ({ platform }: { platform: string }) => (
         }
     }
 }`}</CodeB>
-          <p><strong>Step 1c — Define the composable.</strong> Below the closing brace of <IC>MainActivity</IC>, add a new function annotated with <IC>@Composable</IC>. Start with just the name:</p>
-          <CodeB title="Kotlin — add below MainActivity" accent={BL}>{`@Composable
+            <p style={{ fontSize: 13, margin: "6px 0 6px" }}><strong>Step 1c — Define the composable.</strong> Below the closing brace of <IC>MainActivity</IC>, add a new function annotated with <IC>@Composable</IC>. Start with just the name:</p>
+            <CodeB title="Kotlin — add below MainActivity" accent={BL}>{`@Composable
 fun ProfileCard() {
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -232,18 +232,18 @@ fun ProfileCard() {
         )
     }
 }`}</CodeB>
-          <p><strong>Step 1d — Add the tagline.</strong> Inside the <IC>Column</IC>, directly after the name <IC>Text</IC>, add a second <IC>Text</IC> for your cohort tagline:</p>
-          <CodeB title="Kotlin — inside the Column" accent={BL}>{`Text(
+            <p style={{ fontSize: 13, margin: "6px 0 6px" }}><strong>Step 1d — Add the tagline.</strong> Inside the <IC>Column</IC>, directly after the name <IC>Text</IC>, add a second <IC>Text</IC> for your cohort tagline:</p>
+            <CodeB title="Kotlin — inside the Column" accent={BL}>{`Text(
     text = "Mobile Dev Cohort 2025",
     fontSize = 16.sp,
     color = Color.Gray
 )`}</CodeB>
-        </>
-      ) : (
-        <>
-          <p><strong>Step 1a — Open the right file.</strong> In Xcode's file navigator on the left, click <IC>ContentView.swift</IC>. This is where your UI lives — the preview on the right will update as you edit.</p>
-          <p><strong>Step 1b — Replace the body.</strong> Inside the existing <IC>ContentView</IC> struct, delete the placeholder content and replace the <IC>body</IC> with a <IC>VStack</IC> containing just your name:</p>
-          <CodeB title="Swift — ContentView.swift" accent={GR}>{`struct ContentView: View {
+          </>
+        ) : (
+          <>
+            <p style={{ fontSize: 13, margin: "0 0 6px" }}><strong>Step 1a — Open the right file.</strong> In Xcode's file navigator on the left, click <IC>ContentView.swift</IC>. This is where your UI lives — the preview on the right will update as you edit.</p>
+            <p style={{ fontSize: 13, margin: "6px 0 6px" }}><strong>Step 1b — Replace the body.</strong> Inside the existing <IC>ContentView</IC> struct, delete the placeholder content and replace the <IC>body</IC> with a <IC>VStack</IC> containing just your name:</p>
+            <CodeB title="Swift — ContentView.swift" accent={GR}>{`struct ContentView: View {
     var body: some View {
         VStack(spacing: 8) {
             Text("Your Name")
@@ -252,29 +252,29 @@ fun ProfileCard() {
         }
     }
 }`}</CodeB>
-          <p><strong>Step 1c — Add the tagline.</strong> Inside the <IC>VStack</IC>, directly after the name <IC>Text</IC>, add a second <IC>Text</IC> for your cohort tagline:</p>
-          <CodeB title="Swift — inside the VStack" accent={GR}>{`Text("Mobile Dev Cohort 2025")
+            <p style={{ fontSize: 13, margin: "6px 0 6px" }}><strong>Step 1c — Add the tagline.</strong> Inside the <IC>VStack</IC>, directly after the name <IC>Text</IC>, add a second <IC>Text</IC> for your cohort tagline:</p>
+            <CodeB title="Swift — inside the VStack" accent={GR}>{`Text("Mobile Dev Cohort 2025")
     .font(.subheadline)
     .foregroundColor(.gray)`}</CodeB>
-        </>
-      )}
-      <Checkpoint num={1}>Run your app. Your name and tagline should appear centered on screen.</Checkpoint>
-      {platform === "Android" && (
-        <Section title="💡 Hint: Red squiggles under Color, FontWeight, etc.">
-          Android Studio needs to import these. Click the red word and press Alt+Enter (Option+Enter on Mac) to auto-import.
-        </Section>
-      )}
-      {platform === "Android" && (
-        <Section title="💡 Hint: Where exactly do I add the ProfileCard function?">
-          <IC>MainActivity.kt</IC> is just a normal Kotlin file — you can define multiple functions in it. Add <IC>ProfileCard()</IC> on a new line after the closing <IC>{'}'}</IC> of the <IC>MainActivity</IC> class, not inside it.
-        </Section>
-      )}
+          </>
+        )}
+        <Checkpoint num={1}>Run your app. Your name and tagline should appear centered on screen.</Checkpoint>
+        {platform === "Android" && (
+          <Section title="💡 Hint: Red squiggles under Color, FontWeight, etc.">
+            Android Studio needs to import these. Click the red word and press Alt+Enter (Option+Enter on Mac) to auto-import.
+          </Section>
+        )}
+        {platform === "Android" && (
+          <Section title="💡 Hint: Where exactly do I add the ProfileCard function?">
+            <IC>MainActivity.kt</IC> is just a normal Kotlin file — you can define multiple functions in it. Add <IC>ProfileCard()</IC> on a new line after the closing <IC>{'}'}</IC> of the <IC>MainActivity</IC> class, not inside it.
+          </Section>
+        )}
       </VStep>
 
       <VStep num={2} title="Add a profile avatar (~8 min)">
-      <p>Add a colored circle with your initials above your name. This is a common pattern in real apps when a user has no photo.</p>
-      {platform === "Android" ? (
-        <CodeB title="Kotlin — add above your name Text" accent={BL}>{`Box(
+        <p style={{ fontSize: 13, color: "var(--color-text-secondary)", margin: "0 0 8px" }}>Add a colored circle with your initials above your name. This is a common pattern in real apps when a user has no photo.</p>
+        {platform === "Android" ? (
+          <CodeB title="Kotlin — add above your name Text" accent={BL}>{`Box(
     modifier = Modifier
         .size(80.dp)
         .background(color = Color(0xFF534AB7), shape = CircleShape),
@@ -288,8 +288,8 @@ fun ProfileCard() {
     )
 }
 Spacer(modifier = Modifier.height(12.dp))`}</CodeB>
-      ) : (
-        <CodeB title="Swift — add above your name Text" accent={GR}>{`Circle()
+        ) : (
+          <CodeB title="Swift — add above your name Text" accent={GR}>{`Circle()
     .fill(Color(red: 0.33, green: 0.29, blue: 0.72))
     .frame(width: 80, height: 80)
     .overlay(
@@ -299,26 +299,26 @@ Spacer(modifier = Modifier.height(12.dp))`}</CodeB>
             .foregroundColor(.white)
     )
     .padding(.bottom, 12)`}</CodeB>
-      )}
-      <Checkpoint num={2}>You should see a purple circle with initials above your name. Change the color to something that feels like you.</Checkpoint>
-      {platform === "Android" ? (
-        <Section title="💡 Hint: How do I pick a custom color in Compose?">
-          Use <IC>Color(0xFFRRGGBB)</IC> where RR, GG, BB are hex values. For example <IC>Color(0xFF1D9E75)</IC> gives a teal green. Find hex codes at coolors.co.
-        </Section>
-      ) : (
-        <Section title="💡 Hint: How do I pick a custom color in SwiftUI?">
-          Use <IC>Color(red:green:blue:)</IC> with values between 0 and 1.
-        </Section>
-      )}
+        )}
+        <Checkpoint num={2}>You should see a purple circle with initials above your name. Change the color to something that feels like you.</Checkpoint>
+        {platform === "Android" ? (
+          <Section title="💡 Hint: How do I pick a custom color in Compose?">
+            Use <IC>Color(0xFFRRGGBB)</IC> where RR, GG, BB are hex values. For example <IC>Color(0xFF1D9E75)</IC> gives a teal green. Find hex codes at coolors.co.
+          </Section>
+        ) : (
+          <Section title="💡 Hint: How do I pick a custom color in SwiftUI?">
+            Use <IC>Color(red:green:blue:)</IC> with values between 0 and 1.
+          </Section>
+        )}
       </VStep>
 
       <VStep num={3} title="Build out the card layout (~10 min)">
-      <p>Now give the profile a proper card shape — a white rounded card on a grey background, with a divider and a row of stat items below it. We will build this in four sub-steps.</p>
+        <p style={{ fontSize: 13, color: "var(--color-text-secondary)", margin: "0 0 8px" }}>Now give the profile a proper card shape — a white rounded card on a grey background, with a divider and a row of stat items below it. We will build this in four sub-steps.</p>
 
-      {platform === "Android" ? (
-        <>
-          <p><strong>Step 3a — Add the grey background.</strong> In <IC>MainActivity.kt</IC>, find your existing <IC>ProfileCard</IC> composable. Wrap the entire <IC>Column</IC> body in a new outer <IC>Column</IC> that fills the screen with a light grey background:</p>
-          <CodeB title="Kotlin — new outer Column" accent={BL}>{`@Composable
+        {platform === "Android" ? (
+          <>
+            <p style={{ fontSize: 13, margin: "0 0 6px" }}><strong>Step 3a — Add the grey background.</strong> In <IC>MainActivity.kt</IC>, find your existing <IC>ProfileCard</IC> composable. Wrap the entire <IC>Column</IC> body in a new outer <IC>Column</IC> that fills the screen with a light grey background:</p>
+            <CodeB title="Kotlin — new outer Column" accent={BL}>{`@Composable
 fun ProfileCard() {
     Column(
         modifier = Modifier
@@ -330,8 +330,8 @@ fun ProfileCard() {
         // inner card goes here in Step 3b
     }
 }`}</CodeB>
-          <p><strong>Step 3b — Add the white card.</strong> Inside the outer Column, add an inner <IC>Column</IC> that gives the card its white background and rounded corners. Move your avatar, name, and tagline content inside it:</p>
-          <CodeB title="Kotlin — inner card Column" accent={BL}>{`Column(
+            <p style={{ fontSize: 13, margin: "6px 0 6px" }}><strong>Step 3b — Add the white card.</strong> Inside the outer Column, add an inner <IC>Column</IC> that gives the card its white background and rounded corners. Move your avatar, name, and tagline content inside it:</p>
+            <CodeB title="Kotlin — inner card Column" accent={BL}>{`Column(
     modifier = Modifier
         .fillMaxWidth(0.85f)              // card is 85% of screen width
         .background(Color.White, shape = RoundedCornerShape(16.dp))
@@ -340,20 +340,20 @@ fun ProfileCard() {
 ) {
     // Avatar + name + tagline go here
 }`}</CodeB>
-          <p><strong>Step 3c — Add a divider.</strong> Inside the inner card Column, below your tagline, add spacing and a divider line:</p>
-          <CodeB title="Kotlin — inside the inner Column" accent={BL}>{`Spacer(modifier = Modifier.height(16.dp))
+            <p style={{ fontSize: 13, margin: "6px 0 6px" }}><strong>Step 3c — Add a divider.</strong> Inside the inner card Column, below your tagline, add spacing and a divider line:</p>
+            <CodeB title="Kotlin — inside the inner Column" accent={BL}>{`Spacer(modifier = Modifier.height(16.dp))
 HorizontalDivider(color = Color(0xFFEEEEEE))
 Spacer(modifier = Modifier.height(16.dp))`}</CodeB>
-          <p><strong>Step 3d — Add a StatItem composable and the stats row.</strong> First, define a small reusable composable outside of <IC>ProfileCard</IC>:</p>
-          <CodeB title="Kotlin — add below ProfileCard" accent={BL}>{`@Composable
+            <p style={{ fontSize: 13, margin: "6px 0 6px" }}><strong>Step 3d — Add a StatItem composable and the stats row.</strong> First, define a small reusable composable outside of <IC>ProfileCard</IC>:</p>
+            <CodeB title="Kotlin — add below ProfileCard" accent={BL}>{`@Composable
 fun StatItem(label: String, value: String) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Text(text = value, fontSize = 20.sp, fontWeight = FontWeight.Bold)
         Text(text = label, fontSize = 12.sp, color = Color.Gray)
     }
 }`}</CodeB>
-          <p>Then, back inside the inner card Column (after the second Spacer), add the row of stats:</p>
-          <CodeB title="Kotlin — inside the inner Column, after the second Spacer" accent={BL}>{`Row(
+            <p style={{ fontSize: 13, margin: "6px 0" }}>Then, back inside the inner card Column (after the second Spacer), add the row of stats:</p>
+            <CodeB title="Kotlin — inside the inner Column, after the second Spacer" accent={BL}>{`Row(
     modifier = Modifier.fillMaxWidth(),
     horizontalArrangement = Arrangement.SpaceEvenly
 ) {
@@ -361,11 +361,11 @@ fun StatItem(label: String, value: String) {
     StatItem(label = "Commits", value = "0")
     StatItem(label = "PRs", value = "0")
 }`}</CodeB>
-        </>
-      ) : (
-        <>
-          <p><strong>Step 3a — Add the grey background.</strong> In <IC>ContentView.swift</IC>, wrap your existing <IC>VStack</IC> in a <IC>ZStack</IC> so you can place a full-screen grey background behind the card:</p>
-          <CodeB title="Swift — ContentView.swift" accent={GR}>{`struct ContentView: View {
+          </>
+        ) : (
+          <>
+            <p style={{ fontSize: 13, margin: "0 0 6px" }}><strong>Step 3a — Add the grey background.</strong> In <IC>ContentView.swift</IC>, wrap your existing <IC>VStack</IC> in a <IC>ZStack</IC> so you can place a full-screen grey background behind the card:</p>
+            <CodeB title="Swift — ContentView.swift" accent={GR}>{`struct ContentView: View {
     var body: some View {
         ZStack {
             Color(UIColor.systemGray6).ignoresSafeArea()  // grey page background
@@ -373,18 +373,18 @@ fun StatItem(label: String, value: String) {
         }
     }
 }`}</CodeB>
-          <p><strong>Step 3b — Add the white card.</strong> Inside the <IC>ZStack</IC>, add a <IC>VStack</IC> containing your existing avatar, name, and tagline. Apply padding, a white background, and rounded corners:</p>
-          <CodeB title="Swift — inside ZStack" accent={GR}>{`VStack(spacing: 0) {
+            <p style={{ fontSize: 13, margin: "6px 0 6px" }}><strong>Step 3b — Add the white card.</strong> Inside the <IC>ZStack</IC>, add a <IC>VStack</IC> containing your existing avatar, name, and tagline. Apply padding, a white background, and rounded corners:</p>
+            <CodeB title="Swift — inside ZStack" accent={GR}>{`VStack(spacing: 0) {
     // Avatar + name + tagline here
 }
 .padding(24)
 .background(Color.white)
 .cornerRadius(16)
 .padding(.horizontal, 32)`}</CodeB>
-          <p><strong>Step 3c — Add a divider.</strong> Inside the <IC>VStack</IC>, below your tagline, add a divider with padding:</p>
-          <CodeB title="Swift — inside the VStack" accent={GR}>{`Divider().padding(.vertical, 16)`}</CodeB>
-          <p><strong>Step 3d — Add a StatItem view and the stats row.</strong> First, define a small reusable view at the bottom of <IC>ContentView.swift</IC>, outside <IC>ContentView</IC>:</p>
-          <CodeB title="Swift — add below ContentView" accent={GR}>{`struct StatItem: View {
+            <p style={{ fontSize: 13, margin: "6px 0 6px" }}><strong>Step 3c — Add a divider.</strong> Inside the <IC>VStack</IC>, below your tagline, add a divider with padding:</p>
+            <CodeB title="Swift — inside the VStack" accent={GR}>{`Divider().padding(.vertical, 16)`}</CodeB>
+            <p style={{ fontSize: 13, margin: "6px 0 6px" }}><strong>Step 3d — Add a StatItem view and the stats row.</strong> First, define a small reusable view at the bottom of <IC>ContentView.swift</IC>, outside <IC>ContentView</IC>:</p>
+            <CodeB title="Swift — add below ContentView" accent={GR}>{`struct StatItem: View {
     let label: String
     let value: String
     var body: some View {
@@ -394,8 +394,8 @@ fun StatItem(label: String, value: String) {
         }
     }
 }`}</CodeB>
-          <p>Then, back inside the card <IC>VStack</IC> (after the Divider), add the row of stats:</p>
-          <CodeB title="Swift — inside the VStack, after the Divider" accent={GR}>{`HStack {
+            <p style={{ fontSize: 13, margin: "6px 0" }}>Then, back inside the card <IC>VStack</IC> (after the Divider), add the row of stats:</p>
+            <CodeB title="Swift — inside the VStack, after the Divider" accent={GR}>{`HStack {
     StatItem(label: "Projects", value: "0")
     Spacer()
     StatItem(label: "Commits", value: "0")
@@ -403,49 +403,49 @@ fun StatItem(label: String, value: String) {
     StatItem(label: "PRs", value: "0")
 }
 .padding(.horizontal, 24)`}</CodeB>
-        </>
-      )}
-      <Checkpoint num={3}>Your profile should now look like a real card with a grey background, rounded white card, divider, and stat items. Update the stat values to something real — or funny.</Checkpoint>
-      <Section title="💡 Hint: My card content is invisible or off-screen">
-        {platform === "Android"
-          ? "Make sure the inner card Column is inside the outer Column, not alongside it. Both Columns should be nested, not siblings."
-          : "Make sure the card VStack is inside the ZStack — the ZStack is what layers the grey background behind the card."}
-      </Section>
+          </>
+        )}
+        <Checkpoint num={3}>Your profile should now look like a real card with a grey background, rounded white card, divider, and stat items. Update the stat values to something real — or funny.</Checkpoint>
+        <Section title="💡 Hint: My card content is invisible or off-screen">
+          {platform === "Android"
+            ? "Make sure the inner card Column is inside the outer Column, not alongside it. Both Columns should be nested, not siblings."
+            : "Make sure the card VStack is inside the ZStack — the ZStack is what layers the grey background behind the card."}
+        </Section>
       </VStep>
 
       <VStep num={4} title="Ask Claude to translate it (~8 min)">
-      <p>Now that you have something worth translating, ask Claude to do it.</p>
-      <AiOpp>
-        Open Claude at claude.ai. Paste your entire screen code and use this prompt: <em>"I am learning mobile development. This is my [{platform === "Android" ? "Compose" : "SwiftUI"}] profile card. Please translate it to [{platform === "Android" ? "SwiftUI" : "Compose"}]. After the code, briefly explain the 3 biggest structural differences between the two versions."</em> Read the explanation — do not just copy the code.
-      </AiOpp>
-      <Checkbox>Pasted your code into Claude and received a translation</Checkbox>
-      <Checkbox>Read the explanation of differences — did not just skip to the code</Checkbox>
-      <Checkbox>Ran the translated version on a simulator — it displays correctly</Checkbox>
-      <Section title="💡 Hint: Claude gave me code with errors">
-        That happens — this is a feature, not a bug. Try asking Claude: "This gave me a compile error: [paste error]. What is wrong and how do I fix it?" Do not just ask it to rewrite everything.
-      </Section>
+        <p style={{ fontSize: 13, color: "var(--color-text-secondary)", margin: "0 0 8px" }}>Now that you have something worth translating, ask Claude to do it.</p>
+        <AiOpp>
+          Open Claude at claude.ai. Paste your entire screen code and use this prompt: <em>"I am learning mobile development. This is my [{platform === "Android" ? "Compose" : "SwiftUI"}] profile card. Please translate it to [{platform === "Android" ? "SwiftUI" : "Compose"}]. After the code, briefly explain the 3 biggest structural differences between the two versions."</em> Read the explanation — do not just copy the code.
+        </AiOpp>
+        <Checkbox>Pasted your code into Claude and received a translation</Checkbox>
+        <Checkbox>Read the explanation of differences — did not just skip to the code</Checkbox>
+        <Checkbox>Ran the translated version on a simulator — it displays correctly</Checkbox>
+        <Section title="💡 Hint: Claude gave me code with errors">
+          That happens — this is a feature, not a bug. Try asking Claude: "This gave me a compile error: [paste error]. What is wrong and how do I fix it?" Do not just ask it to rewrite everything.
+        </Section>
       </VStep>
 
       <VStep num={5} title="Make one change Claude did not make (~8 min)">
-      <p>Take the translated code and make at least one meaningful change that Claude did not include. This proves you understand the code rather than just running it.</p>
-      <ul style={{ paddingLeft: 20, margin: "6px 0" }}>
-        <li>Change the avatar color and initials to match your actual name</li>
-        <li>Add a fourth stat item (e.g. Coffee with a funny number)</li>
-        <li>Add a short bio line below the tagline in italic text</li>
-        <li>Change the card corner radius or background color</li>
-        <li>Add your graduation year or cohort city</li>
-      </ul>
-      <Checkbox>Made at least one original change to the translated code</Checkbox>
-      <Checkpoint num={5}>Both versions of your profile card run and have at least one change you made yourself — not Claude.</Checkpoint>
+        <p style={{ fontSize: 13, color: "var(--color-text-secondary)", margin: "0 0 8px" }}>Take the translated code and make at least one meaningful change that Claude did not include. This proves you understand the code rather than just running it.</p>
+        <ul style={{ paddingLeft: 20, margin: "6px 0", fontSize: 13, lineHeight: 1.8 }}>
+          <li>Change the avatar color and initials to match your actual name</li>
+          <li>Add a fourth stat item (e.g. Coffee with a funny number)</li>
+          <li>Add a short bio line below the tagline in italic text</li>
+          <li>Change the card corner radius or background color</li>
+          <li>Add your graduation year or cohort city</li>
+        </ul>
+        <Checkbox>Made at least one original change to the translated code</Checkbox>
+        <Checkpoint num={5}>Both versions of your profile card run and have at least one change you made yourself — not Claude.</Checkpoint>
       </VStep>
 
       <VStep num={6} title="Reflect (~5 min)" last>
-      <p>Add a comment block at the top of your file and answer these three questions in your own words.</p>
-      <CodeB title="Lab 1 Reflection">{`// Lab 1 Reflection
+        <p style={{ fontSize: 13, color: "var(--color-text-secondary)", margin: "0 0 8px" }}>Add a comment block at the top of your file and answer these three questions in your own words.</p>
+        <CodeB title="Lab 1 Reflection">{`// Lab 1 Reflection
 // 1. What is one thing that is identical between Compose and SwiftUI in your code?
 // 2. What is one thing that confused you in the translated version?
 // 3. What did Claude get right? Did it get anything wrong?`}</CodeB>
-      <Checkpoint num="Final">Both platform versions run, you have made at least one original change, and your reflection comment block is filled in. You will discuss these questions during the end-of-session reflection.</Checkpoint>
+        <Checkpoint num="Final">Both platform versions run, you have made at least one original change, and your reflection comment block is filled in. You will discuss these questions during the end-of-session reflection.</Checkpoint>
       </VStep>
     </div>
 
