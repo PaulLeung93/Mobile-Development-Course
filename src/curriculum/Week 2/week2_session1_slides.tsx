@@ -30,7 +30,7 @@ const Step = ({ n, title, accent = PURPLE, children }) => (
   </div>
 );
 
-const Bullet = ({ children, sub }) => (
+const Bullet = ({ children, sub = false }) => (
   <div style={{ display: "flex", gap: 8, margin: sub ? "3px 0 3px 20px" : "7px 0", alignItems: "flex-start" }}>
     <span style={{ color: sub ? TEAL : PURPLE, fontWeight: 700, fontSize: sub ? 12 : 14, marginTop: 1, flexShrink: 0 }}>{sub ? "◦" : "▸"}</span>
     <span style={{ fontSize: sub ? 13 : 14, color: sub ? MUTED : TEXT, lineHeight: 1.5 }}>{children}</span>
@@ -64,7 +64,7 @@ const Warn = ({ title, children }) => (
   </div>
 );
 
-const Shell = ({ tag, title, subtitle, timer, children, notes, dark }) => (
+const Shell = ({ tag, title, subtitle = undefined, timer = undefined, children, notes = undefined, dark = false }: { tag?: string; title: string; subtitle?: string; timer?: string; children: React.ReactNode; notes?: string; dark?: boolean }) => (
   <div style={{ background: dark ? PURPLE_DARK : "#fff", border: `1px solid ${dark ? "transparent" : "#e5e7eb"}`, borderRadius: 12, padding: "24px 28px 18px", minHeight: 360, display: "flex", flexDirection: "column", boxSizing: "border-box" }}>
     <div style={{ marginBottom: 12 }}>
       <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
@@ -78,6 +78,29 @@ const Shell = ({ tag, title, subtitle, timer, children, notes, dark }) => (
     {notes && <Notes>{notes}</Notes>}
   </div>
 );
+
+const OSToggle = ({ android, ios }: { android: React.ReactNode; ios: React.ReactNode }) => {
+  const [platform, setPlatform] = useState<'android' | 'ios'>('android');
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+      <div style={{ display: "flex", borderRadius: 8, overflow: "hidden", border: "1px solid #e5e7eb", width: "fit-content", marginBottom: 2 }}>
+        <button
+          onClick={() => setPlatform('android')}
+          style={{ padding: "5px 16px", fontSize: 11, fontWeight: 700, letterSpacing: ".04em", background: platform === 'android' ? PURPLE : "#fff", color: platform === 'android' ? "#fff" : MUTED, border: "none", borderRight: "1px solid #e5e7eb", cursor: "pointer" }}
+        >
+          Android · Kotlin
+        </button>
+        <button
+          onClick={() => setPlatform('ios')}
+          style={{ padding: "5px 16px", fontSize: 11, fontWeight: 700, letterSpacing: ".04em", background: platform === 'ios' ? TEAL : "#fff", color: platform === 'ios' ? "#fff" : MUTED, border: "none", cursor: "pointer" }}
+        >
+          iOS · Swift
+        </button>
+      </div>
+      {platform === 'android' ? android : ios}
+    </div>
+  );
+};
 
 const slides = [
 
@@ -189,61 +212,66 @@ val q2 = Question(...)`}</pre>
   // 5: Data class vs struct
   () => (
     <Shell tag="Language basics" title="Data class vs struct — two names, same concept" notes="Students are often surprised at how similar these are. Lean into that. The concept is identical: a named template for a group of related values. The only meaningful difference is that Kotlin data classes get equals(), toString(), and copy() for free — Swift structs do not get them automatically but they are easy to add. Do not go deep on this — just note it and move on.">
-      <div style={{ display: "flex", flexDirection: "column", gap: 6, marginTop: 6 }}>
-        <p style={{ fontSize: 11, fontWeight: 700, color: PURPLE, textTransform: "uppercase", letterSpacing: ".06em", margin: "0 0 2px" }}>Android · Kotlin</p>
-        <Step n={1} title="Define the data class" accent={PURPLE}>
-          <CodePane accent={PURPLE}>
+      <OSToggle
+        android={
+          <>
+            <Step n={1} title="Define the data class" accent={PURPLE}>
+              <CodePane accent={PURPLE}>
 {`data class Question(
     val text: String,
     val answers: List<String>,
     val correctIndex: Int
 )`}
-          </CodePane>
-        </Step>
-        <Step n={2} title="Create an instance" accent={PURPLE}>
-          <CodePane accent={PURPLE}>
+              </CodePane>
+            </Step>
+            <Step n={2} title="Create an instance" accent={PURPLE}>
+              <CodePane accent={PURPLE}>
 {`val question = Question(
     text = "What is 2 + 2?",
     answers = listOf("3", "4", "5", "6"),
     correctIndex = 1
 )`}
-          </CodePane>
-        </Step>
-        <Step n={3} title="Access the fields" accent={PURPLE}>
-          <CodePane accent={PURPLE}>
+              </CodePane>
+            </Step>
+            <Step n={3} title="Access the fields" accent={PURPLE}>
+              <CodePane accent={PURPLE}>
 {`println(question.text)          // "What is 2 + 2?"
 println(question.answers[1])    // "4"
 println(question.correctIndex)  // 1`}
-          </CodePane>
-        </Step>
-
-        <p style={{ fontSize: 11, fontWeight: 700, color: TEAL, textTransform: "uppercase", letterSpacing: ".06em", margin: "8px 0 2px" }}>iOS · Swift</p>
-        <Step n={1} title="Define the struct" accent={TEAL}>
-          <CodePane accent={TEAL}>
+              </CodePane>
+            </Step>
+          </>
+        }
+        ios={
+          <>
+            <Step n={1} title="Define the struct" accent={TEAL}>
+              <CodePane accent={TEAL}>
 {`struct Question {
     let text: String
     let answers: [String]
     let correctIndex: Int
 }`}
-          </CodePane>
-        </Step>
-        <Step n={2} title="Create an instance" accent={TEAL}>
-          <CodePane accent={TEAL}>
+              </CodePane>
+            </Step>
+            <Step n={2} title="Create an instance" accent={TEAL}>
+              <CodePane accent={TEAL}>
 {`let question = Question(
     text: "What is 2 + 2?",
     answers: ["3", "4", "5", "6"],
     correctIndex: 1
 )`}
-          </CodePane>
-        </Step>
-        <Step n={3} title="Access the fields" accent={TEAL}>
-          <CodePane accent={TEAL}>
+              </CodePane>
+            </Step>
+            <Step n={3} title="Access the fields" accent={TEAL}>
+              <CodePane accent={TEAL}>
 {`print(question.text)          // "What is 2 + 2?"
 print(question.answers[1])    // "4"
 print(question.correctIndex)  // 1`}
-          </CodePane>
-        </Step>
-      </div>
+              </CodePane>
+            </Step>
+          </>
+        }
+      />
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8, marginTop: 10 }}>
         {[
           { a: "data class", b: "struct", label: "The keyword" },
@@ -267,58 +295,63 @@ print(question.correctIndex)  // 1`}
   () => (
     <Shell tag="Language basics" timer="5" title="Passing functions as parameters — the callback pattern" subtitle="This is how screens talk to each other without knowing about navigation" notes="This pattern — passing a lambda as a parameter — is fundamental to how navigation works in both platforms. The key insight: HomeScreen does not need to know anything about NavController. It just calls onStartClicked() and whoever set up the navigation handles what happens. This separation of concerns is good design.">
       <p style={{ fontSize: 13, color: MUTED, margin: "0 0 10px" }}>We saw this in Week 1 — now let us understand WHY it is useful for navigation.</p>
-      <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-        <p style={{ fontSize: 11, fontWeight: 700, color: PURPLE, textTransform: "uppercase", letterSpacing: ".06em", margin: "0 0 2px" }}>Android · Kotlin</p>
-        <Step n={1} title="Declare the parameter" accent={PURPLE}>
-          <CodePane accent={PURPLE}>
+      <OSToggle
+        android={
+          <>
+            <Step n={1} title="Declare the parameter" accent={PURPLE}>
+              <CodePane accent={PURPLE}>
 {`@Composable
 fun HomeScreen(
     onStartClicked: () -> Unit  // () -> Unit = no params, no return
 )`}
-          </CodePane>
-        </Step>
-        <Step n={2} title="Call it on button tap" accent={PURPLE}>
-          <CodePane accent={PURPLE}>
+              </CodePane>
+            </Step>
+            <Step n={2} title="Call it on button tap" accent={PURPLE}>
+              <CodePane accent={PURPLE}>
 {`Button(onClick = onStartClicked) {
     Text("Start Quiz")
 }`}
-          </CodePane>
-        </Step>
-        <Step n={3} title="Pass it from the caller" accent={PURPLE}>
-          <CodePane accent={PURPLE}>
+              </CodePane>
+            </Step>
+            <Step n={3} title="Pass it from the caller" accent={PURPLE}>
+              <CodePane accent={PURPLE}>
 {`HomeScreen(
     onStartClicked = {
         navController.navigate("question")
         // HomeScreen has no idea this is here
     }
 )`}
-          </CodePane>
-        </Step>
-
-        <p style={{ fontSize: 11, fontWeight: 700, color: TEAL, textTransform: "uppercase", letterSpacing: ".06em", margin: "8px 0 2px" }}>iOS · Swift</p>
-        <Step n={1} title="Declare the property" accent={TEAL}>
-          <CodePane accent={TEAL}>
+              </CodePane>
+            </Step>
+          </>
+        }
+        ios={
+          <>
+            <Step n={1} title="Declare the property" accent={TEAL}>
+              <CodePane accent={TEAL}>
 {`struct HomeScreen: View {
     var onStartClicked: () -> Void
     // () -> Void = a closure that takes nothing, returns nothing`}
-          </CodePane>
-        </Step>
-        <Step n={2} title="Call it on button tap" accent={TEAL}>
-          <CodePane accent={TEAL}>
+              </CodePane>
+            </Step>
+            <Step n={2} title="Call it on button tap" accent={TEAL}>
+              <CodePane accent={TEAL}>
 {`Button(action: onStartClicked) {
     Text("Start Quiz")
 }`}
-          </CodePane>
-        </Step>
-        <Step n={3} title="Pass it from the caller" accent={TEAL}>
-          <CodePane accent={TEAL}>
+              </CodePane>
+            </Step>
+            <Step n={3} title="Pass it from the caller" accent={TEAL}>
+              <CodePane accent={TEAL}>
 {`HomeScreen(onStartClicked: {
     // navigate to question screen
     // HomeScreen has no idea this is here
 })`}
-          </CodePane>
-        </Step>
-      </div>
+              </CodePane>
+            </Step>
+          </>
+        }
+      />
       <Info>{"Callback pattern: whenever a child component needs to tell its parent something happened, it calls a function the parent passed in. Used everywhere in mobile development — not just navigation."}</Info>
     </Shell>
   ),
@@ -388,16 +421,17 @@ fun HomeScreen(
   () => (
     <Shell tag="Navigation setup" timer="8" title="Setting up navigation — NavHost and NavigationStack" notes="This is where the syntax diverges most visibly. Acknowledge it directly: these look very different. But look at what they both do: define a set of screens and which one is first. The concept is identical. After showing this slide, ask students to describe what the NavHost is doing in plain English before you explain it.">
       <p style={{ fontSize: 13, color: MUTED, margin: "0 0 10px" }}>Both platforms need a container that knows about all the screens in your app. The syntax looks different — the concept is the same.</p>
-      <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-        <p style={{ fontSize: 11, fontWeight: 700, color: PURPLE, textTransform: "uppercase", letterSpacing: ".06em", margin: "0 0 2px" }}>Android · Kotlin</p>
-        <Step n={1} title="Create the controller" accent={PURPLE}>
-          <CodePane accent={PURPLE}>
+      <OSToggle
+        android={
+          <>
+            <Step n={1} title="Create the controller" accent={PURPLE}>
+              <CodePane accent={PURPLE}>
 {`val navController = rememberNavController()
 // NavController manages the back stack`}
-          </CodePane>
-        </Step>
-        <Step n={2} title="Declare the NavHost" accent={PURPLE}>
-          <CodePane accent={PURPLE}>
+              </CodePane>
+            </Step>
+            <Step n={2} title="Declare the NavHost" accent={PURPLE}>
+              <CodePane accent={PURPLE}>
 {`NavHost(
     navController = navController,
     startDestination = "home"   // first screen shown
@@ -411,12 +445,14 @@ fun HomeScreen(
         QuestionScreen()
     }
 }`}
-          </CodePane>
-        </Step>
-
-        <p style={{ fontSize: 11, fontWeight: 700, color: TEAL, textTransform: "uppercase", letterSpacing: ".06em", margin: "8px 0 2px" }}>iOS · Swift</p>
-        <Step n={1} title="Wrap in NavigationStack" accent={TEAL}>
-          <CodePane accent={TEAL}>
+              </CodePane>
+            </Step>
+          </>
+        }
+        ios={
+          <>
+            <Step n={1} title="Wrap in NavigationStack" accent={TEAL}>
+              <CodePane accent={TEAL}>
 {`struct ContentView: View {
     var body: some View {
         NavigationStack {
@@ -424,10 +460,10 @@ fun HomeScreen(
         }
     }
 }`}
-          </CodePane>
-        </Step>
-        <Step n={2} title="Add a NavigationLink" accent={TEAL}>
-          <CodePane accent={TEAL}>
+              </CodePane>
+            </Step>
+            <Step n={2} title="Add a NavigationLink" accent={TEAL}>
+              <CodePane accent={TEAL}>
 {`struct HomeScreen: View {
     var body: some View {
         VStack {
@@ -437,9 +473,11 @@ fun HomeScreen(
         }
     }
 }`}
-          </CodePane>
-        </Step>
-      </div>
+              </CodePane>
+            </Step>
+          </>
+        }
+      />
     </Shell>
   ),
 
@@ -519,19 +557,20 @@ fun HomeScreen(
   // 12: Code-along part 1 — data model
   () => (
     <Shell tag="Live code-along" title="Part 1 — the data model" notes="Type the data class first before any UI. Ask students: why do we define the data model before the screens? The answer: the screens depend on the data structure. If you change the data model later, you have to update every screen. Define it once, cleanly, at the start.">
-      <div style={{ display: "flex", flexDirection: "column", gap: 6, marginTop: 6 }}>
-        <p style={{ fontSize: 11, fontWeight: 700, color: PURPLE, textTransform: "uppercase", letterSpacing: ".06em", margin: "0 0 2px" }}>Android · Kotlin — Question.kt</p>
-        <Step n={1} title="Define the data class" accent={PURPLE}>
-          <CodePane accent={PURPLE}>
+      <OSToggle
+        android={
+          <>
+            <Step n={1} title="Define the data class — Question.kt" accent={PURPLE}>
+              <CodePane accent={PURPLE}>
 {`data class Question(
     val text: String,
     val answers: List<String>,
     val correctIndex: Int
 )`}
-          </CodePane>
-        </Step>
-        <Step n={2} title="Create sample data" accent={PURPLE}>
-          <CodePane accent={PURPLE}>
+              </CodePane>
+            </Step>
+            <Step n={2} title="Create sample data" accent={PURPLE}>
+              <CodePane accent={PURPLE}>
 {`val sampleQuestions = listOf(
     Question(
         text = "What is the capital of France?",
@@ -549,21 +588,23 @@ fun HomeScreen(
         correctIndex = 1
     )
 )`}
-          </CodePane>
-        </Step>
-
-        <p style={{ fontSize: 11, fontWeight: 700, color: TEAL, textTransform: "uppercase", letterSpacing: ".06em", margin: "8px 0 2px" }}>iOS · Swift — Question.swift</p>
-        <Step n={1} title="Define the struct" accent={TEAL}>
-          <CodePane accent={TEAL}>
+              </CodePane>
+            </Step>
+          </>
+        }
+        ios={
+          <>
+            <Step n={1} title="Define the struct — Question.swift" accent={TEAL}>
+              <CodePane accent={TEAL}>
 {`struct Question {
     let text: String
     let answers: [String]
     let correctIndex: Int
 }`}
-          </CodePane>
-        </Step>
-        <Step n={2} title="Create sample data" accent={TEAL}>
-          <CodePane accent={TEAL}>
+              </CodePane>
+            </Step>
+            <Step n={2} title="Create sample data" accent={TEAL}>
+              <CodePane accent={TEAL}>
 {`let sampleQuestions: [Question] = [
     Question(
         text: "What is the capital of France?",
@@ -581,9 +622,11 @@ fun HomeScreen(
         correctIndex: 1
     )
 ]`}
-          </CodePane>
-        </Step>
-      </div>
+              </CodePane>
+            </Step>
+          </>
+        }
+      />
       <Info>{"The data class and struct look nearly identical — field names and types are the same. Good data models are platform-agnostic."}</Info>
     </Shell>
   ),
@@ -591,16 +634,17 @@ fun HomeScreen(
   // 13: Code-along part 2 — home screen
   () => (
     <Shell tag="Live code-along" title="Part 2 — the home screen" notes="Point out the onStartClicked parameter explicitly. Ask students: why is it a parameter instead of NavController? Answer: so the screen does not need to know about navigation at all. It just says 'something happened' and the caller decides what to do. This is called separation of concerns and it is a key design principle.">
-      <div style={{ display: "flex", flexDirection: "column", gap: 6, marginTop: 6 }}>
-        <p style={{ fontSize: 11, fontWeight: 700, color: PURPLE, textTransform: "uppercase", letterSpacing: ".06em", margin: "0 0 2px" }}>Android · Kotlin</p>
-        <Step n={1} title="Accept a callback" accent={PURPLE}>
-          <CodePane accent={PURPLE}>
+      <OSToggle
+        android={
+          <>
+            <Step n={1} title="Accept a callback" accent={PURPLE}>
+              <CodePane accent={PURPLE}>
 {`@Composable
 fun HomeScreen(onStartClicked: () -> Unit) {`}
-          </CodePane>
-        </Step>
-        <Step n={2} title="Build the column" accent={PURPLE}>
-          <CodePane accent={PURPLE}>
+              </CodePane>
+            </Step>
+            <Step n={2} title="Build the column" accent={PURPLE}>
+              <CodePane accent={PURPLE}>
 {`    Column(
         modifier = Modifier
             .fillMaxSize()
@@ -614,10 +658,10 @@ fun HomeScreen(onStartClicked: () -> Unit) {`}
         Spacer(modifier = Modifier.height(8.dp))
         Text("Test your knowledge!", fontSize = 16.sp, color = Color.Gray)
         Spacer(modifier = Modifier.height(48.dp))`}
-          </CodePane>
-        </Step>
-        <Step n={3} title="Wire the button" accent={PURPLE}>
-          <CodePane accent={PURPLE}>
+              </CodePane>
+            </Step>
+            <Step n={3} title="Wire the button" accent={PURPLE}>
+              <CodePane accent={PURPLE}>
 {`        Button(
             onClick = onStartClicked,   // call the callback
             modifier = Modifier.fillMaxWidth(),
@@ -627,18 +671,20 @@ fun HomeScreen(onStartClicked: () -> Unit) {`}
         ) { Text("Start Quiz", fontSize = 16.sp) }
     }
 }`}
-          </CodePane>
-        </Step>
-
-        <p style={{ fontSize: 11, fontWeight: 700, color: TEAL, textTransform: "uppercase", letterSpacing: ".06em", margin: "8px 0 2px" }}>iOS · Swift</p>
-        <Step n={1} title="Declare the closure" accent={TEAL}>
-          <CodePane accent={TEAL}>
+              </CodePane>
+            </Step>
+          </>
+        }
+        ios={
+          <>
+            <Step n={1} title="Declare the closure" accent={TEAL}>
+              <CodePane accent={TEAL}>
 {`struct HomeScreen: View {
     var onStartClicked: () -> Void`}
-          </CodePane>
-        </Step>
-        <Step n={2} title="Build the VStack" accent={TEAL}>
-          <CodePane accent={TEAL}>
+              </CodePane>
+            </Step>
+            <Step n={2} title="Build the VStack" accent={TEAL}>
+              <CodePane accent={TEAL}>
 {`    var body: some View {
         ZStack {
             Color(UIColor.systemGray6).ignoresSafeArea()
@@ -649,10 +695,10 @@ fun HomeScreen(onStartClicked: () -> Unit) {`}
                 Text("Test your knowledge!")
                     .font(.subheadline).foregroundColor(.gray)
                 Spacer().frame(height: 48)`}
-          </CodePane>
-        </Step>
-        <Step n={3} title="Wire the button" accent={TEAL}>
-          <CodePane accent={TEAL}>
+              </CodePane>
+            </Step>
+            <Step n={3} title="Wire the button" accent={TEAL}>
+              <CodePane accent={TEAL}>
 {`                Button(action: onStartClicked) {  // call the closure
                     Text("Start Quiz")
                         .font(.headline).foregroundColor(.white)
@@ -665,26 +711,29 @@ fun HomeScreen(onStartClicked: () -> Unit) {`}
         }
     }
 }`}
-          </CodePane>
-        </Step>
-      </div>
+              </CodePane>
+            </Step>
+          </>
+        }
+      />
     </Shell>
   ),
 
   // 14: Code-along part 3 — question screen
   () => (
     <Shell tag="Live code-along" title="Part 3 — the question screen" notes="Introduce forEachIndexed / ForEach here. Students may not have seen loops before. Explain it simply: it goes through the answers list and creates a Button for each one. This is the precursor to the full list concepts in Week 3. Keep it simple — do not go deep on loop mechanics now.">
-      <div style={{ display: "flex", flexDirection: "column", gap: 6, marginTop: 6 }}>
-        <p style={{ fontSize: 11, fontWeight: 700, color: PURPLE, textTransform: "uppercase", letterSpacing: ".06em", margin: "0 0 2px" }}>Android · Kotlin</p>
-        <Step n={1} title="Load the first question" accent={PURPLE}>
-          <CodePane accent={PURPLE}>
+      <OSToggle
+        android={
+          <>
+            <Step n={1} title="Load the first question" accent={PURPLE}>
+              <CodePane accent={PURPLE}>
 {`@Composable
 fun QuestionScreen() {
     val question = sampleQuestions[0]`}
-          </CodePane>
-        </Step>
-        <Step n={2} title="Render question text" accent={PURPLE}>
-          <CodePane accent={PURPLE}>
+              </CodePane>
+            </Step>
+            <Step n={2} title="Render question text" accent={PURPLE}>
+              <CodePane accent={PURPLE}>
 {`    Column(
         modifier = Modifier.fillMaxSize()
             .background(Color(0xFFF5F5F5)).padding(24.dp),
@@ -696,10 +745,10 @@ fun QuestionScreen() {
         Text(question.text, fontSize = 22.sp,
             fontWeight = FontWeight.Bold, lineHeight = 30.sp)
         Spacer(Modifier.height(32.dp))`}
-          </CodePane>
-        </Step>
-        <Step n={3} title="Loop answer buttons" accent={PURPLE}>
-          <CodePane accent={PURPLE}>
+              </CodePane>
+            </Step>
+            <Step n={3} title="Loop answer buttons" accent={PURPLE}>
+              <CodePane accent={PURPLE}>
 {`        question.answers.forEachIndexed { index, answer ->
             Button(
                 onClick = { /* handle in Session 2 */ },
@@ -710,18 +759,20 @@ fun QuestionScreen() {
         }
     }
 }`}
-          </CodePane>
-        </Step>
-
-        <p style={{ fontSize: 11, fontWeight: 700, color: TEAL, textTransform: "uppercase", letterSpacing: ".06em", margin: "8px 0 2px" }}>iOS · Swift</p>
-        <Step n={1} title="Load the first question" accent={TEAL}>
-          <CodePane accent={TEAL}>
+              </CodePane>
+            </Step>
+          </>
+        }
+        ios={
+          <>
+            <Step n={1} title="Load the first question" accent={TEAL}>
+              <CodePane accent={TEAL}>
 {`struct QuestionScreen: View {
     let question = sampleQuestions[0]`}
-          </CodePane>
-        </Step>
-        <Step n={2} title="Render question text" accent={TEAL}>
-          <CodePane accent={TEAL}>
+              </CodePane>
+            </Step>
+            <Step n={2} title="Render question text" accent={TEAL}>
+              <CodePane accent={TEAL}>
 {`    var body: some View {
         ZStack {
             Color(UIColor.systemGray6).ignoresSafeArea()
@@ -731,10 +782,10 @@ fun QuestionScreen() {
                 Text(question.text)
                     .font(.title2).fontWeight(.bold).lineSpacing(6)
                 Spacer().frame(height: 20)`}
-          </CodePane>
-        </Step>
-        <Step n={3} title="Loop answer buttons" accent={TEAL}>
-          <CodePane accent={TEAL}>
+              </CodePane>
+            </Step>
+            <Step n={3} title="Loop answer buttons" accent={TEAL}>
+              <CodePane accent={TEAL}>
 {`                ForEach(
                     Array(question.answers.enumerated()),
                     id: \\.offset
@@ -752,28 +803,31 @@ fun QuestionScreen() {
         }
     }
 }`}
-          </CodePane>
-        </Step>
-      </div>
+              </CodePane>
+            </Step>
+          </>
+        }
+      />
     </Shell>
   ),
 
   // 15: Code-along part 4 — wiring navigation
   () => (
     <Shell tag="Live code-along" title="Part 4 — wiring it all together" notes="This is the payoff of the whole session. Type the NavHost / NavigationStack setup and run it. Navigate forward, then back. Do this several times while narrating: 'I am pushing a screen onto the stack... I am popping it off.' The physical metaphor with the visual action reinforces the mental model.">
-      <div style={{ display: "flex", flexDirection: "column", gap: 6, marginTop: 6 }}>
-        <p style={{ fontSize: 11, fontWeight: 700, color: PURPLE, textTransform: "uppercase", letterSpacing: ".06em", margin: "0 0 2px" }}>Android · Kotlin — MainActivity.kt</p>
-        <Step n={1} title="Create the NavController" accent={PURPLE}>
-          <CodePane accent={PURPLE}>
+      <OSToggle
+        android={
+          <>
+            <Step n={1} title="Create the NavController — MainActivity.kt" accent={PURPLE}>
+              <CodePane accent={PURPLE}>
 {`class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             val navController = rememberNavController()`}
-          </CodePane>
-        </Step>
-        <Step n={2} title="Define the route map" accent={PURPLE}>
-          <CodePane accent={PURPLE}>
+              </CodePane>
+            </Step>
+            <Step n={2} title="Define the route map" accent={PURPLE}>
+              <CodePane accent={PURPLE}>
 {`            NavHost(
                 navController = navController,
                 startDestination = "home"
@@ -792,12 +846,14 @@ fun QuestionScreen() {
         }
     }
 }`}
-          </CodePane>
-        </Step>
-
-        <p style={{ fontSize: 11, fontWeight: 700, color: TEAL, textTransform: "uppercase", letterSpacing: ".06em", margin: "8px 0 2px" }}>iOS · Swift — ContentView.swift</p>
-        <Step n={1} title="Wrap in NavigationStack" accent={TEAL}>
-          <CodePane accent={TEAL}>
+              </CodePane>
+            </Step>
+          </>
+        }
+        ios={
+          <>
+            <Step n={1} title="Wrap in NavigationStack — ContentView.swift" accent={TEAL}>
+              <CodePane accent={TEAL}>
 {`struct ContentView: View {
     var body: some View {
         NavigationStack {
@@ -805,10 +861,10 @@ fun QuestionScreen() {
         }
     }
 }`}
-          </CodePane>
-        </Step>
-        <Step n={2} title="Push via NavigationLink" accent={TEAL}>
-          <CodePane accent={TEAL}>
+              </CodePane>
+            </Step>
+            <Step n={2} title="Push via NavigationLink" accent={TEAL}>
+              <CodePane accent={TEAL}>
 {`struct HomeScreenWithNav: View {
     var body: some View {
         ZStack {
@@ -829,9 +885,11 @@ fun QuestionScreen() {
         }
     }
 }`}
-          </CodePane>
-        </Step>
-      </div>
+              </CodePane>
+            </Step>
+          </>
+        }
+      />
     </Shell>
   ),
 
@@ -934,7 +992,7 @@ fun QuestionScreen() {
     </Shell>
   ),
 
-  // 18: Closing
+  // 19: Closing
   () => (
     <div style={{ background: `linear-gradient(135deg, ${PURPLE_DARK} 0%, ${PURPLE} 100%)`, borderRadius: 12, padding: "44px 40px", minHeight: 360, display: "flex", flexDirection: "column", justifyContent: "space-between", boxSizing: "border-box" }}>
       <div>

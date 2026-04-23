@@ -30,7 +30,7 @@ const Step = ({ n, title, accent = PURPLE, children }) => (
   </div>
 );
 
-const Bullet = ({ children, sub }) => (
+const Bullet = ({ children, sub = false }) => (
   <div style={{ display: "flex", gap: 8, margin: sub ? "3px 0 3px 20px" : "7px 0", alignItems: "flex-start" }}>
     <span style={{ color: sub ? TEAL : PURPLE, fontWeight: 700, fontSize: sub ? 12 : 14, marginTop: 1, flexShrink: 0 }}>{sub ? "◦" : "▸"}</span>
     <span style={{ fontSize: sub ? 13 : 14, color: sub ? MUTED : TEXT, lineHeight: 1.5 }}>{children}</span>
@@ -64,7 +64,7 @@ const Warn = ({ title, children }) => (
   </div>
 );
 
-const Shell = ({ tag, title, subtitle, timer, children, notes, dark }) => (
+const Shell = ({ tag, title, subtitle = undefined, timer = undefined, children, notes = undefined, dark = false }: { tag?: string; title: string; subtitle?: string; timer?: string; children: React.ReactNode; notes?: string; dark?: boolean }) => (
   <div style={{ background: dark ? PURPLE_DARK : "#fff", border: `1px solid ${dark ? "transparent" : "#e5e7eb"}`, borderRadius: 12, padding: "24px 28px 18px", minHeight: 360, display: "flex", flexDirection: "column", boxSizing: "border-box" }}>
     <div style={{ marginBottom: 12 }}>
       <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
@@ -78,6 +78,29 @@ const Shell = ({ tag, title, subtitle, timer, children, notes, dark }) => (
     {notes && <Notes>{notes}</Notes>}
   </div>
 );
+
+const OSToggle = ({ android, ios }: { android: React.ReactNode; ios: React.ReactNode }) => {
+  const [platform, setPlatform] = useState<'android' | 'ios'>('android');
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+      <div style={{ display: "flex", borderRadius: 8, overflow: "hidden", border: "1px solid #e5e7eb", width: "fit-content", marginBottom: 2 }}>
+        <button
+          onClick={() => setPlatform('android')}
+          style={{ padding: "5px 16px", fontSize: 11, fontWeight: 700, letterSpacing: ".04em", background: platform === 'android' ? PURPLE : "#fff", color: platform === 'android' ? "#fff" : MUTED, border: "none", borderRight: "1px solid #e5e7eb", cursor: "pointer" }}
+        >
+          Android · Kotlin
+        </button>
+        <button
+          onClick={() => setPlatform('ios')}
+          style={{ padding: "5px 16px", fontSize: 11, fontWeight: 700, letterSpacing: ".04em", background: platform === 'ios' ? TEAL : "#fff", color: platform === 'ios' ? "#fff" : MUTED, border: "none", cursor: "pointer" }}
+        >
+          iOS · Swift
+        </button>
+      </div>
+      {platform === 'android' ? android : ios}
+    </div>
+  );
+};
 
 const slides = [
 
@@ -175,52 +198,57 @@ const slides = [
   // 5: Passing data — in code
   () => (
     <Shell tag="Data passing" title="Passing data — how it looks in code" notes="Walk through each approach carefully. Compose embeds data in the route string like a URL path — /question/0, /question/1. SwiftUI passes data directly as an initializer parameter. Both are valid approaches. SwiftUI's approach is more type-safe. Compose's approach is more flexible for deep linking.">
-      <div style={{ display: "flex", flexDirection: "column", gap: 6, marginTop: 6 }}>
-        <p style={{ fontSize: 11, fontWeight: 700, color: PURPLE, textTransform: "uppercase", letterSpacing: ".06em", margin: "0 0 2px" }}>Android · Kotlin</p>
-        <Step n={1} title="Define a route with a placeholder" accent={PURPLE}>
-          <CodePane accent={PURPLE}>
+      <OSToggle
+        android={
+          <>
+            <Step n={1} title="Define a route with a placeholder" accent={PURPLE}>
+              <CodePane accent={PURPLE}>
 {`// {questionIndex} is a variable slot — like a URL parameter
 composable("question/{questionIndex}") { backStackEntry ->
     ...
 }`}
-          </CodePane>
-        </Step>
-        <Step n={2} title="Navigate with a value" accent={PURPLE}>
-          <CodePane accent={PURPLE}>
+              </CodePane>
+            </Step>
+            <Step n={2} title="Navigate with a value" accent={PURPLE}>
+              <CodePane accent={PURPLE}>
 {`navController.navigate("question/0")  // passes index 0
 navController.navigate("question/1")  // passes index 1`}
-          </CodePane>
-        </Step>
-        <Step n={3} title="Extract from the back stack entry" accent={PURPLE}>
-          <CodePane accent={PURPLE}>
+              </CodePane>
+            </Step>
+            <Step n={3} title="Extract from the back stack entry" accent={PURPLE}>
+              <CodePane accent={PURPLE}>
 {`val index = backStackEntry
     .arguments
     ?.getString("questionIndex")
     ?.toInt() ?: 0
 
 QuestionScreen(questionIndex = index)`}
-          </CodePane>
-        </Step>
-
-        <p style={{ fontSize: 11, fontWeight: 700, color: TEAL, textTransform: "uppercase", letterSpacing: ".06em", margin: "8px 0 2px" }}>iOS · Swift</p>
-        <Step n={1} title="Add an init parameter to the view" accent={TEAL}>
-          <CodePane accent={TEAL}>
+              </CodePane>
+            </Step>
+          </>
+        }
+        ios={
+          <>
+            <Step n={1} title="Add an init parameter to the view" accent={TEAL}>
+              <CodePane accent={TEAL}>
 {`struct QuestionScreen: View {
     let questionIndex: Int   // received from the caller
     var question: Question { sampleQuestions[questionIndex] }
 }`}
-          </CodePane>
-        </Step>
-        <Step n={2} title="Pass the value via NavigationLink" accent={TEAL}>
-          <CodePane accent={TEAL}>
+              </CodePane>
+            </Step>
+            <Step n={2} title="Pass the value via NavigationLink" accent={TEAL}>
+              <CodePane accent={TEAL}>
 {`NavigationLink(
     destination: QuestionScreen(questionIndex: 0)
 ) {
     Text("Start Quiz")
 }`}
-          </CodePane>
-        </Step>
-      </div>
+              </CodePane>
+            </Step>
+          </>
+        }
+      />
     </Shell>
   ),
 
@@ -333,26 +361,27 @@ NavHost(navController, startDestination = "home") {
   () => (
     <Shell tag="Patterns" title="Answer feedback — showing correct and incorrect" notes="This pattern — selectedIndex state + conditional color — is a very common UI pattern students will use in many contexts beyond trivia. The key: once an answer is selected, disable further taps (selectedIndex != -1 check). Otherwise users can tap multiple answers.">
       <p style={{ fontSize: 13, color: MUTED, margin: "0 0 8px" }}>When a user taps an answer, highlight it green or red — then move on.</p>
-      <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-        <p style={{ fontSize: 11, fontWeight: 700, color: PURPLE, textTransform: "uppercase", letterSpacing: ".06em", margin: "0 0 2px" }}>Android · Kotlin</p>
-        <Step n={1} title="Track the selected answer" accent={PURPLE}>
-          <CodePane accent={PURPLE}>
+      <OSToggle
+        android={
+          <>
+            <Step n={1} title="Track the selected answer" accent={PURPLE}>
+              <CodePane accent={PURPLE}>
 {`// -1 means no answer tapped yet
 var selectedIndex by remember { mutableStateOf(-1) }`}
-          </CodePane>
-        </Step>
-        <Step n={2} title="Compute button color" accent={PURPLE}>
-          <CodePane accent={PURPLE}>
+              </CodePane>
+            </Step>
+            <Step n={2} title="Compute button color" accent={PURPLE}>
+              <CodePane accent={PURPLE}>
 {`val bgColor = when {
     selectedIndex == -1              -> Color.White           // not answered
     index == question.correctIndex   -> Color(0xFF1D9E75)    // correct = green
     index == selectedIndex           -> Color(0xFFE24B4A)    // wrong = red
     else                             -> Color.White           // others unchanged
 }`}
-          </CodePane>
-        </Step>
-        <Step n={3} title="Guard against double-tap" accent={PURPLE}>
-          <CodePane accent={PURPLE}>
+              </CodePane>
+            </Step>
+            <Step n={3} title="Guard against double-tap" accent={PURPLE}>
+              <CodePane accent={PURPLE}>
 {`Button(onClick = {
     if (selectedIndex == -1) {          // only respond once
         selectedIndex = index
@@ -361,28 +390,30 @@ var selectedIndex by remember { mutableStateOf(-1) }`}
 }, colors = ButtonDefaults.buttonColors(containerColor = bgColor)) {
     Text(answer)
 }`}
-          </CodePane>
-        </Step>
-
-        <p style={{ fontSize: 11, fontWeight: 700, color: TEAL, textTransform: "uppercase", letterSpacing: ".06em", margin: "8px 0 2px" }}>iOS · Swift</p>
-        <Step n={1} title="Track the selected answer" accent={TEAL}>
-          <CodePane accent={TEAL}>
+              </CodePane>
+            </Step>
+          </>
+        }
+        ios={
+          <>
+            <Step n={1} title="Track the selected answer" accent={TEAL}>
+              <CodePane accent={TEAL}>
 {`@State private var selectedIndex = -1
 // -1 means no answer tapped yet`}
-          </CodePane>
-        </Step>
-        <Step n={2} title="Color helper functions" accent={TEAL}>
-          <CodePane accent={TEAL}>
+              </CodePane>
+            </Step>
+            <Step n={2} title="Color helper functions" accent={TEAL}>
+              <CodePane accent={TEAL}>
 {`func buttonBgColor(_ index: Int) -> Color {
     if selectedIndex == -1 { return .white }
     if index == question.correctIndex { return Color(red:0.11,green:0.62,blue:0.46) }
     if index == selectedIndex { return Color(red:0.89,green:0.29,blue:0.29) }
     return .white
 }`}
-          </CodePane>
-        </Step>
-        <Step n={3} title="Guard against double-tap" accent={TEAL}>
-          <CodePane accent={TEAL}>
+              </CodePane>
+            </Step>
+            <Step n={3} title="Guard against double-tap" accent={TEAL}>
+              <CodePane accent={TEAL}>
 {`Button(action: {
     if selectedIndex == -1 {            // only respond once
         selectedIndex = index
@@ -391,54 +422,59 @@ var selectedIndex by remember { mutableStateOf(-1) }`}
 }) {
     Text(answer).background(buttonBgColor(index))
 }`}
-          </CodePane>
-        </Step>
-      </div>
+              </CodePane>
+            </Step>
+          </>
+        }
+      />
     </Shell>
   ),
 
   // 10: Results screen pattern
   () => (
     <Shell tag="Patterns" title="The results screen — score, message, and Play Again" notes="Connect the when/switch pattern to what students saw in Week 1 Session 2. The new concept here is using a computed percentage to drive both the display and the message. Walk through the percentage calculation explicitly — integer division is a common gotcha.">
-      <div style={{ display: "flex", flexDirection: "column", gap: 6, marginTop: 6 }}>
-        <p style={{ fontSize: 11, fontWeight: 700, color: PURPLE, textTransform: "uppercase", letterSpacing: ".06em", margin: "0 0 2px" }}>Android · Kotlin</p>
-        <Step n={1} title="Calculate percentage" accent={PURPLE}>
-          <CodePane accent={PURPLE}>
+      <OSToggle
+        android={
+          <>
+            <Step n={1} title="Calculate percentage" accent={PURPLE}>
+              <CodePane accent={PURPLE}>
 {`// toFloat() prevents integer division truncating to 0
 val percentage = (score.toFloat() / total * 100).toInt()`}
-          </CodePane>
-        </Step>
-        <Step n={2} title="Pick the feedback message" accent={PURPLE}>
-          <CodePane accent={PURPLE}>
+              </CodePane>
+            </Step>
+            <Step n={2} title="Pick the feedback message" accent={PURPLE}>
+              <CodePane accent={PURPLE}>
 {`val message = when {
     percentage == 100 -> "Perfect score!"
     percentage >= 70  -> "Great job!"
     percentage >= 40  -> "Good effort!"
     else              -> "Keep practicing!"
 }`}
-          </CodePane>
-        </Step>
-        <Step n={3} title="Wire Play Again" accent={PURPLE}>
-          <CodePane accent={PURPLE}>
+              </CodePane>
+            </Step>
+            <Step n={3} title="Wire Play Again" accent={PURPLE}>
+              <CodePane accent={PURPLE}>
 {`Button(
     onClick = onPlayAgain,
     modifier = Modifier.fillMaxWidth()
 ) {
     Text("Play Again")
 }`}
-          </CodePane>
-        </Step>
-
-        <p style={{ fontSize: 11, fontWeight: 700, color: TEAL, textTransform: "uppercase", letterSpacing: ".06em", margin: "8px 0 2px" }}>iOS · Swift</p>
-        <Step n={1} title="Calculate percentage" accent={TEAL}>
-          <CodePane accent={TEAL}>
+              </CodePane>
+            </Step>
+          </>
+        }
+        ios={
+          <>
+            <Step n={1} title="Calculate percentage" accent={TEAL}>
+              <CodePane accent={TEAL}>
 {`var percentage: Int {
     Int(Double(score) / Double(total) * 100)
 }`}
-          </CodePane>
-        </Step>
-        <Step n={2} title="Pick the feedback message" accent={TEAL}>
-          <CodePane accent={TEAL}>
+              </CodePane>
+            </Step>
+            <Step n={2} title="Pick the feedback message" accent={TEAL}>
+              <CodePane accent={TEAL}>
 {`var message: String {
     switch percentage {
     case 100:   return "Perfect score!"
@@ -447,10 +483,10 @@ val percentage = (score.toFloat() / total * 100).toInt()`}
     default:    return "Keep practicing!"
     }
 }`}
-          </CodePane>
-        </Step>
-        <Step n={3} title="Wire Play Again" accent={TEAL}>
-          <CodePane accent={TEAL}>
+              </CodePane>
+            </Step>
+            <Step n={3} title="Wire Play Again" accent={TEAL}>
+              <CodePane accent={TEAL}>
 {`Button(action: onPlayAgain) {
     Text("Play Again")
         .font(.headline).foregroundColor(.white)
@@ -458,9 +494,11 @@ val percentage = (score.toFloat() / total * 100).toInt()`}
         .background(Color(red:0.33,green:0.29,blue:0.72))
         .cornerRadius(10)
 }`}
-          </CodePane>
-        </Step>
-      </div>
+              </CodePane>
+            </Step>
+          </>
+        }
+      />
     </Shell>
   ),
 
@@ -561,10 +599,11 @@ var score by remember { mutableStateOf(0) }`}
   // 13: Code-along part 2 — updated QuestionScreen
   () => (
     <Shell tag="Live code-along" title="Part 2 — QuestionScreen with answer feedback" notes="The selectedIndex state is the key new concept here. Walk through the color logic slowly. Ask students: when selectedIndex is -1, what color do all buttons show? When the user taps button 2, what happens to button 2's color? What happens to button 3 (the correct answer)?">
-      <div style={{ display: "flex", flexDirection: "column", gap: 6, marginTop: 6 }}>
-        <p style={{ fontSize: 11, fontWeight: 700, color: PURPLE, textTransform: "uppercase", letterSpacing: ".06em", margin: "0 0 2px" }}>Android · Kotlin</p>
-        <Step n={1} title="Accept index and callback" accent={PURPLE}>
-          <CodePane accent={PURPLE}>
+      <OSToggle
+        android={
+          <>
+            <Step n={1} title="Accept index and callback" accent={PURPLE}>
+              <CodePane accent={PURPLE}>
 {`@Composable
 fun QuestionScreen(
     questionIndex: Int,
@@ -572,10 +611,10 @@ fun QuestionScreen(
 ) {
     val question = sampleQuestions[questionIndex]
     var selectedIndex by remember { mutableStateOf(-1) }`}
-          </CodePane>
-        </Step>
-        <Step n={2} title="Color logic per button" accent={PURPLE}>
-          <CodePane accent={PURPLE}>
+              </CodePane>
+            </Step>
+            <Step n={2} title="Color logic per button" accent={PURPLE}>
+              <CodePane accent={PURPLE}>
 {`question.answers.forEachIndexed { index, answer ->
     val bgColor = when {
         selectedIndex == -1            -> Color.White
@@ -583,10 +622,10 @@ fun QuestionScreen(
         index == selectedIndex         -> Color(0xFFE24B4A)  // red
         else                           -> Color.White
     }`}
-          </CodePane>
-        </Step>
-        <Step n={3} title="Tap handler — fire once only" accent={PURPLE}>
-          <CodePane accent={PURPLE}>
+              </CodePane>
+            </Step>
+            <Step n={3} title="Tap handler — fire once only" accent={PURPLE}>
+              <CodePane accent={PURPLE}>
 {`    Button(
         onClick = {
             if (selectedIndex == -1) {
@@ -598,31 +637,33 @@ fun QuestionScreen(
         colors = ButtonDefaults.buttonColors(containerColor = bgColor)
     ) { Text(answer) }
 }`}
-          </CodePane>
-        </Step>
-
-        <p style={{ fontSize: 11, fontWeight: 700, color: TEAL, textTransform: "uppercase", letterSpacing: ".06em", margin: "8px 0 2px" }}>iOS · Swift</p>
-        <Step n={1} title="Accept index and callback" accent={TEAL}>
-          <CodePane accent={TEAL}>
+              </CodePane>
+            </Step>
+          </>
+        }
+        ios={
+          <>
+            <Step n={1} title="Accept index and callback" accent={TEAL}>
+              <CodePane accent={TEAL}>
 {`struct QuestionScreen: View {
     let questionIndex: Int
     let onAnswerSelected: (Bool) -> Void
     var question: Question { sampleQuestions[questionIndex] }
     @State private var selectedIndex = -1`}
-          </CodePane>
-        </Step>
-        <Step n={2} title="Color helper functions" accent={TEAL}>
-          <CodePane accent={TEAL}>
+              </CodePane>
+            </Step>
+            <Step n={2} title="Color helper functions" accent={TEAL}>
+              <CodePane accent={TEAL}>
 {`func buttonBgColor(_ index: Int) -> Color {
     if selectedIndex == -1 { return .white }
     if index == question.correctIndex { return Color(red:0.11,green:0.62,blue:0.46) }
     if index == selectedIndex { return Color(red:0.89,green:0.29,blue:0.29) }
     return .white
 }`}
-          </CodePane>
-        </Step>
-        <Step n={3} title="Tap handler — fire once only" accent={TEAL}>
-          <CodePane accent={TEAL}>
+              </CodePane>
+            </Step>
+            <Step n={3} title="Tap handler — fire once only" accent={TEAL}>
+              <CodePane accent={TEAL}>
 {`ForEach(Array(question.answers.enumerated()), id: \\.offset) { index, answer in
     Button(action: {
         if selectedIndex == -1 {
@@ -636,19 +677,22 @@ fun QuestionScreen(
             .background(buttonBgColor(index)).cornerRadius(10)
     }
 }`}
-          </CodePane>
-        </Step>
-      </div>
+              </CodePane>
+            </Step>
+          </>
+        }
+      />
     </Shell>
   ),
 
   // 14: Code-along part 3 — results screen
   () => (
     <Shell tag="Live code-along" title="Part 3 — ResultsScreen" notes="Build this last. It is the payoff — run the full quiz and land here. Then tap Play Again and watch the app pop all the way back to home. Students should feel the satisfaction of a complete, working app at this moment. Let them tap through it themselves before explaining anything.">
-      <div style={{ display: "flex", flexDirection: "column", gap: 6, marginTop: 6 }}>
-        <p style={{ fontSize: 11, fontWeight: 700, color: PURPLE, textTransform: "uppercase", letterSpacing: ".06em", margin: "0 0 2px" }}>Android · Kotlin</p>
-        <Step n={1} title="Accept score and callback" accent={PURPLE}>
-          <CodePane accent={PURPLE}>
+      <OSToggle
+        android={
+          <>
+            <Step n={1} title="Accept score and callback" accent={PURPLE}>
+              <CodePane accent={PURPLE}>
 {`@Composable
 fun ResultsScreen(
     score: Int,
@@ -656,20 +700,20 @@ fun ResultsScreen(
     onPlayAgain: () -> Unit
 ) {
     val percentage = (score.toFloat() / total * 100).toInt()`}
-          </CodePane>
-        </Step>
-        <Step n={2} title="Pick the feedback message" accent={PURPLE}>
-          <CodePane accent={PURPLE}>
+              </CodePane>
+            </Step>
+            <Step n={2} title="Pick the feedback message" accent={PURPLE}>
+              <CodePane accent={PURPLE}>
 {`val message = when {
     percentage == 100 -> "Perfect score!"
     percentage >= 70  -> "Great job!"
     percentage >= 40  -> "Good effort!"
     else              -> "Keep practicing!"
 }`}
-          </CodePane>
-        </Step>
-        <Step n={3} title="Render score and Play Again" accent={PURPLE}>
-          <CodePane accent={PURPLE}>
+              </CodePane>
+            </Step>
+            <Step n={3} title="Render score and Play Again" accent={PURPLE}>
+              <CodePane accent={PURPLE}>
 {`Column(
     modifier = Modifier.fillMaxSize().padding(32.dp),
     verticalArrangement = Arrangement.Center,
@@ -685,21 +729,23 @@ fun ResultsScreen(
         Text("Play Again", fontSize = 16.sp)
     }
 }`}
-          </CodePane>
-        </Step>
-
-        <p style={{ fontSize: 11, fontWeight: 700, color: TEAL, textTransform: "uppercase", letterSpacing: ".06em", margin: "8px 0 2px" }}>iOS · Swift</p>
-        <Step n={1} title="Accept score and callback" accent={TEAL}>
-          <CodePane accent={TEAL}>
+              </CodePane>
+            </Step>
+          </>
+        }
+        ios={
+          <>
+            <Step n={1} title="Accept score and callback" accent={TEAL}>
+              <CodePane accent={TEAL}>
 {`struct ResultsScreen: View {
     let score: Int
     let total: Int
     let onPlayAgain: () -> Void
     var percentage: Int { Int(Double(score) / Double(total) * 100) }`}
-          </CodePane>
-        </Step>
-        <Step n={2} title="Pick the feedback message" accent={TEAL}>
-          <CodePane accent={TEAL}>
+              </CodePane>
+            </Step>
+            <Step n={2} title="Pick the feedback message" accent={TEAL}>
+              <CodePane accent={TEAL}>
 {`var message: String {
     switch percentage {
     case 100:   return "Perfect score!"
@@ -708,10 +754,10 @@ fun ResultsScreen(
     default:    return "Keep practicing!"
     }
 }`}
-          </CodePane>
-        </Step>
-        <Step n={3} title="Render score and Play Again" accent={TEAL}>
-          <CodePane accent={TEAL}>
+              </CodePane>
+            </Step>
+            <Step n={3} title="Render score and Play Again" accent={TEAL}>
+              <CodePane accent={TEAL}>
 {`var body: some View {
     VStack(spacing: 8) {
         Text("Quiz Complete!").font(.largeTitle).fontWeight(.bold)
@@ -728,9 +774,11 @@ fun ResultsScreen(
     }.padding(32)
     .navigationBarBackButtonHidden(true)
 }`}
-          </CodePane>
-        </Step>
-      </div>
+              </CodePane>
+            </Step>
+          </>
+        }
+      />
     </Shell>
   ),
 
