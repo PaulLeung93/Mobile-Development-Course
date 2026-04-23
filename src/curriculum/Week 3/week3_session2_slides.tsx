@@ -13,10 +13,20 @@ const Tag = ({ children, color = PURPLE }) => (
   <span style={{ fontSize: 10, fontWeight: 600, letterSpacing: ".06em", textTransform: "uppercase", background: color === PURPLE ? PURPLE_LIGHT : TEAL_LIGHT, color, padding: "2px 8px", borderRadius: 20 }}>{children}</span>
 );
 
-const CodePane = ({ title, accent = PURPLE, children }) => (
+const CodePane = ({ title = undefined, accent = PURPLE, children }) => (
   <div style={{ flex: 1, minWidth: 0 }}>
-    <div style={{ background: accent, color: "#fff", fontSize: 11, fontWeight: 600, padding: "4px 12px", borderRadius: "8px 8px 0 0" }}>{title}</div>
-    <pre style={{ margin: 0, background: "#1e1e2e", color: "#cdd6f4", fontSize: 11, padding: "12px 14px", borderRadius: "0 0 8px 8px", lineHeight: 1.7, overflowX: "auto", whiteSpace: "pre-wrap", fontFamily: "monospace" }}>{children}</pre>
+    {title && <div style={{ background: accent, color: "#fff", fontSize: 11, fontWeight: 600, padding: "4px 12px", borderRadius: "8px 8px 0 0", letterSpacing: ".04em" }}>{title}</div>}
+    <pre style={{ margin: 0, background: "#1e1e2e", color: "#cdd6f4", fontSize: 11, padding: "12px 14px", borderRadius: title ? "0 0 8px 8px" : 8, lineHeight: 1.7, overflowX: "auto", whiteSpace: "pre-wrap", fontFamily: "monospace" }}>{children}</pre>
+  </div>
+);
+
+const Step = ({ n, title, accent = PURPLE, children }) => (
+  <div style={{ marginBottom: 12, paddingLeft: 20, borderLeft: `2px solid #e5e7eb`, position: "relative" }}>
+    <div style={{ position: "absolute", left: -14, top: -2, width: 26, height: 26, borderRadius: "50%", background: "#fff", border: `2px solid ${accent}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 800, color: accent }}>
+      {n}
+    </div>
+    <p style={{ fontSize: 13, fontWeight: 700, color: TEXT, margin: "0 0 8px" }}>{title}</p>
+    <div>{children}</div>
   </div>
 );
 
@@ -69,6 +79,29 @@ const Shell = ({ tag, title, subtitle, timer, children, notes, dark }) => (
   </div>
 );
 
+const OSToggle = ({ android, ios }) => {
+  const [platform, setPlatform] = useState<'android' | 'ios'>('android');
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+      <div style={{ display: "flex", borderRadius: 8, overflow: "hidden", border: "1px solid #e5e7eb", width: "fit-content", marginBottom: 2 }}>
+        <button
+          onClick={() => setPlatform('android')}
+          style={{ padding: "5px 16px", fontSize: 11, fontWeight: 700, letterSpacing: ".04em", background: platform === 'android' ? PURPLE : "#fff", color: platform === 'android' ? "#fff" : MUTED, border: "none", borderRight: "1px solid #e5e7eb", cursor: "pointer" }}
+        >
+          Android · Kotlin
+        </button>
+        <button
+          onClick={() => setPlatform('ios')}
+          style={{ padding: "5px 16px", fontSize: 11, fontWeight: 700, letterSpacing: ".04em", background: platform === 'ios' ? TEAL : "#fff", color: platform === 'ios' ? "#fff" : MUTED, border: "none", cursor: "pointer" }}
+        >
+          iOS · Swift
+        </button>
+      </div>
+      {platform === 'android' ? android : ios}
+    </div>
+  );
+};
+
 const slides = [
   // 1: Title
   () => (
@@ -113,13 +146,13 @@ const slides = [
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginTop: 6 }}>
         {[
           { num: "01", time: "5 min",  title: "Recap", desc: "Session 1 — the working list-to-detail app" },
-          { num: "02", time: "8 min",  title: "Object Permanence in UI", desc: "Why spatial continuity matters — what pro apps do differently" },
-          { num: "03", time: "8 min",  title: "Shared Element Transitions", desc: "The code — wrappers, tagging elements, matching IDs" },
-          { num: "04", time: "5 min",  title: "AI's role with complex wrappers", desc: "Why this course can teach this — the AI-powered advantage" },
-          { num: "05", time: "8 min",  title: "UI as a Function of Space", desc: "Adaptive layouts — phone vs tablet, compact vs expanded" },
-          { num: "06", time: "8 min",  title: "Prompt engineering — adaptive refactor", desc: "How to ask AI to refactor navigation into a split view" },
-          { num: "07", time: "8 min",  title: "Live demo", desc: "The full experience — transitions on phone, split view on tablet" },
-          { num: "08", time: "6 min",  title: "Lab intro + Assignment 3 overview", desc: "What you build today and the week's assignment" },
+          { num: "02", time: "8 min",  title: "Object Permanence & Mechanics", desc: "Why spatial continuity matters and how interpolation works" },
+          { num: "03", time: "8 min",  title: "Shared Elements in Code", desc: "The wrapper and tagging the views" },
+          { num: "04", time: "5 min",  title: "The AI Advantage", desc: "Why this course can teach this in Week 3" },
+          { num: "05", time: "10 min", title: "Adaptive Architecture & Patterns", desc: "UI as a function of space, Master-Detail pattern" },
+          { num: "06", time: "8 min",  title: "Adaptive Refactor in Code", desc: "Detecting size classes and switching layouts" },
+          { num: "07", time: "8 min",  title: "Foldables & Prompting", desc: "Designing for canvas, prompt engineering" },
+          { num: "08", time: "8 min",  title: "Live Demo & Lab", desc: "The full experience + Assignment 3 overview" },
         ].map(item => (
           <div key={item.num} style={{ display: "flex", gap: 10, padding: "9px 11px", background: GRAY, borderRadius: 8, alignItems: "flex-start" }}>
             <span style={{ fontSize: 16, fontWeight: 800, color: PURPLE_LIGHT, flexShrink: 0, lineHeight: 1, minWidth: 22 }}>{item.num}</span>
@@ -138,41 +171,30 @@ const slides = [
 
   // 4: Object Permanence in UI
   () => (
-    <Shell tag="Spatial continuity" timer="8" title={"Object Permanence in UI"} subtitle="Why professional apps feel different when you tap a row" notes="This is the most important conceptual slide in the session. Do NOT rush it. The idea is simple: when an element exists on screen A and also on screen B, the user's brain expects continuity — the element should MOVE, not teleport. Show students the difference by demoing a before/after if possible. Ask them: 'Have you ever noticed that album art in Apple Music slides from the list into the detail screen? That is not decoration — it is helping your brain understand where you are.'">
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginTop: 6 }}>
-        <div style={{ background: "#fff3f3", border: "1px solid #fca5a5", borderRadius: 8, padding: "14px 16px" }}>
-          <p style={{ fontSize: 12, fontWeight: 700, color: "#b91c1c", margin: "0 0 8px" }}>Without spatial continuity — "hard cut"</p>
-          <div style={{ display: "flex", gap: 8, marginBottom: 8 }}>
-            <div style={{ flex: 1, background: GRAY, borderRadius: 6, padding: 10 }}>
-              <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-                <div style={{ width: 32, height: 32, background: PURPLE, borderRadius: "50%", flexShrink: 0 }} />
-                <div><p style={{ fontSize: 11, fontWeight: 600, color: TEXT, margin: 0 }}>Rumours</p><p style={{ fontSize: 10, color: MUTED, margin: 0 }}>Fleetwood Mac</p></div>
-              </div>
-            </div>
-            <span style={{ fontSize: 18, color: MUTED, alignSelf: "center" }}>→</span>
-            <div style={{ flex: 1, background: GRAY, borderRadius: 6, padding: 10, textAlign: "center" }}>
-              <div style={{ width: 48, height: 48, background: PURPLE, borderRadius: "50%", margin: "0 auto 4px" }} />
-              <p style={{ fontSize: 11, fontWeight: 600, color: TEXT, margin: 0 }}>Rumours</p>
-            </div>
+    <Shell tag="Spatial continuity" timer="8" title={"The What & Why: Shared Element Transitions"} subtitle="Object permanence and spatial context in UI design" notes="This is the most important conceptual slide in the session. Do NOT rush it. The idea is simple: when an element exists on screen A and also on screen B, the user's brain expects continuity — the element should MOVE, not teleport. Show students the difference by demoing a before/after if possible. Ask them: 'Have you ever noticed that album art in Apple Music slides from the list into the detail screen? That is not decoration — it is helping your brain understand where you are.'">
+      <div style={{ display: "grid", gridTemplateColumns: "1.5fr 1fr", gap: 12, marginTop: 6 }}>
+        <div>
+          <div style={{ background: GRAY, borderRadius: 8, padding: "12px 14px", marginBottom: 10 }}>
+            <p style={{ fontSize: 12, fontWeight: 700, color: PURPLE, margin: "0 0 6px" }}>What is it?</p>
+            <Bullet sub>A visual technique where an element on Screen A smoothly transforms into a matching element on Screen B.</Bullet>
+            <Bullet sub>Instead of pushing a new screen abruptly, the common element acts as an anchor during the navigation.</Bullet>
           </div>
-          <p style={{ fontSize: 11, color: "#b91c1c", margin: 0, lineHeight: 1.4 }}>The avatar appears in two places but there is no visual connection. The user{"'"}s brain has to re-find it. Feels disconnected and jarring.</p>
+          <div style={{ background: TEAL_LIGHT, border: `1px solid ${TEAL}`, borderRadius: 8, padding: "12px 14px" }}>
+            <p style={{ fontSize: 12, fontWeight: 700, color: TEAL, margin: "0 0 6px" }}>Why do we teach it?</p>
+            <Bullet sub><strong>Object Permanence:</strong> It tells the user's brain "this is the exact same object, just bigger."</Bullet>
+            <Bullet sub><strong>Context:</strong> Helps users understand where they are in the navigation hierarchy.</Bullet>
+            <Bullet sub><strong>Premium Polish:</strong> It's the hallmark of App Store-ready applications.</Bullet>
+          </div>
         </div>
-        <div style={{ background: TEAL_LIGHT, border: `1px solid ${TEAL}`, borderRadius: 8, padding: "14px 16px" }}>
-          <p style={{ fontSize: 12, fontWeight: 700, color: TEAL, margin: "0 0 8px" }}>With spatial continuity — smooth transition</p>
-          <div style={{ display: "flex", gap: 8, marginBottom: 8 }}>
-            <div style={{ flex: 1, background: "#fff", borderRadius: 6, padding: 10 }}>
-              <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-                <div style={{ width: 32, height: 32, background: PURPLE, borderRadius: "50%", flexShrink: 0, border: `2px solid ${TEAL}` }} />
-                <div><p style={{ fontSize: 11, fontWeight: 600, color: TEXT, margin: 0 }}>Rumours</p><p style={{ fontSize: 10, color: MUTED, margin: 0 }}>Fleetwood Mac</p></div>
-              </div>
-            </div>
-            <span style={{ fontSize: 18, color: TEAL, alignSelf: "center" }}>⟿</span>
-            <div style={{ flex: 1, background: "#fff", borderRadius: 6, padding: 10, textAlign: "center" }}>
-              <div style={{ width: 48, height: 48, background: PURPLE, borderRadius: "50%", margin: "0 auto 4px", border: `2px solid ${TEAL}` }} />
-              <p style={{ fontSize: 11, fontWeight: 600, color: TEXT, margin: 0 }}>Rumours</p>
-            </div>
+        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+          <div style={{ background: "#fff3f3", border: "1px solid #fca5a5", borderRadius: 8, padding: "10px 14px", flex: 1 }}>
+            <p style={{ fontSize: 11, fontWeight: 700, color: "#b91c1c", margin: "0 0 4px" }}>Without (Hard Cut)</p>
+            <p style={{ fontSize: 11, color: "#b91c1c", margin: 0, lineHeight: 1.4 }}>The avatar "teleports". The user's brain has to re-find it on the new screen. Feels disconnected.</p>
           </div>
-          <p style={{ fontSize: 11, color: "#085041", margin: 0, lineHeight: 1.4 }}>The avatar <strong>animates</strong> from its position in the row to its position in the detail screen. The user{"'"}s brain says: {"\""}same thing, just bigger.{"\""}  Object permanence.</p>
+          <div style={{ background: "#fff", border: `1px solid ${TEAL}`, borderRadius: 8, padding: "10px 14px", flex: 1 }}>
+            <p style={{ fontSize: 11, fontWeight: 700, color: TEAL, margin: "0 0 4px" }}>With (Transition)</p>
+            <p style={{ fontSize: 11, color: "#085041", margin: 0, lineHeight: 1.4 }}>The avatar moves and grows. The brain tracks it seamlessly.</p>
+          </div>
         </div>
       </div>
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8, marginTop: 10 }}>
@@ -190,175 +212,175 @@ const slides = [
     </Shell>
   ),
 
-  // 5: Shared Element Transitions — the wrapper code
+  // 5: NEW CONCEPT: Mechanics of Shared Elements
   () => (
-    <Shell tag="Shared elements" timer="8" title="Shared Element Transitions — the wrapper" subtitle="The framework handles the animation. You just tag which elements match." notes="Walk through both platforms in parallel. Emphasize the CONCEPT over the syntax: 'All you are doing is wrapping your navigation in a special container, then marking two elements — one on each screen — with the same ID. The framework figures out the animation.' Students do NOT need to memorize this API. They will copy the wrapper and use AI to understand it.">
-      <div style={{ display: "flex", gap: 10, marginTop: 6 }}>
-        <CodePane title="Compose — SharedTransitionLayout wrapping NavHost" accent={PURPLE}>
-{`// Step 1: Wrap your NavHost
-SharedTransitionLayout {
-    NavHost(
-        navController = navController,
-        startDestination = "home"
-    ) {
-        composable("home") {
-            AlbumListScreen(
-                onAlbumClicked = { album ->
-                    navController.navigate(
-                        "detail/\${album.id}"
-                    )
-                },
-                // Pass the scopes down so rows
-                // can register shared elements
-                animatedVisibilityScope = this
-            )
-        }
-        composable("detail/{albumId}") {
-            val id = it.arguments
-                ?.getString("albumId")?.toInt() ?: 0
-            val album = sampleAlbums.find { it.id == id }
-            album?.let {
-                AlbumDetailScreen(
-                    album = it,
-                    animatedVisibilityScope = this
-                )
-            }
-        }
-    }
-}
-// The SharedTransitionLayout provides the
-// context for matching elements across screens`}
-        </CodePane>
-        <CodePane title="SwiftUI — @Namespace + navigation transition" accent={TEAL}>
-{`// Step 1: Declare a namespace for matching
-@Namespace private var animation
-
-NavigationStack {
-    List(filteredAlbums) { album in
-        NavigationLink(value: album.id) {
-            AlbumRow(album: album)
-        }
-        // Step 2: Mark the source of the transition
-        .matchedTransitionSource(
-            id: album.id, in: animation
-        )
-    }
-    .navigationDestination(for: Int.self) { id in
-        let album = sampleAlbums.first {
-            $0.id == id
-        }!
-        AlbumDetailScreen(album: album)
-            // Step 3: Connect the destination
-            .navigationTransition(
-                .zoom(sourceID: id, in: animation)
-            )
-    }
-}
-// The @Namespace links the source row
-// to the destination screen automatically`}
-        </CodePane>
+    <Shell tag="Spatial continuity" timer="5" title="The Mechanics of Shared Elements" subtitle="How frameworks understand what to animate" notes="Explain the mental model before showing code. You need a boundary (the wrapper) that watches everything inside it. And you need to tag things inside that boundary with matching keys.">
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginTop: 10 }}>
+         <div style={{ background: GRAY, borderRadius: 8, padding: "16px" }}>
+            <p style={{ fontSize: 13, fontWeight: 700, color: PURPLE, margin: "0 0 8px" }}>1. The Boundary (Wrapper)</p>
+            <p style={{ fontSize: 12, color: MUTED, lineHeight: 1.5, marginBottom: 8 }}>The framework needs to know where to look for transitions. We wrap our entire navigation stack in a special transition container. Anything inside this boundary can animate to anything else inside it.</p>
+            <Bullet sub><strong>Compose:</strong> <code>SharedTransitionLayout</code></Bullet>
+            <Bullet sub><strong>SwiftUI:</strong> <code>@Namespace</code></Bullet>
+            <Bullet sub>Must wrap both the source and destination screens.</Bullet>
+         </div>
+         <div style={{ background: TEAL_LIGHT, border: `1px solid ${TEAL}`, borderRadius: 8, padding: "16px" }}>
+            <p style={{ fontSize: 13, fontWeight: 700, color: TEAL, margin: "0 0 8px" }}>2. The Tags (IDs)</p>
+            <p style={{ fontSize: 12, color: "#085041", lineHeight: 1.5, marginBottom: 8 }}>Once inside the boundary, how does the framework know which element on Screen A matches the element on Screen B? We give them both the exact same string ID. The framework connects the dots.</p>
+            <Bullet sub><strong>Compose:</strong> <code>Modifier.sharedElement(key)</code></Bullet>
+            <Bullet sub><strong>SwiftUI:</strong> <code>.matchedTransitionSource(id)</code></Bullet>
+            <Bullet sub>IDs must match <strong>exactly</strong> (e.g. "avatar-123").</Bullet>
+         </div>
       </div>
-      <Info>{"This wrapper code is scaffolded for you — you will copy it into your project. The concept to understand: a shared transition container watches for elements with matching IDs on two screens and animates between them."}</Info>
     </Shell>
   ),
 
-  // 6: Tagging elements with matching IDs
+  // 6: NEW CONCEPT: Under the Hood: Interpolation
   () => (
-    <Shell tag="Shared elements" title="Tagging elements — matching IDs across screens" notes="This is the key hands-on concept. Both platforms use the same mental model: give the same string key to an element on Screen A and Screen B. The framework knows they are 'the same thing' and animates the transition. In Compose, you use .sharedElement() modifier. In SwiftUI, the zoom transition handles this automatically when you use matchedTransitionSource with a matching ID.">
-      <div style={{ display: "flex", gap: 10, marginTop: 6 }}>
-        <CodePane title="Compose — .sharedElement() modifier" accent={PURPLE}>
-{`// In AlbumRow — tag the avatar:
+    <Shell tag="Spatial continuity" timer="5" title="Under the Hood: Interpolation" subtitle="What the framework is actually doing" notes="It's important students know this isn't magic. The framework isn't physically moving their code. It's taking a picture, drawing it on top of everything, and animating the picture's size and position while hiding the real views.">
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 10, marginTop: 10 }}>
+        <div style={{ background: GRAY, borderRadius: 8, padding: "14px" }}>
+          <div style={{ display: "flex", justifyContent: "center", marginBottom: 12 }}><div style={{ width: 40, height: 40, background: PURPLE_LIGHT, border: `2px dashed ${PURPLE}`, borderRadius: 4 }}></div></div>
+          <p style={{ fontSize: 12, fontWeight: 700, color: PURPLE, margin: "0 0 6px", textAlign: "center" }}>1. Measure & Snapshot</p>
+          <div style={{ fontSize: 11, color: MUTED, lineHeight: 1.5 }}>
+            <Bullet sub>Calculates `(x,y)` screen coordinates</Bullet>
+            <Bullet sub>Measures `width` and `height`</Bullet>
+            <Bullet sub>Generates an overlay graphic layer</Bullet>
+          </div>
+        </div>
+        <div style={{ background: GRAY, borderRadius: 8, padding: "14px" }}>
+          <div style={{ display: "flex", justifyContent: "center", marginBottom: 12 }}><div style={{ width: 40, height: 40, background: TEAL_LIGHT, border: `2px dashed ${TEAL}`, borderRadius: "50%", transform: "scale(1.2)" }}></div></div>
+          <p style={{ fontSize: 12, fontWeight: 700, color: TEAL, margin: "0 0 6px", textAlign: "center" }}>2. Interpolate</p>
+          <div style={{ fontSize: 11, color: MUTED, lineHeight: 1.5 }}>
+            <Bullet sub>Hides the original static views</Bullet>
+            <Bullet sub>Animates layer using a physics spring</Bullet>
+            <Bullet sub>Morphs position, size, and corners</Bullet>
+          </div>
+        </div>
+        <div style={{ background: GRAY, borderRadius: 8, padding: "14px" }}>
+          <div style={{ display: "flex", justifyContent: "center", marginBottom: 12 }}><div style={{ width: 40, height: 40, background: "#fff3f3", border: `2px dashed #fca5a5`, borderRadius: "50%", transform: "scale(1.5)" }}></div></div>
+          <p style={{ fontSize: 12, fontWeight: 700, color: "#b91c1c", margin: "0 0 6px", textAlign: "center" }}>3. Swap</p>
+          <div style={{ fontSize: 11, color: MUTED, lineHeight: 1.5 }}>
+            <Bullet sub>Animation reaches destination bounds</Bullet>
+            <Bullet sub>Removes the temporary overlay graphic</Bullet>
+            <Bullet sub>Reveals the real destination view</Bullet>
+          </div>
+        </div>
+      </div>
+      <Info>{"Because it is an overlay, Z-index and clipping matter! If your list row has overflow: hidden or clips its children, the animation might get cut off as it tries to grow outside the row."}</Info>
+    </Shell>
+  ),
+
+  // 7: Shared Elements in code
+  () => (
+    <Shell tag="Code implementation" timer="10" title="Shared Elements: Step by Step" subtitle="Wrapping the navigation and tagging the views" notes="Explain how we attach a unique identifier to the element we want to animate out of. Emphasize that the ID must EXACTLY match the source ID. That's the secret.">
+      <OSToggle
+        android={
+          <>
+            <Step n={1} title="The Wrapper (SharedTransitionLayout)" accent={PURPLE}>
+              <CodePane accent={PURPLE}>
+{`// Wrap your entire NavHost
+SharedTransitionLayout {
+    NavHost(navController = navController, startDestination = "home") {
+        composable("home") {
+            AlbumListScreen(
+                animatedVisibilityScope = this // Pass scope down
+            )
+        }
+        // ... detail composable ...
+    }
+}`}
+              </CodePane>
+            </Step>
+            <Step n={2} title="Tagging the Source (List Row)" accent={PURPLE}>
+              <CodePane accent={PURPLE}>
+{`// Inside AlbumRow's avatar Box:
 Box(
-    modifier = Modifier
-        .sharedElement(
-            state = rememberSharedContentState(
-                key = "avatar-\${album.id}"
-                //     ^^^^^^^^^^^^^^^^^^
-                // This key MUST match the one
-                // in AlbumDetailScreen
-            ),
-            animatedVisibilityScope =
-                animatedVisibilityScope
-        )
-        .size(52.dp)
-        .background(Color(0xFF534AB7), CircleShape),
-    contentAlignment = Alignment.Center
-) {
-    Text(
-        album.artist.first().toString(),
-        color = Color.White
+    modifier = Modifier.sharedElement(
+        state = rememberSharedContentState(
+            key = "avatar-\${album.id}" // The unique ID
+        ),
+        animatedVisibilityScope = animatedVisibilityScope
     )
-}
-
-// In AlbumDetailScreen — SAME key:
+) { /* avatar content */ }`}
+              </CodePane>
+            </Step>
+            <Step n={3} title="Tagging the Destination (Detail)" accent={PURPLE}>
+              <CodePane accent={PURPLE}>
+{`// Inside AlbumDetailScreen's avatar Box:
 Box(
-    modifier = Modifier
-        .sharedElement(
-            state = rememberSharedContentState(
-                key = "avatar-\${album.id}"
-                //     ^^^^^^^^^^^^^^^^^^
-                // MATCHES the row's key!
-            ),
-            animatedVisibilityScope =
-                animatedVisibilityScope
-        )
-        .size(72.dp)
-        .background(Color(0xFF534AB7), CircleShape),
-    // ...
-)`}
-        </CodePane>
-        <CodePane title="SwiftUI — automatic with zoom transition" accent={TEAL}>
-{`// SwiftUI's .zoom transition handles matching
-// automatically when you use the same ID:
+    modifier = Modifier.sharedElement(
+        state = rememberSharedContentState(
+            key = "avatar-\${album.id}" // MUST match the row's ID
+        ),
+        animatedVisibilityScope = animatedVisibilityScope
+    )
+) { /* larger avatar content */ }`}
+              </CodePane>
+            </Step>
+          </>
+        }
+        ios={
+          <>
+            <Step n={1} title="The Wrapper (@Namespace)" accent={TEAL}>
+              <CodePane accent={TEAL}>
+{`// 1. Declare a namespace for matching
+@Namespace private var animation
 
-// In the list — the source:
+NavigationStack {
+    List(albums) { album in
+        NavigationLink(value: album.id) {
+            AlbumRow(album: album)
+        }
+    }
+    .navigationDestination(for: Int.self) { id in
+        // ... destination view ...
+    }
+}`}
+              </CodePane>
+            </Step>
+            <Step n={2} title="Tagging the Source (List Row)" accent={TEAL}>
+              <CodePane accent={TEAL}>
+{`// Attach to the NavigationLink in the list
 NavigationLink(value: album.id) {
     AlbumRow(album: album)
 }
 .matchedTransitionSource(
-    id: album.id, in: animation
-    // This ID links to the destination's
-    // .navigationTransition below
+    id: album.id, 
+    in: animation
 )
-
-// In the destination:
+// In SwiftUI, tagging the link is often enough for the zoom transition`}
+              </CodePane>
+            </Step>
+            <Step n={3} title="Tagging the Destination (Detail)" accent={TEAL}>
+              <CodePane accent={TEAL}>
+{`// Attach to the destination view
 AlbumDetailScreen(album: album)
     .navigationTransition(
         .zoom(
-            sourceID: album.id, in: animation
-            // MATCHES the source's ID!
+            sourceID: album.id, 
+            in: animation
         )
     )
-
-// The whole row zooms into the detail screen
-// No need to tag individual elements —
-// SwiftUI handles the visual interpolation
-
-// Want to tag a specific element instead?
-// Use matchedGeometryEffect:
-Circle()
-    .matchedGeometryEffect(
-        id: "avatar-\\(album.id)",
-        in: animation
-    )`}
-        </CodePane>
-      </div>
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8, marginTop: 8 }}>
-        {[
-          { label: "Same key", desc: "Both screens use the exact same string key — that is how the framework matches them" },
-          { label: "Auto size/position", desc: "The framework automatically interpolates size and position between the two locations" },
-          { label: "Multiple elements", desc: "You can tag multiple elements — avatar AND title text — each with their own key" },
-        ].map(item => (
-          <div key={item.label} style={{ background: GRAY, borderRadius: 8, padding: "10px 12px" }}>
-            <p style={{ fontSize: 12, fontWeight: 600, color: PURPLE, margin: "0 0 4px" }}>{item.label}</p>
-            <p style={{ fontSize: 11, color: MUTED, margin: 0, lineHeight: 1.4 }}>{item.desc}</p>
-          </div>
-        ))}
+// The ID matches the source link ID, creating the connection`}
+              </CodePane>
+            </Step>
+          </>
+        }
+      />
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginTop: 8 }}>
+        <div style={{ background: GRAY, borderRadius: 8, padding: "10px 12px" }}>
+          <p style={{ fontSize: 12, fontWeight: 600, color: PURPLE, margin: "0 0 4px" }}>Same key</p>
+          <p style={{ fontSize: 11, color: MUTED, margin: 0, lineHeight: 1.4 }}>Both screens use the exact same string key — that is how the framework matches them.</p>
+        </div>
+        <div style={{ background: GRAY, borderRadius: 8, padding: "10px 12px" }}>
+          <p style={{ fontSize: 12, fontWeight: 600, color: PURPLE, margin: "0 0 4px" }}>Auto size/position</p>
+          <p style={{ fontSize: 11, color: MUTED, margin: 0, lineHeight: 1.4 }}>The framework automatically interpolates size and position between the two locations.</p>
+        </div>
       </div>
     </Shell>
   ),
 
-  // 7: AI's role with complex wrappers
+  // 9: AI's role with complex wrappers
   () => (
     <Shell tag="AI-powered learning" timer="5" title={"AI's role — why this works in Week 3"} subtitle="This is the pedagogical advantage of an AI-powered course" notes="This is a meta-moment. Pause and be explicit about WHY you are teaching shared element transitions in Week 3. In a traditional CS class, this would be a Week 8-10 topic. But because AI handles the dense framework-specific boilerplate, students can focus on the CONCEPT (matching IDs, spatial continuity) and use the API without memorizing it. The goal is conceptual mastery and UX architecture, not rote memorization of SharedTransitionLayout parameters.">
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginTop: 6 }}>
@@ -384,7 +406,21 @@ Circle()
     </Shell>
   ),
 
-  // 8: UI as a Function of Space
+  // Transition to Part 2
+  () => (
+    <div style={{ background: `linear-gradient(135deg, ${TEAL} 0%, #0f766e 100%)`, borderRadius: 12, padding: "44px 40px", minHeight: 360, display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", textAlign: "center", boxSizing: "border-box" }}>
+      <div style={{ marginBottom: 16 }}>
+        <span style={{ fontSize: 12, fontWeight: 700, letterSpacing: ".1em", textTransform: "uppercase", background: "rgba(255,255,255,0.2)", color: "#fff", padding: "4px 12px", borderRadius: 20 }}>Part 2</span>
+      </div>
+      <h2 style={{ fontSize: 32, fontWeight: 800, color: "#fff", margin: "0 0 12px", lineHeight: 1.2 }}>Adaptive Layouts</h2>
+      <p style={{ fontSize: 16, color: "rgba(255,255,255,0.8)", margin: 0, maxWidth: 400, lineHeight: 1.5 }}>
+        We solved how our UI <strong>moves</strong>.<br/>Now let{"'"}s solve how it <strong>adapts</strong>.
+      </p>
+      <Notes>{"Use this moment to reset the room. We are shifting gears from 'animation' to 'layout'. Ask the students: 'What happens to our list if someone opens this app on an iPad? It just stretches to be 1000 pixels wide. Is that a good experience?'"}</Notes>
+    </div>
+  ),
+
+  // 10: UI as a Function of Space
   () => (
     <Shell tag="Adaptive layouts" timer="8" title={"UI as a Function of Space"} subtitle="Same data, same components — different spatial arrangement" notes="Second major concept of the session. The key insight: when you rotate an iPhone to landscape, or when someone uses your app on an iPad, the list-to-detail navigation push is wasteful — you have enough space to show BOTH at once. This is not a new screen — it is the same data arranged differently based on available space. Call out WindowSizeClass (Compose) and horizontalSizeClass (SwiftUI) as the APIs that tell you how much space you have.">
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginTop: 6 }}>
@@ -400,7 +436,11 @@ Circle()
               ))}
             </div>
           </div>
-          <p style={{ fontSize: 11, color: MUTED, margin: 0, textAlign: "center" }}>List fills full width → tap → <strong>navigate</strong> to detail</p>
+          <p style={{ fontSize: 11, color: MUTED, margin: "0 0 8px", textAlign: "center" }}>List fills full width → tap → <strong>navigate</strong> to detail</p>
+          <div style={{ borderTop: "1px solid #e5e7eb", paddingTop: 8 }}>
+             <Bullet sub><strong>Width:</strong> {"< 600dp"} (Compact)</Bullet>
+             <Bullet sub><strong>Behavior:</strong> Pushes new screen to stack</Bullet>
+          </div>
         </div>
         <div style={{ background: TEAL_LIGHT, border: `1px solid ${TEAL}`, borderRadius: 8, padding: "14px 16px" }}>
           <p style={{ fontSize: 12, fontWeight: 700, color: TEAL, margin: "0 0 8px" }}>Tablet / Landscape (Expanded width)</p>
@@ -421,130 +461,196 @@ Circle()
               </div>
             </div>
           </div>
-          <p style={{ fontSize: 11, color: "#085041", margin: 0, textAlign: "center" }}>List and detail <strong>side by side</strong> → tap updates the detail pane</p>
+          <p style={{ fontSize: 11, color: "#085041", margin: "0 0 8px", textAlign: "center" }}>List and detail <strong>side by side</strong> → tap updates the detail pane</p>
+          <div style={{ borderTop: `1px solid ${TEAL}`, paddingTop: 8 }}>
+             <Bullet sub><strong>Width:</strong> {">= 840dp"} (Expanded)</Bullet>
+             <Bullet sub><strong>Behavior:</strong> Updates state, no navigation</Bullet>
+          </div>
         </div>
-      </div>
-      <div style={{ display: "flex", gap: 10, marginTop: 10 }}>
-        <CodePane title="Compose — WindowSizeClass" accent={PURPLE}>
-{`// Check the width of the current window:
-val windowInfo = currentWindowAdaptiveInfo()
-val isExpanded = windowInfo.windowSizeClass
-    .windowWidthSizeClass ==
-    WindowWidthSizeClass.EXPANDED
-
-// EXPANDED  = tablet landscape (> 840dp)
-// MEDIUM    = large phone landscape (600-840dp)
-// COMPACT   = normal phone portrait (< 600dp)`}
-        </CodePane>
-        <CodePane title="SwiftUI — horizontalSizeClass" accent={TEAL}>
-{`// Check the horizontal size class:
-@Environment(\\.horizontalSizeClass)
-var sizeClass
-
-// .regular  = iPad, or iPhone landscape
-// .compact  = iPhone portrait
-
-// Use it in the body:
-if sizeClass == .regular {
-    // Show side-by-side layout
-} else {
-    // Show navigation push layout
-}`}
-        </CodePane>
       </div>
     </Shell>
   ),
 
-  // 9: Adaptive Layout — the refactor
+  // 11: NEW CONCEPT: Adaptive Architecture: Navigation vs. State
   () => (
-    <Shell tag="Adaptive layouts" timer="8" title="The architectural refactor — one state, two layouts" subtitle="The same selectedAlbum drives both phone and tablet" notes="The key insight: on a tablet, tapping a row does NOT navigate to a new screen. Instead, it updates a selectedAlbum state variable at the top level, and the detail pane re-renders with the new album. On a phone, tapping still navigates. The ONLY difference is how the tap handler behaves and how the two screens are spatially arranged. Walk students through the code side by side.">
-      <div style={{ display: "flex", gap: 10, marginTop: 6 }}>
-        <CodePane title="Compose — adaptive top-level" accent={PURPLE}>
-{`@Composable
-fun AlbumApp() {
-    val windowInfo = currentWindowAdaptiveInfo()
-    val isExpanded = windowInfo.windowSizeClass
-        .windowWidthSizeClass ==
-        WindowWidthSizeClass.EXPANDED
-
-    var selectedAlbum by remember {
-        mutableStateOf<Album?>(null)
-    }
-
-    if (isExpanded) {
-        // TABLET: side by side
-        Row(Modifier.fillMaxSize()) {
-            AlbumListScreen(
-                modifier = Modifier.weight(1f),
-                onAlbumClicked = {
-                    selectedAlbum = it  // no navigate!
-                }
-            )
-            selectedAlbum?.let { album ->
-                AlbumDetailScreen(
-                    album = album,
-                    modifier = Modifier.weight(1.5f)
-                )
-            }
-        }
-    } else {
-        // PHONE: navigation push (as before)
-        val navController = rememberNavController()
-        NavHost(navController, "home") {
-            composable("home") {
-                AlbumListScreen(
-                    onAlbumClicked = { album ->
-                        navController.navigate(
-                            "detail/\${album.id}")
-                    }
-                )
-            }
-            composable("detail/{albumId}") { /* ... */ }
-        }
-    }
-}`}
-        </CodePane>
-        <CodePane title="SwiftUI — adaptive top-level" accent={TEAL}>
-{`struct AlbumApp: View {
-    @Environment(\\.horizontalSizeClass)
-    var sizeClass
-
-    @State private var selectedAlbum: Album?
-
-    var body: some View {
-        if sizeClass == .regular {
-            // TABLET: NavigationSplitView
-            NavigationSplitView {
-                AlbumListScreen(
-                    selectedAlbum: $selectedAlbum
-                )
-            } detail: {
-                if let album = selectedAlbum {
-                    AlbumDetailScreen(album: album)
-                } else {
-                    Text("Select an album")
-                        .foregroundColor(.gray)
-                }
-            }
-        } else {
-            // PHONE: NavigationStack (as before)
-            NavigationStack {
-                AlbumListScreen()
-            }
-        }
-    }
-}
-
-// On iPad: tapping a row sets selectedAlbum
-// On iPhone: tapping a row pushes detail screen
-// Same data, same row, different spatial result`}
-        </CodePane>
+    <Shell tag="Adaptive layouts" timer="5" title="Adaptive Architecture: Navigation vs. State" subtitle="Rethinking what a 'tap' means" notes="The key insight: on a tablet, tapping a row does NOT navigate to a new screen. Instead, it updates a selectedAlbum state variable at the top level, and the detail pane re-renders with the new album. On a phone, tapping still navigates. The ONLY difference is how the tap handler behaves and how the two screens are spatially arranged.">
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginTop: 10 }}>
+         <div style={{ background: GRAY, borderRadius: 8, padding: "16px" }}>
+            <p style={{ fontSize: 13, fontWeight: 700, color: PURPLE, margin: "0 0 8px" }}>On a Phone (Navigation)</p>
+            <p style={{ fontSize: 12, color: MUTED, lineHeight: 1.5, marginBottom: 12 }}>Tapping a row pushes a completely new screen onto the stack. The list disappears, and the detail view takes over the entire display.</p>
+            <div style={{ background: "#fff", padding: "8px 12px", borderRadius: 6 }}>
+               <p style={{ fontSize: 11, fontFamily: "monospace", color: TEXT, margin: 0 }}>onClick = {"{"}<br/>&nbsp;&nbsp;navController.navigate("detail/1")<br/>{"}"}</p>
+            </div>
+         </div>
+         <div style={{ background: TEAL_LIGHT, border: `1px solid ${TEAL}`, borderRadius: 8, padding: "16px" }}>
+            <p style={{ fontSize: 13, fontWeight: 700, color: TEAL, margin: "0 0 8px" }}>On a Tablet (State Update)</p>
+            <p style={{ fontSize: 12, color: "#085041", lineHeight: 1.5, marginBottom: 12 }}>Tapping a row <strong>does not navigate</strong>. It simply updates a <code>selectedAlbum</code> state variable. The detail pane, which is already on screen, re-renders with the new data.</p>
+            <div style={{ background: "#fff", padding: "8px 12px", borderRadius: 6, border: `1px solid ${TEAL}` }}>
+               <p style={{ fontSize: 11, fontFamily: "monospace", color: TEXT, margin: 0 }}>onClick = {"{"}<br/>&nbsp;&nbsp;selectedAlbum = album<br/>{"}"}</p>
+            </div>
+         </div>
       </div>
       <Info>{"Notice: the AlbumRow and AlbumDetailScreen components are UNCHANGED. Only the top-level container decides how they are arranged. This is the power of component-based architecture — swap the container, keep the content."}</Info>
     </Shell>
   ),
 
-  // 10: Prompt Engineering
+  // 12: NEW CONCEPT: The Master-Detail Pattern
+  () => (
+    <Shell tag="Adaptive layouts" timer="5" title="The Master-Detail Pattern" subtitle="A foundational UX pattern for large screens" notes="Give context that this is an industry standard pattern. It's not just something we invented for this app. Have them check their phone vs iPad for Mail or Settings.">
+      <div style={{ display: "flex", gap: 14, marginTop: 10 }}>
+        <div style={{ flex: 1.2 }}>
+          <p style={{ fontSize: 12, color: MUTED, lineHeight: 1.6, margin: "0 0 12px" }}>The side-by-side layout you are building is called <strong>Master-Detail</strong> (or List-Detail). It is the most common responsive pattern in mobile development.</p>
+          <div style={{ background: GRAY, borderRadius: 8, padding: "12px", marginBottom: 10 }}>
+            <p style={{ fontSize: 12, fontWeight: 600, color: TEXT, margin: "0 0 4px" }}>The "Master" Pane (List)</p>
+            <Bullet sub>Occupies ~1/3 of the screen width.</Bullet>
+            <Bullet sub>Used for navigation, selection, and searching.</Bullet>
+            <Bullet sub>Typically persists and does not change entirely.</Bullet>
+          </div>
+          <div style={{ background: TEAL_LIGHT, border: `1px solid ${TEAL}`, borderRadius: 8, padding: "12px" }}>
+            <p style={{ fontSize: 12, fontWeight: 600, color: TEAL, margin: "0 0 4px" }}>The "Detail" Pane (Content)</p>
+            <Bullet sub>Occupies ~2/3 of the screen width.</Bullet>
+            <Bullet sub>Displays the full content of the selected master item.</Bullet>
+            <Bullet sub>Should provide an "Empty State" if nothing is selected.</Bullet>
+          </div>
+        </div>
+        <div style={{ flex: 1, background: "#1e1e2e", borderRadius: 10, padding: 16, display: "flex", flexDirection: "column", justifyContent: "center" }}>
+          <p style={{ fontSize: 12, fontWeight: 600, color: "#cdd6f4", margin: "0 0 12px", textAlign: "center" }}>Real-world examples</p>
+          {["iOS Mail / Gmail", "Settings App", "Notes", "Slack (Channels vs Chat)"].map(app => (
+            <div key={app} style={{ background: "rgba(255,255,255,0.1)", borderRadius: 6, padding: "8px 12px", marginBottom: 6, display: "flex", alignItems: "center", gap: 8 }}>
+              <span style={{ color: TEAL }}>▸</span>
+              <span style={{ fontSize: 12, color: "#fff" }}>{app}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </Shell>
+  ),
+
+  // 13: Adaptive Refactor in code
+  () => (
+    <Shell tag="Code implementation" timer="12" title="Adaptive Refactor: Step by Step" subtitle="Detecting the screen size and switching layouts" notes="Show how we detect the window size class and set up our state variable. Then show the wide layout where we don't navigate, followed by the narrow layout where we do navigate.">
+      <OSToggle
+        android={
+          <>
+            <Step n={1} title="Detect screen size & set up state" accent={PURPLE}>
+              <CodePane accent={PURPLE}>
+{`@Composable
+fun AlbumApp() {
+    // 1. Detect screen size
+    val windowInfo = currentWindowAdaptiveInfo()
+    val isExpanded = windowInfo.windowSizeClass.windowWidthSizeClass == WindowWidthSizeClass.EXPANDED
+
+    // 2. State for the tablet layout
+    var selectedAlbum by remember { mutableStateOf<Album?>(null) }`}
+              </CodePane>
+            </Step>
+            <Step n={2} title="The Tablet Path (Side-by-side)" accent={PURPLE}>
+              <CodePane accent={PURPLE}>
+{`    if (isExpanded) {
+        Row(Modifier.fillMaxSize()) {
+            AlbumListScreen(
+                modifier = Modifier.weight(1f),
+                onAlbumClicked = { selectedAlbum = it }  // Update state!
+            )
+            selectedAlbum?.let { album ->
+                AlbumDetailScreen(album = album, modifier = Modifier.weight(1.5f))
+            }
+        }
+    }`}
+              </CodePane>
+            </Step>
+            <Step n={3} title="The Phone Path (Navigation push)" accent={PURPLE}>
+              <CodePane accent={PURPLE}>
+{`    } else {
+        val navController = rememberNavController()
+        NavHost(navController, "home") {
+            composable("home") {
+                AlbumListScreen(
+                    onAlbumClicked = { album ->
+                        navController.navigate("detail/\${album.id}") // Push!
+                    }
+                )
+            }
+            composable("detail/{albumId}") { /*...*/ }
+        }
+    }
+}`}
+              </CodePane>
+            </Step>
+          </>
+        }
+        ios={
+          <>
+            <Step n={1} title="Detect screen size & set up state" accent={TEAL}>
+              <CodePane accent={TEAL}>
+{`struct AlbumApp: View {
+    // 1. Detect screen size
+    @Environment(\\.horizontalSizeClass) var sizeClass
+
+    // 2. State for the tablet layout
+    @State private var selectedAlbum: Album?
+
+    var body: some View {`}
+              </CodePane>
+            </Step>
+            <Step n={2} title="The Tablet Path (Split View)" accent={TEAL}>
+              <CodePane accent={TEAL}>
+{`        if sizeClass == .regular {
+            NavigationSplitView {
+                // Pass binding to list
+                AlbumListScreen(selectedAlbum: $selectedAlbum)
+            } detail: {
+                if let album = selectedAlbum {
+                    AlbumDetailScreen(album: album)
+                } else {
+                    Text("Select an album").foregroundColor(.gray)
+                }
+            }
+        }`}
+              </CodePane>
+            </Step>
+            <Step n={3} title="The Phone Path (Navigation push)" accent={TEAL}>
+              <CodePane accent={TEAL}>
+{`        } else {
+            NavigationStack {
+                AlbumListScreen()
+                // list handles its own navigationDestinations
+            }
+        }
+    }
+}`}
+              </CodePane>
+            </Step>
+          </>
+        }
+      />
+    </Shell>
+  ),
+
+  // 14: NEW CONCEPT: Beyond Tablets
+  () => (
+    <Shell tag="Adaptive layouts" timer="4" title="Beyond Tablets: Foldables & Resizable Windows" subtitle="Why checking WindowSizeClass is future-proof" notes="Explain why we don't just check 'is this an iPad'. A phone can unfold into a tablet. A tablet can run apps in tiny floating windows.">
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginTop: 10 }}>
+         <div style={{ background: GRAY, borderRadius: 8, padding: "16px" }}>
+            <p style={{ fontSize: 13, fontWeight: 700, color: PURPLE, margin: "0 0 8px" }}>Foldable Devices</p>
+            <p style={{ fontSize: 12, color: MUTED, lineHeight: 1.5, marginBottom: 12 }}>Devices like the Galaxy Z Fold switch from a compact phone screen to an expanded tablet screen instantly. Your app must react to this physical hardware change.</p>
+            <Bullet sub>Closed: Compact window class</Bullet>
+            <Bullet sub>Opened: Expanded window class</Bullet>
+            <Bullet sub>App must preserve state during unfold.</Bullet>
+         </div>
+         <div style={{ background: TEAL_LIGHT, border: `1px solid ${TEAL}`, borderRadius: 8, padding: "16px" }}>
+            <p style={{ fontSize: 13, fontWeight: 700, color: TEAL, margin: "0 0 8px" }}>Multi-Window / Stage Manager</p>
+            <p style={{ fontSize: 12, color: "#085041", lineHeight: 1.5, marginBottom: 12 }}>On an iPad or ChromeOS, users can drag your app into a narrow column. Even if the hardware is a 12-inch tablet, your app might only have 300px of space.</p>
+            <Bullet sub>Hardware: 12" Tablet</Bullet>
+            <Bullet sub>Available Space: 300px (Compact)</Bullet>
+            <Bullet sub>Result: Must fall back to phone layout.</Bullet>
+         </div>
+      </div>
+      <Info>{"This is why we check the available SPACE (WindowSizeClass), not the hardware device type. Always design for the available canvas, never for the device."}</Info>
+    </Shell>
+  ),
+
+  // 15: Prompt engineering
   () => (
     <Shell tag="Prompt engineering" timer="5" title="Prompting AI to refactor for adaptive layouts" subtitle="The exact prompt you will use in the lab — and what to verify" notes="This is a practical slide. Show the prompt, emphasize that students should NOT just paste AI output blindly. They need to verify: does it check WindowSizeClass/horizontalSizeClass correctly? Is selectedAlbum a state variable at the top level? Does the phone path still use navigation? Does the tablet path show side-by-side? These are the checkpoints.">
       <div style={{ background: "#1e1e2e", borderRadius: 10, padding: "16px 18px", marginTop: 6, marginBottom: 10 }}>
@@ -574,7 +680,7 @@ fun AlbumApp() {
     </Shell>
   ),
 
-  // 11: Live demo
+  // 16: Live demo
   () => (
     <Shell tag="Live demo" timer="8" title="The full experience — see it in action" subtitle="Shared element transitions on phone + split view on tablet" dark notes="This is the wow moment. Run the app with shared element transitions on a phone emulator — tap a row, watch the avatar animate into the detail screen, go back, watch it animate back. Then resize the emulator to tablet size or rotate to landscape — the split view activates and tapping a row updates the detail pane without navigation. Let students soak this in before sending them to the lab. This is the payoff for the whole session.">
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginTop: 8 }}>
@@ -617,7 +723,7 @@ fun AlbumApp() {
     </Shell>
   ),
 
-  // 12: Lab intro
+  // 17: Lab intro
   () => (
     <Shell tag="Lab intro" timer="6" title="Lab time + Assignment 3 overview" subtitle="Go to the Lab tab on the course site — Session 2 Lab." notes="The Session 2 lab is heavily scaffolded — students copy the wrapper code and focus on understanding the concept. The AI Opportunity sections are the centerpiece: students use AI to understand the wrappers and to refactor for adaptive layouts. Emphasize that this lab is about UNDERSTANDING and APPLYING, not writing everything from scratch.">
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginTop: 6 }}>
@@ -660,7 +766,7 @@ fun AlbumApp() {
     </Shell>
   ),
 
-  // 13: Closing
+  // 18: Closing
   () => (
     <div style={{ background: `linear-gradient(135deg, ${PURPLE_DARK} 0%, ${PURPLE} 100%)`, borderRadius: 12, padding: "44px 40px", minHeight: 360, display: "flex", flexDirection: "column", justifyContent: "space-between", boxSizing: "border-box" }}>
       <div>

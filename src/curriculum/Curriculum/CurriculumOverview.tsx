@@ -49,22 +49,22 @@ export default function CurriculumOverview() {
       </div>
 
       <div className="week-card">
-        <div className="week-header"><span className="week-num">Week 3</span><p className="week-title">Lists, scrolling & dynamic data</p></div>
+        <div className="week-header"><span className="week-num">Week 3</span><p className="week-title">Lists, Navigation & Premium UX</p></div>
         <div className="sessions">
           <div className="session">
             <p className="s-label">Session 1</p>
-            <p className="s-topic">LazyColumn / List & custom row layouts</p>
-            <p className="s-lab"><b>Lab:</b> Render a hardcoded list of 20 items with a custom row layout including an image placeholder, title, and subtitle.</p>
+            <p className="s-topic">LazyColumn / List basics, search & navigation wiring</p>
+            <p className="s-lab"><b>Lab:</b> Build an album browser with a scrollable list, real-time search filtering, empty states, and list-to-detail navigation.</p>
           </div>
           <div className="session">
             <p className="s-label">Session 2</p>
-            <p className="s-topic">Search, filter & empty states</p>
-            <p className="s-lab"><b>Lab:</b> Add a search bar that filters the list in real time as the user types. Handle the empty results state gracefully.</p>
+            <p className="s-topic">Premium polish — Shared Element Transitions & Adaptive Layouts</p>
+            <p className="s-lab"><b>Lab:</b> Add shared element transitions for spatial continuity, and use AI to refactor the app for adaptive tablet/landscape layouts.</p>
           </div>
         </div>
         <div className="milestone m-assign">
           <span className="m-label">Assignment 3</span>
-          <p className="m-text">Build a searchable contacts or movie list app. Tapping a row navigates to a detail screen (combining Weeks 2 + 3). Data can be hardcoded.</p>
+          <p className="m-text">Build a custom searchable browser app (contacts, movies, etc.) with a detail screen. Stretch: add shared element transitions and adaptive layouts.</p>
         </div>
       </div>
 

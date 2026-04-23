@@ -174,7 +174,7 @@ function Session1Lab({ platform: _platform }: { platform: string }) {
   return (
     <div style={{ '--platform-accent': _platform === "Android" ? BL : GR } as React.CSSProperties}>
       <h1 style={{ fontSize: 20, fontWeight: 500, margin: "0 0 6px", color: "var(--color-text-primary)" }}>Session 1 Lab: Album Browser — The List Screen</h1>
-      <p style={{ fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 1.7, margin: "0 0 14px" }}>You are going to build the main screen of a music album browser — a scrollable list of albums, each displayed as a custom row card. No search or navigation yet — that is Session 2. Budget about 50-60 minutes.</p>
+      <p style={{ fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 1.7, margin: "0 0 14px" }}>You are going to build a complete music album browser — a scrollable list of albums with a real-time search bar, an empty state, and tap-to-detail navigation. Session 2 will add shared element transitions and adaptive layouts on top of what you build here. Budget about 80–90 minutes.</p>
 
       <div style={{ fontSize: 13, lineHeight: 1.7 }}>
         <strong>{"🎯"} Goals</strong>
@@ -183,17 +183,20 @@ function Session1Lab({ platform: _platform }: { platform: string }) {
           <li>Build a LazyColumn (Compose) or List (SwiftUI) that renders a list of albums</li>
           <li>Design a custom row layout for each album</li>
           <li>Understand how lazy loading differs from a regular Column</li>
-          <li>Use Claude to translate your list implementation to the other platform</li>
+          <li>Add a real-time search bar that filters by title and artist</li>
+          <li>Handle the empty state when a search matches nothing</li>
+          <li>Wire up list-to-detail navigation with search state preserved on back</li>
+          <li>Use Claude to translate your implementation to the other platform</li>
         </ul>
       </div>
 
       <div style={{ marginTop: 20 }}>
-        <VStep num={0} title="Set up your project (~3 min)">
+        <VStep num={0} title="Set up your project">
           <p style={{ fontSize: 13, color: "var(--color-text-secondary)", margin: "0 0 8px" }}>Create a new project, just like you did in Week 1.</p>
           {_platform === "Android" ? (
             <>
               <Checkbox>New Empty Activity project in Android Studio — name it <IC>AlbumBrowser</IC>, language Kotlin, min SDK API 24.</Checkbox>
-              <Tip>Add the Navigation Compose dependency to your <IC>build.gradle</IC> now — you will need it in Session 2: <IC>implementation({"\""}androidx.navigation:navigation-compose:2.7.0{"\""})</IC></Tip>
+              <Tip>Add the Navigation Compose dependency to your <IC>build.gradle</IC> now — you will need it in Step 7: <IC>implementation({"\""}androidx.navigation:navigation-compose:2.7.0{"\""})</IC></Tip>
             </>
           ) : (
             <>
@@ -208,7 +211,7 @@ function Session1Lab({ platform: _platform }: { platform: string }) {
           </Section>
         </VStep>
 
-        <VStep num={1} title="Create the Album data model (~5 min)">
+        <VStep num={1} title="Create the Album data model">
           <p style={{ fontSize: 13, color: "var(--color-text-secondary)", margin: "0 0 8px" }}>Define what an album looks like as a data structure, then create a hardcoded list of sample albums.</p>
           {_platform === "Android" ? (
             <>
@@ -263,7 +266,7 @@ let sampleAlbums: [Album] = [
           <Tip><b>{_platform === "Android" ? "Why does Compose need a key?" : "Why does the iOS struct need Identifiable?"}</b> {_platform === "Android" ? <>LazyColumn uses the <IC>key</IC> parameter to uniquely track items. When the list updates, Compose uses keys to figure out which rows changed, which moved, and which can be recycled.</> : <>SwiftUI{"'"}s List needs a way to uniquely identify each item so it can efficiently update only the rows that changed. The <IC>Identifiable</IC> protocol requires an <IC>id</IC> field. Compose{"'"}s LazyColumn uses the <IC>key</IC> parameter for the same purpose.</>}</Tip>
         </VStep>
 
-        <VStep num={2} title="Build a basic list — no custom rows yet (~5 min)">
+        <VStep num={2} title="Build a basic list — no custom rows yet">
           <p style={{ fontSize: 13, color: "var(--color-text-secondary)", margin: "0 0 8px" }}>Before styling the rows, get a plain list rendering first. Confirm the data is showing up before adding complexity.</p>
           {_platform === "Android" ? (
             <>
@@ -299,7 +302,7 @@ fun AlbumListScreen() {
           <Tip><b>LazyColumn vs Column — what is the difference?</b> A regular Column renders ALL its children at once, even if they are off screen. LazyColumn only renders the items currently visible — as you scroll, it creates new rows and recycles old ones. For short lists it does not matter. For 1000 items, Column would crash. Always use LazyColumn/List for scrollable lists of data.</Tip>
         </VStep>
 
-        <VStep num={3} title="Design a custom row layout (~12 min)">
+        <VStep num={3} title="Design a custom row layout">
           <p style={{ fontSize: 13, color: "var(--color-text-secondary)", margin: "0 0 8px" }}>Replace the plain Text with a proper album row — artist initial avatar, title, artist name, year, genre badge, and star rating. We will build this in three parts.</p>
 
           {_platform === "Android" ? (
@@ -445,7 +448,7 @@ VStack(spacing: 2) {
           )}
         </VStep>
 
-        <VStep num={4} title="Wire up the complete list screen (~5 min)">
+        <VStep num={4} title="Wire up the complete list screen">
           <p style={{ fontSize: 13, color: "var(--color-text-secondary)", margin: "0 0 8px" }}>Update your list screen to use <IC>AlbumRow</IC> instead of plain <IC>Text</IC>, and add a background for contrast.</p>
           {_platform === "Android" ? (
             <CodeB title="Kotlin — updated AlbumListScreen" accent={BL}>{`@Composable
@@ -484,25 +487,410 @@ fun AlbumListScreen() {
           <Checkpoint num="4">Scroll down — all 8 albums are there, each with a styled card layout on a contrasting background.</Checkpoint>
         </VStep>
 
-        <VStep num={5} title="Ask Claude to translate and compare (~8 min)">
-          <p style={{ fontSize: 13, color: "var(--color-text-secondary)", margin: "0 0 8px" }}>Now that you have a polished list, ask Claude to translate it to the other platform.</p>
+        <VStep num={5} title="Add real-time search">
+          <p style={{ fontSize: 13, color: "var(--color-text-secondary)", margin: "0 0 8px" }}>Add a search bar that filters the album list as the user types. You need two things: a state variable to hold the query string, and a filtered list computed from it.</p>
+          {_platform === "Android" ? (
+            <>
+              <p style={{ fontSize: 13, margin: "0 0 6px" }}>Replace your <IC>AlbumListScreen</IC> with this updated version:</p>
+              <CodeB title="Kotlin — AlbumListScreen.kt (with search)" accent={BL}>{`@Composable
+fun AlbumListScreen(onAlbumClicked: (Album) -> Unit = {}) {
+    var query by remember { mutableStateOf("") }
+    val filtered = remember(query) {
+        if (query.isBlank()) sampleAlbums
+        else sampleAlbums.filter { album ->
+            album.title.contains(query, ignoreCase = true) ||
+            album.artist.contains(query, ignoreCase = true)
+        }
+    }
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color(0xFFF5F5F5))
+    ) {
+        OutlinedTextField(
+            value = query,
+            onValueChange = { query = it },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            placeholder = { Text("Search albums or artists…") },
+            singleLine = true
+        )
+        LazyColumn(
+            contentPadding = PaddingValues(
+                horizontal = 16.dp, vertical = 4.dp),
+            verticalArrangement = Arrangement.spacedBy(4.dp)
+        ) {
+            items(filtered, key = { it.id }) { album ->
+                AlbumRow(album = album)
+            }
+        }
+    }
+}`}</CodeB>
+            </>
+          ) : (
+            <>
+              <p style={{ fontSize: 13, margin: "0 0 6px" }}>Replace your <IC>AlbumListScreen</IC> with this updated version:</p>
+              <CodeB title="Swift — AlbumListScreen.swift (with search)" accent={GR}>{`struct AlbumListScreen: View {
+    @State private var query = ""
+
+    var filtered: [Album] {
+        if query.isEmpty { return sampleAlbums }
+        return sampleAlbums.filter {
+            $0.title.localizedCaseInsensitiveContains(query) ||
+            $0.artist.localizedCaseInsensitiveContains(query)
+        }
+    }
+
+    var body: some View {
+        ZStack {
+            Color(UIColor.systemGray6).ignoresSafeArea()
+            VStack(spacing: 0) {
+                HStack {
+                    Image(systemName: "magnifyingglass")
+                        .foregroundColor(.gray)
+                    TextField(
+                        "Search albums or artists…",
+                        text: $query
+                    )
+                }
+                .padding(10)
+                .background(Color.white)
+                .cornerRadius(10)
+                .padding(.horizontal, 16)
+                .padding(.vertical, 8)
+                List(filtered) { album in
+                    AlbumRow(album: album)
+                        .listRowInsets(EdgeInsets(
+                            top: 4, leading: 16,
+                            bottom: 4, trailing: 16))
+                        .listRowBackground(Color.clear)
+                        .listRowSeparator(.hidden)
+                }
+                .listStyle(.plain)
+            }
+        }
+        .navigationTitle("Albums")
+    }
+}`}</CodeB>
+            </>
+          )}
+          <Checkpoint num={5}>Type a few letters — the list filters in real time. Clear the field — all albums are back.</Checkpoint>
+          <Tip><b>Why <IC>remember(query)</IC> in Compose?</b> Without the key, the filtered list would only compute once. Passing <IC>query</IC> as the key tells Compose to rerun the lambda every time <IC>query</IC> changes — which is what makes the list update live.</Tip>
+          <Section title="💡 Hint: The list doesn't update as I type">
+            {_platform === "Android"
+              ? <>Make sure <IC>query</IC> uses <IC>by remember {"{ mutableStateOf(\"\") }"}</IC>, not a plain <IC>var</IC>. A plain var does not trigger recomposition, so the list appears frozen.</>
+              : <>Make sure <IC>query</IC> is declared as <IC>@State private var query = ""</IC>. Without <IC>@State</IC>, SwiftUI does not watch the value and will not re-render the view.</>}
+          </Section>
+        </VStep>
+
+        <VStep num={6} title="Handle empty search results">
+          <p style={{ fontSize: 13, color: "var(--color-text-secondary)", margin: "0 0 8px" }}>When no albums match the query, the list goes blank — which looks broken. Replace the list with a conditional that shows a message instead.</p>
+          {_platform === "Android" ? (
+            <>
+              <p style={{ fontSize: 13, margin: "0 0 6px" }}>Inside <IC>AlbumListScreen</IC>, replace the <IC>LazyColumn</IC> with this conditional:</p>
+              <CodeB title="Kotlin — replace the LazyColumn" accent={BL}>{`if (filtered.isEmpty()) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(32.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Text("🔍", fontSize = 40.sp)
+        Spacer(modifier = Modifier.height(12.dp))
+        Text("No results found",
+            fontSize = 16.sp,
+            fontWeight = FontWeight.SemiBold)
+        Text("Try a different search term",
+            fontSize = 13.sp,
+            color = Color.Gray)
+    }
+} else {
+    LazyColumn(
+        contentPadding = PaddingValues(
+            horizontal = 16.dp, vertical = 4.dp),
+        verticalArrangement = Arrangement.spacedBy(4.dp)
+    ) {
+        items(filtered, key = { it.id }) { album ->
+            AlbumRow(album = album)
+        }
+    }
+}`}</CodeB>
+            </>
+          ) : (
+            <>
+              <p style={{ fontSize: 13, margin: "0 0 6px" }}>Inside the <IC>VStack</IC> in <IC>AlbumListScreen</IC>, replace the <IC>List</IC> with this conditional:</p>
+              <CodeB title="Swift — replace the List block" accent={GR}>{`if filtered.isEmpty {
+    Spacer()
+    VStack(spacing: 8) {
+        Text("🔍").font(.largeTitle)
+        Text("No results found").font(.headline)
+        Text("Try a different search term")
+            .font(.subheadline)
+            .foregroundColor(.gray)
+    }
+    Spacer()
+} else {
+    List(filtered) { album in
+        AlbumRow(album: album)
+            .listRowInsets(EdgeInsets(
+                top: 4, leading: 16,
+                bottom: 4, trailing: 16))
+            .listRowBackground(Color.clear)
+            .listRowSeparator(.hidden)
+    }
+    .listStyle(.plain)
+}`}</CodeB>
+            </>
+          )}
+          <Checkpoint num={6}>Search for something that does not match (e.g. {"\""}zzz{"\""}). The empty state message appears instead of a blank screen. Clear the field — the full list returns.</Checkpoint>
+        </VStep>
+
+        <VStep num={7} title="Wire up navigation to the detail screen">
+          <p style={{ fontSize: 13, color: "var(--color-text-secondary)", margin: "0 0 8px" }}>Tapping a row should navigate to a detail screen that shows all the album{"'"}s fields. The detail screen code is provided below — your job is to connect the list to it.</p>
+          {_platform === "Android" ? (
+            <>
+              <p style={{ fontSize: 13, margin: "0 0 6px" }}><strong>Part A — Make rows tappable.</strong> Add an <IC>onClick</IC> parameter to <IC>AlbumRow</IC> and a <IC>.clickable</IC> modifier on the outer <IC>Row</IC>:</p>
+              <CodeB title="Kotlin — update AlbumRow signature and modifier" accent={BL}>{`@Composable
+fun AlbumRow(album: Album, onClick: () -> Unit = {}) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onClick() }    // ← add this
+            .padding(vertical = 6.dp)
+            .background(Color.White,
+                shape = RoundedCornerShape(12.dp))
+            .padding(12.dp),
+        // ... rest unchanged
+    ) { /* ... */ }
+}`}</CodeB>
+              <p style={{ fontSize: 13, margin: "6px 0 6px" }}>Then update the <IC>items</IC> block inside <IC>AlbumListScreen</IC> to pass the handler:</p>
+              <CodeB title="Kotlin — update items block" accent={BL}>{`items(filtered, key = { it.id }) { album ->
+    AlbumRow(album = album, onClick = { onAlbumClicked(album) })
+}`}</CodeB>
+
+              <p style={{ fontSize: 13, margin: "14px 0 6px" }}><strong>Part B — Add the pre-built detail screen.</strong> Create <IC>AlbumDetailScreen.kt</IC> and paste in:</p>
+              <CodeB title="Kotlin — AlbumDetailScreen.kt (provided)" accent={BL}>{`@Composable
+fun AlbumDetailScreen(album: Album, onBack: () -> Unit) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color(0xFFF5F5F5))
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 4.dp, top = 8.dp,
+                    end = 16.dp, bottom = 8.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            IconButton(onClick = onBack) {
+                Icon(Icons.Filled.ArrowBack,
+                    contentDescription = "Back")
+            }
+            Text(album.title, fontSize = 18.sp,
+                fontWeight = FontWeight.SemiBold)
+        }
+        Divider()
+        Column(
+            modifier = Modifier
+                .padding(24.dp)
+                .fillMaxWidth(),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(72.dp)
+                    .background(Color(0xFF534AB7), CircleShape),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(album.artist.first().toString(),
+                    color = Color.White, fontSize = 30.sp,
+                    fontWeight = FontWeight.Bold)
+            }
+            Spacer(modifier = Modifier.height(24.dp))
+            listOf(
+                "Artist" to album.artist,
+                "Year" to album.year.toString(),
+                "Genre" to album.genre,
+                "Tracks" to "\${album.tracks} tracks",
+                "Rating" to "★ \${album.rating}"
+            ).forEach { (label, value) ->
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 10.dp),
+                    horizontalArrangement =
+                        Arrangement.SpaceBetween
+                ) {
+                    Text(label, fontSize = 14.sp,
+                        color = Color.Gray)
+                    Text(value, fontSize = 14.sp,
+                        fontWeight = FontWeight.Medium)
+                }
+                Divider(color = Color(0xFFE0E0E0))
+            }
+        }
+    }
+}`}</CodeB>
+
+              <p style={{ fontSize: 13, margin: "14px 0 6px" }}><strong>Part C — Set up the NavHost.</strong> Replace your <IC>setContent {"{ ... }"}</IC> in <IC>MainActivity.kt</IC>:</p>
+              <CodeB title="Kotlin — MainActivity.kt" accent={BL}>{`class MainActivity : ComponentActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContent {
+            val navController = rememberNavController()
+            NavHost(navController,
+                startDestination = "home") {
+                composable("home") {
+                    AlbumListScreen(
+                        onAlbumClicked = { album ->
+                            navController.navigate(
+                                "detail/\${album.id}")
+                        }
+                    )
+                }
+                composable("detail/{albumId}") { entry ->
+                    val id = entry.arguments
+                        ?.getString("albumId")?.toInt() ?: 0
+                    val album = sampleAlbums.find {
+                        it.id == id
+                    }
+                    album?.let {
+                        AlbumDetailScreen(
+                            album = it,
+                            onBack = {
+                                navController.popBackStack()
+                            }
+                        )
+                    }
+                }
+            }
+        }
+    }
+}`}</CodeB>
+            </>
+          ) : (
+            <>
+              <p style={{ fontSize: 13, margin: "0 0 6px" }}><strong>Part A — Wrap in NavigationStack and add a navigation destination.</strong> Update <IC>ContentView.swift</IC>:</p>
+              <CodeB title="Swift — ContentView.swift" accent={GR}>{`struct ContentView: View {
+    var body: some View {
+        NavigationStack {
+            AlbumListScreen()
+        }
+    }
+}`}</CodeB>
+              <p style={{ fontSize: 13, margin: "6px 0 6px" }}>Then update the <IC>else</IC> List block in <IC>AlbumListScreen</IC> to use <IC>NavigationLink</IC>, and add a <IC>.navigationDestination</IC> modifier after <IC>.navigationTitle</IC>:</p>
+              <CodeB title="Swift — AlbumListScreen, updated else block + destination" accent={GR}>{`// Replace the else { List(...) } block with:
+} else {
+    List(filtered) { album in
+        NavigationLink(value: album.id) {
+            AlbumRow(album: album)
+        }
+        .listRowInsets(EdgeInsets(
+            top: 4, leading: 16,
+            bottom: 4, trailing: 16))
+        .listRowBackground(Color.clear)
+        .listRowSeparator(.hidden)
+    }
+    .listStyle(.plain)
+}
+
+// Add after .navigationTitle("Albums"):
+.navigationDestination(for: Int.self) { id in
+    let album = sampleAlbums.first { $0.id == id }!
+    AlbumDetailScreen(album: album)
+}`}</CodeB>
+
+              <p style={{ fontSize: 13, margin: "14px 0 6px" }}><strong>Part B — Add the pre-built detail screen.</strong> Create <IC>AlbumDetailScreen.swift</IC> and paste in:</p>
+              <CodeB title="Swift — AlbumDetailScreen.swift (provided)" accent={GR}>{`struct AlbumDetailScreen: View {
+    let album: Album
+
+    private func infoRow(
+        _ label: String, _ value: String
+    ) -> some View {
+        HStack {
+            Text(label).foregroundColor(.gray)
+            Spacer()
+            Text(value).fontWeight(.medium)
+        }
+        .font(.subheadline)
+        .padding(.horizontal, 20)
+        .padding(.vertical, 12)
+    }
+
+    var body: some View {
+        ZStack {
+            Color(UIColor.systemGray6).ignoresSafeArea()
+            ScrollView {
+                VStack(spacing: 0) {
+                    Circle()
+                        .fill(Color(red: 0.33, green: 0.29,
+                            blue: 0.72))
+                        .frame(width: 72, height: 72)
+                        .overlay(
+                            Text(String(album.artist.prefix(1)))
+                                .font(.largeTitle)
+                                .fontWeight(.bold)
+                                .foregroundColor(.white)
+                        )
+                        .padding(.top, 24)
+                        .padding(.bottom, 20)
+                    VStack(spacing: 0) {
+                        infoRow("Artist", album.artist)
+                        Divider().padding(.horizontal, 20)
+                        infoRow("Year", String(album.year))
+                        Divider().padding(.horizontal, 20)
+                        infoRow("Genre", album.genre)
+                        Divider().padding(.horizontal, 20)
+                        infoRow("Tracks",
+                            "\(album.tracks) tracks")
+                        Divider().padding(.horizontal, 20)
+                        infoRow("Rating", "★ \(album.rating)")
+                    }
+                    .background(Color.white)
+                    .cornerRadius(12)
+                    .padding(16)
+                }
+            }
+        }
+        .navigationTitle(album.title)
+        .navigationBarTitleDisplayMode(.inline)
+    }
+}`}</CodeB>
+            </>
+          )}
+          <Checkpoint num={7}>Tap any album row — the detail screen opens showing all fields. Press back — the search bar and list are exactly as you left them. The search state is preserved because <IC>{_platform === "Android" ? "popBackStack()" : "NavigationLink"}</IC> returns to the existing screen rather than creating a fresh one.</Checkpoint>
+          <Note>This is the key distinction between <strong>push navigation</strong> and <strong>replacing the screen</strong>. <IC>{_platform === "Android" ? "popBackStack()" : "NavigationStack"}</IC> preserves the list screen in memory and uncovers it on back. If you had navigated to a new list screen instead, the query would be empty every time you came back.</Note>
+          {_platform === "Android" && (
+            <Section title="💡 Hint: Red squiggles under NavHost, rememberNavController">
+              Press Alt+Enter on each to auto-import. You need <IC>androidx.navigation.compose.NavHost</IC>, <IC>androidx.navigation.compose.composable</IC>, and <IC>androidx.navigation.compose.rememberNavController</IC>.
+            </Section>
+          )}
+        </VStep>
+
+        <VStep num={8} title="Ask Claude to translate and compare">
+          <p style={{ fontSize: 13, color: "var(--color-text-secondary)", margin: "0 0 8px" }}>Now that you have a working app with search, empty state, and navigation, ask Claude to translate the key pieces to the other platform.</p>
           <AiOpp>
-            Paste your full list screen code (AlbumRow + AlbumListScreen) into Claude and use this prompt: <em>{"\""}{_platform === "Android" ? "I built an album list screen using LazyColumn in Compose. Please translate it to SwiftUI List. Then explain: what is the equivalent of LazyColumn's items() and key parameter in SwiftUI, and what does Identifiable do?" : "I built an album list screen using List in SwiftUI. Please translate it to Compose LazyColumn. Then explain: what is the equivalent of List's Identifiable protocol in Compose, and what does the key parameter in LazyColumn's items() do?"}{"\""}</em>
+            Paste your <IC>AlbumListScreen</IC> and <IC>AlbumRow</IC> into Claude and use this prompt: <em>{"\""}{_platform === "Android" ? "I built an album browser with real-time search and navigation using LazyColumn in Compose. Please translate AlbumListScreen to SwiftUI. Then explain: how does @State in SwiftUI compare to mutableStateOf/remember in Compose for managing the search query?" : "I built an album browser with real-time search and navigation using List in SwiftUI. Please translate AlbumListScreen to Compose with LazyColumn. Then explain: how does mutableStateOf/remember in Compose compare to @State in SwiftUI for managing the search query?"}{"\""}</em>
           </AiOpp>
           <Checkbox>Received and read Claude{"'"}s translation and explanation</Checkbox>
-          <Checkbox>Both platform versions show the full styled album list</Checkbox>
+          <Checkbox>Both platform versions show search, empty state, and navigation working</Checkbox>
           <Section title="💡 Hint: Claude gave me code with errors">
             That happens — this is a feature, not a bug. Try asking Claude: {"\""}{`This gave me a compile error: [paste error]. What is wrong and how do I fix it?`}{"\""} Do not just ask it to rewrite everything.
           </Section>
         </VStep>
 
-        <VStep num={6} title="Reflect (~5 min)" last>
+        <VStep num={9} title="Reflect" last>
           <p style={{ fontSize: 13, color: "var(--color-text-secondary)", margin: "0 0 8px" }}>Add a comment block at the top of your file and answer these questions in your own words.</p>
           <CodeB title="Lab Reflection (Week 3, Session 1)">{`// Lab Reflection (Week 3, Session 1)
 // 1. In your own words: what is lazy loading and why does it matter?
 // 2. What does the key parameter in LazyColumn / Identifiable in SwiftUI do?
-// 3. What was the trickiest part of building the custom row layout?`}</CodeB>
-          <Checkpoint num="Final">Show a TA your styled scrollable album list and walk them through your reflection.</Checkpoint>
+// 3. What was the trickiest part of building the custom row layout?
+// 4. How does pressing back preserve the search state?
+//    What would happen if navigation created a new list screen instead?`}</CodeB>
+          <Checkpoint num="Final">Show a TA your album browser — styled list, live search, empty state, and tap-to-detail navigation — and walk them through your reflection.</Checkpoint>
           <Note>Right now the albums are hardcoded in a {_platform === "Android" ? "Kotlin list" : "Swift array"}. In Week 4 you will replace this with a real API call — the list screen will not need to change much — just the data source.</Note>
         </VStep>
       </div>
@@ -541,7 +929,7 @@ function Session2Lab({ platform: _platform }: { platform: string }) {
       <h2 style={{ fontSize: 18, fontWeight: 600, margin: "24px 0 16px" }}>Lab instructions</h2>
 
       <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-        <VStep num={0} title="Verify your working AlbumBrowser (~2 min)">
+        <VStep num={0} title="Verify your working AlbumBrowser">
           <p style={{ fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 1.7, margin: "0 0 14px" }}>Make sure your Session 1 app is fully working before adding anything new. You should be able to:</p>
           <Checkbox>See all 8 albums in a styled scrollable list</Checkbox>
           <Checkbox>Search and filter the list in real time</Checkbox>
@@ -551,7 +939,7 @@ function Session2Lab({ platform: _platform }: { platform: string }) {
           <Tip>If any of these are not working, fix them first or pair with someone who has a working app. Everything today builds on the complete Session 1 app.</Tip>
         </VStep>
 
-        <VStep num={1} title="Add the shared element wrapper (~15 min)">
+        <VStep num={1} title="Add the shared element wrapper">
           <p style={{ fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 1.7, margin: "0 0 14px" }}>This step adds a shared element transition so the album avatar <strong>animates</strong> from its position in the list row to its larger position on the detail screen. The framework handles the animation — you just <strong>tag</strong> which elements should be treated as the same object across screens.</p>
 
           {_platform === "Android" ? (
@@ -707,7 +1095,7 @@ struct AlbumListScreen: View {
           <Checkpoint num={1}>Tap any album row. The album avatar should <strong>smoothly animate</strong> from its 52dp size in the row to its 72dp size in the detail screen. Press back — it animates back. This is spatial continuity in action.</Checkpoint>
         </VStep>
 
-        <VStep num={2} title="Test and refine the transition (~5 min)">
+        <VStep num={2} title="Test and refine the transition">
           <p style={{ fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 1.7, margin: "0 0 14px" }}>Test the shared element transition thoroughly:</p>
           <Checkbox>Tap different album rows — each avatar should animate correctly</Checkbox>
           <Checkbox>Tap back — the avatar should return to its original position in the list</Checkbox>
@@ -717,7 +1105,7 @@ struct AlbumListScreen: View {
           <Tip><b>Want to animate the title text too?</b> Add a second shared element tag on the title Text in both screens with a key like <IC>{"\""}title-{"$"}{"{album.id}\""}</IC>. Each shared element needs its own unique key.</Tip>
         </VStep>
 
-        <VStep num={3} title="Prompt AI for an adaptive layout refactor (~15 min)">
+        <VStep num={3} title="Prompt AI for an adaptive layout refactor">
           <p style={{ fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 1.7, margin: "0 0 14px" }}>Right now your app uses a navigation push for every screen size. On a tablet or in landscape, this wastes space — there is room to show the list and detail <strong>side by side</strong>. Use AI to refactor your app to detect screen width and adapt the layout.</p>
           <AiOpp>
             <p style={{ marginTop: 0 }}>Copy your complete <IC>MainActivity</IC> (Compose) or <IC>ContentView</IC> (SwiftUI), including AlbumListScreen and AlbumDetailScreen, and paste it into Claude with this prompt:</p>
@@ -736,7 +1124,7 @@ struct AlbumListScreen: View {
           <Checkpoint num={2}>Apply AI{"'"}s output and run the app. On a phone-sized screen, the app should behave exactly as before (navigation push). Resize the emulator to tablet width or rotate to landscape — the list and detail should appear <strong>side by side</strong>.</Checkpoint>
         </VStep>
 
-        <VStep num={4} title="Test adaptive behavior (~5 min)">
+        <VStep num={4} title="Test adaptive behavior">
           <p style={{ fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 1.7, margin: "0 0 14px" }}>Test the adaptive layout on both screen sizes:</p>
           <Checkbox>Phone (compact): List fills full width. Tap a row → navigates to detail. Back → returns to list.</Checkbox>
           <Checkbox>Tablet (expanded): List and detail side by side. Tap a row → detail pane updates in place. No navigation animation.</Checkbox>
@@ -745,13 +1133,13 @@ struct AlbumListScreen: View {
           <Tip><b>How to test tablet mode:</b> In Android Studio, use the resizable emulator or create a tablet AVD. In Xcode, select an iPad simulator or use the Preview canvas with a landscape modifier.</Tip>
         </VStep>
 
-        <VStep num={5} title="Ask AI to explain the architecture (~5 min)">
+        <VStep num={5} title="Ask AI to explain the architecture">
           <AiOpp>Ask Claude: {"\""}In my adaptive layout, tapping a row on a tablet updates a selectedAlbum state variable instead of calling {_platform === "Android" ? "navController.navigate()" : "navigation destination"}. Explain why this architectural difference exists. What problem would occur if I used navigation push on a tablet with a side-by-side layout?{"\""}</AiOpp>
           <Checkbox>Read and understood AI{"'"}s explanation of state-driven vs navigation-driven detail display</Checkbox>
           <Checkbox>Can explain in your own words why the tablet path uses state instead of navigation</Checkbox>
         </VStep>
 
-        <VStep num={6} title="Reflect (~5 min)">
+        <VStep num={6} title="Reflect">
           <CodeB>{`// Lab Reflection (Week 3, Session 2)
 // 1. What does "object permanence" mean in UI?
 //    How does the shared element transition create it?
