@@ -525,8 +525,8 @@ function Session2Lab({ platform }: { platform: string }) {
 
       <Step num={1} title="Pass the question index to the question screen (~10 min)">
         <p>Right now the question screen always shows sampleQuestions[0]. Let us pass which question to show from the home screen.</p>
-        <p>For Android — update the navigation route and QuestionScreen:</p>
-        <CodeB title="Kotlin — NavHost update" accent={BL}>{`// In NavHost, update the question route to accept an argument:
+        {platform === "Android" ? (
+          <CodeB title="Kotlin — NavHost update" accent={BL}>{`// In NavHost, update the question route to accept an argument:
 composable("question/{questionIndex}") { backStackEntry ->
     val index = backStackEntry.arguments
         ?.getString("questionIndex")
@@ -545,8 +545,17 @@ fun QuestionScreen(questionIndex: Int) {
     val question = sampleQuestions[questionIndex]
     // rest of the screen stays the same
 }`}</CodeB>
-        <p>For iOS — update NavigationLink to pass data:</p>
-        <CodeB title="Swift — NavigationLink update" accent={GR}>{`// Update HomeScreen's NavigationLink:
+        ) : (
+          <CodeB title="Swift — ContentView update" accent={GR}>{`// Update ContentView.swift to pass the question index:
+struct ContentView: View {
+    var body: some View {
+        NavigationStack {
+            HomeScreen()
+        }
+    }
+}
+
+// Update HomeScreen to pass index via NavigationLink:
 NavigationLink(destination: QuestionScreen(questionIndex: 0)) {
     Text("Start Quiz")
         // ... styling stays the same
@@ -558,14 +567,16 @@ struct QuestionScreen: View {
     var question: Question { sampleQuestions[questionIndex] }
     // rest of the screen stays the same
 }`}</CodeB>
+        )}
         <Checkpoint num={1}>The app still navigates to the question screen and shows the first question. The difference now is the question comes from a parameter, not a hardcoded index.</Checkpoint>
 
       </Step>
 
       <Step num={2} title="Track score and navigate to the next question (~12 min)">
         <p>Add answer handling — when a user taps an answer, check if it is correct, update the score, and navigate to the next question. Pass the score along as navigation data.</p>
-        <p>For Android — update QuestionScreen:</p>
-      <CodeB title="Kotlin — QuestionScreen" accent={BL}>{`@Composable
+        {platform === "Android" ? (
+          <>
+            <CodeB title="Kotlin — QuestionScreen" accent={BL}>{`@Composable
 fun QuestionScreen(
     questionIndex: Int,
     score: Int = 0,
@@ -610,8 +621,8 @@ fun QuestionScreen(
         }
     }
 }`}</CodeB>
-        <p>Update NavHost to wire up the score and next question logic:</p>
-      <CodeB title="Kotlin — NavHost wiring" accent={BL}>{`var score by remember { mutableStateOf(0) }
+            <p>Update NavHost to wire up the score and next question logic:</p>
+            <CodeB title="Kotlin — NavHost wiring" accent={BL}>{`var score by remember { mutableStateOf(0) }
 
 NavHost(navController = navController, startDestination = "home") {
     composable("home") {
@@ -649,13 +660,100 @@ NavHost(navController = navController, startDestination = "home") {
         )
     }
 }`}</CodeB>
+          </>
+        ) : (
+          <>
+            <CodeB title="Swift — QuestionScreen" accent={GR}>{`struct QuestionScreen: View {
+    let questionIndex: Int
+    let onAnswerSelected: (Bool) -> Void
+    var question: Question { sampleQuestions[questionIndex] }
+    @State private var selectedIndex = -1
+
+    var body: some View {
+        ZStack {
+            Color(UIColor.systemGray6).ignoresSafeArea()
+            VStack(alignment: .leading, spacing: 12) {
+                Text("Question \\(questionIndex + 1) of \\(sampleQuestions.count)")
+                    .font(.subheadline).foregroundColor(.gray)
+                Text(question.text)
+                    .font(.title2).fontWeight(.bold).lineSpacing(6)
+                Spacer().frame(height: 20)
+                ForEach(Array(question.answers.enumerated()), id: \\.offset) { index, answer in
+                    let bg: Color = {
+                        if selectedIndex == -1 { return .white }
+                        if index == question.correctIndex { return Color(red:0.11,green:0.62,blue:0.46) }
+                        if index == selectedIndex { return Color(red:0.89,green:0.29,blue:0.29) }
+                        return .white
+                    }()
+                    Button(action: {
+                        if selectedIndex == -1 {
+                            selectedIndex = index
+                            onAnswerSelected(index == question.correctIndex)
+                        }
+                    }) {
+                        Text(answer)
+                            .foregroundColor(selectedIndex == -1
+                                ? Color(red:0.33,green:0.29,blue:0.72) : .white)
+                            .frame(maxWidth: .infinity).padding()
+                            .background(bg).cornerRadius(10)
+                    }
+                }
+            }
+            .padding(24)
+        }
+    }
+}`}</CodeB>
+            <p>Update ContentView to manage score and programmatic navigation:</p>
+            <CodeB title="Swift — ContentView wiring" accent={GR}>{`enum AppRoute: Hashable {
+    case question(Int)
+    case results(Int)
+}
+
+struct ContentView: View {
+    @State private var path: [AppRoute] = []
+    @State private var score = 0
+
+    var body: some View {
+        NavigationStack(path: $path) {
+            HomeScreen(onStartClicked: {
+                score = 0
+                path.append(.question(0))
+            })
+            .navigationDestination(for: AppRoute.self) { route in
+                switch route {
+                case .question(let index):
+                    QuestionScreen(
+                        questionIndex: index,
+                        onAnswerSelected: { correct in
+                            if correct { score += 1 }
+                            let next = index + 1
+                            if next < sampleQuestions.count {
+                                path.append(.question(next))
+                            } else {
+                                path.append(.results(score))
+                            }
+                        }
+                    )
+                case .results(let finalScore):
+                    ResultsScreen(
+                        score: finalScore,
+                        total: sampleQuestions.count,
+                        onPlayAgain: { path.removeAll() }
+                    )
+                }
+            }
+        }
+    }
+}`}</CodeB>
+          </>
+        )}
         <Checkpoint num={2}>Tapping an answer highlights it green or red, then automatically navigates to the next question. After the last question, you land on the results screen.</Checkpoint>
       </Step>
 
 
       <Step num={3} title="Build the results screen (~8 min)">
-        <p>For Android (Compose):</p>
-      <CodeB title="Kotlin — ResultsScreen" accent={BL}>{`@Composable
+        {platform === "Android" ? (
+          <CodeB title="Kotlin — ResultsScreen" accent={BL}>{`@Composable
 fun ResultsScreen(score: Int, total: Int, onPlayAgain: () -> Unit) {
     val percentage = (score.toFloat() / total * 100).toInt()
     Column(
@@ -694,8 +792,8 @@ fun ResultsScreen(score: Int, total: Int, onPlayAgain: () -> Unit) {
         }
     }
 }`}</CodeB>
-        <p>For iOS (SwiftUI):</p>
-      <CodeB title="Swift — ResultsScreen" accent={GR}>{`struct ResultsScreen: View {
+        ) : (
+          <CodeB title="Swift — ResultsScreen" accent={GR}>{`struct ResultsScreen: View {
     let score: Int
     let total: Int
     let onPlayAgain: () -> Void
@@ -742,6 +840,7 @@ fun ResultsScreen(score: Int, total: Int, onPlayAgain: () -> Unit) {
         .navigationBarBackButtonHidden(true)
     }
 }`}</CodeB>
+        )}
         <Checkpoint num={3}>Complete the quiz and land on the results screen showing your score. Tap Play Again and return to the home screen.</Checkpoint>
       </Step>
 
