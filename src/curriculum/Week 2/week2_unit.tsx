@@ -900,7 +900,7 @@ function Project() {
       </p>
 
       <div style={{ display: "flex", justifyContent: "center", margin: "0 0 20px" }}>
-        <img src={`${import.meta.env.BASE_URL}week2_project_walkthrough.gif`} alt="Character Creator walkthrough" style={{ width: 280, borderRadius: 16, border: "1px solid var(--color-border-tertiary)" }} />
+        <img src="https://raw.githubusercontent.com/PaulLeung93/Mobile-Course-Solutions/main/Android/Week%202/Week2-Project2_Solutions/CharacterCreator/walkthroughs/walkthrough.gif" alt="Character Creator walkthrough" style={{ width: 280, borderRadius: 16, border: "1px solid var(--color-border-tertiary)" }} />
       </div>
 
       <Section title="🗺️ The App" defaultOpen={true}>
