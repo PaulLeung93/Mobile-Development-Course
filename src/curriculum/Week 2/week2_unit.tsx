@@ -901,7 +901,7 @@ function Project() {
       </p>
 
       <div style={{ display: "flex", justifyContent: "center", margin: "0 0 20px" }}>
-        <img src="/week2_project_walkthrough.gif" alt="Character Creator walkthrough" style={{ width: 280, borderRadius: 16, border: "1px solid var(--color-border-tertiary)" }} />
+        <img src={`${import.meta.env.BASE_URL}week2_project_walkthrough.gif`} alt="Character Creator walkthrough" style={{ width: 280, borderRadius: 16, border: "1px solid var(--color-border-tertiary)" }} />
       </div>
 
       <Section title="🗺️ The App" defaultOpen={true}>
