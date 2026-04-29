@@ -894,7 +894,6 @@ function Lab() {
 function Project() {
   return (
     <div>
-      <Warn>Submit this assignment by the end of Week 3 Session 1 using the Submit button on this page.</Warn>
       <h2 style={{ fontSize: 18, fontWeight: 600, margin: "0 0 4px" }}>Unit 2 Project: Character Creator</h2>
       <p style={{ fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 1.7, margin: "0 0 14px" }}>
         You are going to build an RPG character creator — a multi-screen app that walks the user through a series of choices and assembles a character card from their selections. We provide starter code with some screens fully complete, one with a TODO to fill in, one with deliberate bugs to find and fix, and a final screen where you wire up the display. Android only for this assignment.
