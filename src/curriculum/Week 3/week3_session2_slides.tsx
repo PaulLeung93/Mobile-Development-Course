@@ -108,7 +108,7 @@ const slides = [
     <div style={{ background: `linear-gradient(135deg, ${PURPLE_DARK} 0%, ${PURPLE} 100%)`, borderRadius: 12, padding: "44px 40px", minHeight: 360, display: "flex", flexDirection: "column", justifyContent: "space-between", boxSizing: "border-box" }}>
       <div>
         <div style={{ marginBottom: 10 }}><Tag color="#fff">Week 3 — Session 2</Tag></div>
-        <h1 style={{ fontSize: 30, fontWeight: 800, color: "#fff", margin: "10px 0 8px", lineHeight: 1.2 }}>Premium Polish:<br/>Shared Elements &amp; Adaptive Layouts</h1>
+        <h1 style={{ fontSize: 30, fontWeight: 800, color: "#fff", margin: "10px 0 8px", lineHeight: 1.2 }}>Shared Elements &amp; Adaptive Layouts</h1>
         <p style={{ fontSize: 15, color: "rgba(255,255,255,0.7)", margin: "0 0 28px" }}>From a working app to a production-quality experience</p>
         <div style={{ display: "flex", gap: 20 }}>
           {["Builds on Session 1", "Spatial continuity", "Responsive design"].map(t => (
@@ -237,6 +237,7 @@ const slides = [
   // 6: NEW CONCEPT: Under the Hood: Interpolation
   () => (
     <Shell tag="Spatial continuity" timer="5" title="Under the Hood: Interpolation" subtitle="What the framework is actually doing" notes="It's important students know this isn't magic. The framework isn't physically moving their code. It's taking a picture, drawing it on top of everything, and animating the picture's size and position while hiding the real views.">
+      <Info>{"Interpolation means calculating the in-between values as an element moves from one state to another. For a shared element, the framework interpolates between the source's position and size and the destination's — generating the smooth frames you see during the transition. It is not magic: the framework captures snapshots, then animates an overlay graphic."}</Info>
       <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 10, marginTop: 10 }}>
         <div style={{ background: GRAY, borderRadius: 8, padding: "14px" }}>
           <div style={{ display: "flex", justifyContent: "center", marginBottom: 12 }}><div style={{ width: 40, height: 40, background: PURPLE_LIGHT, border: `2px dashed ${PURPLE}`, borderRadius: 4 }}></div></div>
@@ -377,6 +378,7 @@ AlbumDetailScreen(album: album)
           <p style={{ fontSize: 11, color: MUTED, margin: 0, lineHeight: 1.4 }}>The framework automatically interpolates size and position between the two locations.</p>
         </div>
       </div>
+      <Warn title="Mismatched keys = no animation">{"If the key on the source and destination do not match exactly, the framework cannot connect them — the transition silently falls back to a standard push. Watch for typos: \"avatar-1\" and \"Avatar-1\" are treated as different keys."}</Warn>
     </Shell>
   ),
 
@@ -423,6 +425,7 @@ AlbumDetailScreen(album: album)
   // 10: UI as a Function of Space
   () => (
     <Shell tag="Adaptive layouts" timer="8" title={"UI as a Function of Space"} subtitle="Same data, same components — different spatial arrangement" notes="Second major concept of the session. The key insight: when you rotate an iPhone to landscape, or when someone uses your app on an iPad, the list-to-detail navigation push is wasteful — you have enough space to show BOTH at once. This is not a new screen — it is the same data arranged differently based on available space. Call out WindowSizeClass (Compose) and horizontalSizeClass (SwiftUI) as the APIs that tell you how much space you have.">
+      <Info>{"A window size class is a system-provided value that describes how much horizontal space your app currently has — Compact, Medium, or Expanded. Compose calls it WindowWidthSizeClass; SwiftUI calls it horizontalSizeClass. Checking this instead of the device model means your layout automatically responds to rotation, split-screen, and foldables."}</Info>
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginTop: 6 }}>
         <div style={{ background: GRAY, borderRadius: 8, padding: "14px 16px" }}>
           <p style={{ fontSize: 12, fontWeight: 700, color: PURPLE, margin: "0 0 8px" }}>Phone (Compact width)</p>
@@ -630,6 +633,10 @@ fun AlbumApp() {
   // 14: NEW CONCEPT: Beyond Tablets
   () => (
     <Shell tag="Adaptive layouts" timer="4" title="Beyond Tablets: Foldables & Resizable Windows" subtitle="Why checking WindowSizeClass is future-proof" notes="Explain why we don't just check 'is this an iPad'. A phone can unfold into a tablet. A tablet can run apps in tiny floating windows.">
+      <div style={{ background: TEAL_LIGHT, border: `1px solid ${TEAL}`, borderRadius: 8, padding: "10px 14px", marginBottom: 10 }}>
+        <p style={{ fontSize: 12, fontWeight: 700, color: TEAL, margin: "0 0 4px" }}>Design for the canvas, not the device</p>
+        <p style={{ fontSize: 12, color: "#085041", margin: 0, lineHeight: 1.5 }}>Checking "is this an iPad?" is the wrong approach — a phone can unfold into a tablet, and a tablet can run in a 300px split-screen window. Always ask: <strong>how much space do I have right now?</strong> That is exactly what WindowSizeClass and horizontalSizeClass give you.</p>
+      </div>
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginTop: 10 }}>
          <div style={{ background: GRAY, borderRadius: 8, padding: "16px" }}>
             <p style={{ fontSize: 13, fontWeight: 700, color: PURPLE, margin: "0 0 8px" }}>Foldable Devices</p>

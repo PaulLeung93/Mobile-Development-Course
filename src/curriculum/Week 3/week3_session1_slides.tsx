@@ -247,6 +247,10 @@ const slides = [
   // 6: Why lists need special components
   () => (
     <Shell tag="Lists" timer="8" title="Why you cannot use Column / VStack for long lists" subtitle="The performance problem that LazyColumn / List solves" notes="This is a conceptual slide — no code yet. Draw the analogy: Column/VStack is like printing every page of a book before you open it. LazyColumn/List is like printing each page just before you read it. For 10 items, Column is fine. For 1000 items, Column will freeze the app. Always use LazyColumn/List for data-driven scrollable lists.">
+      <div style={{ background: PURPLE_LIGHT, borderRadius: 8, padding: "10px 14px", marginBottom: 10 }}>
+        <p style={{ fontSize: 12, fontWeight: 700, color: PURPLE_DARK, margin: "0 0 4px" }}>What is lazy loading?</p>
+        <p style={{ fontSize: 12, color: PURPLE_DARK, margin: 0, lineHeight: 1.5 }}>Lazy loading means creating only the UI elements currently visible on screen. As the user scrolls, new rows are created on demand and old ones recycled — so the app never holds 1000 views in memory at once.</p>
+      </div>
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginTop: 6 }}>
         <div style={{ background: "#fff3f3", border: "1px solid #fca5a5", borderRadius: 8, padding: "14px 16px" }}>
           <p style={{ fontSize: 12, fontWeight: 700, color: "#b91c1c", margin: "0 0 4px", textTransform: "uppercase" }}>Column / VStack — renders everything upfront</p>
@@ -344,7 +348,7 @@ struct Album: Identifiable {
         </Step>
 
         <Step n="3" title="The Content Lambda" accent={PURPLE}>
-          <p style={{ fontSize: 12, color: MUTED, marginBottom: 8 }}>This block runs once per visible item. In both frameworks, you receive the individual data object and return the row view.</p>
+          <p style={{ fontSize: 12, color: MUTED, marginBottom: 8 }}>This block — called a <strong style={{ color: TEXT }}>content lambda</strong> — runs once for each item currently visible on screen. When a new row scrolls into view, the framework calls it again with that item's data. Think of it as a template: <em>"for each album in the list, draw this."</em> You receive the data object and return the view to render for that row.</p>
           <div style={{ display: "flex", gap: 10 }}>
             <pre style={{ flex: 1, margin: 0, background: "#1e1e2e", color: "#cdd6f4", fontSize: 11, padding: "10px", borderRadius: 8 }}>{`{ album -> 
     AlbumRow(album = album) 
@@ -362,6 +366,7 @@ struct Album: Identifiable {
   () => (
     <Shell tag="Lists" title="Keys and Identifiable — why unique IDs matter" notes="This is an important concept that students often skip over. The analogy: imagine a classroom register. If two students have the same name, the teacher cannot tell them apart. Keys/Identifiable are the same — they give each row a unique identity so the framework knows which row changed and can update only that one instead of redrawing the whole list.">
       <Discussion>{"If you have a list of 100 albums and you change the rating of album number 50, how should the framework know to only update that one row and leave the other 99 alone?"}</Discussion>
+      <Info>{"The answer: give every row a unique, stable ID. In Compose, you pass a key parameter to items(). In SwiftUI, your data type conforms to Identifiable. Both tag each row with a unique identity — so when data changes, the framework updates only the affected row instead of redrawing the entire list."}</Info>
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginTop: 10 }}>
         <div style={{ background: GRAY, borderRadius: 8, padding: "12px 14px" }}>
           <p style={{ fontSize: 12, fontWeight: 600, color: PURPLE, margin: "0 0 8px" }}>Compose — key parameter</p>
@@ -407,6 +412,7 @@ List(sampleAlbums, id: \\.id) { album in
   () => (
     <Shell tag="Custom rows" timer="8" title="Custom row layouts — beyond plain Text" subtitle="Rows are just Composables / Views — you can put anything in them" notes="This is where students start to see real app UI. The key insight: a row is just a regular Composable or View. Everything they learned about layout in Week 1 applies inside a row. Row/HStack for horizontal layout, Column/VStack for vertical, Box/ZStack for overlay.">
       <Discussion>{"Look at a row in the Spotify app — it has an album cover, a song title, an artist name, a duration, and a more button. What layout containers would you use to build that? Sketch it in your head before we look at code."}</Discussion>
+      <Info>{"A custom row is just a regular Composable or View — there is nothing special about being inside a list. All the layout skills from Week 1 apply: Row/HStack for horizontal arrangement, Column/VStack for vertical stacking, and Box/ZStack for overlays. The list calls your row once per item and you decide what it looks like."}</Info>
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginTop: 10 }}>
         <div>
           <p style={{ fontSize: 12, fontWeight: 600, color: TEXT, margin: "0 0 8px" }}>Anatomy of a row</p>
@@ -650,6 +656,7 @@ Spacer() // Pushes content to the left`}
     <Shell tag="Live code-along" title="Part 1 — data model and basic list" notes="Type the data class/struct first, then the basic list with plain Text. Run it — students should see a plain scrollable list of album titles. Point out that it scrolls — even with plain Text, LazyColumn/List handles scrolling automatically. This is the foundation we build on.">
       <div style={{ marginTop: 10 }}>
         <Step n="1" title="Define the Data Model" accent={PURPLE}>
+          <p style={{ fontSize: 12, color: MUTED, margin: "0 0 8px" }}>Define the fields each Album will have. Both platforms use the same shape — the Swift version requires <code>Identifiable</code> conformance so SwiftUI's List can track each row uniquely.</p>
           <div style={{ display: "flex", gap: 10 }}>
             <CodePane title="Compose" accent={PURPLE}>{`data class Album(
     val id: Int,
@@ -673,6 +680,7 @@ Spacer() // Pushes content to the left`}
         </Step>
 
         <Step n="2" title="Define Sample Data" accent={TEAL}>
+          <p style={{ fontSize: 12, color: MUTED, margin: "0 0 8px" }}>Create a hardcoded list of test albums. This stands in for the real API data you will add in Week 4 — and the list screen will barely change when that happens.</p>
           <div style={{ display: "flex", gap: 10 }}>
             <CodePane title="Compose" accent={PURPLE}>{`val sampleAlbums = listOf(
     Album(1, "Rumours", "Fleetwood Mac", ...),
@@ -688,6 +696,7 @@ Spacer() // Pushes content to the left`}
         </Step>
 
         <Step n="3" title="Create a Basic List Screen" accent={PURPLE}>
+          <p style={{ fontSize: 12, color: MUTED, margin: "0 0 8px" }}>Get a scrollable list on screen before adding any styling. Start with plain Text rows to confirm the data is flowing — you will replace them with the styled AlbumRow in Part 2.</p>
           <div style={{ display: "flex", gap: 10 }}>
             <CodePane title="Compose" accent={PURPLE}>{`@Composable
 fun AlbumListScreen() {
@@ -716,6 +725,7 @@ fun AlbumListScreen() {
     <Shell tag="Live code-along" title="Part 2 — building and connecting AlbumRow" notes="Now replace the plain Text with the styled row. Build AlbumRow as a separate component first, then plug it into the list. Remind students this is the same component extraction pattern from Week 1. Also call out the Compose vs SwiftUI differences: background modifier vs .background() view modifier, CircleShape vs Circle(), weight(1f) vs Spacer().">
       <div style={{ marginTop: 10 }}>
         <Step n="4" title="Build the Row Component" accent={PURPLE}>
+          <p style={{ fontSize: 12, color: MUTED, margin: "0 0 8px" }}>Extract the row UI into its own Composable or View before wiring it into the list. Building it in isolation makes it easier to style and iterate on.</p>
           <div style={{ display: "flex", gap: 10 }}>
             <CodePane title="Compose" accent={PURPLE}>{`@Composable
 fun AlbumRow(album: Album) {
@@ -738,6 +748,7 @@ fun AlbumRow(album: Album) {
         </Step>
 
         <Step n="5" title="Connect to the List" accent={TEAL}>
+          <p style={{ fontSize: 12, color: MUTED, margin: "0 0 8px" }}>Swap the plain Text inside items()/List for AlbumRow. One-line change — the list handles rendering; the row handles appearance.</p>
           <div style={{ display: "flex", gap: 10 }}>
             <CodePane title="Compose" accent={PURPLE}>{`LazyColumn(...) {
     items(sampleAlbums, key = { it.id }) { album ->
@@ -751,6 +762,7 @@ fun AlbumRow(album: Album) {
         </Step>
 
         <Step n="6" title="Refine Layout & Spacing" accent={PURPLE}>
+          <p style={{ fontSize: 12, color: MUTED, margin: "0 0 8px" }}>Add spacing between rows and edge padding around the list. Compose uses contentPadding and verticalArrangement; SwiftUI uses list modifiers — different APIs, same intent.</p>
           <div style={{ display: "flex", gap: 10 }}>
             <CodePane title="Compose (Arrangement)" accent={PURPLE}>
               {`LazyColumn(

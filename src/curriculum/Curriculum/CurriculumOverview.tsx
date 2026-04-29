@@ -49,7 +49,7 @@ export default function CurriculumOverview() {
       </div>
 
       <div className="week-card">
-        <div className="week-header"><span className="week-num">Week 3</span><p className="week-title">Lists, Navigation & Premium UX</p></div>
+        <div className="week-header"><span className="week-num">Week 3</span><p className="week-title">Lists, Shared Transitions & Adaptive Layouts</p></div>
         <div className="sessions">
           <div className="session">
             <p className="s-label">Session 1</p>
