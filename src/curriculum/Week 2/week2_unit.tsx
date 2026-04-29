@@ -66,6 +66,26 @@ const Step = ({ num, title, children }: { num: number | string; title: string; c
   </div>
 );
 
+const SubStep = ({ num, title, children }: { num: string; title: string; children: React.ReactNode }) => (
+  <div style={{ margin: "14px 0 14px 8px", paddingLeft: 14, borderLeft: "2px solid var(--platform-accent, var(--color-border-tertiary))" }}>
+    <h5 style={{ fontSize: 13, fontWeight: 600, color: "var(--platform-accent, var(--color-text-primary))", margin: "0 0 6px" }}>Step {num}: {title}</h5>
+    <div style={{ fontSize: 13, lineHeight: 1.7 }}>{children}</div>
+  </div>
+);
+
+const VStep = ({ num, title, children, last = false }: { num: number; title: string; children: React.ReactNode; last?: boolean }) => (
+  <div style={{ display: "flex", gap: 12 }}>
+    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", flexShrink: 0 }}>
+      <div style={{ width: 26, height: 26, borderRadius: "50%", background: "var(--platform-accent, #534AB7)", color: "#fff", fontSize: 12, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center" }}>{num}</div>
+      {!last && <div style={{ width: 2, flex: 1, minHeight: 20, background: "var(--color-border-tertiary)", margin: "3px 0" }} />}
+    </div>
+    <div style={{ paddingBottom: last ? 8 : 24, flex: 1, minWidth: 0 }}>
+      <h4 style={{ fontSize: 13, fontWeight: 600, margin: "3px 0 8px", color: "var(--color-text-primary)" }}>{title}</h4>
+      <div>{children}</div>
+    </div>
+  </div>
+);
+
 const IC = ({ children }: { children: React.ReactNode }) => (
   <code style={{ background: "var(--color-background-secondary)", border: "0.5px solid var(--color-border-tertiary)", borderRadius: 4, padding: "1px 5px", fontSize: 12 }}>{children}</code>
 );
@@ -177,17 +197,74 @@ const LabSession1 = ({ platform }: { platform: string }) => (
       </ul>
     </div>
 
-    <Step num={0} title="Set up a new project (~3 min)">
+    <VStep num={0} title="Set up a new project (~3 min)">
       <Checkbox>Create a new project called TriviaApp (same setup as Week 1)</Checkbox>
       <Tip>Keep your TapCounter project open in another window — you will reference the state patterns from last week.</Tip>
-    </Step>
+    </VStep>
 
-    <Step num={1} title="Create your data model (~8 min)">
+    <VStep num={1} title="Create your data model (~8 min)">
       <p>Before building any UI, define what a trivia question looks like as a data structure. This is a data class in Kotlin or a struct in Swift.</p>
-      {platform === "Android" ? (
-        <>
-          <p>Create a new file called <IC>Question.kt</IC>:</p>
-          <CodeB title="Kotlin — Question.kt" accent={BL}>{`data class Question(
+
+      <SubStep num="1a" title="Identify the fields">
+        <p>Before writing any code, think: what data does a single trivia question need to store? There are three pieces of information. Write them down before peeking.</p>
+        <Section title="💡 Show me the three fields">
+          <ul style={{ paddingLeft: 20, margin: "4px 0" }}>
+            <li><strong>text</strong> — the question string</li>
+            <li><strong>answers</strong> — a list of answer strings (four choices)</li>
+            <li><strong>correctIndex</strong> — an integer pointing to the right answer in the list</li>
+          </ul>
+        </Section>
+      </SubStep>
+
+      <SubStep num="1b" title="Declare the data class / struct">
+        {platform === "Android" ? (
+          <>
+            <p>Create a new file called <IC>Question.kt</IC>. In Kotlin, a data class looks like:</p>
+            <CodeB accent={BL}>{`data class Name(val field1: Type1, val field2: Type2)`}</CodeB>
+            <p>Declare a <IC>Question</IC> data class with the three fields from 1a. Use these exact names and types: <IC>text: String</IC>, <IC>answers: List&lt;String&gt;</IC>, <IC>correctIndex: Int</IC>.</p>
+            <Section title="✅ Check your work — show me the complete file so far">
+              <CodeB title="Kotlin — Question.kt" accent={BL}>{`data class Question(
+    val text: String,
+    val answers: List<String>,
+    val correctIndex: Int
+)`}</CodeB>
+            </Section>
+          </>
+        ) : (
+          <>
+            <p>Create a new file called <IC>Question.swift</IC>. In Swift, a struct looks like:</p>
+            <CodeB accent={GR}>{`struct Name {
+    let field1: Type1
+    let field2: Type2
+}`}</CodeB>
+            <p>Declare a <IC>Question</IC> struct with the three fields from 1a. Use these exact names and types: <IC>text: String</IC>, <IC>answers: [String]</IC>, <IC>correctIndex: Int</IC>.</p>
+            <Section title="✅ Check your work — show me the complete file so far">
+              <CodeB title="Swift — Question.swift" accent={GR}>{`struct Question {
+    let text: String
+    let answers: [String]
+    let correctIndex: Int
+}`}</CodeB>
+            </Section>
+          </>
+        )}
+        <Checkpoint num="1b">The data class or struct compiles with no errors. No UI yet — just make sure the file is valid.</Checkpoint>
+      </SubStep>
+
+      <SubStep num="1c" title="Add sample data">
+        <p>Below your type declaration, create a list called <IC>sampleQuestions</IC>. Here is the first question to get you started — add the other two yourself:</p>
+        {platform === "Android" ? (
+          <>
+            <CodeB title="Kotlin — starter" accent={BL}>{`val sampleQuestions = listOf(
+    Question(
+        text = "What is the capital of France?",
+        answers = listOf("London", "Berlin", "Paris", "Madrid"),
+        correctIndex = 2
+    ),
+    // your turn: add two more questions
+)`}</CodeB>
+            <p>Add a question about which planet is closest to the Sun (answer: Mercury, correctIndex 1) and one about how many sides a hexagon has (answer: 6, correctIndex 1).</p>
+            <Section title="✅ Check your work — show me the complete Question.kt">
+              <CodeB title="Kotlin — Question.kt (complete)" accent={BL}>{`data class Question(
     val text: String,
     val answers: List<String>,
     val correctIndex: Int
@@ -210,11 +287,21 @@ val sampleQuestions = listOf(
         correctIndex = 1
     )
 )`}</CodeB>
-        </>
-      ) : (
-        <>
-          <p>Create a new file called <IC>Question.swift</IC>:</p>
-          <CodeB title="Swift — Question.swift" accent={GR}>{`struct Question {
+            </Section>
+          </>
+        ) : (
+          <>
+            <CodeB title="Swift — starter" accent={GR}>{`let sampleQuestions: [Question] = [
+    Question(
+        text: "What is the capital of France?",
+        answers: ["London", "Berlin", "Paris", "Madrid"],
+        correctIndex: 2
+    ),
+    // your turn: add two more questions
+]`}</CodeB>
+            <p>Add a question about which planet is closest to the Sun (answer: Mercury, correctIndex 1) and one about how many sides a hexagon has (answer: 6, correctIndex 1).</p>
+            <Section title="✅ Check your work — show me the complete Question.swift">
+              <CodeB title="Swift — Question.swift (complete)" accent={GR}>{`struct Question {
     let text: String
     let answers: [String]
     let correctIndex: Int
@@ -237,18 +324,144 @@ let sampleQuestions: [Question] = [
         correctIndex: 1
     )
 ]`}</CodeB>
-        </>
-      )}
-      <Checkpoint num={1}>The data model compiles with no errors. You do not need any UI yet — just make sure the file is valid.</Checkpoint>
-      <Section title="💡 Hint: What is a data class / struct?">
-        A data class (Kotlin) or struct (Swift) is a blueprint for a piece of data. It defines what fields that data has. Think of it like a form template — the template defines the fields, and each Question is a filled-in copy of that form.
-      </Section>
-    </Step>
+            </Section>
+          </>
+        )}
+      </SubStep>
 
-    <Step num={2} title="Build the home screen (~10 min)">
-      <p>Build a simple home screen — the app name, a tagline, and a Start Quiz button. No navigation yet.</p>
-      {platform === "Android" ? (
-        <CodeB title="Kotlin — HomeScreen.kt" accent={BL}>{`@Composable
+      <Checkpoint num={1}>The file compiles and your three questions are defined. No UI needed yet.</Checkpoint>
+      <Section title="💡 Hint: What is a data class / struct?">
+        A data class (Kotlin) or struct (Swift) is a blueprint for a piece of data. Think of it like a form template — the template defines the fields, and each Question is one filled-in copy.
+      </Section>
+    </VStep>
+
+    <VStep num={2} title="Build the home screen (~10 min)">
+      <p>Build a simple home screen — the app name, a tagline, and a Start Quiz button. Notice that <IC>onStartClicked</IC> is a <em>parameter</em> — a function passed into the screen. This keeps HomeScreen ignorant of navigation: it fires the callback, and whoever calls it decides what to do. You will wire that up in Step 4.</p>
+
+      <SubStep num="2a" title="Set up the screen layout">
+        {platform === "Android" ? (
+          <>
+            <p>Create a new file <IC>HomeScreen.kt</IC>. Add a <IC>@Composable</IC> function <IC>HomeScreen</IC> that takes one parameter: <IC>onStartClicked: () -&gt; Unit</IC>.</p>
+            <p>Inside, add a <IC>Column</IC> that fills the screen, has a light-gray background (<IC>Color(0xFFF5F5F5)</IC>), 32dp padding, and centers its children both vertically (<IC>Arrangement.Center</IC>) and horizontally (<IC>Alignment.CenterHorizontally</IC>).</p>
+            <Section title="✅ Check your work — show me the complete file so far">
+              <CodeB title="Kotlin — HomeScreen.kt (layout only)" accent={BL}>{`@Composable
+fun HomeScreen(onStartClicked: () -> Unit) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color(0xFFF5F5F5))
+            .padding(32.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        // content goes here
+    }
+}`}</CodeB>
+            </Section>
+          </>
+        ) : (
+          <>
+            <p>Create a new file <IC>HomeScreen.swift</IC>. Add a <IC>HomeScreen</IC> struct with a <IC>var onStartClicked: () -&gt; Void</IC> property.</p>
+            <p>Inside <IC>body</IC>, use a <IC>ZStack</IC> with a <IC>Color(UIColor.systemGray6).ignoresSafeArea()</IC> background and a <IC>VStack(spacing: 8)</IC> on top with 32pt padding.</p>
+            <Section title="✅ Check your work — show me the complete file so far">
+              <CodeB title="Swift — HomeScreen.swift (layout only)" accent={GR}>{`struct HomeScreen: View {
+    var onStartClicked: () -> Void
+
+    var body: some View {
+        ZStack {
+            Color(UIColor.systemGray6).ignoresSafeArea()
+            VStack(spacing: 8) {
+                // content goes here
+            }
+            .padding(32)
+        }
+    }
+}`}</CodeB>
+            </Section>
+          </>
+        )}
+      </SubStep>
+
+      <SubStep num="2b" title="Add the title and tagline">
+        {platform === "Android" ? (
+          <>
+            <p>Inside the Column, add:</p>
+            <ul style={{ paddingLeft: 20, margin: "4px 0 8px" }}>
+              <li>A <IC>Text</IC> — <IC>"Trivia Challenge"</IC>, 32sp, bold, color <IC>Color(0xFF534AB7)</IC></li>
+              <li>A <IC>Spacer</IC> of 8dp</li>
+              <li>A <IC>Text</IC> — <IC>"Test your knowledge!"</IC>, 16sp, <IC>Color.Gray</IC></li>
+              <li>A <IC>Spacer</IC> of 48dp (gap before the button)</li>
+            </ul>
+            <Section title="✅ Check your work — show me the complete file so far">
+              <CodeB title="Kotlin — HomeScreen.kt (with title + tagline)" accent={BL}>{`@Composable
+fun HomeScreen(onStartClicked: () -> Unit) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color(0xFFF5F5F5))
+            .padding(32.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            text = "Trivia Challenge",
+            fontSize = 32.sp,
+            fontWeight = FontWeight.Bold,
+            color = Color(0xFF534AB7)
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+        Text(
+            text = "Test your knowledge!",
+            fontSize = 16.sp,
+            color = Color.Gray
+        )
+        Spacer(modifier = Modifier.height(48.dp))
+        // button goes here
+    }
+}`}</CodeB>
+            </Section>
+          </>
+        ) : (
+          <>
+            <p>Inside the VStack, add:</p>
+            <ul style={{ paddingLeft: 20, margin: "4px 0 8px" }}>
+              <li>A <IC>Text("Trivia Challenge")</IC> — <IC>.largeTitle</IC>, bold, foreground <IC>Color(red: 0.33, green: 0.29, blue: 0.72)</IC></li>
+              <li>A <IC>Text("Test your knowledge!")</IC> — <IC>.subheadline</IC>, <IC>.gray</IC></li>
+              <li>A <IC>Spacer().frame(height: 48)</IC> before the button</li>
+            </ul>
+            <Section title="✅ Check your work — show me the complete file so far">
+              <CodeB title="Swift — HomeScreen.swift (with title + tagline)" accent={GR}>{`struct HomeScreen: View {
+    var onStartClicked: () -> Void
+
+    var body: some View {
+        ZStack {
+            Color(UIColor.systemGray6).ignoresSafeArea()
+            VStack(spacing: 8) {
+                Text("Trivia Challenge")
+                    .font(.largeTitle)
+                    .fontWeight(.bold)
+                    .foregroundColor(Color(red: 0.33, green: 0.29, blue: 0.72))
+                Text("Test your knowledge!")
+                    .font(.subheadline)
+                    .foregroundColor(.gray)
+                Spacer().frame(height: 48)
+                // button goes here
+            }
+            .padding(32)
+        }
+    }
+}`}</CodeB>
+            </Section>
+          </>
+        )}
+      </SubStep>
+
+      <SubStep num="2c" title="Add the Start Quiz button">
+        {platform === "Android" ? (
+          <>
+            <p>Add a <IC>Button</IC> that calls <IC>onStartClicked</IC> when tapped (<IC>onClick = onStartClicked</IC>), fills the full width, uses the purple background color, and has a <IC>Text("Start Quiz")</IC> label at 16sp.</p>
+            <Section title="✅ Check your work — show me the complete HomeScreen.kt">
+              <CodeB title="Kotlin — HomeScreen.kt (complete)" accent={BL}>{`@Composable
 fun HomeScreen(onStartClicked: () -> Unit) {
     Column(
         modifier = Modifier
@@ -282,8 +495,13 @@ fun HomeScreen(onStartClicked: () -> Unit) {
         }
     }
 }`}</CodeB>
-      ) : (
-        <CodeB title="Swift — HomeScreen.swift" accent={GR}>{`struct HomeScreen: View {
+            </Section>
+          </>
+        ) : (
+          <>
+            <p>Add a <IC>Button(action: onStartClicked)</IC> with a label that has white text, purple background, full width, and rounded corners.</p>
+            <Section title="✅ Check your work — show me the complete HomeScreen.swift">
+              <CodeB title="Swift — HomeScreen.swift (complete)" accent={GR}>{`struct HomeScreen: View {
     var onStartClicked: () -> Void
 
     var body: some View {
@@ -312,17 +530,160 @@ fun HomeScreen(onStartClicked: () -> Unit) {
         }
     }
 }`}</CodeB>
-      )}
-      <Tip>Notice that <IC>onStartClicked</IC> is a parameter — it is a function passed into the screen. This is how screens communicate upward in both platforms. We will use this when wiring up navigation in Step 4.</Tip>
-      <Checkpoint num={2}>Run the app. You should see the home screen with a Start Quiz button. Tapping it does nothing yet.</Checkpoint>
-    </Step>
+            </Section>
+          </>
+        )}
+      </SubStep>
 
-    <Step num={3} title="Build the question screen (~10 min)">
-      <p>Build a question screen that displays a hardcoded question and four answer buttons. No data passing yet — use the first question from <IC>sampleQuestions</IC> directly.</p>
-      {platform === "Android" ? (
-        <CodeB title="Kotlin — QuestionScreen.kt" accent={BL}>{`@Composable
+      <Checkpoint num={2}>Run the app. You should see the home screen with the Start Quiz button. Tapping it does nothing yet — that is Step 4.</Checkpoint>
+    </VStep>
+
+    <VStep num={3} title="Build the question screen (~10 min)">
+      <p>Build a question screen that displays a hardcoded question and four answer buttons. Use <IC>sampleQuestions[0]</IC> directly — no data passing yet, that is Session 2.</p>
+
+      <SubStep num="3a" title="Set up the layout and question counter">
+        {platform === "Android" ? (
+          <>
+            <p>Create a new file <IC>QuestionScreen.kt</IC>. Add a <IC>@Composable</IC> function <IC>QuestionScreen</IC> with no parameters for now. At the top of the function, grab the first question: <IC>val question = sampleQuestions[0]</IC>.</p>
+            <p>Add a <IC>Column</IC> using the same pattern as HomeScreen — full screen, gray background, 24dp padding, vertically centered. Inside, add a <IC>Text</IC> that reads <IC>"Question 1 of [total]"</IC> in gray, using <IC>sampleQuestions.size</IC> for the total.</p>
+            <Section title="✅ Check your work — show me the complete file so far">
+              <CodeB title="Kotlin — QuestionScreen.kt (layout + counter)" accent={BL}>{`@Composable
 fun QuestionScreen() {
-    val question = sampleQuestions[0]   // hardcoded for now
+    val question = sampleQuestions[0]
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color(0xFFF5F5F5))
+            .padding(24.dp),
+        verticalArrangement = Arrangement.Center
+    ) {
+        Text(
+            text = "Question 1 of \${sampleQuestions.size}",
+            fontSize = 14.sp,
+            color = Color.Gray
+        )
+        // rest goes here
+    }
+}`}</CodeB>
+            </Section>
+          </>
+        ) : (
+          <>
+            <p>Create a new file <IC>QuestionScreen.swift</IC>. Add a <IC>QuestionScreen</IC> struct and store the first question: <IC>let question = sampleQuestions[0]</IC>.</p>
+            <p>Use the same <IC>ZStack</IC>/<IC>VStack</IC> layout pattern as HomeScreen, but with <IC>alignment: .leading</IC> and <IC>spacing: 12</IC> on the VStack. At the top, show <IC>"Question 1 of [total]"</IC> in gray using <IC>sampleQuestions.count</IC>.</p>
+            <Section title="✅ Check your work — show me the complete file so far">
+              <CodeB title="Swift — QuestionScreen.swift (layout + counter)" accent={GR}>{`struct QuestionScreen: View {
+    let question = sampleQuestions[0]
+
+    var body: some View {
+        ZStack {
+            Color(UIColor.systemGray6).ignoresSafeArea()
+            VStack(alignment: .leading, spacing: 12) {
+                Text("Question 1 of \\(sampleQuestions.count)")
+                    .font(.subheadline)
+                    .foregroundColor(.gray)
+                // rest goes here
+            }
+            .padding(24)
+        }
+        .navigationBarBackButtonHidden(false)
+    }
+}`}</CodeB>
+            </Section>
+          </>
+        )}
+      </SubStep>
+
+      <SubStep num="3b" title="Add the question text">
+        {platform === "Android" ? (
+          <>
+            <p>Below the counter, add:</p>
+            <ul style={{ paddingLeft: 20, margin: "4px 0 8px" }}>
+              <li>A <IC>Spacer</IC> of 12dp</li>
+              <li>A <IC>Text</IC> showing <IC>question.text</IC> — 22sp, bold, lineHeight 30sp</li>
+              <li>A <IC>Spacer</IC> of 32dp (gap before the answer buttons)</li>
+            </ul>
+            <Section title="✅ Check your work — show me the complete file so far">
+              <CodeB title="Kotlin — QuestionScreen.kt (with question text)" accent={BL}>{`@Composable
+fun QuestionScreen() {
+    val question = sampleQuestions[0]
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color(0xFFF5F5F5))
+            .padding(24.dp),
+        verticalArrangement = Arrangement.Center
+    ) {
+        Text(
+            text = "Question 1 of \${sampleQuestions.size}",
+            fontSize = 14.sp,
+            color = Color.Gray
+        )
+        Spacer(modifier = Modifier.height(12.dp))
+        Text(
+            text = question.text,
+            fontSize = 22.sp,
+            fontWeight = FontWeight.Bold,
+            lineHeight = 30.sp
+        )
+        Spacer(modifier = Modifier.height(32.dp))
+        // answer buttons go here
+    }
+}`}</CodeB>
+            </Section>
+          </>
+        ) : (
+          <>
+            <p>Below the counter, add:</p>
+            <ul style={{ paddingLeft: 20, margin: "4px 0 8px" }}>
+              <li>A <IC>Text(question.text)</IC> — <IC>.title2</IC> font, bold, with <IC>.lineSpacing(6)</IC></li>
+              <li>A <IC>Spacer().frame(height: 20)</IC> before the answer buttons</li>
+            </ul>
+            <Section title="✅ Check your work — show me the complete file so far">
+              <CodeB title="Swift — QuestionScreen.swift (with question text)" accent={GR}>{`struct QuestionScreen: View {
+    let question = sampleQuestions[0]
+
+    var body: some View {
+        ZStack {
+            Color(UIColor.systemGray6).ignoresSafeArea()
+            VStack(alignment: .leading, spacing: 12) {
+                Text("Question 1 of \\(sampleQuestions.count)")
+                    .font(.subheadline)
+                    .foregroundColor(.gray)
+                Text(question.text)
+                    .font(.title2)
+                    .fontWeight(.bold)
+                    .lineSpacing(6)
+                Spacer().frame(height: 20)
+                // answer buttons go here
+            }
+            .padding(24)
+        }
+        .navigationBarBackButtonHidden(false)
+    }
+}`}</CodeB>
+            </Section>
+          </>
+        )}
+      </SubStep>
+
+      <SubStep num="3c" title="Loop over the answer choices">
+        <p>This is the key new concept: instead of writing four separate <IC>Button</IC> calls, you iterate over the answers list and create one Button per item.</p>
+        {platform === "Android" ? (
+          <>
+            <p>Use <IC>question.answers.forEachIndexed {`{ index, answer -> ... }`}</IC>. For each answer, create a <IC>Button</IC> with:</p>
+            <ul style={{ paddingLeft: 20, margin: "4px 0 8px" }}>
+              <li>White background, 1dp purple border via <IC>BorderStroke(1.dp, Color(0xFF534AB7))</IC></li>
+              <li>Full width, 4dp vertical padding</li>
+              <li>Answer text in purple</li>
+              <li><IC>onClick = {`{ /* handle answer — Session 2 */ }`}</IC> for now</li>
+            </ul>
+            <Section title="✅ Check your work — show me the complete QuestionScreen.kt">
+              <CodeB title="Kotlin — QuestionScreen.kt (complete)" accent={BL}>{`@Composable
+fun QuestionScreen() {
+    val question = sampleQuestions[0]
 
     Column(
         modifier = Modifier
@@ -356,9 +717,20 @@ fun QuestionScreen() {
         }
     }
 }`}</CodeB>
-      ) : (
-        <CodeB title="Swift — QuestionScreen.swift" accent={GR}>{`struct QuestionScreen: View {
-    let question = sampleQuestions[0]   // hardcoded for now
+            </Section>
+          </>
+        ) : (
+          <>
+            <p>Use <IC>ForEach(Array(question.answers.enumerated()), id: \.offset)</IC>. For each answer, create a <IC>Button</IC> with:</p>
+            <ul style={{ paddingLeft: 20, margin: "4px 0 8px" }}>
+              <li>White background, full width, rounded corners</li>
+              <li>A purple border overlay using <IC>RoundedRectangle(...).stroke</IC></li>
+              <li>Purple answer text</li>
+              <li><IC>action: {`{ /* handle — Session 2 */ }`}</IC> for now</li>
+            </ul>
+            <Section title="✅ Check your work — show me the complete QuestionScreen.swift">
+              <CodeB title="Swift — QuestionScreen.swift (complete)" accent={GR}>{`struct QuestionScreen: View {
+    let question = sampleQuestions[0]
 
     var body: some View {
         ZStack {
@@ -392,17 +764,84 @@ fun QuestionScreen() {
         .navigationBarBackButtonHidden(false)
     }
 }`}</CodeB>
-      )}
-      <Checkpoint num={3}>The question screen compiles. You cannot see it in the app yet — we wire up navigation in the next step.</Checkpoint>
-      <Section title="💡 Hint: What is forEachIndexed / ForEach?">
-        Both loop over a list and create UI for each item. <IC>forEachIndexed</IC> in Kotlin gives you both the index and the item. <IC>ForEach</IC> in SwiftUI does the same with <IC>enumerated()</IC>. You will use this pattern constantly when building lists in Week 3.
-      </Section>
-    </Step>
+            </Section>
+          </>
+        )}
+        <Section title="💡 Hint: What is forEachIndexed / ForEach?">
+          Both loop over a list and create UI for each item. <IC>forEachIndexed</IC> in Kotlin gives you both the index and the item. <IC>ForEach</IC> in SwiftUI does the same with <IC>enumerated()</IC>. You will use this pattern constantly when building lists in Week 3.
+        </Section>
+      </SubStep>
 
-    <Step num={4} title="Set up navigation and connect the screens (~12 min)">
-      <p>Now wire the two screens together. This is the core of Session 1.</p>
+      <Checkpoint num={3}>The question screen compiles. You cannot navigate to it yet — that is Step 4.</Checkpoint>
+    </VStep>
+
+    <VStep num={4} title="Set up navigation and connect the screens (~12 min)">
+      <p>Navigation has three moving parts: a controller (or stack) that owns the history, a set of named destinations, and a call that triggers the transition. You will wire them up one piece at a time.</p>
+
       {platform === "Android" ? (
-        <CodeB title="Kotlin — MainActivity.kt" accent={BL}>{`class MainActivity : ComponentActivity() {
+        <>
+          <SubStep num="4a" title="Add the navigation dependency">
+            <p>Navigation Compose is not part of the standard Compose library — you need to add it explicitly. Open your <strong>module-level</strong> <IC>build.gradle</IC> file (inside the <IC>app/</IC> folder, not the top-level one) and add one line inside the <IC>dependencies {`{ }`}</IC> block.</p>
+            <Tip>After adding it, click <strong>Sync Now</strong> in the yellow banner at the top of Android Studio. The build will fail with unresolved imports if you skip this.</Tip>
+            <Section title="✅ Check your work — show me the line to add">
+              <CodeB title="build.gradle (module-level)" accent={BL}>{`dependencies {
+    // ... your existing dependencies ...
+    implementation("androidx.navigation:navigation-compose:2.7.0")
+}`}</CodeB>
+            </Section>
+            <Checkbox>Project syncs without errors</Checkbox>
+          </SubStep>
+
+          <SubStep num="4b" title="Declare a NavController">
+            <p>A <IC>NavController</IC> is the object that owns the back stack — it knows which screen you are on and how to get back. It lives at the top level of your composable tree so every screen can reach it.</p>
+            <p>Inside the <IC>setContent</IC> block in <IC>MainActivity.kt</IC>, declare a NavController. The function you need starts with <IC>remember</IC> and ends with <IC>NavController()</IC>. Try writing it yourself before peeking.</p>
+            <Section title="✅ Check your work — show me the complete MainActivity so far">
+              <CodeB title="Kotlin — MainActivity.kt" accent={BL}>{`class MainActivity : ComponentActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContent {
+            val navController = rememberNavController()
+            // NavHost goes here
+        }
+    }
+}`}</CodeB>
+              <p><IC>rememberNavController()</IC> creates the controller and keeps it alive across recompositions. It must be called inside a composable context — <IC>setContent</IC> counts.</p>
+            </Section>
+          </SubStep>
+
+          <SubStep num="4c" title="Set up a NavHost and declare your routes">
+            <p>A <IC>NavHost</IC> is the composable that acts as the navigation container. You give it: (1) the NavController you just created, (2) a starting destination, and (3) a list of routes. Each route is declared with <IC>composable("route-name") {`{ }`}</IC> — inside the block you return the screen composable for that route.</p>
+            <p>Add a <IC>NavHost</IC> below your navController declaration. Give it two routes: <IC>"home"</IC> and <IC>"question"</IC>. Wire each to its screen composable. For the <IC>onStartClicked</IC> lambda on HomeScreen, pass an empty lambda <IC>{`{ }`}</IC> for now — you will fill it in next.</p>
+            <Section title="✅ Check your work — show me the complete MainActivity so far">
+              <CodeB title="Kotlin — MainActivity.kt" accent={BL}>{`class MainActivity : ComponentActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContent {
+            val navController = rememberNavController()
+            NavHost(
+                navController = navController,
+                startDestination = "home"
+            ) {
+                composable("home") {
+                    HomeScreen(
+                        onStartClicked = { /* fill in next step */ }
+                    )
+                }
+                composable("question") {
+                    QuestionScreen()
+                }
+            }
+        }
+    }
+}`}</CodeB>
+            </Section>
+            <Checkpoint num="4c">Run the app — you should see the home screen. Tapping Start Quiz does nothing yet, but the app should not crash.</Checkpoint>
+          </SubStep>
+
+          <SubStep num="4d" title="Trigger navigation from the Start Quiz button">
+            <p>Now connect the button to the question screen. Fill in the <IC>onStartClicked</IC> lambda you left empty in step 4c. The call you need is on <IC>navController</IC> and takes the route name string you defined above as its argument.</p>
+            <Section title="✅ Check your work — show me the complete MainActivity.kt">
+              <CodeB title="Kotlin — MainActivity.kt (complete)" accent={BL}>{`class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -425,31 +864,85 @@ fun QuestionScreen() {
         }
     }
 }`}</CodeB>
+              <p><IC>navigate("question")</IC> pushes the <IC>"question"</IC> destination onto the back stack. The user can tap the system back button to pop it and return to home.</p>
+            </Section>
+          </SubStep>
+        </>
       ) : (
-        <CodeB title="Swift — ContentView.swift (with NavigationLink)" accent={GR}>{`struct ContentView: View {
+        <>
+          <SubStep num="4a" title="Wrap your root view in a NavigationStack">
+            <p>In SwiftUI, <IC>NavigationStack</IC> is the container that makes navigation possible. Any view inside it can push new screens onto the stack. Without it, <IC>NavigationLink</IC> silently does nothing.</p>
+            <p>Open <IC>ContentView.swift</IC>. Wrap the <IC>HomeScreen()</IC> call in a <IC>NavigationStack</IC>. Try writing it from memory — the structure is just <IC>NavigationStack {`{ }`}</IC> with <IC>HomeScreen()</IC> inside.</p>
+            <Section title="✅ Check your work — show me the complete ContentView.swift">
+              <CodeB title="Swift — ContentView.swift" accent={GR}>{`struct ContentView: View {
     var body: some View {
         NavigationStack {
             HomeScreen()
         }
     }
-}
+}`}</CodeB>
+            </Section>
+            <Checkpoint num="4a">Run the app — the home screen should appear. You may see a navigation bar at the top; that confirms the NavigationStack is active.</Checkpoint>
+          </SubStep>
 
-// Update HomeScreen to use NavigationLink:
-struct HomeScreen: View {
+          <SubStep num="4b" title="Replace the Button with a NavigationLink">
+            <p>Right now your <IC>HomeScreen</IC> has a <IC>Button</IC> that calls <IC>onStartClicked</IC>. In SwiftUI, <IC>NavigationLink</IC> handles the push declaratively — you give it a destination and a label, and SwiftUI handles the transition when the user taps.</p>
+            <p>In <IC>HomeScreen.swift</IC>, replace the <IC>Button(...)</IC> with a <IC>NavigationLink(destination: QuestionScreen()) {`{ }`}</IC>. The label inside the braces is the tappable content — keep the same text and styling as your current button label.</p>
+            <Tip>A NavigationLink's label block works just like a Button's label block — anything you can put in a Button you can put here.</Tip>
+            <Section title="✅ Check your work — show me the complete HomeScreen.swift so far">
+              <CodeB title="Swift — HomeScreen.swift (with NavigationLink)" accent={GR}>{`struct HomeScreen: View {
     var body: some View {
         ZStack {
             Color(UIColor.systemGray6).ignoresSafeArea()
             VStack(spacing: 8) {
                 Text("Trivia Challenge")
-                    .font(.largeTitle).fontWeight(.bold)
+                    .font(.largeTitle)
+                    .fontWeight(.bold)
                     .foregroundColor(Color(red: 0.33, green: 0.29, blue: 0.72))
                 Text("Test your knowledge!")
-                    .font(.subheadline).foregroundColor(.gray)
+                    .font(.subheadline)
+                    .foregroundColor(.gray)
                 Spacer().frame(height: 48)
                 NavigationLink(destination: QuestionScreen()) {
                     Text("Start Quiz")
-                        .font(.headline).foregroundColor(.white)
-                        .frame(maxWidth: .infinity).padding()
+                        .font(.headline)
+                        .foregroundColor(.white)
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                        .background(Color(red: 0.33, green: 0.29, blue: 0.72))
+                        .cornerRadius(10)
+                }
+            }
+            .padding(32)
+        }
+    }
+}`}</CodeB>
+              <p>Note: the <IC>onStartClicked</IC> parameter is gone — <IC>NavigationLink</IC> handles the tap directly so we no longer need a callback.</p>
+            </Section>
+          </SubStep>
+
+          <SubStep num="4c" title="Hide the auto-generated navigation bar title">
+            <p>By default, <IC>NavigationStack</IC> adds a navigation bar with an empty title above your home screen. Add a <IC>.navigationBarHidden(true)</IC> modifier to the VStack (or ZStack) inside HomeScreen to clean up the design.</p>
+            <Section title="✅ Check your work — show me the complete HomeScreen.swift">
+              <CodeB title="Swift — HomeScreen.swift (complete)" accent={GR}>{`struct HomeScreen: View {
+    var body: some View {
+        ZStack {
+            Color(UIColor.systemGray6).ignoresSafeArea()
+            VStack(spacing: 8) {
+                Text("Trivia Challenge")
+                    .font(.largeTitle)
+                    .fontWeight(.bold)
+                    .foregroundColor(Color(red: 0.33, green: 0.29, blue: 0.72))
+                Text("Test your knowledge!")
+                    .font(.subheadline)
+                    .foregroundColor(.gray)
+                Spacer().frame(height: 48)
+                NavigationLink(destination: QuestionScreen()) {
+                    Text("Start Quiz")
+                        .font(.headline)
+                        .foregroundColor(.white)
+                        .frame(maxWidth: .infinity)
+                        .padding()
                         .background(Color(red: 0.33, green: 0.29, blue: 0.72))
                         .cornerRadius(10)
                 }
@@ -459,34 +952,38 @@ struct HomeScreen: View {
         .navigationBarHidden(true)
     }
 }`}</CodeB>
+            </Section>
+          </SubStep>
+        </>
       )}
-      <Checkpoint num={4}>Tap Start Quiz — you should navigate to the question screen. Tap the back button — you return to the home screen. Navigation is working!</Checkpoint>
-      <Section title="💡 Hint: Why does Android use NavController but iOS uses NavigationLink?">
-        This is the biggest syntax difference between the two platforms for navigation. Android uses a central NavController that you pass around. iOS uses NavigationLink directly in the UI. Both achieve the same thing — pushing a screen onto the stack. Ask Claude to explain why they made different design choices!
+
+      <Checkpoint num={4}>Tap Start Quiz — you should navigate to the question screen. Tap the back button (or swipe back on iOS) — you return to the home screen. Navigation is working!</Checkpoint>
+      <Section title="💡 Why does Android use NavController but iOS uses NavigationLink?">
+        Android uses a central NavController you pass around; iOS embeds the navigation intent directly in the UI with NavigationLink. Both push a screen onto the stack — they just differ in where the navigation logic lives. Ask Claude to explain why the platforms made different design choices here!
       </Section>
       {platform === "Android" && (
-        <Section title="💡 Hint: I am getting a NavController import error">
-          Make sure you have added the Navigation Compose dependency to your <IC>build.gradle</IC>: <IC>implementation("androidx.navigation:navigation-compose:2.7.0")</IC>
+        <Section title="💡 I am getting a NavController import error">
+          Make sure you synced after adding the dependency to <IC>build.gradle</IC>. If sync ran but imports still fail, try <strong>File → Sync Project with Gradle Files</strong> manually.
         </Section>
       )}
-    </Step>
+    </VStep>
 
-    <Step num={5} title="Ask Claude to translate and compare (~8 min)">
+    <VStep num={5} title="Ask Claude to translate and compare (~8 min)">
       <AiOpp>
         Paste your full navigation setup into Claude at claude.ai and use this prompt: <em>"I just set up navigation in my trivia app using [{platform === "Android" ? "Compose" : "SwiftUI"}]. Please translate the navigation setup to [{platform === "Android" ? "SwiftUI" : "Compose"}]. Then explain: what is conceptually the same about navigation in both platforms, and what is genuinely different about how they implement it?"</em> Read the explanation carefully before running the code.
       </AiOpp>
       <Checkbox>Received and read Claude's translation and explanation</Checkbox>
       <Checkbox>Both platform versions navigate from home to question correctly</Checkbox>
-    </Step>
+    </VStep>
 
-    <Step num={6} title="Reflect (~5 min)">
+    <VStep num={6} title="Reflect (~5 min)" last={true}>
       <CodeB title="Lab 3 Reflection">{`// Lab 3 Reflection (Week 2, Session 1)
 // 1. In your own words: what is the navigation stack?
 // 2. What does NavController / NavigationStack actually do?
 // 3. What surprised you about how different the two platforms look
 //    even though navigation works the same way conceptually?`}</CodeB>
       <Checkpoint num="Final">Show a TA both platforms navigating forward and back. Walk them through your reflection.</Checkpoint>
-    </Step>
+    </VStep>
 
     <Section title="🚀 Stretch Features">
       <ul style={{ paddingLeft: 20, fontSize: 13, lineHeight: 1.8 }}>
@@ -509,94 +1006,195 @@ function Session2Lab({ platform }: { platform: string }) {
       <div style={{ fontSize: 13, lineHeight: 1.7 }}>
         <strong>{"🎯"} Goals</strong>
         <ul style={{ paddingLeft: 20, margin: "6px 0 12px" }}>
-          <li>Pass a Question object from the home screen to the question screen</li>
-          <li>Track a score using state across screens</li>
-          <li>Build a results screen that shows the final score</li>
-          <li>Understand how the back stack works and when to use popBackStack</li>
+          <li>Pass a question index between screens so each screen shows the right question</li>
+          <li>Add answer selection state with green/red visual feedback</li>
+          <li>Track a score and navigate through all questions automatically</li>
+          <li>Build a results screen that shows the final score and a Play Again button</li>
           <li>Use Claude to understand data passing differences between platforms</li>
         </ul>
       </div>
 
-      <Step num={0} title="Recap and setup (~3 min)">
+      <VStep num={0} title="Recap and setup (~3 min)">
         <p>Open your TriviaApp project from Session 1. Make sure navigation between home and question is still working before adding anything new.</p>
-        <Tip>If your Session 1 lab is not working, ask a TA to help you get it to the checkpoint 4 state before continuing. Everything in this lab builds on it.</Tip>
+        <Tip>If your Session 1 lab is not working, ask a TA to help you get it to the Checkpoint 4 state before continuing. Everything in this lab builds on it.</Tip>
+      </VStep>
 
-      </Step>
+      <VStep num={1} title="Pass the question index to the question screen (~10 min)">
+        <p>Right now <IC>QuestionScreen</IC> always shows <IC>sampleQuestions[0]</IC> and the question number is hardcoded as "1 of 3". You will fix both by passing the index in from the navigation layer.</p>
 
-      <Step num={1} title="Pass the question index to the question screen (~10 min)">
-        <p>Right now the question screen always shows sampleQuestions[0]. Let us pass which question to show from the home screen.</p>
-        {platform === "Android" ? (
-          <CodeB title="Kotlin — NavHost update" accent={BL}>{`// In NavHost, update the question route to accept an argument:
-composable("question/{questionIndex}") { backStackEntry ->
-    val index = backStackEntry.arguments
-        ?.getString("questionIndex")
-        ?.toInt() ?: 0
-    QuestionScreen(questionIndex = index)
-}
-
-// Update HomeScreen's onStartClicked:
-onStartClicked = {
-    navController.navigate("question/0")  // start at index 0
-}
-
-// Update QuestionScreen to accept the index:
-@Composable
-fun QuestionScreen(questionIndex: Int) {
-    val question = sampleQuestions[questionIndex]
-    // rest of the screen stays the same
-}`}</CodeB>
-        ) : (
-          <CodeB title="Swift — ContentView update" accent={GR}>{`// Update ContentView.swift to pass the question index:
-struct ContentView: View {
-    var body: some View {
-        NavigationStack {
-            HomeScreen()
+        <SubStep num="1a" title="Update the route to carry the index">
+          {platform === "Android" ? (
+            <>
+              <p>In <IC>MainActivity.kt</IC>, find your <IC>composable("question")</IC> route. Navigation Compose passes data as route arguments using the <IC>{`{paramName}`}</IC> syntax. Update the route to <IC>"question/{`{questionIndex}`}"</IC> and extract the integer from the back stack entry.</p>
+              <p>Also update the <IC>onStartClicked</IC> navigate call to pass <IC>0</IC> as the starting index: <IC>navController.navigate("question/0")</IC>.</p>
+              <Section title="✅ Check your work — show me the complete MainActivity.kt so far">
+                <CodeB title="Kotlin — MainActivity.kt (updated route)" accent={BL}>{`class MainActivity : ComponentActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContent {
+            val navController = rememberNavController()
+            NavHost(navController = navController, startDestination = "home") {
+                composable("home") {
+                    HomeScreen(onStartClicked = {
+                        navController.navigate("question/0")
+                    })
+                }
+                composable("question/{questionIndex}") { backStackEntry ->
+                    val index = backStackEntry.arguments
+                        ?.getString("questionIndex")
+                        ?.toInt() ?: 0
+                    QuestionScreen(questionIndex = index)
+                }
+            }
         }
     }
-}
-
-// Update HomeScreen to pass index via NavigationLink:
-NavigationLink(destination: QuestionScreen(questionIndex: 0)) {
+}`}</CodeB>
+              </Section>
+            </>
+          ) : (
+            <>
+              <p>In <IC>HomeScreen.swift</IC>, find the <IC>NavigationLink</IC> you set up in Session 1. Update its destination to pass the starting index: <IC>NavigationLink(destination: QuestionScreen(questionIndex: 0))</IC>.</p>
+              <Tip>The <IC>QuestionScreen</IC> struct does not accept <IC>questionIndex</IC> yet — you will add that in step 1b. For now the compiler will show an error; that is expected.</Tip>
+              <Section title="✅ Check your work — show me the updated NavigationLink">
+                <CodeB title="Swift — HomeScreen.swift (updated NavigationLink)" accent={GR}>{`NavigationLink(destination: QuestionScreen(questionIndex: 0)) {
     Text("Start Quiz")
-        // ... styling stays the same
-}
+        .font(.headline)
+        .foregroundColor(.white)
+        .frame(maxWidth: .infinity)
+        .padding()
+        .background(Color(red: 0.33, green: 0.29, blue: 0.72))
+        .cornerRadius(10)
+}`}</CodeB>
+              </Section>
+            </>
+          )}
+        </SubStep>
 
-// Update QuestionScreen to accept the index:
-struct QuestionScreen: View {
+        <SubStep num="1b" title="Update QuestionScreen to accept and use the index">
+          {platform === "Android" ? (
+            <>
+              <p>In <IC>QuestionScreen.kt</IC>, add a <IC>questionIndex: Int</IC> parameter to the function signature. Replace the hardcoded <IC>sampleQuestions[0]</IC> with <IC>sampleQuestions[questionIndex]</IC>. Also update the question counter text to use <IC>questionIndex + 1</IC> instead of <IC>1</IC>.</p>
+              <Section title="✅ Check your work — show me the complete QuestionScreen.kt">
+                <CodeB title="Kotlin — QuestionScreen.kt (with index parameter)" accent={BL}>{`@Composable
+fun QuestionScreen(questionIndex: Int) {
+    val question = sampleQuestions[questionIndex]
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color(0xFFF5F5F5))
+            .padding(24.dp),
+        verticalArrangement = Arrangement.Center
+    ) {
+        Text(
+            text = "Question \${questionIndex + 1} of \${sampleQuestions.size}",
+            fontSize = 14.sp, color = Color.Gray
+        )
+        Spacer(modifier = Modifier.height(12.dp))
+        Text(
+            text = question.text,
+            fontSize = 22.sp, fontWeight = FontWeight.Bold,
+            lineHeight = 30.sp
+        )
+        Spacer(modifier = Modifier.height(32.dp))
+        question.answers.forEachIndexed { index, answer ->
+            Button(
+                onClick = { /* handle answer — Step 2 */ },
+                modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = Color.White),
+                border = BorderStroke(1.dp, Color(0xFF534AB7))
+            ) {
+                Text(answer, color = Color(0xFF534AB7))
+            }
+        }
+    }
+}`}</CodeB>
+              </Section>
+            </>
+          ) : (
+            <>
+              <p>In <IC>QuestionScreen.swift</IC>, replace the stored property <IC>let question = sampleQuestions[0]</IC> with a <IC>let questionIndex: Int</IC> parameter and a computed property <IC>var question: Question {`{ sampleQuestions[questionIndex] }`}</IC>. Update the counter text to use <IC>questionIndex + 1</IC>.</p>
+              <Section title="✅ Check your work — show me the complete QuestionScreen.swift">
+                <CodeB title="Swift — QuestionScreen.swift (with index parameter)" accent={GR}>{`struct QuestionScreen: View {
     let questionIndex: Int
     var question: Question { sampleQuestions[questionIndex] }
-    // rest of the screen stays the same
+
+    var body: some View {
+        ZStack {
+            Color(UIColor.systemGray6).ignoresSafeArea()
+            VStack(alignment: .leading, spacing: 12) {
+                Text("Question \\(questionIndex + 1) of \\(sampleQuestions.count)")
+                    .font(.subheadline)
+                    .foregroundColor(.gray)
+                Text(question.text)
+                    .font(.title2).fontWeight(.bold).lineSpacing(6)
+                Spacer().frame(height: 20)
+                ForEach(Array(question.answers.enumerated()), id: \\.offset) { index, answer in
+                    Button(action: { /* handle — Step 2 */ }) {
+                        Text(answer)
+                            .foregroundColor(Color(red: 0.33, green: 0.29, blue: 0.72))
+                            .frame(maxWidth: .infinity).padding()
+                            .background(Color.white).cornerRadius(10)
+                            .overlay(RoundedRectangle(cornerRadius: 10)
+                                .stroke(Color(red: 0.33, green: 0.29, blue: 0.72), lineWidth: 1))
+                    }
+                }
+            }
+            .padding(24)
+        }
+        .navigationBarBackButtonHidden(false)
+    }
 }`}</CodeB>
-        )}
-        <Checkpoint num={1}>The app still navigates to the question screen and shows the first question. The difference now is the question comes from a parameter, not a hardcoded index.</Checkpoint>
+              </Section>
+            </>
+          )}
+        </SubStep>
 
-      </Step>
+        <Checkpoint num={1}>The app navigates to the question screen and the counter now reads "Question 1 of 3". The question shown is still the first one — that is correct for now.</Checkpoint>
+      </VStep>
 
-      <Step num={2} title="Track score and navigate to the next question (~12 min)">
-        <p>Add answer handling — when a user taps an answer, check if it is correct, update the score, and navigate to the next question. Pass the score along as navigation data.</p>
-        {platform === "Android" ? (
-          <>
-            <CodeB title="Kotlin — QuestionScreen" accent={BL}>{`@Composable
+      <VStep num={2} title="Add answer handling and score tracking (~12 min)">
+        <p>Two things need to happen when a user taps an answer: (1) the button should turn green or red immediately as feedback, and (2) the app should move to the next question (or results) automatically. You will build these one at a time.</p>
+
+        <SubStep num="2a" title="Add answer selection state and visual feedback">
+          <p>Add a <IC>selectedIndex</IC> state variable to <IC>QuestionScreen</IC> — it starts at <IC>-1</IC> (nothing selected) and gets set when the user taps. Use it to color each button: white when unselected, green for the correct answer, red for a wrong one.</p>
+          <p>Also add an <IC>onAnswerSelected</IC> callback parameter — a function the screen calls with <IC>true</IC> or <IC>false</IC> depending on whether the answer was correct. The parent (NavHost / ContentView) will decide what to do next.</p>
+          {platform === "Android" ? (
+            <>
+              <p>In <IC>QuestionScreen.kt</IC>:</p>
+              <ul style={{ paddingLeft: 20, margin: "4px 0 8px" }}>
+                <li>Add <IC>onAnswerSelected: (Boolean) -&gt; Unit</IC> as a second parameter</li>
+                <li>Add <IC>var selectedIndex by remember {`{ mutableStateOf(-1) }`}</IC> inside the function</li>
+                <li>Inside the loop, compute <IC>val isSelected = selectedIndex == index</IC> and a <IC>bgColor</IC> using a <IC>when</IC> expression</li>
+                <li>Update <IC>onClick</IC> to guard against double-taps and call the callback</li>
+              </ul>
+              <Section title="✅ Check your work — show me the complete QuestionScreen.kt">
+                <CodeB title="Kotlin — QuestionScreen.kt (with answer feedback)" accent={BL}>{`@Composable
 fun QuestionScreen(
     questionIndex: Int,
-    score: Int = 0,
-    onAnswerSelected: (correct: Boolean) -> Unit
+    onAnswerSelected: (Boolean) -> Unit
 ) {
     val question = sampleQuestions[questionIndex]
     var selectedIndex by remember { mutableStateOf(-1) }
 
     Column(
-        modifier = Modifier.fillMaxSize()
-            .background(Color(0xFFF5F5F5)).padding(24.dp),
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color(0xFFF5F5F5))
+            .padding(24.dp),
         verticalArrangement = Arrangement.Center
     ) {
-        Text("Question \${questionIndex + 1} of \${sampleQuestions.size}",
-            fontSize = 14.sp, color = Color.Gray)
+        Text(
+            text = "Question \${questionIndex + 1} of \${sampleQuestions.size}",
+            fontSize = 14.sp, color = Color.Gray
+        )
         Spacer(Modifier.height(12.dp))
-        Text(question.text, fontSize = 22.sp,
-            fontWeight = FontWeight.Bold, lineHeight = 30.sp)
+        Text(
+            text = question.text,
+            fontSize = 22.sp, fontWeight = FontWeight.Bold,
+            lineHeight = 30.sp
+        )
         Spacer(Modifier.height(32.dp))
-
         question.answers.forEachIndexed { index, answer ->
             val isSelected = selectedIndex == index
             val bgColor = when {
@@ -615,55 +1213,24 @@ fun QuestionScreen(
                 colors = ButtonDefaults.buttonColors(containerColor = bgColor)
             ) {
                 Text(answer,
-                    color = if (isSelected) Color.White
-                            else Color(0xFF534AB7))
+                    color = if (isSelected) Color.White else Color(0xFF534AB7))
             }
         }
     }
 }`}</CodeB>
-            <p>Update NavHost to wire up the score and next question logic:</p>
-            <CodeB title="Kotlin — NavHost wiring" accent={BL}>{`var score by remember { mutableStateOf(0) }
-
-NavHost(navController = navController, startDestination = "home") {
-    composable("home") {
-        score = 0  // reset on return to home
-        HomeScreen(onStartClicked = {
-            navController.navigate("question/0")
-        })
-    }
-    composable("question/{questionIndex}") { backStackEntry ->
-        val index = backStackEntry.arguments
-            ?.getString("questionIndex")?.toInt() ?: 0
-        QuestionScreen(
-            questionIndex = index,
-            score = score,
-            onAnswerSelected = { correct ->
-                if (correct) score++
-                val nextIndex = index + 1
-                if (nextIndex < sampleQuestions.size) {
-                    navController.navigate("question/\$nextIndex")
-                } else {
-                    navController.navigate("results/\$score")
-                }
-            }
-        )
-    }
-    composable("results/{finalScore}") { backStackEntry ->
-        val finalScore = backStackEntry.arguments
-            ?.getString("finalScore")?.toInt() ?: 0
-        ResultsScreen(
-            score = finalScore,
-            total = sampleQuestions.size,
-            onPlayAgain = {
-                navController.popBackStack("home", inclusive = false)
-            }
-        )
-    }
-}`}</CodeB>
-          </>
-        ) : (
-          <>
-            <CodeB title="Swift — QuestionScreen" accent={GR}>{`struct QuestionScreen: View {
+              </Section>
+            </>
+          ) : (
+            <>
+              <p>In <IC>QuestionScreen.swift</IC>:</p>
+              <ul style={{ paddingLeft: 20, margin: "4px 0 8px" }}>
+                <li>Add <IC>let onAnswerSelected: (Bool) -&gt; Void</IC> as a stored property</li>
+                <li>Add <IC>@State private var selectedIndex = -1</IC></li>
+                <li>Inside the <IC>ForEach</IC>, compute a <IC>bg: Color</IC> closure based on <IC>selectedIndex</IC></li>
+                <li>Update the button action to guard against double-taps and call the callback</li>
+              </ul>
+              <Section title="✅ Check your work — show me the complete QuestionScreen.swift">
+                <CodeB title="Swift — QuestionScreen.swift (with answer feedback)" accent={GR}>{`struct QuestionScreen: View {
     let questionIndex: Int
     let onAnswerSelected: (Bool) -> Void
     var question: Question { sampleQuestions[questionIndex] }
@@ -703,8 +1270,419 @@ NavHost(navController = navController, startDestination = "home") {
         }
     }
 }`}</CodeB>
-            <p>Update ContentView to manage score and programmatic navigation:</p>
-            <CodeB title="Swift — ContentView wiring" accent={GR}>{`enum AppRoute: Hashable {
+              </Section>
+            </>
+          )}
+        </SubStep>
+
+        <SubStep num="2b" title="Add score state and wire up the full navigation flow">
+          {platform === "Android" ? (
+            <>
+              <p>Now wire up the <IC>onAnswerSelected</IC> callback in <IC>MainActivity.kt</IC>. The NavHost needs to: (1) hold a <IC>score</IC> state variable, (2) increment it on correct answers, (3) navigate to the next question or the results screen when done, and (4) reset the score when the user returns home.</p>
+              <p>Add a <IC>results/{`{finalScore}`}</IC> route to the NavHost. For now, use a placeholder <IC>Text</IC> for <IC>ResultsScreen</IC> — you will build the real screen in Step 3.</p>
+              <Section title="✅ Check your work — show me the complete MainActivity.kt">
+                <CodeB title="Kotlin — MainActivity.kt (with score + full NavHost)" accent={BL}>{`class MainActivity : ComponentActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContent {
+            val navController = rememberNavController()
+            var score by remember { mutableStateOf(0) }
+            NavHost(navController = navController, startDestination = "home") {
+                composable("home") {
+                    score = 0
+                    HomeScreen(onStartClicked = {
+                        navController.navigate("question/0")
+                    })
+                }
+                composable("question/{questionIndex}") { backStackEntry ->
+                    val index = backStackEntry.arguments
+                        ?.getString("questionIndex")?.toInt() ?: 0
+                    QuestionScreen(
+                        questionIndex = index,
+                        onAnswerSelected = { correct ->
+                            if (correct) score++
+                            val nextIndex = index + 1
+                            if (nextIndex < sampleQuestions.size) {
+                                navController.navigate("question/\$nextIndex")
+                            } else {
+                                navController.navigate("results/\$score")
+                            }
+                        }
+                    )
+                }
+                composable("results/{finalScore}") { backStackEntry ->
+                    val finalScore = backStackEntry.arguments
+                        ?.getString("finalScore")?.toInt() ?: 0
+                    // placeholder — replace with ResultsScreen in Step 3
+                    Text("\$finalScore / \${sampleQuestions.size} correct")
+                }
+            }
+        }
+    }
+}`}</CodeB>
+              </Section>
+            </>
+          ) : (
+            <>
+              <p>With <IC>NavigationLink</IC>, SwiftUI decides when to navigate — but you need to update the score <em>before</em> navigating. The solution is to switch to <strong>programmatic navigation</strong> using a <IC>path</IC> array that you control.</p>
+              <p>The pattern:</p>
+              <ul style={{ paddingLeft: 20, margin: "4px 0 8px" }}>
+                <li>Define an <IC>AppRoute</IC> enum with a case for each destination (including any data it carries)</li>
+                <li>Add <IC>@State private var path: [AppRoute] = []</IC> to ContentView — this array <em>is</em> the back stack</li>
+                <li>Use <IC>NavigationStack(path: $path)</IC> and <IC>.navigationDestination(for: AppRoute.self)</IC> to map routes to screens</li>
+                <li>Navigate by calling <IC>path.append(.question(index))</IC> instead of relying on NavigationLink</li>
+              </ul>
+              <p>Also restore the <IC>onStartClicked</IC> parameter to <IC>HomeScreen</IC> — we removed it in Session 1, but programmatic navigation needs it back so ContentView can drive the navigation.</p>
+              <Tip>For now, use a placeholder <IC>Text</IC> for the results case — you will build <IC>ResultsScreen</IC> in Step 3.</Tip>
+              <Section title="✅ Check your work — show me the complete ContentView.swift">
+                <CodeB title="Swift — ContentView.swift (programmatic navigation)" accent={GR}>{`enum AppRoute: Hashable {
+    case question(Int)
+    case results(Int)
+}
+
+struct ContentView: View {
+    @State private var path: [AppRoute] = []
+    @State private var score = 0
+
+    var body: some View {
+        NavigationStack(path: $path) {
+            HomeScreen(onStartClicked: {
+                score = 0
+                path.append(.question(0))
+            })
+            .navigationDestination(for: AppRoute.self) { route in
+                switch route {
+                case .question(let index):
+                    QuestionScreen(
+                        questionIndex: index,
+                        onAnswerSelected: { correct in
+                            if correct { score += 1 }
+                            let next = index + 1
+                            if next < sampleQuestions.count {
+                                path.append(.question(next))
+                            } else {
+                                path.append(.results(score))
+                            }
+                        }
+                    )
+                case .results(let finalScore):
+                    // placeholder — replace with ResultsScreen in Step 3
+                    Text("\\(finalScore) / \\(sampleQuestions.count) correct")
+                }
+            }
+        }
+    }
+}`}</CodeB>
+              </Section>
+              <Note>You will also need to restore <IC>var onStartClicked: () -&gt; Void</IC> to <IC>HomeScreen</IC> and change the <IC>NavigationLink</IC> back to a plain <IC>Button(action: onStartClicked)</IC>, since ContentView now drives the navigation.</Note>
+            </>
+          )}
+        </SubStep>
+
+        <Checkpoint num={2}>Tap an answer — it highlights green or red immediately. The app then navigates to the next question automatically. After the last question you should see the placeholder text. Score tracking is live.</Checkpoint>
+      </VStep>
+
+      <VStep num={3} title="Build the results screen (~8 min)">
+        <p>Create a new file <IC>{platform === "Android" ? "ResultsScreen.kt" : "ResultsScreen.swift"}</IC> and build the results screen. It receives the final score and total, computes a percentage, shows a feedback message, and offers a Play Again button.</p>
+
+        <SubStep num="3a" title="Set up the layout and title">
+          {platform === "Android" ? (
+            <>
+              <p>Add a <IC>@Composable</IC> function <IC>ResultsScreen</IC> with three parameters: <IC>score: Int</IC>, <IC>total: Int</IC>, <IC>onPlayAgain: () -&gt; Unit</IC>. Compute <IC>val percentage = (score.toFloat() / total * 100).toInt()</IC> at the top.</p>
+              <p>Set up a centered Column (same pattern as HomeScreen) with 32dp padding. Add the "Quiz Complete!" title in purple at 28sp bold.</p>
+              <Section title="✅ Check your work — show me the complete file so far">
+                <CodeB title="Kotlin — ResultsScreen.kt (layout + title)" accent={BL}>{`@Composable
+fun ResultsScreen(score: Int, total: Int, onPlayAgain: () -> Unit) {
+    val percentage = (score.toFloat() / total * 100).toInt()
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color(0xFFF5F5F5))
+            .padding(32.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            "Quiz Complete!",
+            fontSize = 28.sp,
+            fontWeight = FontWeight.Bold,
+            color = Color(0xFF534AB7)
+        )
+        Spacer(Modifier.height(24.dp))
+        // score display goes here
+    }
+}`}</CodeB>
+              </Section>
+            </>
+          ) : (
+            <>
+              <p>Add a <IC>ResultsScreen</IC> struct with three stored properties: <IC>score: Int</IC>, <IC>total: Int</IC>, <IC>onPlayAgain: () -&gt; Void</IC>. Add a computed <IC>var percentage: Int</IC> that calculates the score as a whole-number percentage.</p>
+              <p>Set up the same ZStack/VStack layout pattern. Add a bold "Quiz Complete!" title in purple.</p>
+              <Section title="✅ Check your work — show me the complete file so far">
+                <CodeB title="Swift — ResultsScreen.swift (layout + title)" accent={GR}>{`struct ResultsScreen: View {
+    let score: Int
+    let total: Int
+    let onPlayAgain: () -> Void
+
+    var percentage: Int { Int(Double(score) / Double(total) * 100) }
+
+    var body: some View {
+        ZStack {
+            Color(UIColor.systemGray6).ignoresSafeArea()
+            VStack(spacing: 8) {
+                Text("Quiz Complete!")
+                    .font(.largeTitle).fontWeight(.bold)
+                    .foregroundColor(Color(red:0.33,green:0.29,blue:0.72))
+                Spacer().frame(height: 24)
+                // score display goes here
+            }
+            .padding(32)
+        }
+        .navigationBarBackButtonHidden(true)
+    }
+}`}</CodeB>
+              </Section>
+            </>
+          )}
+        </SubStep>
+
+        <SubStep num="3b" title="Add the score display and feedback message">
+          {platform === "Android" ? (
+            <>
+              <p>Below the Spacer, add:</p>
+              <ul style={{ paddingLeft: 20, margin: "4px 0 8px" }}>
+                <li>A large <IC>Text</IC> showing <IC>"$score / $total"</IC> at 64sp bold</li>
+                <li>A gray <IC>Text</IC> showing <IC>"$percentage% correct"</IC> at 16sp</li>
+                <li>A small Spacer, then a green <IC>Text</IC> with a feedback message based on the percentage — use a <IC>when</IC> expression: 100% → "Perfect score!", ≥70% → "Great job!", ≥40% → "Good effort!", else → "Keep practicing!"</li>
+                <li>A larger Spacer (40dp) before the button</li>
+              </ul>
+              <Section title="✅ Check your work — show me the complete file so far">
+                <CodeB title="Kotlin — ResultsScreen.kt (with score + message)" accent={BL}>{`@Composable
+fun ResultsScreen(score: Int, total: Int, onPlayAgain: () -> Unit) {
+    val percentage = (score.toFloat() / total * 100).toInt()
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color(0xFFF5F5F5))
+            .padding(32.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text("Quiz Complete!", fontSize = 28.sp,
+            fontWeight = FontWeight.Bold, color = Color(0xFF534AB7))
+        Spacer(Modifier.height(24.dp))
+        Text("\$score / \$total", fontSize = 64.sp,
+            fontWeight = FontWeight.Bold)
+        Text("\$percentage% correct", fontSize = 16.sp, color = Color.Gray)
+        Spacer(Modifier.height(12.dp))
+        Text(
+            text = when {
+                percentage == 100 -> "Perfect score!"
+                percentage >= 70  -> "Great job!"
+                percentage >= 40  -> "Good effort!"
+                else              -> "Keep practicing!"
+            },
+            fontSize = 18.sp,
+            color = Color(0xFF1D9E75)
+        )
+        Spacer(Modifier.height(40.dp))
+        // Play Again button goes here
+    }
+}`}</CodeB>
+              </Section>
+            </>
+          ) : (
+            <>
+              <p>Add a computed <IC>var message: String</IC> property using a <IC>switch</IC> on <IC>percentage</IC>: 100 → "Perfect score!", 70... → "Great job!", 40... → "Good effort!", default → "Keep practicing!"</p>
+              <p>Inside the VStack, add the score display: a large <IC>Text("\(score) / \(total)")</IC> at system size 64 bold, a gray percentage text, a green message text, and a 40pt Spacer before the button.</p>
+              <Section title="✅ Check your work — show me the complete file so far">
+                <CodeB title="Swift — ResultsScreen.swift (with score + message)" accent={GR}>{`struct ResultsScreen: View {
+    let score: Int
+    let total: Int
+    let onPlayAgain: () -> Void
+
+    var percentage: Int { Int(Double(score) / Double(total) * 100) }
+
+    var message: String {
+        switch percentage {
+        case 100:   return "Perfect score!"
+        case 70...: return "Great job!"
+        case 40...: return "Good effort!"
+        default:    return "Keep practicing!"
+        }
+    }
+
+    var body: some View {
+        ZStack {
+            Color(UIColor.systemGray6).ignoresSafeArea()
+            VStack(spacing: 8) {
+                Text("Quiz Complete!")
+                    .font(.largeTitle).fontWeight(.bold)
+                    .foregroundColor(Color(red:0.33,green:0.29,blue:0.72))
+                Spacer().frame(height: 24)
+                Text("\\(score) / \\(total)")
+                    .font(.system(size: 64, weight: .bold))
+                Text("\\(percentage)% correct")
+                    .foregroundColor(.gray)
+                Text(message).font(.title3)
+                    .foregroundColor(Color(red:0.11,green:0.62,blue:0.46))
+                Spacer().frame(height: 40)
+                // Play Again button goes here
+            }
+            .padding(32)
+        }
+        .navigationBarBackButtonHidden(true)
+    }
+}`}</CodeB>
+              </Section>
+            </>
+          )}
+        </SubStep>
+
+        <SubStep num="3c" title="Add the Play Again button and connect ResultsScreen">
+          {platform === "Android" ? (
+            <>
+              <p>Add a full-width purple <IC>Button</IC> with label "Play Again" that calls <IC>onPlayAgain</IC>. Then go back to <IC>MainActivity.kt</IC> and replace the placeholder <IC>Text</IC> in the <IC>results/{`{finalScore}`}</IC> route with the real <IC>ResultsScreen</IC> call, passing <IC>onPlayAgain = {`{ navController.popBackStack("home", inclusive = false) }`}</IC>.</p>
+              <Tip><IC>popBackStack("home", inclusive = false)</IC> clears everything back to the home destination without pushing a new one. If you used <IC>navigate("home")</IC> instead, you would stack a second home on top of the existing one.</Tip>
+              <Section title="✅ Check your work — show me the complete ResultsScreen.kt">
+                <CodeB title="Kotlin — ResultsScreen.kt (complete)" accent={BL}>{`@Composable
+fun ResultsScreen(score: Int, total: Int, onPlayAgain: () -> Unit) {
+    val percentage = (score.toFloat() / total * 100).toInt()
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color(0xFFF5F5F5))
+            .padding(32.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text("Quiz Complete!", fontSize = 28.sp,
+            fontWeight = FontWeight.Bold, color = Color(0xFF534AB7))
+        Spacer(Modifier.height(24.dp))
+        Text("\$score / \$total", fontSize = 64.sp,
+            fontWeight = FontWeight.Bold)
+        Text("\$percentage% correct", fontSize = 16.sp, color = Color.Gray)
+        Spacer(Modifier.height(12.dp))
+        Text(
+            text = when {
+                percentage == 100 -> "Perfect score!"
+                percentage >= 70  -> "Great job!"
+                percentage >= 40  -> "Good effort!"
+                else              -> "Keep practicing!"
+            },
+            fontSize = 18.sp,
+            color = Color(0xFF1D9E75)
+        )
+        Spacer(Modifier.height(40.dp))
+        Button(
+            onClick = onPlayAgain,
+            modifier = Modifier.fillMaxWidth(),
+            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF534AB7))
+        ) {
+            Text("Play Again", fontSize = 16.sp)
+        }
+    }
+}`}</CodeB>
+              </Section>
+              <Section title="✅ Check your work — show me the complete MainActivity.kt">
+                <CodeB title="Kotlin — MainActivity.kt (complete)" accent={BL}>{`class MainActivity : ComponentActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContent {
+            val navController = rememberNavController()
+            var score by remember { mutableStateOf(0) }
+            NavHost(navController = navController, startDestination = "home") {
+                composable("home") {
+                    score = 0
+                    HomeScreen(onStartClicked = {
+                        navController.navigate("question/0")
+                    })
+                }
+                composable("question/{questionIndex}") { backStackEntry ->
+                    val index = backStackEntry.arguments
+                        ?.getString("questionIndex")?.toInt() ?: 0
+                    QuestionScreen(
+                        questionIndex = index,
+                        onAnswerSelected = { correct ->
+                            if (correct) score++
+                            val nextIndex = index + 1
+                            if (nextIndex < sampleQuestions.size) {
+                                navController.navigate("question/\$nextIndex")
+                            } else {
+                                navController.navigate("results/\$score")
+                            }
+                        }
+                    )
+                }
+                composable("results/{finalScore}") { backStackEntry ->
+                    val finalScore = backStackEntry.arguments
+                        ?.getString("finalScore")?.toInt() ?: 0
+                    ResultsScreen(
+                        score = finalScore,
+                        total = sampleQuestions.size,
+                        onPlayAgain = {
+                            navController.popBackStack("home", inclusive = false)
+                        }
+                    )
+                }
+            }
+        }
+    }
+}`}</CodeB>
+              </Section>
+            </>
+          ) : (
+            <>
+              <p>Add a full-width purple <IC>Button(action: onPlayAgain)</IC> with label "Play Again". Then go back to <IC>ContentView.swift</IC> and replace the placeholder <IC>Text</IC> in the <IC>results</IC> case with a real <IC>ResultsScreen</IC> call, passing <IC>onPlayAgain: {`{ path.removeAll() }`}</IC>.</p>
+              <Tip><IC>path.removeAll()</IC> clears the entire navigation stack, which takes the user back to the root <IC>HomeScreen</IC>. This is the SwiftUI equivalent of Android's <IC>popBackStack("home", inclusive = false)</IC>.</Tip>
+              <Section title="✅ Check your work — show me the complete ResultsScreen.swift">
+                <CodeB title="Swift — ResultsScreen.swift (complete)" accent={GR}>{`struct ResultsScreen: View {
+    let score: Int
+    let total: Int
+    let onPlayAgain: () -> Void
+
+    var percentage: Int { Int(Double(score) / Double(total) * 100) }
+
+    var message: String {
+        switch percentage {
+        case 100:   return "Perfect score!"
+        case 70...: return "Great job!"
+        case 40...: return "Good effort!"
+        default:    return "Keep practicing!"
+        }
+    }
+
+    var body: some View {
+        ZStack {
+            Color(UIColor.systemGray6).ignoresSafeArea()
+            VStack(spacing: 8) {
+                Text("Quiz Complete!")
+                    .font(.largeTitle).fontWeight(.bold)
+                    .foregroundColor(Color(red:0.33,green:0.29,blue:0.72))
+                Spacer().frame(height: 24)
+                Text("\\(score) / \\(total)")
+                    .font(.system(size: 64, weight: .bold))
+                Text("\\(percentage)% correct")
+                    .foregroundColor(.gray)
+                Text(message).font(.title3)
+                    .foregroundColor(Color(red:0.11,green:0.62,blue:0.46))
+                Spacer().frame(height: 40)
+                Button(action: onPlayAgain) {
+                    Text("Play Again")
+                        .font(.headline).foregroundColor(.white)
+                        .frame(maxWidth: .infinity).padding()
+                        .background(Color(red:0.33,green:0.29,blue:0.72))
+                        .cornerRadius(10)
+                }
+            }
+            .padding(32)
+        }
+        .navigationBarBackButtonHidden(true)
+    }
+}`}</CodeB>
+              </Section>
+              <Section title="✅ Check your work — show me the complete ContentView.swift">
+                <CodeB title="Swift — ContentView.swift (complete)" accent={GR}>{`enum AppRoute: Hashable {
     case question(Int)
     case results(Int)
 }
@@ -745,120 +1723,29 @@ struct ContentView: View {
         }
     }
 }`}</CodeB>
-          </>
-        )}
-        <Checkpoint num={2}>Tapping an answer highlights it green or red, then automatically navigates to the next question. After the last question, you land on the results screen.</Checkpoint>
-      </Step>
+              </Section>
+            </>
+          )}
+        </SubStep>
 
+        <Checkpoint num={3}>Complete the full quiz. You land on the results screen with your score and a feedback message. Tap Play Again — you return to the home screen and the score resets.</Checkpoint>
+      </VStep>
 
-      <Step num={3} title="Build the results screen (~8 min)">
-        {platform === "Android" ? (
-          <CodeB title="Kotlin — ResultsScreen" accent={BL}>{`@Composable
-fun ResultsScreen(score: Int, total: Int, onPlayAgain: () -> Unit) {
-    val percentage = (score.toFloat() / total * 100).toInt()
-    Column(
-        modifier = Modifier.fillMaxSize()
-            .background(Color(0xFFF5F5F5)).padding(32.dp),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text("Quiz Complete!", fontSize = 28.sp,
-            fontWeight = FontWeight.Bold,
-            color = Color(0xFF534AB7))
-        Spacer(Modifier.height(24.dp))
-        Text("\$score / \$total", fontSize = 64.sp,
-            fontWeight = FontWeight.Bold)
-        Text("\$percentage% correct", fontSize = 16.sp,
-            color = Color.Gray)
-        Spacer(Modifier.height(12.dp))
-        Text(
-            text = when {
-                percentage == 100 -> "Perfect score!"
-                percentage >= 70  -> "Great job!"
-                percentage >= 40  -> "Good effort!"
-                else              -> "Keep practicing!"
-            },
-            fontSize = 18.sp,
-            color = Color(0xFF1D9E75)
-        )
-        Spacer(Modifier.height(40.dp))
-        Button(
-            onClick = onPlayAgain,
-            modifier = Modifier.fillMaxWidth(),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = Color(0xFF534AB7))
-        ) {
-            Text("Play Again", fontSize = 16.sp)
-        }
-    }
-}`}</CodeB>
-        ) : (
-          <CodeB title="Swift — ResultsScreen" accent={GR}>{`struct ResultsScreen: View {
-    let score: Int
-    let total: Int
-    let onPlayAgain: () -> Void
+      <VStep num={4} title="Ask Claude about data passing (~7 min)">
+        <AiOpp>
+          Paste your navigation setup into Claude and use this prompt: <em>"I built a trivia app with navigation and data passing in [{platform === "Android" ? "Compose" : "SwiftUI"}]. Please translate the navigation and data passing code to [{platform === "Android" ? "SwiftUI" : "Compose"}]. Then explain: what is the difference between how Android and iOS pass data between screens? Is one approach cleaner than the other?"</em>
+        </AiOpp>
+        <Checkbox>Received and read Claude's translation and data passing explanation</Checkbox>
+        <Checkbox>Both platform versions complete the full quiz flow end-to-end</Checkbox>
+      </VStep>
 
-    var percentage: Int { Int(Double(score) / Double(total) * 100) }
-
-    var message: String {
-        switch percentage {
-        case 100:      return "Perfect score!"
-        case 70...:    return "Great job!"
-        case 40...:    return "Good effort!"
-        default:       return "Keep practicing!"
-        }
-    }
-
-    var body: some View {
-        ZStack {
-            Color(UIColor.systemGray6).ignoresSafeArea()
-            VStack(spacing: 8) {
-                Text("Quiz Complete!")
-                    .font(.largeTitle).fontWeight(.bold)
-                    .foregroundColor(
-                        Color(red:0.33,green:0.29,blue:0.72))
-                Spacer().frame(height: 24)
-                Text("\\(score) / \\(total)")
-                    .font(.system(size: 64, weight: .bold))
-                Text("\\(percentage)% correct")
-                    .foregroundColor(.gray)
-                Text(message).font(.title3)
-                    .foregroundColor(
-                        Color(red:0.11,green:0.62,blue:0.46))
-                Spacer().frame(height: 40)
-                Button(action: onPlayAgain) {
-                    Text("Play Again")
-                        .font(.headline).foregroundColor(.white)
-                        .frame(maxWidth: .infinity).padding()
-                        .background(
-                            Color(red:0.33,green:0.29,blue:0.72))
-                        .cornerRadius(10)
-                }
-            }
-            .padding(32)
-        }
-        .navigationBarBackButtonHidden(true)
-    }
-}`}</CodeB>
-        )}
-        <Checkpoint num={3}>Complete the quiz and land on the results screen showing your score. Tap Play Again and return to the home screen.</Checkpoint>
-      </Step>
-
-
-      <Step num={4} title="Ask Claude about data passing (~7 min)">
-        <AiOpp>Paste your navigation setup into Claude and use this prompt: <em>"I built a trivia app with navigation and data passing in [{platform === "Android" ? "Compose" : "SwiftUI"}]. Please translate the navigation and data passing code to [{platform === "Android" ? "SwiftUI" : "Compose"}]. Then explain: what is the difference between how Android and iOS pass data between screens? Is one approach cleaner than the other?"</em></AiOpp>
-      <Checkbox>Received and read Claude's translation and data passing explanation</Checkbox>
-      <Checkbox>Both platform versions complete the full quiz flow end-to-end</Checkbox>
-
-      </Step>
-
-      <Step num={5} title="Reflect (~5 min)">
+      <VStep num={5} title="Reflect (~5 min)" last={true}>
         <CodeB title="Lab 4 Reflection">{`// Lab 4 Reflection (Week 2, Session 2)
 // 1. What is the back stack? Describe it like a stack of cards.
 // 2. When would you use popBackStack vs navigate?
 // 3. What was the hardest part of passing data between screens?`}</CodeB>
         <Checkpoint num="Final">Show a TA the full quiz flow — home, questions with correct/incorrect highlighting, results, and play again. Walk them through your reflection.</Checkpoint>
-      </Step>
+      </VStep>
 
       <Section title="🚀 Stretch Features">
         <ul style={{ paddingLeft: 20, fontSize: 13, lineHeight: 1.8 }}>
