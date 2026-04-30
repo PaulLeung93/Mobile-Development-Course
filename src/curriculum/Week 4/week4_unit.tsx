@@ -67,6 +67,19 @@ const Step = ({ num, title, children }: { num: number | string; title: string; c
   </div>
 );
 
+const VStep = ({ num, title, children, last = false }: { num: number | string; title: string; children: React.ReactNode; last?: boolean }) => (
+  <div style={{ display: "flex", gap: 12 }}>
+    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", flexShrink: 0 }}>
+      <div style={{ width: 26, height: 26, borderRadius: "50%", background: "var(--platform-accent, #534AB7)", color: "#fff", fontSize: 12, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center" }}>{num}</div>
+      {!last && <div style={{ width: 2, flex: 1, minHeight: 20, background: "var(--color-border-tertiary)", margin: "3px 0" }} />}
+    </div>
+    <div style={{ paddingBottom: last ? 8 : 24, flex: 1, minWidth: 0 }}>
+      <h4 style={{ fontSize: 13, fontWeight: 600, margin: "3px 0 8px", color: "var(--color-text-primary)" }}>{title}</h4>
+      <div>{children}</div>
+    </div>
+  </div>
+);
+
 const IC = ({ children }: { children: React.ReactNode }) => (
   <code style={{ background: "var(--color-background-secondary)", border: "0.5px solid var(--color-border-tertiary)", borderRadius: 4, padding: "1px 5px", fontSize: 12 }}>{children}</code>
 );
@@ -155,43 +168,53 @@ function Overview() {
 }
 
 function ApiSetup() {
+  const [platform, setPlatform] = useState("Android");
+  
   return (
-    <div>
+    <div style={{ '--platform-accent': platform === "Android" ? BL : GR } as React.CSSProperties}>
       <h1 style={{ fontSize: 20, fontWeight: 500, margin: "0 0 6px", color: "var(--color-text-primary)" }}>Last.fm API Setup</h1>
       <p style={{ fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 1.7, margin: "0 0 14px" }}>Complete these steps before Session 1. The whole process takes about 5 minutes. You will not be able to follow the lab without an API key.</p>
+      
+      <PlatformToggle platform={platform} setPlatform={setPlatform} />
+      
       <Warn>Do not share your API key publicly — do not commit it to GitHub, post it in Slack, or include it in a README. Treat it like a password.</Warn>
 
-      <h4 style={{ fontSize: 15, fontWeight: 600, color: "var(--color-text-primary)", margin: "0 0 8px" }}>Step 1: Create a Last.fm account</h4>
-      <Checkbox>Go to <a href="https://www.last.fm/join" style={{ color: "var(--color-text-info)" }}>last.fm/join</a> and create a free account. If you already have one, skip to Step 2.</Checkbox>
-      <Checkbox>Verify your email address. Last.fm will send a confirmation email — click the link inside it.</Checkbox>
+      <VStep num={1} title="Create a Last.fm account">
+        <Checkbox>Go to <a href="https://www.last.fm/join" style={{ color: "var(--color-text-info)" }}>last.fm/join</a> and create a free account. If you already have one, skip to Step 2.</Checkbox>
+        <Checkbox>Verify your email address. Last.fm will send a confirmation email — click the link inside it.</Checkbox>
+      </VStep>
 
-      <h4 style={{ fontSize: 15, fontWeight: 600, color: "var(--color-text-primary)", margin: "0 0 8px" }}>Step 2: Get your API key</h4>
-      <Checkbox>Go to <a href="https://www.last.fm/api/account/create" style={{ color: "var(--color-text-info)" }}>last.fm/api/account/create</a>. You must be logged in.</Checkbox>
-      <Checkbox>Fill in the form:
-        <ul style={{ fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 2, paddingLeft: 20, marginTop: 6 }}>
-          <li><strong>Application name:</strong> AlbumBrowser (or anything you like)</li>
-          <li><strong>Application description:</strong> CodePath mobile development course project</li>
-          <li><strong>Application homepage:</strong> leave blank</li>
-          <li><strong>Callback URL:</strong> leave blank</li>
-        </ul>
-      </Checkbox>
-      <Checkbox>Click Submit. You will see your <strong>API key</strong> and <strong>Shared secret</strong> on the next page. Copy the API key — you only need this one, not the shared secret.</Checkbox>
-      <Tip>Save your API key somewhere safe — a notes app or password manager. If you lose it you can always return to last.fm/api/accounts to view it again.</Tip>
+      <VStep num={2} title="Get your API key">
+        <Checkbox>Go to <a href="https://www.last.fm/api/account/create" style={{ color: "var(--color-text-info)" }}>last.fm/api/account/create</a>. You must be logged in.</Checkbox>
+        <Checkbox>Fill in the form:
+          <ul style={{ fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 2, paddingLeft: 20, marginTop: 6 }}>
+            <li><strong>Application name:</strong> AlbumBrowser (or anything you like)</li>
+            <li><strong>Application description:</strong> CodePath mobile development course project</li>
+            <li><strong>Application homepage:</strong> leave blank</li>
+            <li><strong>Callback URL:</strong> leave blank</li>
+          </ul>
+        </Checkbox>
+        <Checkbox>Click Submit. You will see your <strong>API key</strong> and <strong>Shared secret</strong> on the next page. Copy the API key — you only need this one, not the shared secret.</Checkbox>
+        <Tip>Save your API key somewhere safe — a notes app or password manager. If you lose it you can always return to last.fm/api/accounts to view it again.</Tip>
+      </VStep>
 
-      <h4 style={{ fontSize: 15, fontWeight: 600, color: "var(--color-text-primary)", margin: "0 0 8px" }}>Step 3: Test your key</h4>
-      <p style={{ fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 1.7, margin: "0 0 14px" }}>Paste this URL into your browser, replacing <IC>YOUR_API_KEY</IC> with your actual key:</p>
-      <CodeB>{"https://ws.audioscrobbler.com/2.0/?method=chart.gettoptracks&api_key=YOUR_API_KEY&format=json&limit=10"}</CodeB>
-      <p style={{ fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 1.7, margin: "0 0 14px" }}>You should see a JSON response with a list of top tracks. If you see an error message, double-check that you pasted the key correctly.</p>
-      <Checkpoint num="?">Checkpoint: you can see a JSON response in your browser. You are ready for lab.</Checkpoint>
+      <VStep num={3} title="Test your key">
+        <p style={{ fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 1.7, margin: "0 0 14px" }}>Paste this URL into your browser, replacing <IC>YOUR_API_KEY</IC> with your actual key:</p>
+        <CodeB>{"https://ws.audioscrobbler.com/2.0/?method=chart.gettoptracks&api_key=YOUR_API_KEY&format=json&limit=10"}</CodeB>
+        <p style={{ fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 1.7, margin: "0 0 14px" }}>You should see a JSON response with a list of top tracks. If you see an error message, double-check that you pasted the key correctly.</p>
+        <Checkpoint num="?">Checkpoint: you can see a JSON response in your browser. You are ready for lab.</Checkpoint>
+      </VStep>
 
-      <h4 style={{ fontSize: 15, fontWeight: 600, color: "var(--color-text-primary)", margin: "0 0 8px" }}>Step 4: Store your key safely in your project</h4>
-      <p style={{ fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 1.7, margin: "0 0 14px" }}>Never hardcode an API key directly in your source code — it will end up on GitHub. Use a local config file that is excluded from version control instead.</p>
+      <VStep num={4} title="Store your key safely in your project" last>
+        <p style={{ fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 1.7, margin: "0 0 14px" }}>Never hardcode an API key directly in your source code — it will end up on GitHub. Use a local config file that is excluded from version control instead.</p>
 
-      <h4 style={{ fontSize: 15, fontWeight: 600, color: "var(--color-text-primary)", margin: "0 0 8px" }}>Android — local.properties</h4>
-      <p style={{ fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 1.7, margin: "0 0 14px" }}>Open or create <IC>local.properties</IC> in your project root (this file is already in <IC>.gitignore</IC> by default):</p>
-      <CodeB>{"LASTFM_API_KEY=your_actual_key_here"}</CodeB>
-      <p style={{ fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 1.7, margin: "0 0 14px" }}>Then read it in your <IC>build.gradle.kts</IC>:</p>
-      <CodeB>{`import java.util.Properties
+        {platform === "Android" && (
+          <VStep num="a" title="Add to local.properties" last>
+            <p style={{ fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 1.7, margin: "0 0 14px" }}>Open or create <IC>local.properties</IC> in your project root (this file is already in <IC>.gitignore</IC> by default) and add your key:</p>
+            <CodeB title="local.properties" accent={BL}>{"LASTFM_API_KEY=your_actual_key_here"}</CodeB>
+            <p style={{ fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 1.7, margin: "0 0 14px" }}>Then read it in your app-level <IC>build.gradle.kts</IC> inside the <IC>android</IC> block. This will generate a <IC>BuildConfig</IC> class.</p>
+            <Section title="💡 Show me how to configure build.gradle.kts">
+              <CodeB title="app/build.gradle.kts" accent={BL}>{`import java.util.Properties
 
 val localProperties = Properties()
 localProperties.load(rootProject.file("local.properties").inputStream())
@@ -206,16 +229,23 @@ android {
     }
     buildFeatures { buildConfig = true }
 }`}</CodeB>
-      <p style={{ fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 1.7, margin: "0 0 14px" }}>Access it in code with <IC>BuildConfig.LASTFM_API_KEY</IC>.</p>
+            </Section>
+            <p style={{ fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 1.7, margin: "0 0 14px" }}>You can now access it anywhere in your code with <IC>BuildConfig.LASTFM_API_KEY</IC>.</p>
+          </VStep>
+        )}
 
-      <h4 style={{ fontSize: 15, fontWeight: 600, color: "var(--color-text-primary)", margin: "0 0 8px" }}>iOS — Config.xcconfig</h4>
-      <p style={{ fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 1.7, margin: "0 0 14px" }}>Create a new file called <IC>Config.xcconfig</IC> in your project root. Add it to <IC>.gitignore</IC>.</p>
-      <CodeB>{"LASTFM_API_KEY = your_actual_key_here"}</CodeB>
-      <p style={{ fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 1.7, margin: "0 0 14px" }}>In your <IC>Info.plist</IC>, add a new row:</p>
-      <CodeB>{"LASTFM_API_KEY = $(LASTFM_API_KEY)"}</CodeB>
-      <p style={{ fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 1.7, margin: "0 0 14px" }}>Access it in code:</p>
-      <CodeB>{`let apiKey = Bundle.main.infoDictionary?["LASTFM_API_KEY"] as? String ?? ""`}</CodeB>
-      <Note>For this course it is acceptable to store the key in a constant at the top of your networking file, as long as you add that file to .gitignore. The xcconfig approach is best practice for real projects.</Note>
+        {platform === "iOS" && (
+          <VStep num="a" title="Create a Config.xcconfig file" last>
+            <p style={{ fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 1.7, margin: "0 0 14px" }}>Create a new file called <IC>Config.xcconfig</IC> in your project root. Add it to your <IC>.gitignore</IC> file immediately. Put your key inside:</p>
+            <CodeB title="Config.xcconfig" accent={GR}>{"LASTFM_API_KEY = your_actual_key_here"}</CodeB>
+            <p style={{ fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 1.7, margin: "0 0 14px" }}>Next, open your project's <IC>Info.plist</IC> and add a new row to map the value from your config file into the app's info dictionary:</p>
+            <CodeB title="Info.plist" accent={GR}>{"LASTFM_API_KEY = $(LASTFM_API_KEY)"}</CodeB>
+            <p style={{ fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 1.7, margin: "0 0 14px" }}>You can now access it in your Swift code like this:</p>
+            <CodeB title="Swift" accent={GR}>{`let apiKey = Bundle.main.infoDictionary?["LASTFM_API_KEY"] as? String ?? ""`}</CodeB>
+            <Note>For this course it is acceptable to store the key in a constant at the top of your networking file, as long as you add that file to .gitignore. The xcconfig approach is best practice for real projects.</Note>
+          </VStep>
+        )}
+      </VStep>
 
       <h2 style={{ fontSize: 18, fontWeight: 600, margin: "24px 0 8px" }}>Last.fm API endpoints you will use</h2>
       <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: 6, margin: "8px 0" }}>
@@ -256,13 +286,15 @@ function Session1Lab({ platform }: { platform: string }) {
 
       <h2 style={{ fontSize: 18, fontWeight: 600, margin: "24px 0 8px" }}>Lab instructions</h2>
 
-      <h4 style={{ fontSize: 15, fontWeight: 600, color: "var(--color-text-primary)", margin: "0 0 8px" }}>Step 0: Open your AlbumBrowser from Week 3 (~2 min)</h4>
-      <p style={{ fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 1.7, margin: "0 0 14px" }}>Your existing list screen, search, and detail screen all stay. You are only changing where the data comes from.</p>
-      <Tip>Make a copy of your Week 3 project before starting — call it AlbumBrowserV2. That way you have a working fallback if something goes wrong.</Tip>
+      <VStep num={0} title="Open your AlbumBrowser from Week 3 (~2 min)">
+        <p style={{ fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 1.7, margin: "0 0 14px" }}>Your existing list screen, search, and detail screen all stay. You are only changing where the data comes from.</p>
+        <Tip>Make a copy of your Week 3 project before starting — call it AlbumBrowserV2. That way you have a working fallback if something goes wrong.</Tip>
+      </VStep>
 
-      <h4 style={{ fontSize: 15, fontWeight: 600, color: "var(--color-text-primary)", margin: "0 0 8px" }}>Step 1: Add dependencies (~5 min)</h4>
-      <p style={{ fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 1.7, margin: "0 0 14px" }}>For Android — add to <IC>build.gradle.kts (app)</IC>:</p>
-      <CodeB>{`dependencies {
+      <VStep num={1} title="Add dependencies (~5 min)">
+        {platform === "Android" && <>
+          <p style={{ fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 1.7, margin: "0 0 14px" }}>For Android — add to <IC>build.gradle.kts (app)</IC>:</p>
+          <CodeB>{`dependencies {
     // Retrofit — HTTP client
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     // Gson converter — parses JSON into data classes
@@ -270,16 +302,18 @@ function Session1Lab({ platform }: { platform: string }) {
     // Coil — image loading (used in Session 2)
     implementation("io.coil-kt:coil-compose:2.4.0")
 }`}</CodeB>
-      <p style={{ fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 1.7, margin: "0 0 14px" }}>Also add internet permission to <IC>AndroidManifest.xml</IC>:</p>
-      <CodeB>{"<uses-permission android:name=\"android.permission.INTERNET\" />"}</CodeB>
-      <p style={{ fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 1.7, margin: "0 0 14px" }}>For iOS — no extra dependencies needed. URLSession and AsyncImage are built into the SDK.</p>
-      <Checkpoint num="1">Project syncs without errors after adding dependencies.</Checkpoint>
+          <p style={{ fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 1.7, margin: "0 0 14px" }}>Also add internet permission to <IC>AndroidManifest.xml</IC>:</p>
+          <CodeB>{"<uses-permission android:name=\"android.permission.INTERNET\" />"}</CodeB>
+        </>}
+        {platform === "iOS" && <p style={{ fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 1.7, margin: "0 0 14px" }}>For iOS — no extra dependencies needed. URLSession and AsyncImage are built into the SDK.</p>}
+        <Checkpoint num="1">Project syncs without errors after adding dependencies.</Checkpoint>
+      </VStep>
 
-      <h4 style={{ fontSize: 15, fontWeight: 600, color: "var(--color-text-primary)", margin: "0 0 8px" }}>Step 2: Understand the Last.fm JSON response (~5 min)</h4>
-      <p style={{ fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 1.7, margin: "0 0 14px" }}>Before writing any code, paste this URL into your browser and read the response:</p>
-      <CodeB>{"https://ws.audioscrobbler.com/2.0/?method=chart.gettopartists&api_key=YOUR_KEY&format=json&limit=10"}</CodeB>
-      <p style={{ fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 1.7, margin: "0 0 14px" }}>The JSON structure looks like this:</p>
-      <CodeB>{`{
+      <VStep num={2} title="Understand the Last.fm JSON response (~5 min)">
+        <p style={{ fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 1.7, margin: "0 0 14px" }}>Before writing any code, paste this URL into your browser and read the response:</p>
+        <CodeB>{"https://ws.audioscrobbler.com/2.0/?method=chart.gettopartists&api_key=YOUR_KEY&format=json&limit=10"}</CodeB>
+        <p style={{ fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 1.7, margin: "0 0 14px" }}>The JSON structure looks like this:</p>
+        <CodeB>{`{
   "artists": {
     "artist": [
       {
@@ -297,12 +331,93 @@ function Session1Lab({ platform }: { platform: string }) {
     ]
   }
 }`}</CodeB>
-      <Tip>Reading the raw JSON before writing any models is a good habit. It tells you exactly what field names to use and which fields are nested inside which objects.</Tip>
+        <Tip>Reading the raw JSON before writing any models is a good habit. It tells you exactly what field names to use and which fields are nested inside which objects.</Tip>
+      </VStep>
 
-      <h4 style={{ fontSize: 15, fontWeight: 600, color: "var(--color-text-primary)", margin: "0 0 8px" }}>Step 3: Define the response data model (~8 min)</h4>
-      <p style={{ fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 1.7, margin: "0 0 14px" }}>Create data classes/structs that match the JSON structure exactly. Field names must match the JSON keys.</p>
-      <p style={{ fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 1.7, margin: "0 0 14px" }}>For Android — create <IC>LastFmModels.kt</IC>:</p>
-      <CodeB>{`import com.google.gson.annotations.SerializedName
+      <VStep num={3} title="Define the response data model (~8 min)">
+        <p style={{ fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 1.7, margin: "0 0 14px" }}>Create data classes/structs that match the JSON structure exactly. Field names must match the JSON keys.</p>
+
+        <VStep num="a" title="Define the ArtistImage model">
+          <p style={{ fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 1.7, margin: "0 0 14px" }}>Create a file named <IC>LastFmModels</IC> and define the <IC>ArtistImage</IC> model to represent the items in the "image" array. Notice that Last.fm uses "#text" as the key for the image URL.</p>
+          <Section title="💡 Show me the syntax for special JSON keys">
+            {platform === "Android" && <p style={{ fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 1.7, margin: "0 0 14px" }}>For Android (Gson): Use <IC>@SerializedName("#text")</IC> above the property.</p>}
+            {platform === "iOS" && <p style={{ fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 1.7, margin: "0 0 14px" }}>For iOS (Swift): Use an enum <IC>CodingKeys: String, CodingKey</IC> inside the struct to map property names to JSON keys.</p>}
+          </Section>
+          <Section title="✅ Check your work — show me the complete file so far">
+            {platform === "Android" && <CodeB title="Kotlin — LastFmModels.kt" accent={BL}>{`import com.google.gson.annotations.SerializedName
+
+data class ArtistImage(
+    @SerializedName("#text") val url: String,
+    val size: String
+)`}</CodeB>}
+            {platform === "iOS" && <CodeB title="Swift — LastFmModels.swift" accent={GR}>{`struct ArtistImage: Codable {
+    let text: String
+    let size: String
+
+    // Map "#text" JSON key to "text" Swift property
+    enum CodingKeys: String, CodingKey {
+        case text = "#text"
+        case size
+    }
+}`}</CodeB>}
+          </Section>
+        </VStep>
+
+        <VStep num="b" title="Define the Artist model">
+          <p style={{ fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 1.7, margin: "0 0 14px" }}>Above <IC>ArtistImage</IC>, define the <IC>Artist</IC> model containing strings for <IC>name</IC>, <IC>playcount</IC>, <IC>listeners</IC>, <IC>url</IC>, and a list/array of <IC>ArtistImage</IC>. Also include a helper property/function to grab the "extralarge" image URL or fallback to the last one.</p>
+          <Section title="✅ Check your work — show me the complete file so far">
+            {platform === "Android" && <CodeB title="Kotlin — LastFmModels.kt" accent={BL}>{`import com.google.gson.annotations.SerializedName
+
+data class Artist(
+    val name: String,
+    val playcount: String,
+    val listeners: String,
+    val url: String,
+    val image: List<ArtistImage>
+)
+
+data class ArtistImage(
+    @SerializedName("#text") val url: String,
+    val size: String
+)
+
+// Helper to get the large image URL
+fun Artist.getLargeImageUrl(): String =
+    image.find { it.size == "extralarge" }?.url
+        ?: image.lastOrNull()?.url
+        ?: ""`}</CodeB>}
+            {platform === "iOS" && <CodeB title="Swift — LastFmModels.swift" accent={GR}>{`struct Artist: Codable, Identifiable {
+    var id: String { name }   // use name as unique ID
+    let name: String
+    let playcount: String
+    let listeners: String
+    let url: String
+    let image: [ArtistImage]
+
+    var largeImageUrl: String {
+        image.first { $0.size == "extralarge" }?.text
+            ?? image.last?.text
+            ?? ""
+    }
+}
+
+struct ArtistImage: Codable {
+    let text: String
+    let size: String
+
+    // Map "#text" JSON key to "text" Swift property
+    enum CodingKeys: String, CodingKey {
+        case text = "#text"
+        case size
+    }
+}`}</CodeB>}
+          </Section>
+        </VStep>
+
+        <VStep num="c" title="Define the wrapper response models" last>
+          <p style={{ fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 1.7, margin: "0 0 14px" }}>Looking at the JSON, the artists list is nested inside <IC>"artist"</IC> which is nested inside <IC>"artists"</IC>. Create two wrapper models: <IC>ArtistsWrapper</IC> holding the list of <IC>Artist</IC>, and <IC>TopArtistsResponse</IC> holding the <IC>ArtistsWrapper</IC>.</p>
+          <Section title="✅ Check your work — show me the complete LastFmModels">
+            {platform === "Android" && <CodeB title="Kotlin — LastFmModels.kt" accent={BL}>{`import com.google.gson.annotations.SerializedName
 
 data class TopArtistsResponse(
     val artists: ArtistsWrapper
@@ -329,9 +444,8 @@ data class ArtistImage(
 fun Artist.getLargeImageUrl(): String =
     image.find { it.size == "extralarge" }?.url
         ?: image.lastOrNull()?.url
-        ?: ""`}</CodeB>
-      <p style={{ fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 1.7, margin: "0 0 14px" }}>For iOS — create <IC>LastFmModels.swift</IC>:</p>
-      <CodeB>{`struct TopArtistsResponse: Codable {
+        ?: ""`}</CodeB>}
+            {platform === "iOS" && <CodeB title="Swift — LastFmModels.swift" accent={GR}>{`struct TopArtistsResponse: Codable {
     let artists: ArtistsWrapper
 }
 
@@ -363,13 +477,50 @@ struct ArtistImage: Codable {
         case text = "#text"
         case size
     }
-}`}</CodeB>
-      <Checkpoint num="2">Models compile without errors. The field names exactly match the Last.fm JSON keys.</Checkpoint>
-      <Tip><b>Why does the image field use a hash in the JSON?</b> {"Last.fm uses \"#text\" as the key for image URLs — it is an unusual naming choice. In Kotlin, @SerializedName(\"#text\") maps it to a regular property name. In Swift, CodingKeys does the same thing."}</Tip>
+}`}</CodeB>}
+          </Section>
+        </VStep>
+        
+        <Checkpoint num="2">Models compile without errors. The field names exactly match the Last.fm JSON keys.</Checkpoint>
+        {platform === "Android" && <Tip><b>Why does the image field use a hash in the JSON?</b> {"Last.fm uses \"#text\" as the key for image URLs — it is an unusual naming choice. In Kotlin, @SerializedName(\"#text\") maps it to a regular property name."}</Tip>}
+        {platform === "iOS" && <Tip><b>Why does the image field use a hash in the JSON?</b> {"Last.fm uses \"#text\" as the key for image URLs — it is an unusual naming choice. In Swift, CodingKeys does the same thing."}</Tip>}
+      </VStep>
 
-      <h4 style={{ fontSize: 15, fontWeight: 600, color: "var(--color-text-primary)", margin: "0 0 8px" }}>Step 4: Create the API service (~8 min)</h4>
-      <p style={{ fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 1.7, margin: "0 0 14px" }}>For Android — create <IC>LastFmApiService.kt</IC>:</p>
-      <CodeB>{`import retrofit2.Retrofit
+      <VStep num={4} title="Create the API service (~8 min)">
+        <p style={{ fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 1.7, margin: "0 0 14px" }}>Now that we have the models, let's create the networking layer to actually call the API.</p>
+
+        <VStep num="a" title="Define the API base URL and Key">
+          <p style={{ fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 1.7, margin: "0 0 14px" }}>Create a new file called <IC>LastFmApiService</IC>. Define constants for the <IC>BASE_URL</IC> (<IC>"https://ws.audioscrobbler.com/2.0/"</IC>) and your <IC>API_KEY</IC> (loaded safely from your configuration).</p>
+          <Section title="✅ Check your work — show me the complete file so far">
+            {platform === "Android" && <CodeB title="Kotlin — LastFmApiService.kt" accent={BL}>{`const val BASE_URL = "https://ws.audioscrobbler.com/2.0/"
+const val API_KEY = BuildConfig.LASTFM_API_KEY`}</CodeB>}
+            {platform === "iOS" && <CodeB title="Swift — LastFmApiService.swift" accent={GR}>{`import Foundation
+
+struct LastFmApiService {
+    static let baseURL = "https://ws.audioscrobbler.com/2.0/"
+    static let apiKey = Bundle.main.infoDictionary?["LASTFM_API_KEY"] as? String ?? ""
+}`}</CodeB>}
+          </Section>
+        </VStep>
+
+        <VStep num="b" title="Add the fetch method" last>
+          <p style={{ fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 1.7, margin: "0 0 14px" }}>Create the method to fetch the top artists. It must be asynchronous (use <IC>suspend</IC> in Kotlin or <IC>async throws</IC> in Swift).</p>
+          {platform === "Android" && <p style={{ fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 1.7, margin: "0 0 14px" }}><strong>Android:</strong> Define a Retrofit interface with a <IC>@GET(".")</IC> function, passing query parameters like "method" and "api_key". Then create a Singleton object to build the Retrofit instance.</p>}
+          {platform === "iOS" && <p style={{ fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 1.7, margin: "0 0 14px" }}><strong>iOS:</strong> Use <IC>URLComponents</IC> to append the query items, then call <IC>URLSession.shared.data</IC> and decode the JSON response.</p>}
+          
+          <Section title="💡 Show me the syntax for Retrofit / URLSession">
+             {platform === "Android" && <CodeB title="Kotlin (Retrofit)" accent={BL}>{`interface MyApiService {
+    @GET(".")
+    suspend fun getItems(@Query("param") param: String): ResponseModel
+}`}</CodeB>}
+             {platform === "iOS" && <CodeB title="Swift (URLSession)" accent={GR}>{`static func getItems() async throws -> [Item] {
+    let (data, _) = try await URLSession.shared.data(from: url)
+    return try JSONDecoder().decode(ResponseModel.self, from: data).items
+}`}</CodeB>}
+          </Section>
+
+          <Section title="✅ Check your work — show me the complete LastFmApiService">
+            {platform === "Android" && <CodeB title="Kotlin — LastFmApiService.kt" accent={BL}>{`import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
 import retrofit2.http.Query
@@ -396,9 +547,8 @@ object LastFmApi {
             .build()
             .create(LastFmApiService::class.java)
     }
-}`}</CodeB>
-      <p style={{ fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 1.7, margin: "0 0 14px" }}>For iOS — create <IC>LastFmApiService.swift</IC>:</p>
-      <CodeB>{`import Foundation
+}`}</CodeB>}
+            {platform === "iOS" && <CodeB title="Swift — LastFmApiService.swift" accent={GR}>{`import Foundation
 
 struct LastFmApiService {
     static let baseURL = "https://ws.audioscrobbler.com/2.0/"
@@ -416,14 +566,81 @@ struct LastFmApiService {
         let response = try JSONDecoder().decode(TopArtistsResponse.self, from: data)
         return response.artists.artist
     }
-}`}</CodeB>
-      <Tip><b>What does suspend mean in Kotlin?</b> {"A suspend function can pause and resume without blocking the thread. When getTopArtists() makes a network call, it suspends — the thread is freed to do other work. When the response arrives, it resumes. This is how Kotlin handles async work without freezing the UI."}</Tip>
-      <Tip><b>What does async throws mean in Swift?</b> {"async means the function runs asynchronously — it can pause while waiting for the network without blocking the main thread. throws means it can fail and throw an error, which you handle with do/try/catch."}</Tip>
+}`}</CodeB>}
+          </Section>
+        </VStep>
+        {platform === "Android" && <Tip><b>What does suspend mean in Kotlin?</b> {"A suspend function can pause and resume without blocking the thread. When getTopArtists() makes a network call, it suspends — the thread is freed to do other work. When the response arrives, it resumes. This is how Kotlin handles async work without freezing the UI."}</Tip>}
+        {platform === "iOS" && <Tip><b>What does async throws mean in Swift?</b> {"async means the function runs asynchronously — it can pause while waiting for the network without blocking the main thread. throws means it can fail and throw an error, which you handle with do/try/catch."}</Tip>}
+      </VStep>
 
-      <h4 style={{ fontSize: 15, fontWeight: 600, color: "var(--color-text-primary)", margin: "0 0 8px" }}>Step 5: Call the API from your screen (~10 min)</h4>
-      <p style={{ fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 1.7, margin: "0 0 14px" }}>Update your list screen to fetch artists from the API instead of using sampleAlbums.</p>
-      <p style={{ fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 1.7, margin: "0 0 14px" }}>For Android — update <IC>AlbumListScreen</IC>:</p>
-      <CodeB>{`@Composable
+      <VStep num={5} title="Call the API from your screen (~10 min)">
+        <p style={{ fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 1.7, margin: "0 0 14px" }}>Update your list screen to fetch artists from the API instead of using sampleAlbums.</p>
+        
+        <VStep num="a" title="Replace sample data with state and fetch logic">
+          <p style={{ fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 1.7, margin: "0 0 14px" }}>In <IC>ArtistListScreen</IC>, change the <IC>artists</IC> variable to be an empty state array. Then, use <IC>LaunchedEffect(Unit)</IC> (Android) or <IC>.task</IC> (iOS) to call the API service and update the state when the screen appears.</p>
+          <Section title="💡 Show me the syntax for fetching data">
+            {platform === "Android" && <CodeB title="Kotlin" accent={BL}>{`var artists by remember { mutableStateOf<List<Artist>>(emptyList()) }
+
+LaunchedEffect(Unit) {
+    artists = LastFmApi.service.getTopArtists().artists.artist
+}`}</CodeB>}
+            {platform === "iOS" && <CodeB title="Swift" accent={GR}>{`@State private var artists: [Artist] = []
+
+// Attach to the main View
+.task {
+    do {
+        artists = try await LastFmApiService.getTopArtists()
+    } catch {
+        print("Failed: " + error.localizedDescription)
+    }
+}`}</CodeB>}
+          </Section>
+          <Section title="✅ Check your work — show me the complete file so far">
+            {platform === "Android" && <CodeB title="Kotlin — ArtistListScreen.kt (fetch logic)" accent={BL}>{`@Composable
+fun ArtistListScreen(onArtistClicked: (Artist) -> Unit = {}) {
+    var artists by remember { mutableStateOf<List<Artist>>(emptyList()) }
+    var query by remember { mutableStateOf("") }
+
+    // LaunchedEffect — runs once when the screen first appears
+    LaunchedEffect(Unit) {
+        artists = LastFmApi.service.getTopArtists().artists.artist
+    }
+
+    val filtered = artists.filter {
+        it.name.contains(query, ignoreCase = true)
+    }
+
+    // UI goes here
+}`}</CodeB>}
+            {platform === "iOS" && <CodeB title="Swift — ArtistListScreen.swift (fetch logic)" accent={GR}>{`struct ArtistListScreen: View {
+    @State private var artists: [Artist] = []
+    @State private var query = ""
+
+    var filtered: [Artist] {
+        if query.isEmpty { return artists }
+        return artists.filter {
+            $0.name.localizedCaseInsensitiveContains(query)
+        }
+    }
+
+    var body: some View {
+        // UI goes here
+        .task {
+            do {
+                artists = try await LastFmApiService.getTopArtists()
+            } catch {
+                print("Failed to fetch artists: " + error.localizedDescription)
+            }
+        }
+    }
+}`}</CodeB>}
+          </Section>
+        </VStep>
+
+        <VStep num="b" title="Ensure the UI uses the fetched data" last>
+          <p style={{ fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 1.7, margin: "0 0 14px" }}>Verify that your <IC>LazyColumn</IC> or <IC>List</IC> is using the <IC>filtered</IC> list variable that derives from the state. Since the state updates after the network call completes, the UI will automatically re-render with the fetched artists.</p>
+          <Section title="✅ Check your work — show me the complete ArtistListScreen">
+            {platform === "Android" && <CodeB title="Kotlin — ArtistListScreen.kt" accent={BL}>{`@Composable
 fun ArtistListScreen(onArtistClicked: (Artist) -> Unit = {}) {
     var artists by remember { mutableStateOf<List<Artist>>(emptyList()) }
     var query by remember { mutableStateOf("") }
@@ -456,9 +673,8 @@ fun ArtistListScreen(onArtistClicked: (Artist) -> Unit = {}) {
             }
         }
     }
-}`}</CodeB>
-      <p style={{ fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 1.7, margin: "0 0 14px" }}>For iOS — update <IC>ArtistListScreen</IC>:</p>
-      <CodeB>{`struct ArtistListScreen: View {
+}`}</CodeB>}
+            {platform === "iOS" && <CodeB title="Swift — ArtistListScreen.swift" accent={GR}>{`struct ArtistListScreen: View {
     @State private var artists: [Artist] = []
     @State private var query = ""
 
@@ -506,24 +722,31 @@ fun ArtistListScreen(onArtistClicked: (Artist) -> Unit = {}) {
             }
         }
     }
-}`}</CodeB>
-      <Checkpoint num="3">Run your app. After a brief pause, real artist names from Last.fm should appear in your list. Search still works. If the list is empty, check your API key and internet connection.</Checkpoint>
-      <Tip><b>My list is empty but there are no errors</b> {"Check that INTERNET permission is added to AndroidManifest.xml (Android). On iOS, make sure your Info.plist has the LASTFM_API_KEY entry. Also try pasting the URL into your browser to confirm your key is valid."}</Tip>
-      <Tip><b>I am getting a NetworkOnMainThreadException on Android</b> {"You must make network calls from a coroutine, not from the main thread directly. Make sure your call is inside a LaunchedEffect or a ViewModel with viewModelScope."}</Tip>
+}`}</CodeB>}
+          </Section>
+        </VStep>
+        
+        <Checkpoint num="3">Run your app. After a brief pause, real artist names from Last.fm should appear in your list. Search still works. If the list is empty, check your API key and internet connection.</Checkpoint>
+        {platform === "Android" && <Tip><b>My list is empty but there are no errors</b> {"Check that INTERNET permission is added to AndroidManifest.xml. Also try pasting the URL into your browser to confirm your key is valid."}</Tip>}
+        {platform === "iOS" && <Tip><b>My list is empty but there are no errors</b> {"Make sure your Info.plist has the LASTFM_API_KEY entry. Also try pasting the URL into your browser to confirm your key is valid."}</Tip>}
+        {platform === "Android" && <Tip><b>I am getting a NetworkOnMainThreadException</b> {"You must make network calls from a coroutine, not from the main thread directly. Make sure your call is inside a LaunchedEffect or a ViewModel with viewModelScope."}</Tip>}
+      </VStep>
 
-      <h4 style={{ fontSize: 15, fontWeight: 600, color: "var(--color-text-primary)", margin: "0 0 8px" }}>Step 6: Ask Claude to explain the async patterns (~5 min)</h4>
-      <AiOpp>Ask Claude: "I just made my first network call in [Compose / SwiftUI]. Can you explain in plain English: what is a coroutine in Kotlin and what is async/await in Swift? How are they similar and how do they differ? Why do we need them for network calls?"</AiOpp>
-      <Checkbox>Real artist data is showing in your list from the Last.fm API</Checkbox>
-      <Checkbox>Search still filters the live data correctly</Checkbox>
+      <VStep num={6} title="Ask Claude to explain the async patterns (~5 min)">
+        <AiOpp>Ask Claude: "I just made my first network call in [Compose / SwiftUI]. Can you explain in plain English: what is a coroutine in Kotlin and what is async/await in Swift? How are they similar and how do they differ? Why do we need them for network calls?"</AiOpp>
+        <Checkbox>Real artist data is showing in your list from the Last.fm API</Checkbox>
+        <Checkbox>Search still filters the live data correctly</Checkbox>
+      </VStep>
 
-      <h4 style={{ fontSize: 15, fontWeight: 600, color: "var(--color-text-primary)", margin: "0 0 8px" }}>Step 7: Reflect (~5 min)</h4>
-      <CodeB>{`// Lab 7 Reflection (Week 4, Session 1)
+      <VStep num={7} title="Reflect (~5 min)" last>
+        <CodeB>{`// Lab 7 Reflection (Week 4, Session 1)
 // 1. In your own words: what is a network request?
 //    Describe it like you're explaining to a non-developer.
 // 2. What did LaunchedEffect / .task replace in your code?
 //    What was happening before that it now handles?
 // 3. What surprised you about the Last.fm JSON structure?`}</CodeB>
-      <Checkpoint num="?">Final checkpoint: Show a TA your app displaying live Last.fm data. Walk them through your reflection.</Checkpoint>
+        <Checkpoint num="?">Final checkpoint: Show a TA your app displaying live Last.fm data. Walk them through your reflection.</Checkpoint>
+      </VStep>
 
       <h2 style={{ fontSize: 18, fontWeight: 600, margin: "24px 0 8px" }}>Stretch features</h2>
       <Checkbox>Switch the endpoint to chart.getTopTracks and display top tracks instead of artists</Checkbox>
@@ -550,40 +773,238 @@ function Session2Lab({ platform }: { platform: string }) {
 
       <h2 style={{ fontSize: 18, fontWeight: 600, margin: "24px 0 8px" }}>Lab instructions</h2>
 
-      <h4 style={{ fontSize: 15, fontWeight: 600, color: "var(--color-text-primary)", margin: "0 0 8px" }}>Step 0: The three states of a networked screen (~5 min)</h4>
-      <p style={{ fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 1.7, margin: "0 0 14px" }}>Every screen that loads data from a network has exactly three possible states. Right now your screen only handles one of them.</p>
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8, margin: "10px 0" }}>
-        {[
-          { state: "Loading", desc: "The request is in flight. Show a spinner. Do not show stale or empty content.", color: "#E6F1FB", text: "#0C447C" },
-          { state: "Success", desc: "Data arrived. Show the list. This is what your app does now — but only after a blank screen flash.", color: "#E1F5EE", text: "#085041" },
-          { state: "Error", desc: "Something went wrong — no internet, server down, bad API key. Show a message and a retry button.", color: "#FCEBEB", text: "#791F1F" },
-        ].map(s => (
-          <div key={s.state} style={{ background: s.color, borderRadius: 8, padding: "12px 14px" }}>
-            <p style={{ fontSize: 13, fontWeight: 600, color: s.text, margin: "0 0 4px" }}>{s.state}</p>
-            <p style={{ fontSize: 12, color: s.text, margin: 0, lineHeight: 1.4, opacity: 0.85 }}>{s.desc}</p>
-          </div>
-        ))}
-      </div>
+      <VStep num={0} title="The three states of a networked screen (~5 min)">
+        <p style={{ fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 1.7, margin: "0 0 14px" }}>Every screen that loads data from a network has exactly three possible states. Right now your screen only handles one of them.</p>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8, margin: "10px 0" }}>
+          {[
+            { state: "Loading", desc: "The request is in flight. Show a spinner. Do not show stale or empty content.", color: "#E6F1FB", text: "#0C447C" },
+            { state: "Success", desc: "Data arrived. Show the list. This is what your app does now — but only after a blank screen flash.", color: "#E1F5EE", text: "#085041" },
+            { state: "Error", desc: "Something went wrong — no internet, server down, bad API key. Show a message and a retry button.", color: "#FCEBEB", text: "#791F1F" },
+          ].map(s => (
+            <div key={s.state} style={{ background: s.color, borderRadius: 8, padding: "12px 14px" }}>
+              <p style={{ fontSize: 13, fontWeight: 600, color: s.text, margin: "0 0 4px" }}>{s.state}</p>
+              <p style={{ fontSize: 12, color: s.text, margin: 0, lineHeight: 1.4, opacity: 0.85 }}>{s.desc}</p>
+            </div>
+          ))}
+        </div>
+      </VStep>
 
-      <h4 style={{ fontSize: 15, fontWeight: 600, color: "var(--color-text-primary)", margin: "0 0 8px" }}>Step 1: Model the UI state (~5 min)</h4>
-      <p style={{ fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 1.7, margin: "0 0 14px" }}>Create a sealed class (Kotlin) or enum (Swift) to represent the three states cleanly.</p>
-      <p style={{ fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 1.7, margin: "0 0 14px" }}>For Android:</p>
-      <CodeB>{`sealed class UiState<out T> {
+      <VStep num={1} title="Model the UI state (~5 min)">
+        <p style={{ fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 1.7, margin: "0 0 14px" }}>Create a sealed class (Kotlin) or enum (Swift) to represent the three states cleanly.</p>
+        <Section title="✅ Check your work — show me the complete file so far">
+          {platform === "Android" && <CodeB title="Kotlin" accent={BL}>{`sealed class UiState<out T> {
     object Loading : UiState<Nothing>()
     data class Success<T>(val data: T) : UiState<T>()
     data class Error(val message: String) : UiState<Nothing>()
-}`}</CodeB>
-      <p style={{ fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 1.7, margin: "0 0 14px" }}>For iOS:</p>
-      <CodeB>{`enum UiState<T> {
+}`}</CodeB>}
+          {platform === "iOS" && <CodeB title="Swift" accent={GR}>{`enum UiState<T> {
     case loading
     case success(T)
     case error(String)
-}`}</CodeB>
-      <Tip><b>What is a sealed class in Kotlin?</b> {"A sealed class restricts which subclasses can exist — only the ones defined inside it. This means when you write a when expression on a UiState, Kotlin knows all the possible cases and can warn you if you miss one. It is perfect for modelling a fixed set of states."}</Tip>
+}`}</CodeB>}
+        </Section>
+        <Tip><b>What is a sealed class in Kotlin?</b> {"A sealed class restricts which subclasses can exist — only the ones defined inside it. This means when you write a when expression on a UiState, Kotlin knows all the possible cases and can warn you if you miss one. It is perfect for modelling a fixed set of states."}</Tip>
+      </VStep>
 
-      <h4 style={{ fontSize: 15, fontWeight: 600, color: "var(--color-text-primary)", margin: "0 0 8px" }}>Step 2: Update the screen to use UiState (~12 min)</h4>
-      <p style={{ fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 1.7, margin: "0 0 14px" }}>For Android — update <IC>ArtistListScreen</IC>:</p>
-      <CodeB>{`@Composable
+      <VStep num={2} title="Update the screen to use UiState (~12 min)">
+        <p style={{ fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 1.7, margin: "0 0 14px" }}>Now integrate the <IC>UiState</IC> into your <IC>ArtistListScreen</IC>.</p>
+
+        <VStep num="a" title="Replace state variable and fetch logic">
+          <p style={{ fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 1.7, margin: "0 0 14px" }}>Instead of a list of artists, your state should now be a <IC>UiState</IC> starting in the <IC>Loading</IC> state. Wrap your API call in a try/catch block. If it succeeds, update the state to <IC>Success</IC> with the data payload. If it fails, catch the error and update the state to <IC>Error</IC>.</p>
+          <Section title="💡 Show me the syntax">
+            {platform === "Android" && <CodeB title="Kotlin" accent={BL}>{`var uiState by remember { mutableStateOf<UiState<List<Artist>>>(UiState.Loading) }
+
+LaunchedEffect(Unit) {
+    uiState = try {
+        val artists = LastFmApi.service.getTopArtists().artists.artist
+        UiState.Success(artists)
+    } catch (e: Exception) {
+        UiState.Error(e.message ?: "Something went wrong")
+    }
+}`}</CodeB>}
+            {platform === "iOS" && <CodeB title="Swift" accent={GR}>{`@State private var uiState: UiState<[Artist]> = .loading
+
+// ...
+.task(id: uiState.isLoading) {
+    guard case .loading = uiState else { return }
+    do {
+        let artists = try await LastFmApiService.getTopArtists()
+        uiState = .success(artists)
+    } catch {
+        uiState = .error(error.localizedDescription)
+    }
+}`}</CodeB>}
+          </Section>
+          <Section title="✅ Check your work — show me the complete file so far">
+            {platform === "Android" && <CodeB title="Kotlin — ArtistListScreen.kt (with updated state and fetch)" accent={BL}>{`@Composable
+fun ArtistListScreen(onArtistClicked: (Artist) -> Unit = {}) {
+    var uiState by remember {
+        mutableStateOf<UiState<List<Artist>>>(UiState.Loading)
+    }
+    var query by remember { mutableStateOf("") }
+
+    LaunchedEffect(Unit) {
+        uiState = try {
+            val artists = LastFmApi.service.getTopArtists().artists.artist
+            UiState.Success(artists)
+        } catch (e: Exception) {
+            UiState.Error(e.message ?: "Something went wrong")
+        }
+    }
+
+    Column(modifier = Modifier.fillMaxSize()
+        .background(Color(0xFFF5F5F5))) {
+        OutlinedTextField(
+            value = query, onValueChange = { query = it },
+            placeholder = { Text("Search artists...") },
+            modifier = Modifier.fillMaxWidth().padding(16.dp),
+            singleLine = true, shape = RoundedCornerShape(12.dp)
+        )
+        // We will update the UI in the next step to use uiState
+        // Currently, it might not compile since the list variable is gone
+    }
+}`}</CodeB>}
+            {platform === "iOS" && <CodeB title="Swift — ArtistListScreen.swift (with updated state and fetch)" accent={GR}>{`struct ArtistListScreen: View {
+    @State private var uiState: UiState<[Artist]> = .loading
+    @State private var query = ""
+
+    var body: some View {
+        ZStack {
+            Color(UIColor.systemGray6).ignoresSafeArea()
+            // We will update the UI in the next step to use uiState
+            // Currently, it might not compile since the list variable is gone
+        }
+        .navigationTitle("Top Artists")
+        .task(id: uiState.isLoading) {
+            guard case .loading = uiState else { return }
+            do {
+                let artists = try await LastFmApiService.getTopArtists()
+                uiState = .success(artists)
+            } catch {
+                uiState = .error(error.localizedDescription)
+            }
+        }
+    }
+}
+
+extension UiState {
+    var isLoading: Bool {
+        if case .loading = self { return true }
+        return false
+    }
+}`}</CodeB>}
+          </Section>
+        </VStep>
+
+        <VStep num="b" title="Add UI for Loading and Error states">
+          <p style={{ fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 1.7, margin: "0 0 14px" }}>Below the search bar (Android) or inside your <IC>ZStack</IC> (iOS), replace the list with a <IC>when</IC> (Kotlin) or <IC>switch</IC> (Swift) statement on <IC>uiState</IC>. Show a spinner for <IC>Loading</IC>, and an error message with a Retry button for <IC>Error</IC>. Leave the <IC>Success</IC> state empty for now.</p>
+          <Section title="✅ Check your work — show me the complete file so far">
+            {platform === "Android" && <CodeB title="Kotlin — ArtistListScreen.kt (with loading and error)" accent={BL}>{`@Composable
+fun ArtistListScreen(onArtistClicked: (Artist) -> Unit = {}) {
+    var uiState by remember {
+        mutableStateOf<UiState<List<Artist>>>(UiState.Loading)
+    }
+    var query by remember { mutableStateOf("") }
+
+    LaunchedEffect(Unit) {
+        uiState = try {
+            val artists = LastFmApi.service.getTopArtists().artists.artist
+            UiState.Success(artists)
+        } catch (e: Exception) {
+            UiState.Error(e.message ?: "Something went wrong")
+        }
+    }
+
+    Column(modifier = Modifier.fillMaxSize()
+        .background(Color(0xFFF5F5F5))) {
+        OutlinedTextField(
+            value = query, onValueChange = { query = it },
+            placeholder = { Text("Search artists...") },
+            modifier = Modifier.fillMaxWidth().padding(16.dp),
+            singleLine = true, shape = RoundedCornerShape(12.dp)
+        )
+        when (val state = uiState) {
+            is UiState.Loading -> {
+                Box(modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center) {
+                    CircularProgressIndicator(color = Color(0xFF534AB7))
+                }
+            }
+            is UiState.Error -> {
+                Column(
+                    modifier = Modifier.fillMaxSize().padding(32.dp),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text("Something went wrong", fontSize = 18.sp,
+                        fontWeight = FontWeight.Bold)
+                    Text(state.message, fontSize = 13.sp,
+                        color = Color.Gray, textAlign = TextAlign.Center)
+                    Spacer(Modifier.height(16.dp))
+                    Button(onClick = {
+                        // reset to loading to retry
+                        uiState = UiState.Loading
+                    }) { Text("Retry") }
+                }
+            }
+            is UiState.Success -> {
+                // To be implemented in the next step
+            }
+        }
+    }
+}`}</CodeB>}
+            {platform === "iOS" && <CodeB title="Swift — ArtistListScreen.swift (with loading and error)" accent={GR}>{`struct ArtistListScreen: View {
+    @State private var uiState: UiState<[Artist]> = .loading
+    @State private var query = ""
+
+    var body: some View {
+        ZStack {
+            Color(UIColor.systemGray6).ignoresSafeArea()
+            switch uiState {
+            case .loading:
+                ProgressView("Loading artists...")
+                    .tint(Color(red:0.33,green:0.29,blue:0.72))
+            case .error(let message):
+                VStack(spacing: 12) {
+                    Text("Something went wrong").font(.headline)
+                    Text(message).font(.subheadline)
+                        .foregroundColor(.gray)
+                        .multilineTextAlignment(.center)
+                    Button("Retry") { uiState = .loading }
+                        .buttonStyle(.borderedProminent)
+                }
+                .padding(32)
+            case .success(let artists):
+                // To be implemented in the next step
+                EmptyView()
+            }
+        }
+        .navigationTitle("Top Artists")
+        .task(id: uiState.isLoading) {
+            guard case .loading = uiState else { return }
+            do {
+                let artists = try await LastFmApiService.getTopArtists()
+                uiState = .success(artists)
+            } catch {
+                uiState = .error(error.localizedDescription)
+            }
+        }
+    }
+}
+
+extension UiState {
+    var isLoading: Bool {
+        if case .loading = self { return true }
+        return false
+    }
+}`}</CodeB>}
+          </Section>
+        </VStep>
+
+        <VStep num="c" title="Add UI for the Success state" last>
+          <p style={{ fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 1.7, margin: "0 0 14px" }}>Finally, move your original list rendering logic into the <IC>Success</IC> block. Use the data payload from the state (<IC>state.data</IC> in Kotlin, or the unwrapped <IC>artists</IC> in Swift) to populate the list and handle search filtering.</p>
+          <Section title="✅ Check your work — show me the complete ArtistListScreen">
+            {platform === "Android" && <CodeB title="Kotlin — ArtistListScreen.kt (complete)" accent={BL}>{`@Composable
 fun ArtistListScreen(onArtistClicked: (Artist) -> Unit = {}) {
     var uiState by remember {
         mutableStateOf<UiState<List<Artist>>>(UiState.Loading)
@@ -650,9 +1071,8 @@ fun ArtistListScreen(onArtistClicked: (Artist) -> Unit = {}) {
             }
         }
     }
-}`}</CodeB>
-      <p style={{ fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 1.7, margin: "0 0 14px" }}>For iOS — update <IC>ArtistListScreen</IC>:</p>
-      <CodeB>{`struct ArtistListScreen: View {
+}`}</CodeB>}
+            {platform === "iOS" && <CodeB title="Swift — ArtistListScreen.swift (complete)" accent={GR}>{`struct ArtistListScreen: View {
     @State private var uiState: UiState<[Artist]> = .loading
     @State private var query = ""
 
@@ -675,7 +1095,17 @@ fun ArtistListScreen(onArtistClicked: (Artist) -> Unit = {}) {
                 .padding(32)
             case .success(let artists):
                 VStack(spacing: 0) {
-                    // search bar (same as before)
+                    // Search bar (same as before)
+                    HStack {
+                        Image(systemName: "magnifyingglass")
+                            .foregroundColor(.gray)
+                        TextField("Search artists...", text: $query)
+                            .font(.subheadline)
+                    }
+                    .padding(10).background(Color.white)
+                    .cornerRadius(12)
+                    .padding(.horizontal,16).padding(.vertical,10)
+
                     List(artists.filter {
                         query.isEmpty ||
                         $0.name.localizedCaseInsensitiveContains(query)
@@ -708,13 +1138,94 @@ extension UiState {
         if case .loading = self { return true }
         return false
     }
-}`}</CodeB>
-      <Checkpoint num="1">You should see a loading spinner when the screen first opens, then the list appears. Turn off your WiFi and reopen the app — you should see the error state with a Retry button.</Checkpoint>
+}`}</CodeB>}
+          </Section>
+        </VStep>
+        <Checkpoint num="1">You should see a loading spinner when the screen first opens, then the list appears. Turn off your WiFi and reopen the app — you should see the error state with a Retry button.</Checkpoint>
+      </VStep>
 
-      <h4 style={{ fontSize: 15, fontWeight: 600, color: "var(--color-text-primary)", margin: "0 0 8px" }}>Step 3: Add image loading (~12 min)</h4>
-      <p style={{ fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 1.7, margin: "0 0 14px" }}>Last.fm returns image URLs for each artist. Display them in the row using Coil (Android) or AsyncImage (SwiftUI) instead of the initial avatar circle.</p>
-      <p style={{ fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 1.7, margin: "0 0 14px" }}>For Android — update <IC>ArtistRow</IC>:</p>
-      <CodeB>{`@Composable
+      <VStep num={3} title="Build a Skeleton Loading State (~15 min)">
+        <p style={{ fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 1.7, margin: "0 0 14px" }}>A simple progress spinner is okay, but a <strong>skeleton loading state</strong> (placeholder rows that shimmer) makes your app feel much faster and more premium. Let's upgrade our <IC>Loading</IC> state to show 10 skeleton rows instead.</p>
+
+        <VStep num="a" title="Create the Skeleton Row Component">
+          <p style={{ fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 1.7, margin: "0 0 14px" }}>Create a new file for <IC>SkeletonRow</IC>. It should visually match the <IC>ArtistRow</IC>, but instead of text and images, it displays gray rectangles and circles.</p>
+          <Section title="💡 Show me the syntax">
+            {platform === "Android" && <CodeB title="Kotlin" accent={BL}>{`@Composable
+fun SkeletonRow() {
+    Row(
+        modifier = Modifier.fillMaxWidth()
+            .background(Color.White, RoundedCornerShape(12.dp)).padding(12.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        Box(modifier = Modifier.size(52.dp).background(Color.LightGray, CircleShape))
+        Column(modifier = Modifier.weight(1f)) {
+            Box(modifier = Modifier.width(120.dp).height(16.dp).background(Color.LightGray))
+            Spacer(Modifier.height(8.dp))
+            Box(modifier = Modifier.width(80.dp).height(12.dp).background(Color.LightGray))
+        }
+    }
+}`}</CodeB>}
+            {platform === "iOS" && <CodeB title="Swift" accent={GR}>{`struct SkeletonRow: View {
+    var body: some View {
+        HStack(spacing: 12) {
+            Circle()
+                .fill(Color(UIColor.systemGray5))
+                .frame(width: 52, height: 52)
+            
+            VStack(alignment: .leading, spacing: 8) {
+                RoundedRectangle(cornerRadius: 4)
+                    .fill(Color(UIColor.systemGray5))
+                    .frame(width: 120, height: 16)
+                RoundedRectangle(cornerRadius: 4)
+                    .fill(Color(UIColor.systemGray5))
+                    .frame(width: 80, height: 12)
+            }
+            Spacer()
+        }
+        .padding(12)
+        .background(Color.white)
+        .cornerRadius(12)
+    }
+}`}</CodeB>}
+          </Section>
+        </VStep>
+
+        <VStep num="b" title="Replace the spinner with the Skeleton List" last>
+          <p style={{ fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 1.7, margin: "0 0 14px" }}>In <IC>ArtistListScreen</IC>, replace the <IC>CircularProgressIndicator</IC> / <IC>ProgressView</IC> in the <IC>Loading</IC> state with a list of 10 <IC>SkeletonRow</IC>s.</p>
+          <Section title="✅ Check your work — show me the updated loading state">
+            {platform === "Android" && <CodeB title="Kotlin — ArtistListScreen.kt (loading state)" accent={BL}>{`// ... inside when (val state = uiState) ...
+is UiState.Loading -> {
+    LazyColumn(
+        contentPadding = PaddingValues(horizontal=16.dp),
+        verticalArrangement = Arrangement.spacedBy(4.dp)
+    ) {
+        items(10) { 
+            SkeletonRow() 
+        }
+    }
+}`}</CodeB>}
+            {platform === "iOS" && <CodeB title="Swift — ArtistListScreen.swift (loading state)" accent={GR}>{`// ... inside switch uiState ...
+case .loading:
+    ScrollView {
+        VStack(spacing: 4) {
+            ForEach(0..<10, id: \\.self) { _ in
+                SkeletonRow()
+                    .padding(.horizontal, 16)
+            }
+        }
+        .padding(.vertical, 10)
+    }`}</CodeB>}
+          </Section>
+        </VStep>
+        
+        <Checkpoint num="2">Restart your app. You should now see a list of gray skeleton placeholders while the API is loading, followed by the real data.</Checkpoint>
+      </VStep>
+
+      <VStep num={4} title="Add image loading (~12 min)">
+        <p style={{ fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 1.7, margin: "0 0 14px" }}>Last.fm returns image URLs for each artist. Display them in the row using Coil (Android) or AsyncImage (SwiftUI) instead of the initial avatar circle.</p>
+        <Section title="✅ Check your work — show me the complete ArtistRow">
+          {platform === "Android" && <CodeB title="Kotlin — ArtistRow.kt" accent={BL}>{`@Composable
 fun ArtistRow(artist: Artist, onClick: () -> Unit = {}) {
     val imageUrl = artist.getLargeImageUrl()
 
@@ -772,9 +1283,8 @@ fun formatListeners(count: Long): String = when {
     count >= 1_000_000 -> String.format("%.1fM listeners", count / 1_000_000.0)
     count >= 1_000     -> String.format("%.0fK listeners", count / 1_000.0)
     else               -> "$count listeners"
-}`}</CodeB>
-      <p style={{ fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 1.7, margin: "0 0 14px" }}>For iOS — update <IC>ArtistRow</IC>:</p>
-      <CodeB>{`struct ArtistRow: View {
+}`}</CodeB>}
+          {platform === "iOS" && <CodeB title="Swift — ArtistRow.swift" accent={GR}>{`struct ArtistRow: View {
     let artist: Artist
 
     var body: some View {
@@ -835,33 +1345,98 @@ fun formatListeners(count: Long): String = when {
             return String(format: "%.0fK listeners",
                           Double(count) / 1_000)
         }
-        return "\(count) listeners"
+        return "\\(count) listeners"
     }
-}`}</CodeB>
-      <Checkpoint num="2">Artist images load from Last.fm URLs. Rows with no image show the initial avatar fallback. The listener count is formatted as "9.8M listeners" instead of a raw number.</Checkpoint>
-      <Tip><b>My images are not loading on Android</b> {"Make sure you added the INTERNET permission to AndroidManifest.xml in Step 1. Also check that your Coil dependency was synced correctly."}</Tip>
-      <Tip><b>Last.fm is returning empty image URLs</b> {"This is common for some artists. That is exactly why the fallback avatar exists — always handle the empty URL case. Never assume an image URL will be present."}</Tip>
+}`}</CodeB>}
+        </Section>
+        <Checkpoint num="3">Artist images load from Last.fm URLs. Rows with no image show the initial avatar fallback. The listener count is formatted as "9.8M listeners" instead of a raw number.</Checkpoint>
+        {platform === "Android" && <Tip><b>My images are not loading</b> {"Make sure you added the INTERNET permission to AndroidManifest.xml in Step 1. Also check that your Coil dependency was synced correctly."}</Tip>}
+        <Tip><b>Last.fm is returning empty image URLs</b> {"This is common for some artists. That is exactly why the fallback avatar exists — always handle the empty URL case. Never assume an image URL will be present."}</Tip>
+      </VStep>
 
-      <h4 style={{ fontSize: 15, fontWeight: 600, color: "var(--color-text-primary)", margin: "0 0 8px" }}>Step 4: Ask Claude about error handling patterns (~5 min)</h4>
-      <AiOpp>Ask Claude: "I just added loading and error states to my networked screen. Can you translate my [Compose / SwiftUI] UiState implementation to [SwiftUI / Compose]? Then explain: what other error scenarios should a production app handle that I am not handling yet?"</AiOpp>
-      <Checkbox>Loading spinner appears on first launch</Checkbox>
-      <Checkbox>Error state appears when network is off — with a working Retry button</Checkbox>
-      <Checkbox>Images load from URLs with a fallback for missing ones</Checkbox>
+      <VStep num={5} title="Ask Claude about error handling patterns (~5 min)">
+        <AiOpp>Ask Claude: "I just added loading and error states to my networked screen. Can you translate my [Compose / SwiftUI] UiState implementation to [SwiftUI / Compose]? Then explain: what other error scenarios should a production app handle that I am not handling yet?"</AiOpp>
+        <Checkbox>Skeleton loading state appears on first launch</Checkbox>
+        <Checkbox>Error state appears when network is off — with a working Retry button</Checkbox>
+        <Checkbox>Images load from URLs with a fallback for missing ones</Checkbox>
+      </VStep>
 
-      <h4 style={{ fontSize: 15, fontWeight: 600, color: "var(--color-text-primary)", margin: "0 0 8px" }}>Step 5: Reflect (~5 min)</h4>
-      <CodeB>{`// Lab 8 Reflection (Week 4, Session 2)
+      <VStep num={6} title="Reflect (~5 min)" last>
+        <CodeB>{`// Lab 8 Reflection (Week 4, Session 2)
 // 1. What are the three UI states every networked screen needs?
 //    Why does ignoring any one of them create a bad user experience?
 // 2. What does the Retry button actually do in your code?
 //    Trace exactly what happens when it is tapped.
 // 3. What happens in your app if an image URL is empty?
 //    What would happen if you had not handled that case?`}</CodeB>
-      <Checkpoint num="?">Final checkpoint: Show a TA the full flow — loading spinner, real artist data with images, error state with retry, and search still working. Walk them through your reflection.</Checkpoint>
+        <Checkpoint num="?">Final checkpoint: Show a TA the full flow — skeleton loading state, real artist data with images, error state with retry, and search still working. Walk them through your reflection.</Checkpoint>
+      </VStep>
 
       <h2 style={{ fontSize: 18, fontWeight: 600, margin: "24px 0 8px" }}>Stretch features</h2>
-      <Checkbox>Cache the API response — if the user navigates away and comes back, show the cached data instantly while refetching in the background</Checkbox>
-      <Checkbox>Add a pull-to-refresh gesture that refetches the artist list</Checkbox>
-      <Checkbox>Show a skeleton loading state — placeholder rows with an animated shimmer effect instead of a spinner</Checkbox>
+      <VStep num="★" title="Add a pull-to-refresh gesture" last>
+        <p style={{ fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 1.7, margin: "0 0 14px" }}>Add a pull-to-refresh gesture to your list so users can manually fetch the latest data.</p>
+        
+        {platform === "Android" && (
+          <VStep num="a" title="Add the material foundation dependency">
+            <p>To use <IC>pullRefresh</IC> in Compose, you need the material dependency. Open <IC>app/build.gradle.kts</IC> and add the following inside your <IC>dependencies</IC> block, then click <strong>Sync Now</strong>.</p>
+            <CodeB title="build.gradle.kts" accent={BL}>{`implementation("androidx.compose.material:material:1.5.4")`}</CodeB>
+          </VStep>
+        )}
+        
+        <VStep num={platform === "Android" ? "b" : "a"} title="Setup the refresh logic">
+          {platform === "Android" && <p>In <IC>ArtistListScreen</IC>, you'll need to remember an <IC>isRefreshing</IC> boolean state (initially false) and create a <IC>pullRefreshState</IC> using <IC>rememberPullRefreshState</IC>. Inside the <IC>onRefresh</IC> callback of that state, set your refreshing boolean to true, launch a coroutine to fetch the data from the API again, and when it completes, update your <IC>UiState</IC> and set the refreshing boolean back to false.</p>}
+          {platform === "iOS" && <p>For iOS, this is built into SwiftUI. You just need to prepare the asynchronous API call you want to execute when a refresh is triggered. We will use the <IC>.refreshable</IC> modifier in the next step.</p>}
+          
+          {platform === "Android" && (
+            <Section title="💡 Show me the syntax">
+              <CodeB title="Kotlin (Compose)" accent={BL}>{`var isRefreshing by remember { mutableStateOf(false) }
+val pullRefreshState = rememberPullRefreshState(
+    refreshing = isRefreshing,
+    onRefresh = {
+        isRefreshing = true
+        // Launch a coroutine to fetch data again
+        // When done, set isRefreshing = false and update uiState to Success/Error
+    }
+)`}</CodeB>
+            </Section>
+          )}
+        </VStep>
+        
+        <VStep num={platform === "Android" ? "c" : "b"} title="Attach it to your list layout" last>
+          <p>Now, connect this logic to your UI.</p>
+          {platform === "Android" && <p>Wrap your <IC>LazyColumn</IC> inside a <IC>Box</IC> and apply the <IC>.pullRefresh(pullRefreshState)</IC> modifier to the Box. Finally, add a <IC>PullRefreshIndicator</IC> inside the Box on top of the list, aligning it to the TopCenter.</p>}
+          {platform === "iOS" && <p>Add the <IC>.refreshable</IC> modifier directly to your <IC>List</IC>. Inside the closure, fetch the data again and update your <IC>uiState</IC>. Remember to handle potential errors so you don't destroy the existing list if the refresh fails!</p>}
+          
+          <Section title="✅ Check your work — show me the completed implementation">
+            {platform === "Android" && <CodeB title="Kotlin (Compose)" accent={BL}>{`Box(modifier = Modifier.fillMaxSize().pullRefresh(pullRefreshState)) {
+    // Your existing LazyColumn
+    LazyColumn { /* existing code */ }
+    
+    // Add the indicator on top
+    PullRefreshIndicator(
+        refreshing = isRefreshing,
+        state = pullRefreshState,
+        modifier = Modifier.align(Alignment.TopCenter)
+    )
+}`}</CodeB>}
+            {platform === "iOS" && <CodeB title="Swift (SwiftUI)" accent={GR}>{`List(artists) { artist in
+    // ...
+}
+.listStyle(.plain)
+.refreshable {
+    do {
+        // Fetch new data
+        let newArtists = try await LastFmApiService.getTopArtists()
+        uiState = .success(newArtists)
+    } catch {
+        print(error.localizedDescription)
+    }
+}`}</CodeB>}
+          </Section>
+        </VStep>
+
+        <Checkbox>Users can swipe down on the list to trigger a refresh</Checkbox>
+      </VStep>
     </div>
   );
 }

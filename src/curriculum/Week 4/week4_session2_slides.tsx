@@ -435,9 +435,73 @@ extension UiState {
   () => (
     <Shell tag="Error handling" title="Retry pattern — step 1: state variable and try/catch" subtitle="Setting up the state machine and wrapping the API call">
       <div style={{ marginTop: 8 }}>
-        <OSToggle
-          android={
-            <CodePane title="Kotlin — UiState variable + try/catch in LaunchedEffect" accent={PURPLE}>
+        <ViewToggle
+          steps={
+            <OSToggle
+              android={
+                <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                  <Step n={1} title="Replace boolean flags with UiState variable">
+                    <pre style={{ margin: 0, background: "#1e1e2e", color: "#cdd6f4", fontSize: 10, padding: "8px 12px", borderRadius: 6, lineHeight: 1.6, fontFamily: "monospace", whiteSpace: "pre-wrap" }}>{`@Composable
+fun ArtistListScreen(onArtistClicked: (Artist) -> Unit = {}) {
+    var uiState by remember {
+        mutableStateOf<UiState<List<Artist>>>(UiState.Loading)
+    }
+    var query by remember { mutableStateOf("") }`}</pre>
+                  </Step>
+                  <Step n={2} title="Use LaunchedEffect to re-run automatically">
+                    <pre style={{ margin: 0, background: "#1e1e2e", color: "#cdd6f4", fontSize: 10, padding: "8px 12px", borderRadius: 6, lineHeight: 1.6, fontFamily: "monospace", whiteSpace: "pre-wrap" }}>{`    LaunchedEffect(uiState) {
+        if (uiState !is UiState.Loading) return@LaunchedEffect
+        // ...
+    }`}</pre>
+                  </Step>
+                  <Step n={3} title="Wrap the API call in a try/catch block">
+                    <pre style={{ margin: 0, background: "#1e1e2e", color: "#cdd6f4", fontSize: 10, padding: "8px 12px", borderRadius: 6, lineHeight: 1.6, fontFamily: "monospace", whiteSpace: "pre-wrap" }}>{`        uiState = try {
+            UiState.Success(
+                LastFmApi.service.getTopArtists().artists.artist
+            )
+        } catch (e: Exception) {
+            UiState.Error(e.message ?: "Something went wrong")
+        }
+    }
+    // ... continue to rendering on the next slide
+}`}</pre>
+                  </Step>
+                </div>
+              }
+              ios={
+                <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                  <Step n={1} title="Replace booleans with UiState variable" accent={TEAL}>
+                    <pre style={{ margin: 0, background: "#1e1e2e", color: "#cdd6f4", fontSize: 10, padding: "8px 12px", borderRadius: 6, lineHeight: 1.6, fontFamily: "monospace", whiteSpace: "pre-wrap" }}>{`struct ArtistListScreen: View {
+    @State private var uiState: UiState<[Artist]> = .loading
+    @State private var query = ""`}</pre>
+                  </Step>
+                  <Step n={2} title="Use .task to re-run automatically" accent={TEAL}>
+                    <pre style={{ margin: 0, background: "#1e1e2e", color: "#cdd6f4", fontSize: 10, padding: "8px 12px", borderRadius: 6, lineHeight: 1.6, fontFamily: "monospace", whiteSpace: "pre-wrap" }}>{`    var body: some View {
+        ZStack { /* rendering on next slide */ }
+        .navigationTitle("Top Artists")
+        .task(id: uiState.isLoading) {
+            guard case .loading = uiState else { return }
+            // ...
+        }
+    }
+}`}</pre>
+                  </Step>
+                  <Step n={3} title="Wrap the API call in a do/catch block" accent={TEAL}>
+                    <pre style={{ margin: 0, background: "#1e1e2e", color: "#cdd6f4", fontSize: 10, padding: "8px 12px", borderRadius: 6, lineHeight: 1.6, fontFamily: "monospace", whiteSpace: "pre-wrap" }}>{`            do {
+                let artists = try await LastFmApiService.getTopArtists()
+                uiState = .success(artists)
+            } catch {
+                uiState = .error(error.localizedDescription)
+            }`}</pre>
+                  </Step>
+                </div>
+              }
+            />
+          }
+          full={
+            <OSToggle
+              android={
+                <CodePane title="Kotlin — UiState variable + try/catch in LaunchedEffect" accent={PURPLE}>
 {`@Composable
 fun ArtistListScreen(onArtistClicked: (Artist) -> Unit = {}) {
     // One variable replaces isLoading + hasError + artists
@@ -462,10 +526,10 @@ fun ArtistListScreen(onArtistClicked: (Artist) -> Unit = {}) {
     }
     // ... continue to rendering on the next slide
 }`}
-            </CodePane>
-          }
-          ios={
-            <CodePane title="Swift — UiState variable + try/catch in .task" accent={TEAL}>
+                </CodePane>
+              }
+              ios={
+                <CodePane title="Swift — UiState variable + try/catch in .task" accent={TEAL}>
 {`struct ArtistListScreen: View {
     // One variable replaces multiple @State booleans
     @State private var uiState: UiState<[Artist]> = .loading
@@ -492,7 +556,9 @@ fun ArtistListScreen(onArtistClicked: (Artist) -> Unit = {}) {
         }
     }
 }`}
-            </CodePane>
+                </CodePane>
+              }
+            />
           }
         />
       </div>
@@ -503,9 +569,81 @@ fun ArtistListScreen(onArtistClicked: (Artist) -> Unit = {}) {
   () => (
     <Shell tag="Error handling" title="Retry pattern — step 2: render each state" subtitle="The when / switch that shows spinner, error, or list">
       <div style={{ marginTop: 8 }}>
-        <OSToggle
-          android={
-            <CodePane title="Kotlin — when block rendering all three states" accent={PURPLE}>
+        <ViewToggle
+          steps={
+            <OSToggle
+              android={
+                <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                  <Step n={1} title="Loading state: Show a spinner">
+                    <pre style={{ margin: 0, background: "#1e1e2e", color: "#cdd6f4", fontSize: 10, padding: "8px 12px", borderRadius: 6, lineHeight: 1.6, fontFamily: "monospace", whiteSpace: "pre-wrap" }}>{`when (val state = uiState) {
+    is UiState.Loading -> {
+        Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            CircularProgressIndicator(color = Color(0xFF534AB7))
+        }
+    }`}</pre>
+                  </Step>
+                  <Step n={2} title="Error state: Show message and Retry button">
+                    <pre style={{ margin: 0, background: "#1e1e2e", color: "#cdd6f4", fontSize: 10, padding: "8px 12px", borderRadius: 6, lineHeight: 1.6, fontFamily: "monospace", whiteSpace: "pre-wrap" }}>{`    is UiState.Error -> {
+        Column(
+            Modifier.fillMaxSize().padding(32.dp),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text("Something went wrong", fontSize = 18.sp, fontWeight = FontWeight.Bold)
+            Text(state.message, color = Color.Gray, textAlign = TextAlign.Center)
+            Spacer(Modifier.height(16.dp))
+            // Retry sets state to Loading → LaunchedEffect re-fetches
+            Button(onClick = { uiState = UiState.Loading }) {
+                Text("Retry")
+            }
+        }
+    }`}</pre>
+                  </Step>
+                  <Step n={3} title="Success state: Render the main content">
+                    <pre style={{ margin: 0, background: "#1e1e2e", color: "#cdd6f4", fontSize: 10, padding: "8px 12px", borderRadius: 6, lineHeight: 1.6, fontFamily: "monospace", whiteSpace: "pre-wrap" }}>{`    is UiState.Success -> {
+        ArtistListContent(artists = state.data, query = query,
+            onQueryChange = { query = it },
+            onArtistClicked = onArtistClicked)
+    }
+}`}</pre>
+                  </Step>
+                </div>
+              }
+              ios={
+                <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                  <Step n={1} title="Loading state: Show a spinner" accent={TEAL}>
+                    <pre style={{ margin: 0, background: "#1e1e2e", color: "#cdd6f4", fontSize: 10, padding: "8px 12px", borderRadius: 6, lineHeight: 1.6, fontFamily: "monospace", whiteSpace: "pre-wrap" }}>{`switch uiState {
+case .loading:
+    ProgressView("Loading artists...")
+        .tint(Color(red: 0.33, green: 0.29, blue: 0.72))`}</pre>
+                  </Step>
+                  <Step n={2} title="Error state: Show message and Retry button" accent={TEAL}>
+                    <pre style={{ margin: 0, background: "#1e1e2e", color: "#cdd6f4", fontSize: 10, padding: "8px 12px", borderRadius: 6, lineHeight: 1.6, fontFamily: "monospace", whiteSpace: "pre-wrap" }}>{`case .error(let message):
+    VStack(spacing: 12) {
+        Text("Something went wrong").font(.headline)
+        Text(message).font(.subheadline).foregroundColor(.gray)
+            .multilineTextAlignment(.center)
+        // Retry sets state to .loading → .task re-fetches
+        Button("Retry") { uiState = .loading }
+            .buttonStyle(.borderedProminent)
+            .tint(Color(red: 0.33, green: 0.29, blue: 0.72))
+    }
+    .padding(32)`}</pre>
+                  </Step>
+                  <Step n={3} title="Success state: Render the main content" accent={TEAL}>
+                    <pre style={{ margin: 0, background: "#1e1e2e", color: "#cdd6f4", fontSize: 10, padding: "8px 12px", borderRadius: 6, lineHeight: 1.6, fontFamily: "monospace", whiteSpace: "pre-wrap" }}>{`case .success(let artists):
+    ArtistListContent(artists: artists, query: $query,
+                      onArtistTapped: onArtistTapped)
+}`}</pre>
+                  </Step>
+                </div>
+              }
+            />
+          }
+          full={
+            <OSToggle
+              android={
+                <CodePane title="Kotlin — when block rendering all three states" accent={PURPLE}>
 {`// Inside the Column(modifier = Modifier.fillMaxSize()):
 when (val state = uiState) {
     is UiState.Loading -> {
@@ -538,10 +676,10 @@ when (val state = uiState) {
             onArtistClicked = onArtistClicked)
     }
 }`}
-            </CodePane>
-          }
-          ios={
-            <CodePane title="Swift — switch rendering all three states" accent={TEAL}>
+                </CodePane>
+              }
+              ios={
+                <CodePane title="Swift — switch rendering all three states" accent={TEAL}>
 {`// Inside the ZStack:
 switch uiState {
 case .loading:
@@ -568,7 +706,9 @@ case .success(let artists):
     ArtistListContent(artists: artists, query: $query,
                       onArtistTapped: onArtistTapped)
 }`}
-            </CodePane>
+                </CodePane>
+              }
+            />
           }
         />
       </div>
@@ -613,9 +753,94 @@ case .success(let artists):
   () => (
     <Shell tag="Image loading" title="AsyncImage in practice — loading and fallback" subtitle="Toggle to see how each platform handles the same four cases" notes="Walk through each phase/case. The empty URL check is critical — Last.fm returns empty string for many lesser-known artists. Passing an empty string to AsyncImage causes platform-specific issues. Always check first.">
       <div style={{ marginTop: 6 }}>
-        <OSToggle
-          android={
-            <CodePane title="Android — Coil AsyncImage with placeholder and error" accent={PURPLE}>
+        <ViewToggle
+          steps={
+            <OSToggle
+              android={
+                <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                  <Step n={1} title="Check if the URL is empty">
+                    <pre style={{ margin: 0, background: "#1e1e2e", color: "#cdd6f4", fontSize: 10, padding: "8px 12px", borderRadius: 6, lineHeight: 1.6, fontFamily: "monospace", whiteSpace: "pre-wrap" }}>{`val imageUrl = artist.getLargeImageUrl()
+
+if (imageUrl.isNotEmpty()) {
+    // ...
+} else {
+    // ...
+}`}</pre>
+                  </Step>
+                  <Step n={2} title="Valid URL: Use AsyncImage with fallbacks">
+                    <pre style={{ margin: 0, background: "#1e1e2e", color: "#cdd6f4", fontSize: 10, padding: "8px 12px", borderRadius: 6, lineHeight: 1.6, fontFamily: "monospace", whiteSpace: "pre-wrap" }}>{`    // URL exists — Coil handles async, cache, and decode
+    AsyncImage(
+        model = imageUrl,
+        contentDescription = artist.name,
+        modifier = Modifier
+            .size(52.dp)
+            .clip(CircleShape),
+        contentScale = ContentScale.Crop,
+        placeholder = ColorPainter(Color(0xFFEEEDFE)),  // grey circle while loading
+        error = ColorPainter(Color(0xFF534AB7))          // purple if load fails
+    )`}</pre>
+                  </Step>
+                  <Step n={3} title="Empty URL: Fall back to initials">
+                    <pre style={{ margin: 0, background: "#1e1e2e", color: "#cdd6f4", fontSize: 10, padding: "8px 12px", borderRadius: 6, lineHeight: 1.6, fontFamily: "monospace", whiteSpace: "pre-wrap" }}>{`} else {
+    // URL is empty — show initial letter fallback
+    Box(
+        modifier = Modifier
+            .size(52.dp)
+            .background(Color(0xFF534AB7), CircleShape),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            artist.name.first().toString(),
+            color = Color.White,
+            fontSize = 22.sp,
+            fontWeight = FontWeight.Bold
+        )
+    }
+}`}</pre>
+                  </Step>
+                </div>
+              }
+              ios={
+                <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                  <Step n={1} title="Check if the URL is valid" accent={TEAL}>
+                    <pre style={{ margin: 0, background: "#1e1e2e", color: "#cdd6f4", fontSize: 10, padding: "8px 12px", borderRadius: 6, lineHeight: 1.6, fontFamily: "monospace", whiteSpace: "pre-wrap" }}>{`let imageUrl = artist.largeImageUrl
+
+if !imageUrl.isEmpty, let url = URL(string: imageUrl) {
+    // ...
+} else {
+    // ...
+}`}</pre>
+                  </Step>
+                  <Step n={2} title="Valid URL: Handle AsyncImage phases" accent={TEAL}>
+                    <pre style={{ margin: 0, background: "#1e1e2e", color: "#cdd6f4", fontSize: 10, padding: "8px 12px", borderRadius: 6, lineHeight: 1.6, fontFamily: "monospace", whiteSpace: "pre-wrap" }}>{`    AsyncImage(url: url) { phase in
+        switch phase {
+        case .success(let image):
+            image.resizable().aspectRatio(contentMode: .fill)
+                .frame(width: 52, height: 52).clipShape(Circle())
+        case .failure:
+            initialsCircle(for: artist.name)
+        case .empty:
+            Circle().fill(Color(red: 0.93, green: 0.93, blue: 1.0))
+                .frame(width: 52, height: 52)
+        @unknown default:
+            EmptyView()
+        }
+    }`}</pre>
+                  </Step>
+                  <Step n={3} title="Empty URL: Fall back to initials" accent={TEAL}>
+                    <pre style={{ margin: 0, background: "#1e1e2e", color: "#cdd6f4", fontSize: 10, padding: "8px 12px", borderRadius: 6, lineHeight: 1.6, fontFamily: "monospace", whiteSpace: "pre-wrap" }}>{`} else {
+    // URL empty or invalid — show initial letter fallback
+    initialsCircle(for: artist.name)
+}`}</pre>
+                  </Step>
+                </div>
+              }
+            />
+          }
+          full={
+            <OSToggle
+              android={
+                <CodePane title="Android — Coil AsyncImage with placeholder and error" accent={PURPLE}>
 {`// Step 1: add to build.gradle.kts
 // implementation("io.coil-kt:coil-compose:2.4.0")
 
@@ -650,10 +875,10 @@ if (imageUrl.isNotEmpty()) {
         )
     }
 }`}
-            </CodePane>
-          }
-          ios={
-            <CodePane title="iOS — SwiftUI AsyncImage with phase handling" accent={TEAL}>
+                </CodePane>
+              }
+              ios={
+                <CodePane title="iOS — SwiftUI AsyncImage with phase handling" accent={TEAL}>
 {`// Built into SwiftUI — no library needed
 
 let imageUrl = artist.largeImageUrl
@@ -688,7 +913,9 @@ if !imageUrl.isEmpty, let url = URL(string: imageUrl) {
     // URL empty or invalid — show initial letter fallback
     initialsCircle(for: artist.name)
 }`}
-            </CodePane>
+                </CodePane>
+              }
+            />
           }
         />
       </div>

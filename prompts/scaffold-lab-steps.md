@@ -85,7 +85,7 @@ Each sub-step is a `VStep` with `num` using letters starting at "a" (e.g. `num="
 
 Each sub-step follows this pattern:
 
-1. **Instructions** — plain English description of what to build. Include specific details: modifier names, parameter names, colors/sizes, etc. so students have enough to attempt it without the code.
+1. **Instructions** — Provide **highly guided, step-by-step instructions** written in plain English. Do not just give a high-level goal like "Update the screen to use UiState" and expect them to figure it out. Instead, break down the logic: "Change the parameter type to `UiState`. Then, add a `when` or `switch` statement to handle `Loading`, `Success`, and `Error` cases. For the Loading case, show a progress indicator. For Success, show the list." Include specific details: modifier names, parameter names, exact strings, and colors/sizes so students have enough guidance to attempt it without looking at the code.
 
 2. **Partial syntax hint (optional)** — if the syntax is genuinely unfamiliar, show a skeleton with the concept but not the solution. Use a `<Section title="💡 Show me the syntax">` that the student has to click to open. Don't always include this — only when the syntax is new.
 
