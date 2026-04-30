@@ -79,7 +79,7 @@ const IC = ({ children }: { children: React.ReactNode }) => (
   <code style={{ background: "var(--color-background-secondary)", border: "0.5px solid var(--color-border-tertiary)", borderRadius: 4, padding: "1px 5px", fontSize: 12 }}>{children}</code>
 );
 
-const VStep = ({ num, title, children, last = false }: { num: number; title: string; children: React.ReactNode; last?: boolean }) => (
+const VStep = ({ num, title, children, last = false }: { num: number | string; title: string; children: React.ReactNode; last?: boolean }) => (
   <div style={{ display: "flex", gap: 12 }}>
     <div style={{ display: "flex", flexDirection: "column", alignItems: "center", flexShrink: 0 }}>
       <div style={{ width: 26, height: 26, borderRadius: "50%", background: "var(--platform-accent, #534AB7)", color: "#fff", fontSize: 12, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center" }}>{num}</div>
@@ -304,7 +304,7 @@ fun AlbumListScreen() {
         <VStep num={3} title="Design a custom row layout">
           <p style={{ fontSize: 13, color: "var(--color-text-secondary)", margin: "0 0 8px" }}>Replace the plain <IC>Text</IC> with a proper album row — artist initial avatar, title, artist name, year, genre badge, and star rating. You will build a new {_platform === "Android" ? <><IC>@Composable</IC> function called <IC>AlbumRow</IC></> : <>view called <IC>AlbumRow</IC></>} in a separate file, then swap it into your list screen in the next step.</p>
 
-          <VStep num={1} title="Create the row skeleton with an avatar">
+          <VStep num="a" title="Create the row skeleton with an avatar">
             <p style={{ fontSize: 13, margin: "0 0 8px" }}>Create a new file called <IC>{_platform === "Android" ? "AlbumRow.kt" : "AlbumRow.swift"}</IC>. Define {_platform === "Android" ? <>a <IC>@Composable</IC> function <IC>AlbumRow</IC> that takes an <IC>Album</IC> parameter. Inside, add a <IC>Row</IC> with <IC>fillMaxWidth()</IC>, 6dp vertical padding, a white background with 12dp rounded corners, 12dp inner padding, and 12dp spacing between children. Center children vertically.</> : <>a <IC>struct AlbumRow: View</IC> with a <IC>let album: Album</IC> property. In the body, add an <IC>HStack(spacing: 12)</IC> with 12pt padding, a white background, and 12pt corner radius.</>}</p>
             <p style={{ fontSize: 13, margin: "0 0 8px" }}>Inside that container, add a circular avatar showing the artist{"'"}s first initial: {_platform === "Android" ? <>a 52dp <IC>Box</IC> with a purple (<IC>0xFF534AB7</IC>) <IC>CircleShape</IC> background, centered content, and a bold white 22sp <IC>Text</IC> showing <IC>album.artist.first().toString()</IC>.</> : <>a 52×52 <IC>Circle()</IC> filled with purple (rgb 0.33, 0.29, 0.72), with a <IC>.overlay</IC> containing a bold white <IC>.title2</IC> <IC>Text</IC> showing <IC>String(album.artist.prefix(1))</IC>.</>}</p>
             {_platform === "Android" ? (
@@ -384,7 +384,7 @@ fun AlbumRow(album: Album) {
             </Section>
           </VStep>
 
-          <VStep num={2} title="Add the album info column">
+          <VStep num="b" title="Add the album info column">
             <p style={{ fontSize: 13, margin: "0 0 8px" }}>Inside the {_platform === "Android" ? <IC>Row</IC> : <IC>HStack</IC>}, after the avatar, add {_platform === "Android" ? <>a <IC>Column</IC> with <IC>Modifier.weight(1f)</IC> so it fills the remaining horizontal space. Inside, add: a bold 15sp title (<IC>album.title</IC>), a gray 13sp artist name (<IC>album.artist</IC>), a 4dp spacer, and a nested <IC>Row</IC> containing a genre badge and year.</> : <>a <IC>VStack(alignment: .leading, spacing: 2)</IC> containing: a bold <IC>.subheadline</IC> title, a gray <IC>.caption</IC> artist name, and an inner <IC>HStack(spacing: 6)</IC> with a genre badge and year. After the VStack, add a <IC>Spacer()</IC> to push content left.</>}</p>
             <p style={{ fontSize: 13, margin: "0 0 8px" }}>For the genre badge, display <IC>album.genre</IC> as small text ({_platform === "Android" ? "11sp" : ".caption2"}) in purple on a light-purple background with rounded-pill corners ({_platform === "Android" ? "20dp" : "20pt"} radius). Show the year next to it in gray.</p>
             {_platform === "Android" ? (
@@ -516,7 +516,7 @@ fun AlbumRow(album: Album) {
             </Section>
           </VStep>
 
-          <VStep num={3} title="Add the star rating" last>
+          <VStep num="c" title="Add the star rating" last>
             <p style={{ fontSize: 13, margin: "0 0 8px" }}>After the {_platform === "Android" ? <>info <IC>Column</IC> (still inside the outer <IC>Row</IC>)</> : <><IC>Spacer()</IC> (still inside the <IC>HStack</IC>)</>}, add a small rating display: {_platform === "Android" ? <>a <IC>Column</IC> with <IC>Alignment.CenterHorizontally</IC> containing a gold (<IC>0xFFEF9F27</IC>) star character at 18sp, and the numeric rating below it in gray 11sp text.</> : <>a <IC>VStack(spacing: 2)</IC> containing a gold (rgb 0.94, 0.62, 0.15) star character, and the numeric rating below it in gray <IC>.caption2</IC> text.</>}</p>
             <Section title={`✅ Check your work — show me the complete ${_platform === "Android" ? "AlbumRow.kt" : "AlbumRow.swift"}`}>
               {_platform === "Android" ? (
@@ -697,7 +697,7 @@ fun AlbumListScreen() {
         <VStep num={5} title="Wire up navigation to the detail screen">
           <p style={{ fontSize: 13, color: "var(--color-text-secondary)", margin: "0 0 8px" }}>Tapping a row should navigate to a detail screen that shows all the album{"'"}s fields. You will make three changes: make rows tappable, add a provided detail screen, and wire up the navigation controller.</p>
 
-          <VStep num={1} title="Make rows tappable">
+          <VStep num="a" title="Make rows tappable">
             {_platform === "Android" ? (
               <>
                 <p style={{ fontSize: 13, margin: "0 0 8px" }}>Two changes are needed. First, add an <IC>onClick: () -&gt; Unit = {"{}"}</IC> parameter to your <IC>AlbumRow</IC> composable, then add a <IC>.clickable {"{"} onClick() {"}"}</IC> modifier on the outer <IC>Row</IC> (place it <em>before</em> the padding and background modifiers). Second, add an <IC>onAlbumClicked: (Album) -&gt; Unit = {"{}"}</IC> parameter to <IC>AlbumListScreen</IC> and pass it through: <IC>AlbumRow(album = album, onClick = {"{"} onAlbumClicked(album) {"}"})</IC>.</p>
@@ -787,7 +787,7 @@ fun AlbumListScreen(onAlbumClicked: (Album) -> Unit = {}) {
             )}
           </VStep>
 
-          <VStep num={2} title="Add the pre-built detail screen">
+          <VStep num="b" title="Add the pre-built detail screen">
             <p style={{ fontSize: 13, margin: "0 0 8px" }}>Create a new file called <IC>{_platform === "Android" ? "AlbumDetailScreen.kt" : "AlbumDetailScreen.swift"}</IC> and paste in the detail screen below. You do not need to build this from scratch — it is provided so you can focus on navigation wiring. Read through it to understand the layout.</p>
             {_platform === "Android" ? (
               <CodeB title="Kotlin — AlbumDetailScreen.kt (provided)" accent={BL}>{`@Composable
@@ -912,7 +912,7 @@ fun AlbumDetailScreen(album: Album, onBack: () -> Unit) {
             )}
           </VStep>
 
-          <VStep num={3} title={_platform === "Android" ? "Set up the NavHost" : "Verify navigation works"} last>
+          <VStep num="c" title={_platform === "Android" ? "Set up the NavHost" : "Verify navigation works"} last>
             {_platform === "Android" ? (
               <>
                 <p style={{ fontSize: 13, margin: "0 0 8px" }}>Replace your <IC>setContent {"{ ... }"}</IC> block in <IC>MainActivity.kt</IC> with a <IC>NavHost</IC> that defines two routes: <IC>"home"</IC> (showing <IC>AlbumListScreen</IC>) and <IC>"detail/{"{albumId}"}"</IC> (showing <IC>AlbumDetailScreen</IC>). Create a <IC>rememberNavController()</IC> to manage the back stack. In the home route, call <IC>navController.navigate("detail/${"{album.id}"}")</IC> when an album is clicked. In the detail route, extract the album ID from <IC>entry.arguments</IC>, find the matching album, and pass <IC>navController.popBackStack()</IC> as the <IC>onBack</IC> handler.</p>
@@ -1236,7 +1236,7 @@ function Session2Lab({ platform: _platform }: { platform: string }) {
             <>
               <p style={{ fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 1.7, margin: "0 0 12px" }}>You will make three changes: wrap your navigation in a shared transition scope, tag the avatar in the list row, and tag the same avatar in the detail screen with a matching key.</p>
 
-              <VStep num={1} title="Wrap NavHost in SharedTransitionLayout">
+              <VStep num="a" title="Wrap NavHost in SharedTransitionLayout">
                 <p style={{ fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 1.7, margin: "0 0 8px" }}>In <IC>MainActivity.kt</IC>, wrap your existing <IC>NavHost</IC> inside a <IC>SharedTransitionLayout</IC> block. This gives all composables inside it access to the shared transition scope. You also need to pass <IC>this</IC> (the <IC>AnimatedVisibilityScope</IC>) down to each screen via a new parameter called <IC>animatedVisibilityScope</IC>.</p>
                 <Tip><IC>SharedTransitionLayout</IC> creates a coordinate system that tracks tagged elements across screens. Without it, Compose has no way to know which elements should animate together during navigation.</Tip>
                 <Section title="💡 Show me the syntax">
@@ -1295,7 +1295,7 @@ function Session2Lab({ platform: _platform }: { platform: string }) {
                 </Section>
               </VStep>
 
-              <VStep num={2} title="Tag the avatar in AlbumRow">
+              <VStep num="b" title="Tag the avatar in AlbumRow">
                 <p style={{ fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 1.7, margin: "0 0 8px" }}>Open <IC>AlbumRow</IC>. You need to make two changes: (1) change the function signature so it is an extension on <IC>SharedTransitionScope</IC> and accepts an <IC>animatedVisibilityScope</IC> parameter, and (2) add the <IC>.sharedElement()</IC> modifier to the avatar <IC>Box</IC>. The key string must include the album's ID so each row's avatar is uniquely tracked — use <IC>{"\"avatar-${album.id}\""}</IC>.</p>
                 <Section title="💡 Show me the syntax">
                   <p style={{ fontSize: 13, margin: "0 0 6px" }}>To make a composable participate in shared transitions, define it as <IC>fun SharedTransitionScope.AlbumRow(...)</IC> instead of <IC>fun AlbumRow(...)</IC>. Then use <IC>Modifier.sharedElement()</IC> on the element to animate:</p>
@@ -1386,7 +1386,7 @@ fun SharedTransitionScope.AlbumRow(
                 </Section>
               </VStep>
 
-              <VStep num={3} title="Tag the avatar in AlbumDetailScreen with the same key" last>
+              <VStep num="c" title="Tag the avatar in AlbumDetailScreen with the same key" last>
                 <p style={{ fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 1.7, margin: "0 0 8px" }}>Open <IC>AlbumDetailScreen</IC> and make the same two changes: (1) change the function signature to an extension on <IC>SharedTransitionScope</IC> with an <IC>animatedVisibilityScope</IC> parameter (you can remove the <IC>onBack</IC> parameter since the system back button handles navigation), and (2) add <IC>.sharedElement()</IC> to the large avatar <IC>Box</IC> with <strong>the exact same key string</strong> — <IC>{"\"avatar-${album.id}\""}</IC>. The keys must match for the framework to know these are the same object.</p>
                 <Tip>The matching key is everything. If the key in AlbumRow is <IC>{"\"avatar-${album.id}\""}</IC> and the key in AlbumDetailScreen is <IC>{"\"detail-avatar-${album.id}\""}</IC>, the framework will treat them as different elements and no animation will happen.</Tip>
                 <Section title="✅ Check your work — show me the complete AlbumDetailScreen">
@@ -1473,7 +1473,7 @@ fun SharedTransitionScope.AlbumDetailScreen(
             <>
               <p style={{ fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 1.7, margin: "0 0 12px" }}>You will make two changes: create a shared animation namespace and mark the source element in the list, then add a zoom transition on the detail destination.</p>
 
-              <VStep num={1} title="Create the namespace and mark the transition source">
+              <VStep num="a" title="Create the namespace and mark the transition source">
                 <p style={{ fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 1.7, margin: "0 0 8px" }}>In <IC>ContentView.swift</IC>, add a <IC>@Namespace</IC> property called <IC>animation</IC>. This creates a shared coordinate space that SwiftUI uses to track matched elements across views. Pass it into <IC>AlbumListScreen</IC> as a new parameter. Then in <IC>AlbumListScreen</IC>, accept <IC>animation: Namespace.ID</IC> and add <IC>.matchedTransitionSource(id: album.id, in: animation)</IC> to each <IC>NavigationLink</IC>. This tells SwiftUI: "this row is the origin point for a transition."</p>
                 <Tip><IC>@Namespace</IC> is like a shared whiteboard — any view that writes an ID into the same namespace can be paired with another view using the same ID. SwiftUI handles the rest.</Tip>
                 <Section title="💡 Show me the syntax">
@@ -1546,7 +1546,7 @@ NavigationLink(value: item.id) { ... }
                 </Section>
               </VStep>
 
-              <VStep num={2} title="Add the zoom transition to the detail destination" last>
+              <VStep num="b" title="Add the zoom transition to the detail destination" last>
                 <p style={{ fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 1.7, margin: "0 0 8px" }}>Inside <IC>.navigationDestination</IC> in <IC>AlbumListScreen</IC>, add <IC>.navigationTransition(.zoom(sourceID: id, in: animation))</IC> to the <IC>AlbumDetailScreen</IC>. The <IC>sourceID</IC> must match the <IC>id</IC> you used in <IC>.matchedTransitionSource</IC> — this is how SwiftUI connects the source row to the detail screen for the animation.</p>
                 <Section title="✅ Check your work — show me the updated navigationDestination">
                   <CodeB title="Swift — the updated navigationDestination block" accent={GR}>{`.navigationDestination(for: Int.self) { id in
