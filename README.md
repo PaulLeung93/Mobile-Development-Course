@@ -18,7 +18,7 @@ Historically, offering separate Android and iOS tracks split the student base. T
 ### 2. AI as a Tool & a Feature
 This course weaves AI directly into the fundamental fabric of mobile development:
 - **AI as a Developer Tool:** Learn how to strategically leverage tools like Claude and Copilot to bridge syntax gaps, scaffold boilerplate, author unit tests, and accelerate development velocity.
-- **AI as a Product Feature:** Learn how to engineer AI-native applications by integrating cloud LLM APIs (focusing on streaming responses and managing AI-generated UI states) and harnessing On-Device AI (like ML Kit and Core ML) for privacy-first, low-latency edge inference.
+- **AI as a Product Feature:** While AI is prominent across all sectors, mobile development is uniquely positioned to showcase its full potential. Unlike the web, mobile offers a multimodal playground. A mobile device’s camera, microphone, and sensors are the "sensory organs" for AI. This course empowers students to build applications that don't just "chat," but see, hear, and react to the user’s environment in real-time.
 
 ### 3. Pragmatic, Industry-Ready Engineering
 While AI serves as an incredible force multiplier, building resilient applications requires deep native platform knowledge. Students learn critical engineering practices:
