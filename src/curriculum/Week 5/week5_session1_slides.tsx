@@ -63,7 +63,55 @@ const Notes = ({ children }) => (
   </div>
 );
 
-const Shell = ({ tag, timer, title, subtitle, children, notes }) => (
+const preStyle = { margin: 0, background: "#1e1e2e", color: "#cdd6f4", fontSize: 10, padding: "8px 12px", borderRadius: 6, lineHeight: 1.6, fontFamily: "monospace", whiteSpace: "pre-wrap" as const };
+
+const OSToggle = ({ android, ios }: { [k: string]: any }) => {
+  const [platform, setPlatform] = useState<'android' | 'ios'>('android');
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+      <div style={{ display: "flex", borderRadius: 8, overflow: "hidden", border: "1px solid #e5e7eb", width: "fit-content" }}>
+        <button onClick={() => setPlatform('android')} style={{ padding: "5px 16px", fontSize: 11, fontWeight: 700, letterSpacing: ".04em", background: platform === 'android' ? PURPLE : "#fff", color: platform === 'android' ? "#fff" : MUTED, border: "none", borderRight: "1px solid #e5e7eb", cursor: "pointer" }}>
+          Android · Kotlin
+        </button>
+        <button onClick={() => setPlatform('ios')} style={{ padding: "5px 16px", fontSize: 11, fontWeight: 700, letterSpacing: ".04em", background: platform === 'ios' ? TEAL : "#fff", color: platform === 'ios' ? "#fff" : MUTED, border: "none", cursor: "pointer" }}>
+          iOS · Swift
+        </button>
+      </div>
+      {platform === 'android' ? android : ios}
+    </div>
+  );
+};
+
+const Step = ({ n, title, children, accent = PURPLE }: { [k: string]: any }) => (
+  <div style={{ marginBottom: 10, paddingLeft: 24, borderLeft: `2px solid #e5e7eb`, position: "relative" }}>
+    <div style={{ position: "absolute", left: -14, top: 0, width: 26, height: 26, borderRadius: "50%", background: "#fff", border: `2px solid ${accent}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 800, color: accent }}>
+      {n}
+    </div>
+    <p style={{ fontSize: 12, fontWeight: 700, color: TEXT, margin: "2px 0 6px" }}>{title}</p>
+    <div>{children}</div>
+  </div>
+);
+
+const ViewToggle = ({ steps, full }: { [k: string]: any }) => {
+  const [view, setView] = useState<'steps' | 'full'>('steps');
+  return (
+    <div>
+      <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 6 }}>
+        <div style={{ display: "flex", borderRadius: 20, overflow: "hidden", border: "1px solid #e5e7eb", width: "fit-content" }}>
+          <button onClick={() => setView('steps')} style={{ padding: "3px 12px", fontSize: 10, fontWeight: 700, letterSpacing: ".04em", background: view === 'steps' ? PURPLE : "#fff", color: view === 'steps' ? "#fff" : MUTED, border: "none", borderRight: "1px solid #e5e7eb", cursor: "pointer" }}>
+            Step by step
+          </button>
+          <button onClick={() => setView('full')} style={{ padding: "3px 12px", fontSize: 10, fontWeight: 700, letterSpacing: ".04em", background: view === 'full' ? PURPLE : "#fff", color: view === 'full' ? "#fff" : MUTED, border: "none", cursor: "pointer" }}>
+            Full code
+          </button>
+        </div>
+      </div>
+      {view === 'steps' ? steps : full}
+    </div>
+  );
+};
+
+const Shell = ({ tag, timer, title, subtitle, children, notes }: { [k: string]: any }) => (
   <div style={{ background: "var(--color-background-primary)", border: "0.5px solid var(--color-border-tertiary)", borderRadius: 12, padding: "20px 22px", minHeight: 340 }}>
     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 12 }}>
       <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
@@ -233,123 +281,49 @@ const slides = [
     </Shell>
   ),
 
-  // 7: Room — Entity
+  // 7: Define the entity / model
   () => (
-    <Shell tag="Android · Room" timer="5" title="Room — defining the entity" subtitle="A data class that describes one row in your database" notes="The @Entity annotation is the key idea here. Walk through each annotation out loud: @Entity tells Room this class is a table, @PrimaryKey(autoGenerate=true) means Room assigns the ID, @ColumnInfo lets you rename columns. Stress that this is just a Kotlin data class with annotations — nothing exotic.">
-      <div style={{ display: "flex", gap: 12 }}>
-        <CodePane title="Kotlin — FavouriteEntity.kt" accent={PURPLE}>{`@Entity(tableName = "favourites")
+    <Shell tag="Code-Along · 1 of 3" timer="6" title="Step 1 — Define your data model" subtitle="The class that describes one saved item" notes="OSToggle lets students follow along on their own platform. @Entity (Kotlin) and @Model (Swift) serve identical purposes — mark this parallel explicitly. Stress that this is just an annotated data class/final class — nothing exotic yet.">
+      <div style={{ marginTop: 8 }}>
+        <ViewToggle
+          steps={
+            <OSToggle
+              android={
+                <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                  <Step n={1} title="Add the Room dependency to build.gradle.kts">
+                    <pre style={preStyle}>{`// build.gradle.kts (module)
+implementation("androidx.room:room-runtime:2.6.1")
+implementation("androidx.room:room-ktx:2.6.1")
+kapt("androidx.room:room-compiler:2.6.1")`}</pre>
+                  </Step>
+                  <Step n={2} title="Create FavouriteItem.kt — annotate each field">
+                    <pre style={preStyle}>{`@Entity(tableName = "favourites")
 data class FavouriteItem(
-    @PrimaryKey(autoGenerate = true)
-    val id: Int = 0,
-
-    @ColumnInfo(name = "item_id")
-    val itemId: String,
-
+    @PrimaryKey(autoGenerate = true) val id: Int = 0,
+    @ColumnInfo(name = "item_id") val itemId: String,
     val title: String,
     val imageUrl: String,
     val savedAt: Long = System.currentTimeMillis()
-)`}</CodePane>
-        <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: 8 }}>
-          <div style={{ background: PURPLE_LIGHT, borderRadius: 8, padding: "10px 12px" }}>
-            <p style={{ fontSize: 11, fontWeight: 600, color: PURPLE_DARK, margin: "0 0 4px" }}>@Entity</p>
-            <p style={{ fontSize: 11, color: PURPLE, margin: 0, lineHeight: 1.5 }}>Tells Room to create a database table for this class. tableName is optional — defaults to the class name.</p>
-          </div>
-          <div style={{ background: TEAL_LIGHT, borderRadius: 8, padding: "10px 12px" }}>
-            <p style={{ fontSize: 11, fontWeight: 600, color: TEAL_DARK, margin: "0 0 4px" }}>@PrimaryKey</p>
-            <p style={{ fontSize: 11, color: TEAL_DARK, margin: 0, lineHeight: 1.5 }}>Every table needs a unique ID. autoGenerate=true means Room increments it automatically.</p>
-          </div>
-          <div style={{ background: AMBER_LIGHT, borderRadius: 8, padding: "10px 12px" }}>
-            <p style={{ fontSize: 11, fontWeight: 600, color: "#633806", margin: "0 0 4px" }}>@ColumnInfo</p>
-            <p style={{ fontSize: 11, color: "#633806", margin: 0, lineHeight: 1.5 }}>Optional — rename the column in the database without renaming the Kotlin property.</p>
-          </div>
-        </div>
-      </div>
-    </Shell>
-  ),
-
-  // 8: Room — DAO
-  () => (
-    <Shell tag="Android · Room" timer="5" title="Room — the DAO" subtitle="An interface that describes what you want to do with the database" notes="Emphasise that this is just an interface — no implementation. Room generates all the boilerplate at compile time. The Flow<List<>> return type is the key teachable moment: the UI observes this flow, and every time the database changes, the list automatically updates. No manual refresh needed.">
-      <div style={{ display: "flex", gap: 12 }}>
-        <CodePane title="Kotlin — FavouriteDao.kt" accent={PURPLE}>{`@Dao
-interface FavouriteDao {
-
-    @Query("SELECT * FROM favourites ORDER BY savedAt DESC")
-    fun getAllFavourites(): Flow<List<FavouriteItem>>
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertFavourite(item: FavouriteItem)
-
-    @Delete
-    suspend fun deleteFavourite(item: FavouriteItem)
-
-    @Query("SELECT EXISTS(SELECT 1 FROM favourites WHERE item_id = :id)")
-    fun isFavourite(id: String): Flow<Boolean>
-}`}</CodePane>
-        <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: 8 }}>
-          <div style={{ background: PURPLE_LIGHT, borderRadius: 8, padding: "10px 12px" }}>
-            <p style={{ fontSize: 11, fontWeight: 600, color: PURPLE_DARK, margin: "0 0 3px" }}>Flow return type</p>
-            <p style={{ fontSize: 11, color: PURPLE, margin: 0 }}>The UI observes this like a live stream — when a favourite is added or removed, the list updates automatically.</p>
-          </div>
-          <div style={{ background: TEAL_LIGHT, borderRadius: 8, padding: "10px 12px" }}>
-            <p style={{ fontSize: 11, fontWeight: 600, color: TEAL_DARK, margin: "0 0 3px" }}>suspend fun</p>
-            <p style={{ fontSize: 11, color: TEAL_DARK, margin: 0 }}>Write and delete operations are suspend functions — they run off the main thread so the UI never freezes.</p>
-          </div>
-          <div style={{ background: AMBER_LIGHT, borderRadius: 8, padding: "10px 12px" }}>
-            <p style={{ fontSize: 11, fontWeight: 600, color: "#633806", margin: "0 0 3px" }}>@Query</p>
-            <p style={{ fontSize: 11, color: "#633806", margin: 0 }}>Room checks your SQL at compile time — typos become build errors, not runtime crashes.</p>
-          </div>
-        </div>
-      </div>
-    </Shell>
-  ),
-
-  // 9: Room — Database + wiring
-  () => (
-    <Shell tag="Android · Room" timer="5" title="Room — wiring it together" subtitle="The database class and how to use it in your ViewModel" notes="Singleton pattern is important here — only one instance of the database should exist in the app. The companion object with context is the standard pattern. Walk through the ViewModel code slowly: the Flow from the DAO is collected as State in the ViewModel, which the Compose UI observes. Students should recognise this pattern from the networking week.">
-      <div style={{ display: "flex", gap: 12 }}>
-        <CodePane title="Kotlin — AppDatabase.kt" accent={PURPLE}>{`@Database(entities = [FavouriteItem::class], version = 1)
-abstract class AppDatabase : RoomDatabase() {
-    abstract fun favouriteDao(): FavouriteDao
-
-    companion object {
-        @Volatile private var INSTANCE: AppDatabase? = null
-
-        fun getDatabase(context: Context): AppDatabase {
-            return INSTANCE ?: synchronized(this) {
-                Room.databaseBuilder(
-                    context.applicationContext,
-                    AppDatabase::class.java,
-                    "app_database"
-                ).build().also { INSTANCE = it }
-            }
-        }
-    }
-}
-
-// In your ViewModel:
-class FavouritesViewModel(private val dao: FavouriteDao) : ViewModel() {
-    val favourites = dao.getAllFavourites()
-        .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
-
-    fun toggleFavourite(item: FavouriteItem) = viewModelScope.launch {
-        if (dao.isFavourite(item.itemId).first()) dao.deleteFavourite(item)
-        else dao.insertFavourite(item)
-    }
-}`}</CodePane>
-        <div style={{ flex: 1 }}>
-          <Info>{"@Volatile + synchronized prevents two threads from creating two database instances simultaneously — the standard Room singleton pattern."}</Info>
-          <Info>{"stateIn converts the Flow from the DAO into a StateFlow the Compose UI can collect. You have already used this pattern in Week 4."}</Info>
-        </div>
-      </div>
-    </Shell>
-  ),
-
-  // 10: SwiftData — @Model
-  () => (
-    <Shell tag="iOS · SwiftData" timer="5" title="SwiftData — defining the model" subtitle="A Swift class that describes one record in your database" notes="SwiftData is Apple's modern replacement for Core Data, introduced in iOS 17. The @Model macro does what Room's @Entity + annotations do — it marks a class as persistable. The main difference from Room: Swift uses a class (not a struct) for SwiftData models, and the @Model macro generates all the observability infrastructure automatically. Highlight the parallel: @Model ≈ @Entity + @ColumnInfo.">
-      <div style={{ display: "flex", gap: 12 }}>
-        <CodePane title="Swift — FavouriteItem.swift" accent={TEAL}>{`import SwiftData
+)`}</pre>
+                  </Step>
+                  <div style={{ display: "flex", flexDirection: "column", gap: 6, marginTop: 4 }}>
+                    {[["@Entity", PURPLE_LIGHT, PURPLE_DARK, PURPLE, "Tells Room to create a table for this class. tableName defaults to the class name."], ["@PrimaryKey", TEAL_LIGHT, TEAL_DARK, TEAL_DARK, "Every row needs a unique ID. autoGenerate=true means Room assigns it."], ["@ColumnInfo", AMBER_LIGHT, "#633806", "#633806", "Optional — rename the column without renaming the Kotlin property."]].map(([label, bg, fg, body_fg, body]) => (
+                      <div key={label as string} style={{ background: bg as string, borderRadius: 6, padding: "6px 10px" }}>
+                        <p style={{ fontSize: 11, fontWeight: 600, color: fg as string, margin: "0 0 2px" }}>{label as string}</p>
+                        <p style={{ fontSize: 11, color: body_fg as string, margin: 0 }}>{body as string}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              }
+              ios={
+                <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                  <Step n={1} title="Import SwiftData — no dependency manager needed" accent={TEAL}>
+                    <pre style={preStyle}>{`// SwiftData is built into iOS 17+.
+// Add "import SwiftData" wherever you need it.`}</pre>
+                  </Step>
+                  <Step n={2} title="Create FavouriteItem.swift — add the @Model macro" accent={TEAL}>
+                    <pre style={preStyle}>{`import SwiftData
 
 @Model
 final class FavouriteItem {
@@ -360,76 +334,291 @@ final class FavouriteItem {
 
     init(itemId: String, title: String,
          imageUrl: String, savedAt: Date = .now) {
-        self.itemId = itemId
-        self.title  = title
+        self.itemId   = itemId
+        self.title    = title
         self.imageUrl = imageUrl
         self.savedAt  = savedAt
     }
-}`}</CodePane>
-        <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: 8 }}>
-          <div style={{ background: TEAL_LIGHT, borderRadius: 8, padding: "10px 12px" }}>
-            <p style={{ fontSize: 11, fontWeight: 600, color: TEAL_DARK, margin: "0 0 3px" }}>@Model</p>
-            <p style={{ fontSize: 11, color: TEAL_DARK, margin: 0 }}>One macro replaces @Entity, @PrimaryKey, and @ColumnInfo. Swift generates an automatic unique identifier.</p>
-          </div>
-          <div style={{ background: PURPLE_LIGHT, borderRadius: 8, padding: "10px 12px" }}>
-            <p style={{ fontSize: 11, fontWeight: 600, color: PURPLE_DARK, margin: "0 0 3px" }}>class, not struct</p>
-            <p style={{ fontSize: 11, color: PURPLE, margin: 0 }}>SwiftData models must be classes — they use reference semantics so the framework can track changes and sync to disk.</p>
-          </div>
-          <div style={{ background: AMBER_LIGHT, borderRadius: 8, padding: "10px 12px" }}>
-            <p style={{ fontSize: 11, fontWeight: 600, color: "#633806", margin: "0 0 3px" }}>No schema setup</p>
-            <p style={{ fontSize: 11, color: "#633806", margin: 0 }}>Unlike Room, there is no database builder class. The ModelContainer is configured at the App entry point — one line.</p>
-          </div>
-        </div>
+}`}</pre>
+                  </Step>
+                  <div style={{ display: "flex", flexDirection: "column", gap: 6, marginTop: 4 }}>
+                    {[["@Model", TEAL_LIGHT, TEAL_DARK, TEAL_DARK, "One macro replaces @Entity + @PrimaryKey + @ColumnInfo. Swift auto-generates a unique ID."], ["class, not struct", PURPLE_LIGHT, PURPLE_DARK, PURPLE, "SwiftData models must be classes — reference semantics let the framework track changes."], ["No schema setup", AMBER_LIGHT, "#633806", "#633806", "Unlike Room, there is no database builder class. The ModelContainer is one line at the App entry point."]].map(([label, bg, fg, body_fg, body]) => (
+                      <div key={label as string} style={{ background: bg as string, borderRadius: 6, padding: "6px 10px" }}>
+                        <p style={{ fontSize: 11, fontWeight: 600, color: fg as string, margin: "0 0 2px" }}>{label as string}</p>
+                        <p style={{ fontSize: 11, color: body_fg as string, margin: 0 }}>{body as string}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              }
+            />
+          }
+          full={
+            <OSToggle
+              android={<CodePane title="Kotlin — FavouriteItem.kt" accent={PURPLE}>{`@Entity(tableName = "favourites")
+data class FavouriteItem(
+    @PrimaryKey(autoGenerate = true) val id: Int = 0,
+    @ColumnInfo(name = "item_id") val itemId: String,
+    val title: String,
+    val imageUrl: String,
+    val savedAt: Long = System.currentTimeMillis()
+)`}</CodePane>}
+              ios={<CodePane title="Swift — FavouriteItem.swift" accent={TEAL}>{`import SwiftData
+
+@Model
+final class FavouriteItem {
+    var itemId: String
+    var title: String
+    var imageUrl: String
+    var savedAt: Date
+
+    init(itemId: String, title: String,
+         imageUrl: String, savedAt: Date = .now) {
+        self.itemId   = itemId
+        self.title    = title
+        self.imageUrl = imageUrl
+        self.savedAt  = savedAt
+    }
+}`}</CodePane>}
+            />
+          }
+        />
       </div>
+      <Info>{"@Model (iOS) ≈ @Entity + @PrimaryKey + @ColumnInfo (Android). Different syntax, identical purpose."}</Info>
     </Shell>
   ),
 
-  // 11: SwiftData — querying and saving
+  // 8: Define the DAO / ModelContext operations
   () => (
-    <Shell tag="iOS · SwiftData" timer="5" title="SwiftData — querying and saving" subtitle="@Query for live updates, ModelContext for writes" notes="@Query is the SwiftData equivalent of a Room Flow — it is a live query that automatically updates the SwiftUI view whenever the underlying data changes. ModelContext is the SwiftData equivalent of the DAO — you insert and delete through it. The parallel is close enough that you can draw a table on the board: @Model ↔ @Entity, @Query ↔ Flow from DAO, ModelContext ↔ DAO suspend functions, ModelContainer ↔ AppDatabase.">
-      <div style={{ display: "flex", gap: 12 }}>
-        <CodePane title="Swift — FavouritesView.swift" accent={TEAL}>{`import SwiftUI
+    <Shell tag="Code-Along · 2 of 3" timer="6" title="Step 2 — Define your query interface" subtitle="Room: a DAO interface · SwiftData: ModelContext + @Query" notes="Emphasise that the DAO is just an interface — no implementation. Room generates all the boilerplate at compile time. The Flow return type is the key moment: the UI observes this live stream. For iOS, @Query is equivalent — a live property that re-renders the view on every database change. ModelContext is equivalent to DAO write operations.">
+      <div style={{ marginTop: 8 }}>
+        <ViewToggle
+          steps={
+            <OSToggle
+              android={
+                <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                  <Step n={1} title="Create FavouriteDao.kt — declare the interface">
+                    <pre style={preStyle}>{`@Dao
+interface FavouriteDao {
+    // READ — returns a live Flow (no suspend needed)
+    @Query("SELECT * FROM favourites ORDER BY savedAt DESC")
+    fun getAllFavourites(): Flow<List<FavouriteItem>>
+
+    // CHECK — is a specific item saved?
+    @Query("SELECT EXISTS(SELECT 1 FROM favourites WHERE item_id = :id)")
+    fun isFavourite(id: String): Flow<Boolean>
+}`}</pre>
+                  </Step>
+                  <Step n={2} title="Add write operations — insert and delete">
+                    <pre style={preStyle}>{`    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertFavourite(item: FavouriteItem)
+
+    @Delete
+    suspend fun deleteFavourite(item: FavouriteItem)`}</pre>
+                  </Step>
+                  <div style={{ display: "flex", flexDirection: "column", gap: 6, marginTop: 4 }}>
+                    {[["Flow return type", PURPLE_LIGHT, PURPLE_DARK, PURPLE, "Read queries return Flow — the UI observes it like a live stream. No manual refresh needed."], ["suspend fun", TEAL_LIGHT, TEAL_DARK, TEAL_DARK, "Write/delete are suspend functions — they run off the main thread so the UI never freezes."], ["@Query compile-time check", AMBER_LIGHT, "#633806", "#633806", "Room validates your SQL at build time — typos become build errors, not runtime crashes."]].map(([label, bg, fg, body_fg, body]) => (
+                      <div key={label as string} style={{ background: bg as string, borderRadius: 6, padding: "6px 10px" }}>
+                        <p style={{ fontSize: 11, fontWeight: 600, color: fg as string, margin: "0 0 2px" }}>{label as string}</p>
+                        <p style={{ fontSize: 11, color: body_fg as string, margin: 0 }}>{body as string}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              }
+              ios={
+                <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                  <Step n={1} title="Add @Query to your view — a live property" accent={TEAL}>
+                    <pre style={preStyle}>{`import SwiftUI
 import SwiftData
 
 struct FavouritesView: View {
-    @Environment(\\.modelContext) private var context
-    @Query(sort: \\.savedAt, order: .reverse)
+    // Injected by SwiftUI — no manual passing needed
+    @Environment(\.modelContext) private var context
+
+    // Live query — re-renders view on every DB change
+    @Query(sort: \.savedAt, order: .reverse)
     private var favourites: [FavouriteItem]
-
-    var body: some View {
-        List(favourites) { item in
-            Text(item.title)
-        }
-    }
-}
-
-// To add a favourite from any view:
+    ...
+}`}</pre>
+                  </Step>
+                  <Step n={2} title="Use ModelContext for insert and delete" accent={TEAL}>
+                    <pre style={preStyle}>{`// Insert a new favourite:
 context.insert(FavouriteItem(
     itemId: result.id,
     title:  result.title,
     imageUrl: result.imageUrl
 ))
 
-// To delete:
-context.delete(item)
+// Delete an existing one:
+context.delete(item)  // must be the actual model instance`}</pre>
+                  </Step>
+                  <div style={{ display: "flex", flexDirection: "column", gap: 6, marginTop: 4 }}>
+                    {[["@Query", TEAL_LIGHT, TEAL_DARK, TEAL_DARK, "A live property — when you insert or delete via ModelContext, this array updates and the view re-renders automatically."], ["@Environment(.modelContext)", PURPLE_LIGHT, PURPLE_DARK, PURPLE, "SwiftData injects the context through SwiftUI's environment — no need to pass it manually through the view hierarchy."]].map(([label, bg, fg, body_fg, body]) => (
+                      <div key={label as string} style={{ background: bg as string, borderRadius: 6, padding: "6px 10px" }}>
+                        <p style={{ fontSize: 11, fontWeight: 600, color: fg as string, margin: "0 0 2px" }}>{label as string}</p>
+                        <p style={{ fontSize: 11, color: body_fg as string, margin: 0 }}>{body as string}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              }
+            />
+          }
+          full={
+            <OSToggle
+              android={<CodePane title="Kotlin — FavouriteDao.kt" accent={PURPLE}>{`@Dao
+interface FavouriteDao {
+    @Query("SELECT * FROM favourites ORDER BY savedAt DESC")
+    fun getAllFavourites(): Flow<List<FavouriteItem>>
 
-// In your App entry point — one line:
-.modelContainer(for: FavouriteItem.self)`}</CodePane>
-        <div style={{ flex: 1 }}>
-          <div style={{ background: TEAL_LIGHT, borderRadius: 8, padding: "10px 12px", marginBottom: 8 }}>
-            <p style={{ fontSize: 11, fontWeight: 600, color: TEAL_DARK, margin: "0 0 3px" }}>@Query</p>
-            <p style={{ fontSize: 11, color: TEAL_DARK, margin: 0 }}>A live query bound to the view. When you insert or delete through ModelContext, this array updates and the view re-renders. Equivalent to collecting a Room Flow.</p>
-          </div>
-          <div style={{ background: PURPLE_LIGHT, borderRadius: 8, padding: "10px 12px" }}>
-            <p style={{ fontSize: 11, fontWeight: 600, color: PURPLE_DARK, margin: "0 0 3px" }}>@Environment(.modelContext)</p>
-            <p style={{ fontSize: 11, color: PURPLE, margin: 0 }}>SwiftData injects the ModelContext through SwiftUI's environment system. No need to pass it manually through the view hierarchy.</p>
-          </div>
-        </div>
+    @Query("SELECT EXISTS(SELECT 1 FROM favourites WHERE item_id = :id)")
+    fun isFavourite(id: String): Flow<Boolean>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertFavourite(item: FavouriteItem)
+
+    @Delete
+    suspend fun deleteFavourite(item: FavouriteItem)
+}`}</CodePane>}
+              ios={<CodePane title="Swift — FavouritesView.swift (read + write)" accent={TEAL}>{`struct FavouritesView: View {
+    @Environment(\.modelContext) private var context
+    @Query(sort: \.savedAt, order: .reverse)
+    private var favourites: [FavouriteItem]
+
+    var body: some View {
+        List(favourites) { item in Text(item.title) }
+    }
+}
+
+// Insert:  context.insert(FavouriteItem(...))
+// Delete:  context.delete(item)`}</CodePane>}
+            />
+          }
+        />
       </div>
+      <Info>{"Room DAO ≈ SwiftData ModelContext. Both expose insert/delete operations. Both drive automatic UI updates through Flow (Kotlin) / @Query (Swift)."}</Info>
     </Shell>
   ),
 
-  // 12: Side-by-side comparison
+  // 9: Wire up the database / App entry point
+  () => (
+    <Shell tag="Code-Along · 3 of 3" timer="6" title="Step 3 — Wire up the database" subtitle="Room: AppDatabase + ViewModel · SwiftData: .modelContainer at the App entry point" notes="Singleton pattern is critical on Android — only one AppDatabase instance should exist. On iOS, .modelContainer(for:) does all the wiring in one line at the App entry point. Compare these side-by-side to show students how much SwiftData handles automatically.">
+      <div style={{ marginTop: 8 }}>
+        <ViewToggle
+          steps={
+            <OSToggle
+              android={
+                <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                  <Step n={1} title="Create AppDatabase.kt — the singleton database class">
+                    <pre style={preStyle}>{`@Database(entities = [FavouriteItem::class], version = 1)
+abstract class AppDatabase : RoomDatabase() {
+    abstract fun favouriteDao(): FavouriteDao
+
+    companion object {
+        @Volatile private var INSTANCE: AppDatabase? = null
+
+        fun getDatabase(context: Context): AppDatabase {
+            return INSTANCE ?: synchronized(this) {
+                Room.databaseBuilder(
+                    context.applicationContext,
+                    AppDatabase::class.java, "app_database"
+                ).build().also { INSTANCE = it }
+            }
+        }
+    }
+}`}</pre>
+                  </Step>
+                  <Step n={2} title="Wire the DAO into your ViewModel">
+                    <pre style={preStyle}>{`class FavouritesViewModel(private val dao: FavouriteDao) : ViewModel() {
+    val favourites = dao.getAllFavourites()
+        .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
+
+    fun toggleFavourite(item: FavouriteItem) = viewModelScope.launch {
+        if (dao.isFavourite(item.itemId).first()) dao.deleteFavourite(item)
+        else dao.insertFavourite(item)
+    }
+}`}</pre>
+                  </Step>
+                </div>
+              }
+              ios={
+                <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                  <Step n={1} title="Add .modelContainer to your App entry point — one line" accent={TEAL}>
+                    <pre style={preStyle}>{`import SwiftUI
+import SwiftData
+
+@main
+struct AlbumBrowserApp: App {
+    var body: some Scene {
+        WindowGroup {
+            ContentView()
+        }
+        // This one modifier creates the database,
+        // schema, and injects the ModelContext automatically
+        .modelContainer(for: FavouriteItem.self)
+    }
+}`}</pre>
+                  </Step>
+                  <Step n={2} title="That's it — SwiftData injects the context into every view" accent={TEAL}>
+                    <pre style={preStyle}>{`// In any child view, just declare:
+@Environment(\.modelContext) private var context
+@Query private var favourites: [FavouriteItem]
+
+// No AppDatabase class. No singleton. No ViewModel boilerplate.
+// The framework handles it all.`}</pre>
+                  </Step>
+                  <div style={{ background: TEAL_LIGHT, borderRadius: 6, padding: "6px 10px", marginTop: 4 }}>
+                    <p style={{ fontSize: 11, fontWeight: 600, color: TEAL_DARK, margin: "0 0 2px" }}>Why so much less code?</p>
+                    <p style={{ fontSize: 11, color: TEAL_DARK, margin: 0 }}>SwiftData is built on Observation — the @Model macro generates all the change-tracking infrastructure automatically. Room's annotation processor does similar work, but requires you to wire more pieces together manually.</p>
+                  </div>
+                </div>
+              }
+            />
+          }
+          full={
+            <OSToggle
+              android={<CodePane title="Kotlin — AppDatabase.kt + ViewModel" accent={PURPLE}>{`@Database(entities = [FavouriteItem::class], version = 1)
+abstract class AppDatabase : RoomDatabase() {
+    abstract fun favouriteDao(): FavouriteDao
+    companion object {
+        @Volatile private var INSTANCE: AppDatabase? = null
+        fun getDatabase(context: Context): AppDatabase =
+            INSTANCE ?: synchronized(this) {
+                Room.databaseBuilder(context.applicationContext,
+                    AppDatabase::class.java, "app_database")
+                    .build().also { INSTANCE = it }
+            }
+    }
+}
+
+class FavouritesViewModel(private val dao: FavouriteDao) : ViewModel() {
+    val favourites = dao.getAllFavourites()
+        .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
+    fun toggleFavourite(item: FavouriteItem) = viewModelScope.launch {
+        if (dao.isFavourite(item.itemId).first()) dao.deleteFavourite(item)
+        else dao.insertFavourite(item)
+    }
+}`}</CodePane>}
+              ios={<CodePane title="Swift — AlbumBrowserApp.swift" accent={TEAL}>{`import SwiftUI
+import SwiftData
+
+@main
+struct AlbumBrowserApp: App {
+    var body: some Scene {
+        WindowGroup { ContentView() }
+        .modelContainer(for: FavouriteItem.self)
+    }
+}`}</CodePane>}
+            />
+          }
+        />
+      </div>
+      <Info>{"Android needs: @Database class + singleton + ViewModel wiring. iOS needs: one .modelContainer modifier. Same result — a persistent, observable database."}</Info>
+    </Shell>
+  ),
+
+  // 10: Side-by-side comparison
   () => (
     <Shell tag="Comparison" timer="4" title="Room vs SwiftData — the parallels" notes="This comparison slide is one of the most valuable in the course — it makes students fluent in both platforms simultaneously. Point out that despite different naming conventions, the mental models are identical. A student who understands Room already understands SwiftData conceptually.">
       <div style={{ overflowX: "auto" }}>
