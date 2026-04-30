@@ -64,6 +64,25 @@ const Warn = ({ title, children }) => (
   </div>
 );
 
+const ViewToggle = ({ steps, full }) => {
+  const [view, setView] = useState<'steps' | 'full'>('steps');
+  return (
+    <div>
+      <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 6 }}>
+        <div style={{ display: "flex", borderRadius: 20, overflow: "hidden", border: "1px solid #e5e7eb", width: "fit-content" }}>
+          <button onClick={() => setView('steps')} style={{ padding: "3px 12px", fontSize: 10, fontWeight: 700, letterSpacing: ".04em", background: view === 'steps' ? PURPLE : "#fff", color: view === 'steps' ? "#fff" : MUTED, border: "none", borderRight: "1px solid #e5e7eb", cursor: "pointer" }}>
+            Step by step
+          </button>
+          <button onClick={() => setView('full')} style={{ padding: "3px 12px", fontSize: 10, fontWeight: 700, letterSpacing: ".04em", background: view === 'full' ? PURPLE : "#fff", color: view === 'full' ? "#fff" : MUTED, border: "none", cursor: "pointer" }}>
+            Full code
+          </button>
+        </div>
+      </div>
+      {view === 'steps' ? steps : full}
+    </div>
+  );
+};
+
 const Shell = ({ tag, title, subtitle, timer, children, notes, dark }) => (
   <div style={{ background: dark ? PURPLE_DARK : "#fff", border: `1px solid ${dark ? "transparent" : "#e5e7eb"}`, borderRadius: 12, padding: "24px 28px 18px", minHeight: 360, display: "flex", flexDirection: "column", boxSizing: "border-box" }}>
     <div style={{ marginBottom: 12 }}>
@@ -274,11 +293,13 @@ const slides = [
   // 7: Shared Elements in code
   () => (
     <Shell tag="Code implementation" timer="10" title="Shared Elements: Step by Step" subtitle="Wrapping the navigation and tagging the views" notes="Explain how we attach a unique identifier to the element we want to animate out of. Emphasize that the ID must EXACTLY match the source ID. That's the secret.">
-      <OSToggle
-        android={
-          <>
-            <Step n={1} title="The Wrapper (SharedTransitionLayout)" accent={PURPLE}>
-              <CodePane accent={PURPLE}>
+      <ViewToggle
+        steps={
+          <OSToggle
+            android={
+              <>
+                <Step n={1} title="The Wrapper (SharedTransitionLayout)" accent={PURPLE}>
+                  <CodePane accent={PURPLE}>
 {`// Wrap your entire NavHost
 SharedTransitionLayout {
     NavHost(navController = navController, startDestination = "home") {
@@ -290,10 +311,10 @@ SharedTransitionLayout {
         // ... detail composable ...
     }
 }`}
-              </CodePane>
-            </Step>
-            <Step n={2} title="Tagging the Source (List Row)" accent={PURPLE}>
-              <CodePane accent={PURPLE}>
+                  </CodePane>
+                </Step>
+                <Step n={2} title="Tagging the Source (List Row)" accent={PURPLE}>
+                  <CodePane accent={PURPLE}>
 {`// Inside AlbumRow's avatar Box:
 Box(
     modifier = Modifier.sharedElement(
@@ -303,10 +324,10 @@ Box(
         animatedVisibilityScope = animatedVisibilityScope
     )
 ) { /* avatar content */ }`}
-              </CodePane>
-            </Step>
-            <Step n={3} title="Tagging the Destination (Detail)" accent={PURPLE}>
-              <CodePane accent={PURPLE}>
+                  </CodePane>
+                </Step>
+                <Step n={3} title="Tagging the Destination (Detail)" accent={PURPLE}>
+                  <CodePane accent={PURPLE}>
 {`// Inside AlbumDetailScreen's avatar Box:
 Box(
     modifier = Modifier.sharedElement(
@@ -316,14 +337,14 @@ Box(
         animatedVisibilityScope = animatedVisibilityScope
     )
 ) { /* larger avatar content */ }`}
-              </CodePane>
-            </Step>
-          </>
-        }
-        ios={
-          <>
-            <Step n={1} title="The Wrapper (@Namespace)" accent={TEAL}>
-              <CodePane accent={TEAL}>
+                  </CodePane>
+                </Step>
+              </>
+            }
+            ios={
+              <>
+                <Step n={1} title="The Wrapper (@Namespace)" accent={TEAL}>
+                  <CodePane accent={TEAL}>
 {`// 1. Declare a namespace for matching
 @Namespace private var animation
 
@@ -337,35 +358,98 @@ NavigationStack {
         // ... destination view ...
     }
 }`}
-              </CodePane>
-            </Step>
-            <Step n={2} title="Tagging the Source (List Row)" accent={TEAL}>
-              <CodePane accent={TEAL}>
+                  </CodePane>
+                </Step>
+                <Step n={2} title="Tagging the Source (List Row)" accent={TEAL}>
+                  <CodePane accent={TEAL}>
 {`// Attach to the NavigationLink in the list
 NavigationLink(value: album.id) {
     AlbumRow(album: album)
 }
 .matchedTransitionSource(
-    id: album.id, 
+    id: album.id,
     in: animation
 )
 // In SwiftUI, tagging the link is often enough for the zoom transition`}
-              </CodePane>
-            </Step>
-            <Step n={3} title="Tagging the Destination (Detail)" accent={TEAL}>
-              <CodePane accent={TEAL}>
+                  </CodePane>
+                </Step>
+                <Step n={3} title="Tagging the Destination (Detail)" accent={TEAL}>
+                  <CodePane accent={TEAL}>
 {`// Attach to the destination view
 AlbumDetailScreen(album: album)
     .navigationTransition(
         .zoom(
-            sourceID: album.id, 
+            sourceID: album.id,
             in: animation
         )
     )
 // The ID matches the source link ID, creating the connection`}
+                  </CodePane>
+                </Step>
+              </>
+            }
+          />
+        }
+        full={
+          <OSToggle
+            android={
+              <CodePane title="Kotlin — all 3 steps together" accent={PURPLE}>
+{`// 1. Wrap the NavHost
+SharedTransitionLayout {
+    NavHost(navController = navController, startDestination = "home") {
+        composable("home") {
+            AlbumListScreen(
+                animatedVisibilityScope = this
+            )
+        }
+        composable("detail/{albumId}") { backStack ->
+            AlbumDetailScreen(
+                animatedVisibilityScope = this
+            )
+        }
+    }
+}
+
+// 2. Tag the source — inside AlbumRow's avatar Box:
+Box(
+    modifier = Modifier.sharedElement(
+        state = rememberSharedContentState(key = "avatar-\${album.id}"),
+        animatedVisibilityScope = animatedVisibilityScope
+    )
+) { /* avatar content */ }
+
+// 3. Tag the destination — inside AlbumDetailScreen's avatar Box:
+Box(
+    modifier = Modifier.sharedElement(
+        state = rememberSharedContentState(key = "avatar-\${album.id}"),
+        animatedVisibilityScope = animatedVisibilityScope
+    )
+) { /* larger avatar content */ }`}
               </CodePane>
-            </Step>
-          </>
+            }
+            ios={
+              <CodePane title="Swift — all 3 steps together" accent={TEAL}>
+{`// 1. Declare the namespace + 2. tag the source in the list
+@Namespace private var animation
+
+NavigationStack {
+    List(albums) { album in
+        NavigationLink(value: album.id) {
+            AlbumRow(album: album)
+        }
+        .matchedTransitionSource(id: album.id, in: animation)
+    }
+    .navigationDestination(for: Int.self) { id in
+        // 3. Tag the destination view
+        AlbumDetailScreen(album: albumFor(id))
+            .navigationTransition(
+                .zoom(sourceID: id, in: animation)
+            )
+    }
+}`}
+              </CodePane>
+            }
+          />
         }
       />
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginTop: 8 }}>
@@ -532,11 +616,13 @@ AlbumDetailScreen(album: album)
   // 13: Adaptive Refactor in code
   () => (
     <Shell tag="Code implementation" timer="12" title="Adaptive Refactor: Step by Step" subtitle="Detecting the screen size and switching layouts" notes="Show how we detect the window size class and set up our state variable. Then show the wide layout where we don't navigate, followed by the narrow layout where we do navigate.">
-      <OSToggle
-        android={
-          <>
-            <Step n={1} title="Detect screen size & set up state" accent={PURPLE}>
-              <CodePane accent={PURPLE}>
+      <ViewToggle
+        steps={
+          <OSToggle
+            android={
+              <>
+                <Step n={1} title="Detect screen size & set up state" accent={PURPLE}>
+                  <CodePane accent={PURPLE}>
 {`@Composable
 fun AlbumApp() {
     // 1. Detect screen size
@@ -545,10 +631,10 @@ fun AlbumApp() {
 
     // 2. State for the tablet layout
     var selectedAlbum by remember { mutableStateOf<Album?>(null) }`}
-              </CodePane>
-            </Step>
-            <Step n={2} title="The Tablet Path (Side-by-side)" accent={PURPLE}>
-              <CodePane accent={PURPLE}>
+                  </CodePane>
+                </Step>
+                <Step n={2} title="The Tablet Path (Side-by-side)" accent={PURPLE}>
+                  <CodePane accent={PURPLE}>
 {`    if (isExpanded) {
         Row(Modifier.fillMaxSize()) {
             AlbumListScreen(
@@ -560,10 +646,10 @@ fun AlbumApp() {
             }
         }
     }`}
-              </CodePane>
-            </Step>
-            <Step n={3} title="The Phone Path (Navigation push)" accent={PURPLE}>
-              <CodePane accent={PURPLE}>
+                  </CodePane>
+                </Step>
+                <Step n={3} title="The Phone Path (Navigation push)" accent={PURPLE}>
+                  <CodePane accent={PURPLE}>
 {`    } else {
         val navController = rememberNavController()
         NavHost(navController, "home") {
@@ -578,14 +664,14 @@ fun AlbumApp() {
         }
     }
 }`}
-              </CodePane>
-            </Step>
-          </>
-        }
-        ios={
-          <>
-            <Step n={1} title="Detect screen size & set up state" accent={TEAL}>
-              <CodePane accent={TEAL}>
+                  </CodePane>
+                </Step>
+              </>
+            }
+            ios={
+              <>
+                <Step n={1} title="Detect screen size & set up state" accent={TEAL}>
+                  <CodePane accent={TEAL}>
 {`struct AlbumApp: View {
     // 1. Detect screen size
     @Environment(\\.horizontalSizeClass) var sizeClass
@@ -594,10 +680,10 @@ fun AlbumApp() {
     @State private var selectedAlbum: Album?
 
     var body: some View {`}
-              </CodePane>
-            </Step>
-            <Step n={2} title="The Tablet Path (Split View)" accent={TEAL}>
-              <CodePane accent={TEAL}>
+                  </CodePane>
+                </Step>
+                <Step n={2} title="The Tablet Path (Split View)" accent={TEAL}>
+                  <CodePane accent={TEAL}>
 {`        if sizeClass == .regular {
             NavigationSplitView {
                 // Pass binding to list
@@ -610,10 +696,10 @@ fun AlbumApp() {
                 }
             }
         }`}
-              </CodePane>
-            </Step>
-            <Step n={3} title="The Phone Path (Navigation push)" accent={TEAL}>
-              <CodePane accent={TEAL}>
+                  </CodePane>
+                </Step>
+                <Step n={3} title="The Phone Path (Navigation push)" accent={TEAL}>
+                  <CodePane accent={TEAL}>
 {`        } else {
             NavigationStack {
                 AlbumListScreen()
@@ -622,9 +708,75 @@ fun AlbumApp() {
         }
     }
 }`}
+                  </CodePane>
+                </Step>
+              </>
+            }
+          />
+        }
+        full={
+          <OSToggle
+            android={
+              <CodePane title="Kotlin — complete adaptive app" accent={PURPLE}>
+{`@Composable
+fun AlbumApp() {
+    val windowInfo = currentWindowAdaptiveInfo()
+    val isExpanded = windowInfo.windowSizeClass.windowWidthSizeClass == WindowWidthSizeClass.EXPANDED
+    var selectedAlbum by remember { mutableStateOf<Album?>(null) }
+
+    if (isExpanded) {
+        Row(Modifier.fillMaxSize()) {
+            AlbumListScreen(
+                modifier = Modifier.weight(1f),
+                onAlbumClicked = { selectedAlbum = it }
+            )
+            selectedAlbum?.let { album ->
+                AlbumDetailScreen(album = album, modifier = Modifier.weight(1.5f))
+            }
+        }
+    } else {
+        val navController = rememberNavController()
+        NavHost(navController, "home") {
+            composable("home") {
+                AlbumListScreen(
+                    onAlbumClicked = { album ->
+                        navController.navigate("detail/\${album.id}")
+                    }
+                )
+            }
+            composable("detail/{albumId}") { /*...*/ }
+        }
+    }
+}`}
               </CodePane>
-            </Step>
-          </>
+            }
+            ios={
+              <CodePane title="Swift — complete adaptive app" accent={TEAL}>
+{`struct AlbumApp: View {
+    @Environment(\\.horizontalSizeClass) var sizeClass
+    @State private var selectedAlbum: Album?
+
+    var body: some View {
+        if sizeClass == .regular {
+            NavigationSplitView {
+                AlbumListScreen(selectedAlbum: $selectedAlbum)
+            } detail: {
+                if let album = selectedAlbum {
+                    AlbumDetailScreen(album: album)
+                } else {
+                    Text("Select an album").foregroundColor(.gray)
+                }
+            }
+        } else {
+            NavigationStack {
+                AlbumListScreen()
+            }
+        }
+    }
+}`}
+              </CodePane>
+            }
+          />
         }
       />
     </Shell>

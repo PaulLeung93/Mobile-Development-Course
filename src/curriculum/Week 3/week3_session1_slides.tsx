@@ -66,6 +66,48 @@ const Warn = ({ title, children }) => (
   </div>
 );
 
+const OSToggle = ({ android, ios }) => {
+  const [platform, setPlatform] = useState<'android' | 'ios'>('android');
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+      <div style={{ display: "flex", borderRadius: 8, overflow: "hidden", border: "1px solid #e5e7eb", width: "fit-content", marginBottom: 2 }}>
+        <button
+          onClick={() => setPlatform('android')}
+          style={{ padding: "5px 16px", fontSize: 11, fontWeight: 700, letterSpacing: ".04em", background: platform === 'android' ? PURPLE : "#fff", color: platform === 'android' ? "#fff" : MUTED, border: "none", borderRight: "1px solid #e5e7eb", cursor: "pointer" }}
+        >
+          Android · Kotlin
+        </button>
+        <button
+          onClick={() => setPlatform('ios')}
+          style={{ padding: "5px 16px", fontSize: 11, fontWeight: 700, letterSpacing: ".04em", background: platform === 'ios' ? TEAL : "#fff", color: platform === 'ios' ? "#fff" : MUTED, border: "none", cursor: "pointer" }}
+        >
+          iOS · Swift
+        </button>
+      </div>
+      {platform === 'android' ? android : ios}
+    </div>
+  );
+};
+
+const ViewToggle = ({ steps, full }) => {
+  const [view, setView] = useState<'steps' | 'full'>('steps');
+  return (
+    <div>
+      <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 6 }}>
+        <div style={{ display: "flex", borderRadius: 20, overflow: "hidden", border: "1px solid #e5e7eb", width: "fit-content" }}>
+          <button onClick={() => setView('steps')} style={{ padding: "3px 12px", fontSize: 10, fontWeight: 700, letterSpacing: ".04em", background: view === 'steps' ? PURPLE : "#fff", color: view === 'steps' ? "#fff" : MUTED, border: "none", borderRight: "1px solid #e5e7eb", cursor: "pointer" }}>
+            Step by step
+          </button>
+          <button onClick={() => setView('full')} style={{ padding: "3px 12px", fontSize: 10, fontWeight: 700, letterSpacing: ".04em", background: view === 'full' ? PURPLE : "#fff", color: view === 'full' ? "#fff" : MUTED, border: "none", cursor: "pointer" }}>
+            Full code
+          </button>
+        </div>
+      </div>
+      {view === 'steps' ? steps : full}
+    </div>
+  );
+};
+
 const Shell = ({ tag, title, subtitle, timer, children, notes, dark }) => (
   <div style={{ background: dark ? PURPLE_DARK : "#fff", border: `1px solid ${dark ? "transparent" : "#e5e7eb"}`, borderRadius: 12, padding: "24px 28px 18px", minHeight: 360, display: "flex", flexDirection: "column", boxSizing: "border-box" }}>
     <div style={{ marginBottom: 12 }}>
@@ -444,10 +486,14 @@ List(sampleAlbums, id: \\.id) { album in
   () => (
     <Shell tag="Custom rows" title="Building AlbumRow — the code" notes="Walk through each section of the row in both platforms in parallel. Point out how weight(1f) / Spacer() pushes the rating to the right edge — this is the same layout intent expressed differently in each framework. Compose uses weight to consume remaining space; SwiftUI uses an explicit Spacer view.">
       <div style={{ marginTop: 10 }}>
-        <Step n="1" title="Outer Container" accent={PURPLE}>
-          <div style={{ display: "flex", gap: 10 }}>
-            <CodePane title="Compose (Row)" accent={PURPLE}>
-              {`Row(
+        <ViewToggle
+          steps={
+            <OSToggle
+              android={
+                <>
+                  <Step n="1" title="Outer Container" accent={PURPLE}>
+                    <CodePane title="Compose (Row)" accent={PURPLE}>
+                      {`Row(
     modifier = Modifier
         .fillMaxWidth()
         .background(Color.White, RoundedCornerShape(12.dp))
@@ -455,76 +501,151 @@ List(sampleAlbums, id: \\.id) { album in
     verticalAlignment = Alignment.CenterVertically,
     horizontalArrangement = Arrangement.spacedBy(12.dp)
 ) { ... }`}
-            </CodePane>
-            <CodePane title="SwiftUI (HStack)" accent={TEAL}>
-              {`HStack(spacing: 12) {
-    // Content...
-}
-.padding(12)
-.background(Color.white)
-.cornerRadius(12)`}
-            </CodePane>
-          </div>
-        </Step>
-
-        <Step n="2" title="Leading Avatar" accent={TEAL}>
-          <div style={{ display: "flex", gap: 10 }}>
-            <CodePane title="Compose" accent={PURPLE}>
-              {`Box(
+                    </CodePane>
+                  </Step>
+                  <Step n="2" title="Leading Avatar" accent={PURPLE}>
+                    <CodePane accent={PURPLE}>
+                      {`Box(
     modifier = Modifier.size(52.dp)
         .background(Color(0xFF534AB7), CircleShape),
     contentAlignment = Alignment.Center
 ) {
     Text(album.artist.first().toString(), ...)
 }`}
-            </CodePane>
-            <CodePane title="SwiftUI" accent={TEAL}>
-              {`Circle()
+                    </CodePane>
+                  </Step>
+                  <Step n="3" title="Central Content Column — weight(1f)" accent={PURPLE}>
+                    <CodePane accent={PURPLE}>
+                      {`Column(modifier = Modifier.weight(1f)) {
+    Text(album.title, fontWeight = FontWeight.Bold)
+    Text(album.artist, color = Color.Gray)
+    // Genre badge...
+}`}
+                    </CodePane>
+                  </Step>
+                  <Step n="4" title="Trailing Element" accent={PURPLE}>
+                    <CodePane accent={PURPLE}>
+                      {`Column(horizontalAlignment = Alignment.CenterHorizontally) {
+    Text("★", color = Color(0xFFEF9F27))
+    Text(album.rating.toString(), fontSize = 11.sp)
+}`}
+                    </CodePane>
+                  </Step>
+                </>
+              }
+              ios={
+                <>
+                  <Step n="1" title="Outer Container" accent={TEAL}>
+                    <CodePane title="SwiftUI (HStack)" accent={TEAL}>
+                      {`HStack(spacing: 12) {
+    // Content...
+}
+.padding(12)
+.background(Color.white)
+.cornerRadius(12)`}
+                    </CodePane>
+                  </Step>
+                  <Step n="2" title="Leading Avatar" accent={TEAL}>
+                    <CodePane accent={TEAL}>
+                      {`Circle()
     .fill(Color.indigo)
     .frame(width: 52, height: 52)
     .overlay(
         Text(String(album.artist.prefix(1))) ...
     )`}
-            </CodePane>
-          </div>
-        </Step>
-
-        <Step n="3" title="Central Content Column" accent={PURPLE}>
-          <div style={{ display: "flex", gap: 10 }}>
-            <CodePane title="Compose — weight(1f)" accent={PURPLE}>
-              {`Column(modifier = Modifier.weight(1f)) {
-    Text(album.title, fontWeight = FontWeight.Bold)
-    Text(album.artist, color = Color.Gray)
-    // Genre badge...
-}`}
-            </CodePane>
-            <CodePane title="SwiftUI — VStack" accent={TEAL}>
-              {`VStack(alignment: .leading) {
+                    </CodePane>
+                  </Step>
+                  <Step n="3" title="Central Content — VStack + Spacer()" accent={TEAL}>
+                    <CodePane accent={TEAL}>
+                      {`VStack(alignment: .leading) {
     Text(album.title).bold()
     Text(album.artist).foregroundColor(.gray)
     // Genre badge...
 }
 Spacer() // Pushes content to the left`}
-            </CodePane>
-          </div>
-        </Step>
-
-        <Step n="4" title="Trailing Element" accent={TEAL}>
-          <div style={{ display: "flex", gap: 10 }}>
-            <CodePane title="Star Rating" accent={PURPLE}>
-              {`Column(horizontalAlignment = Alignment.CenterHorizontally) {
-    Text("★", color = Color(0xFFEF9F27))
-    Text(album.rating.toString(), fontSize = 11.sp)
-}`}
-            </CodePane>
-            <CodePane title="SwiftUI" accent={TEAL}>
-              {`VStack {
+                    </CodePane>
+                  </Step>
+                  <Step n="4" title="Trailing Element" accent={TEAL}>
+                    <CodePane accent={TEAL}>
+                      {`VStack {
     Text("★").foregroundColor(.orange)
     Text("\\(album.rating)").font(.caption)
 }`}
-            </CodePane>
-          </div>
-        </Step>
+                    </CodePane>
+                  </Step>
+                </>
+              }
+            />
+          }
+          full={
+            <OSToggle
+              android={
+                <CodePane title="Compose — AlbumRow complete" accent={PURPLE}>
+                  {`@Composable
+fun AlbumRow(album: Album) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(Color.White, RoundedCornerShape(12.dp))
+            .padding(12.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        Box(
+            modifier = Modifier.size(52.dp)
+                .background(Color(0xFF534AB7), CircleShape),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(album.artist.first().toString(), ...)
+        }
+        Column(modifier = Modifier.weight(1f)) {
+            Text(album.title, fontWeight = FontWeight.Bold)
+            Text(album.artist, color = Color.Gray)
+            // Genre badge...
+        }
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Text("★", color = Color(0xFFEF9F27))
+            Text(album.rating.toString(), fontSize = 11.sp)
+        }
+    }
+}`}
+                </CodePane>
+              }
+              ios={
+                <CodePane title="SwiftUI — AlbumRow complete" accent={TEAL}>
+                  {`struct AlbumRow: View {
+    let album: Album
+    var body: some View {
+        HStack(spacing: 12) {
+            Circle()
+                .fill(Color.indigo)
+                .frame(width: 52, height: 52)
+                .overlay(
+                    Text(String(album.artist.prefix(1)))
+                        .font(.title2).bold()
+                        .foregroundColor(.white)
+                )
+            VStack(alignment: .leading) {
+                Text(album.title).bold()
+                Text(album.artist).foregroundColor(.gray)
+                // Genre badge...
+            }
+            Spacer()
+            VStack {
+                Text("★").foregroundColor(.orange)
+                Text("\\(album.rating)").font(.caption)
+            }
+        }
+        .padding(12)
+        .background(Color.white)
+        .cornerRadius(12)
+    }
+}`}
+                </CodePane>
+              }
+            />
+          }
+        />
       </div>
     </Shell>
   ),
@@ -655,10 +776,14 @@ Spacer() // Pushes content to the left`}
   () => (
     <Shell tag="Live code-along" title="Part 1 — data model and basic list" notes="Type the data class/struct first, then the basic list with plain Text. Run it — students should see a plain scrollable list of album titles. Point out that it scrolls — even with plain Text, LazyColumn/List handles scrolling automatically. This is the foundation we build on.">
       <div style={{ marginTop: 10 }}>
-        <Step n="1" title="Define the Data Model" accent={PURPLE}>
-          <p style={{ fontSize: 12, color: MUTED, margin: "0 0 8px" }}>Define the fields each Album will have. Both platforms use the same shape — the Swift version requires <code>Identifiable</code> conformance so SwiftUI's List can track each row uniquely.</p>
-          <div style={{ display: "flex", gap: 10 }}>
-            <CodePane title="Compose" accent={PURPLE}>{`data class Album(
+        <ViewToggle
+          steps={
+            <OSToggle
+              android={
+                <>
+                  <Step n="1" title="Define the Data Model" accent={PURPLE}>
+                    <p style={{ fontSize: 12, color: MUTED, margin: "0 0 8px" }}>Define the fields each Album will have. Add an <code>id</code> field so Compose can track each row uniquely with the <code>key</code> parameter.</p>
+                    <CodePane accent={PURPLE}>{`data class Album(
     val id: Int,
     val title: String,
     val artist: String,
@@ -667,7 +792,33 @@ Spacer() // Pushes content to the left`}
     val tracks: Int,
     val rating: Double
 )`}</CodePane>
-            <CodePane title="SwiftUI" accent={TEAL}>{`struct Album: Identifiable {
+                  </Step>
+                  <Step n="2" title="Define Sample Data" accent={PURPLE}>
+                    <p style={{ fontSize: 12, color: MUTED, margin: "0 0 8px" }}>Create a hardcoded list of test albums. This stands in for the real API data you will add in Week 4.</p>
+                    <CodePane accent={PURPLE}>{`val sampleAlbums = listOf(
+    Album(1, "Rumours", "Fleetwood Mac", ...),
+    Album(2, "Kind of Blue", "Miles Davis", ...),
+    // ... add more items
+)`}</CodePane>
+                  </Step>
+                  <Step n="3" title="Create a Basic List Screen" accent={PURPLE}>
+                    <p style={{ fontSize: 12, color: MUTED, margin: "0 0 8px" }}>Get a scrollable list on screen with plain Text rows first — confirm the data flows before adding styling.</p>
+                    <CodePane accent={PURPLE}>{`@Composable
+fun AlbumListScreen() {
+    LazyColumn(modifier = Modifier.fillMaxSize()) {
+        items(sampleAlbums, key = { it.id }) { album ->
+            Text(text = album.title)
+        }
+    }
+}`}</CodePane>
+                  </Step>
+                </>
+              }
+              ios={
+                <>
+                  <Step n="1" title="Define the Data Model" accent={TEAL}>
+                    <p style={{ fontSize: 12, color: MUTED, margin: "0 0 8px" }}>The Swift version requires <code>Identifiable</code> conformance so SwiftUI's List can track each row uniquely — same concept as Compose's <code>key</code> parameter.</p>
+                    <CodePane accent={TEAL}>{`struct Album: Identifiable {
     let id: Int
     let title: String
     let artist: String
@@ -676,37 +827,18 @@ Spacer() // Pushes content to the left`}
     let tracks: Int
     let rating: Double
 }`}</CodePane>
-          </div>
-        </Step>
-
-        <Step n="2" title="Define Sample Data" accent={TEAL}>
-          <p style={{ fontSize: 12, color: MUTED, margin: "0 0 8px" }}>Create a hardcoded list of test albums. This stands in for the real API data you will add in Week 4 — and the list screen will barely change when that happens.</p>
-          <div style={{ display: "flex", gap: 10 }}>
-            <CodePane title="Compose" accent={PURPLE}>{`val sampleAlbums = listOf(
-    Album(1, "Rumours", "Fleetwood Mac", ...),
-    Album(2, "Kind of Blue", "Miles Davis", ...),
-    // ... add more items
-)`}</CodePane>
-            <CodePane title="SwiftUI" accent={TEAL}>{`let sampleAlbums: [Album] = [
+                  </Step>
+                  <Step n="2" title="Define Sample Data" accent={TEAL}>
+                    <p style={{ fontSize: 12, color: MUTED, margin: "0 0 8px" }}>Create a hardcoded array of test albums. This stands in for the real API data you will add in Week 4.</p>
+                    <CodePane accent={TEAL}>{`let sampleAlbums: [Album] = [
     Album(id: 1, title: "Rumours", artist: "Fleetwood Mac", ...),
     Album(id: 2, title: "Kind of Blue", artist: "Miles Davis", ...),
     // ... add more items
 ]`}</CodePane>
-          </div>
-        </Step>
-
-        <Step n="3" title="Create a Basic List Screen" accent={PURPLE}>
-          <p style={{ fontSize: 12, color: MUTED, margin: "0 0 8px" }}>Get a scrollable list on screen before adding any styling. Start with plain Text rows to confirm the data is flowing — you will replace them with the styled AlbumRow in Part 2.</p>
-          <div style={{ display: "flex", gap: 10 }}>
-            <CodePane title="Compose" accent={PURPLE}>{`@Composable
-fun AlbumListScreen() {
-    LazyColumn(modifier = Modifier.fillMaxSize()) {
-        items(sampleAlbums, key = { it.id }) { album ->
-            Text(text = album.title)
-        }
-    }
-}`}</CodePane>
-            <CodePane title="SwiftUI" accent={TEAL}>{`struct AlbumListScreen: View {
+                  </Step>
+                  <Step n="3" title="Create a Basic List Screen" accent={TEAL}>
+                    <p style={{ fontSize: 12, color: MUTED, margin: "0 0 8px" }}>Get a scrollable list on screen with plain Text rows first — confirm the data flows before adding styling.</p>
+                    <CodePane accent={TEAL}>{`struct AlbumListScreen: View {
     var body: some View {
         List(sampleAlbums) { album in
             Text(album.title)
@@ -714,8 +846,70 @@ fun AlbumListScreen() {
         .listStyle(.plain)
     }
 }`}</CodePane>
-          </div>
-        </Step>
+                  </Step>
+                </>
+              }
+            />
+          }
+          full={
+            <OSToggle
+              android={
+                <CodePane title="Kotlin — data model + list" accent={PURPLE}>{`data class Album(
+    val id: Int,
+    val title: String,
+    val artist: String,
+    val year: Int,
+    val genre: String,
+    val tracks: Int,
+    val rating: Double
+)
+
+val sampleAlbums = listOf(
+    Album(1, "Rumours", "Fleetwood Mac", 1977, "Rock", 11, 4.9),
+    Album(2, "Kind of Blue", "Miles Davis", 1959, "Jazz", 5, 4.8),
+    // ... add more items
+)
+
+@Composable
+fun AlbumListScreen() {
+    LazyColumn(modifier = Modifier.fillMaxSize()) {
+        items(sampleAlbums, key = { it.id }) { album ->
+            Text(text = album.title)
+        }
+    }
+}`}</CodePane>
+              }
+              ios={
+                <CodePane title="Swift — data model + list" accent={TEAL}>{`struct Album: Identifiable {
+    let id: Int
+    let title: String
+    let artist: String
+    let year: Int
+    let genre: String
+    let tracks: Int
+    let rating: Double
+}
+
+let sampleAlbums: [Album] = [
+    Album(id: 1, title: "Rumours", artist: "Fleetwood Mac",
+          year: 1977, genre: "Rock", tracks: 11, rating: 4.9),
+    Album(id: 2, title: "Kind of Blue", artist: "Miles Davis",
+          year: 1959, genre: "Jazz", tracks: 5, rating: 4.8),
+    // ... add more items
+]
+
+struct AlbumListScreen: View {
+    var body: some View {
+        List(sampleAlbums) { album in
+            Text(album.title)
+        }
+        .listStyle(.plain)
+    }
+}`}</CodePane>
+              }
+            />
+          }
+        />
       </div>
     </Shell>
   ),
@@ -724,10 +918,14 @@ fun AlbumListScreen() {
   () => (
     <Shell tag="Live code-along" title="Part 2 — building and connecting AlbumRow" notes="Now replace the plain Text with the styled row. Build AlbumRow as a separate component first, then plug it into the list. Remind students this is the same component extraction pattern from Week 1. Also call out the Compose vs SwiftUI differences: background modifier vs .background() view modifier, CircleShape vs Circle(), weight(1f) vs Spacer().">
       <div style={{ marginTop: 10 }}>
-        <Step n="4" title="Build the Row Component" accent={PURPLE}>
-          <p style={{ fontSize: 12, color: MUTED, margin: "0 0 8px" }}>Extract the row UI into its own Composable or View before wiring it into the list. Building it in isolation makes it easier to style and iterate on.</p>
-          <div style={{ display: "flex", gap: 10 }}>
-            <CodePane title="Compose" accent={PURPLE}>{`@Composable
+        <ViewToggle
+          steps={
+            <OSToggle
+              android={
+                <>
+                  <Step n="4" title="Build the Row Component" accent={PURPLE}>
+                    <p style={{ fontSize: 12, color: MUTED, margin: "0 0 8px" }}>Extract the row UI into its own Composable before wiring it into the list. Building it in isolation makes it easier to style and iterate on.</p>
+                    <CodePane accent={PURPLE}>{`@Composable
 fun AlbumRow(album: Album) {
     Row(
         modifier = Modifier.fillMaxWidth().padding(12.dp),
@@ -736,7 +934,29 @@ fun AlbumRow(album: Album) {
         // Avatar, Content (weight 1f), Rating
     }
 }`}</CodePane>
-            <CodePane title="SwiftUI" accent={TEAL}>{`struct AlbumRow: View {
+                  </Step>
+                  <Step n="5" title="Connect to the List" accent={PURPLE}>
+                    <p style={{ fontSize: 12, color: MUTED, margin: "0 0 8px" }}>Swap the plain Text inside items() for AlbumRow. One-line change — the list handles rendering; the row handles appearance.</p>
+                    <CodePane accent={PURPLE}>{`LazyColumn(...) {
+    items(sampleAlbums, key = { it.id }) { album ->
+        AlbumRow(album = album)
+    }
+}`}</CodePane>
+                  </Step>
+                  <Step n="6" title="Refine Layout & Spacing" accent={PURPLE}>
+                    <p style={{ fontSize: 12, color: MUTED, margin: "0 0 8px" }}>Add spacing between rows and edge padding around the list using contentPadding and verticalArrangement.</p>
+                    <CodePane accent={PURPLE}>{`LazyColumn(
+    verticalArrangement = Arrangement.spacedBy(4.dp),
+    contentPadding = PaddingValues(16.dp)
+) { ... }`}</CodePane>
+                  </Step>
+                </>
+              }
+              ios={
+                <>
+                  <Step n="4" title="Build the Row Component" accent={TEAL}>
+                    <p style={{ fontSize: 12, color: MUTED, margin: "0 0 8px" }}>Extract the row UI into its own View before wiring it into the list. Building it in isolation makes it easier to style and iterate on.</p>
+                    <CodePane accent={TEAL}>{`struct AlbumRow: View {
     let album: Album
     var body: some View {
         HStack {
@@ -744,40 +964,73 @@ fun AlbumRow(album: Album) {
         }
     }
 }`}</CodePane>
-          </div>
-        </Step>
-
-        <Step n="5" title="Connect to the List" accent={TEAL}>
-          <p style={{ fontSize: 12, color: MUTED, margin: "0 0 8px" }}>Swap the plain Text inside items()/List for AlbumRow. One-line change — the list handles rendering; the row handles appearance.</p>
-          <div style={{ display: "flex", gap: 10 }}>
-            <CodePane title="Compose" accent={PURPLE}>{`LazyColumn(...) {
-    items(sampleAlbums, key = { it.id }) { album ->
-        AlbumRow(album = album)
-    }
-}`}</CodePane>
-            <CodePane title="SwiftUI" accent={TEAL}>{`List(sampleAlbums) { album in
+                  </Step>
+                  <Step n="5" title="Connect to the List" accent={TEAL}>
+                    <p style={{ fontSize: 12, color: MUTED, margin: "0 0 8px" }}>Swap the plain Text inside List for AlbumRow. One-line change — the list handles rendering; the row handles appearance.</p>
+                    <CodePane accent={TEAL}>{`List(sampleAlbums) { album in
     AlbumRow(album: album)
 }`}</CodePane>
-          </div>
-        </Step>
-
-        <Step n="6" title="Refine Layout & Spacing" accent={PURPLE}>
-          <p style={{ fontSize: 12, color: MUTED, margin: "0 0 8px" }}>Add spacing between rows and edge padding around the list. Compose uses contentPadding and verticalArrangement; SwiftUI uses list modifiers — different APIs, same intent.</p>
-          <div style={{ display: "flex", gap: 10 }}>
-            <CodePane title="Compose (Arrangement)" accent={PURPLE}>
-              {`LazyColumn(
-    verticalArrangement = Arrangement.spacedBy(4.dp),
-    contentPadding = PaddingValues(16.dp)
-) { ... }`}
-            </CodePane>
-            <CodePane title="SwiftUI (List Modifiers)" accent={TEAL}>
-              {`List(...) { ... }
+                  </Step>
+                  <Step n="6" title="Refine Layout & Spacing" accent={TEAL}>
+                    <p style={{ fontSize: 12, color: MUTED, margin: "0 0 8px" }}>Add spacing between rows and remove the default separators using List modifiers.</p>
+                    <CodePane accent={TEAL}>{`List(...) { ... }
 .listStyle(.plain)
 .listRowSpacing(4)
-.listRowSeparator(.hidden)`}
-            </CodePane>
-          </div>
-        </Step>
+.listRowSeparator(.hidden)`}</CodePane>
+                  </Step>
+                </>
+              }
+            />
+          }
+          full={
+            <OSToggle
+              android={
+                <CodePane title="Kotlin — row + connected list" accent={PURPLE}>{`@Composable
+fun AlbumRow(album: Album) {
+    Row(
+        modifier = Modifier.fillMaxWidth().padding(12.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        // Avatar, Content (weight 1f), Rating
+    }
+}
+
+@Composable
+fun AlbumListScreen() {
+    LazyColumn(
+        verticalArrangement = Arrangement.spacedBy(4.dp),
+        contentPadding = PaddingValues(16.dp)
+    ) {
+        items(sampleAlbums, key = { it.id }) { album ->
+            AlbumRow(album = album)
+        }
+    }
+}`}</CodePane>
+              }
+              ios={
+                <CodePane title="Swift — row + connected list" accent={TEAL}>{`struct AlbumRow: View {
+    let album: Album
+    var body: some View {
+        HStack {
+            // Avatar, Content, Spacer(), Rating
+        }
+    }
+}
+
+struct AlbumListScreen: View {
+    var body: some View {
+        List(sampleAlbums) { album in
+            AlbumRow(album: album)
+        }
+        .listStyle(.plain)
+        .listRowSpacing(4)
+        .listRowSeparator(.hidden)
+    }
+}`}</CodePane>
+              }
+            />
+          }
+        />
       </div>
     </Shell>
   ),
