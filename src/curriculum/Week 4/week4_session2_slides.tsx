@@ -20,7 +20,53 @@ const CodePane = ({ title, accent = PURPLE, children }) => (
   </div>
 );
 
-const Bullet = ({ children, sub }) => (
+const Step = ({ n, title, children, accent = PURPLE }) => (
+  <div style={{ marginBottom: 10, paddingLeft: 24, borderLeft: `2px solid #e5e7eb`, position: "relative" }}>
+    <div style={{ position: "absolute", left: -14, top: 0, width: 26, height: 26, borderRadius: "50%", background: "#fff", border: `2px solid ${accent}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 800, color: accent }}>
+      {n}
+    </div>
+    <p style={{ fontSize: 12, fontWeight: 700, color: TEXT, margin: "2px 0 6px" }}>{title}</p>
+    <div>{children}</div>
+  </div>
+);
+
+const OSToggle = ({ android, ios }) => {
+  const [platform, setPlatform] = useState<'android' | 'ios'>('android');
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+      <div style={{ display: "flex", borderRadius: 8, overflow: "hidden", border: "1px solid #e5e7eb", width: "fit-content" }}>
+        <button onClick={() => setPlatform('android')} style={{ padding: "5px 16px", fontSize: 11, fontWeight: 700, letterSpacing: ".04em", background: platform === 'android' ? PURPLE : "#fff", color: platform === 'android' ? "#fff" : MUTED, border: "none", borderRight: "1px solid #e5e7eb", cursor: "pointer" }}>
+          Android · Kotlin
+        </button>
+        <button onClick={() => setPlatform('ios')} style={{ padding: "5px 16px", fontSize: 11, fontWeight: 700, letterSpacing: ".04em", background: platform === 'ios' ? TEAL : "#fff", color: platform === 'ios' ? "#fff" : MUTED, border: "none", cursor: "pointer" }}>
+          iOS · Swift
+        </button>
+      </div>
+      {platform === 'android' ? android : ios}
+    </div>
+  );
+};
+
+const ViewToggle = ({ steps, full }) => {
+  const [view, setView] = useState<'steps' | 'full'>('steps');
+  return (
+    <div>
+      <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 6 }}>
+        <div style={{ display: "flex", borderRadius: 20, overflow: "hidden", border: "1px solid #e5e7eb", width: "fit-content" }}>
+          <button onClick={() => setView('steps')} style={{ padding: "3px 12px", fontSize: 10, fontWeight: 700, letterSpacing: ".04em", background: view === 'steps' ? PURPLE : "#fff", color: view === 'steps' ? "#fff" : MUTED, border: "none", borderRight: "1px solid #e5e7eb", cursor: "pointer" }}>
+            Step by step
+          </button>
+          <button onClick={() => setView('full')} style={{ padding: "3px 12px", fontSize: 10, fontWeight: 700, letterSpacing: ".04em", background: view === 'full' ? PURPLE : "#fff", color: view === 'full' ? "#fff" : MUTED, border: "none", cursor: "pointer" }}>
+            Full code
+          </button>
+        </div>
+      </div>
+      {view === 'steps' ? steps : full}
+    </div>
+  );
+};
+
+const Bullet = ({ children, sub }: { [k: string]: any }) => (
   <div style={{ display: "flex", gap: 8, margin: sub ? "3px 0 3px 20px" : "7px 0", alignItems: "flex-start" }}>
     <span style={{ color: sub ? TEAL : PURPLE, fontWeight: 700, fontSize: sub ? 12 : 14, marginTop: 1, flexShrink: 0 }}>{sub ? "◦" : "▸"}</span>
     <span style={{ fontSize: sub ? 13 : 14, color: sub ? MUTED : TEXT, lineHeight: 1.5 }}>{children}</span>
@@ -47,14 +93,14 @@ const Info = ({ children }) => (
   </div>
 );
 
-const Warn = ({ title, children }) => (
+const Warn = ({ title, children }: { [k: string]: any }) => (
   <div className="callout-warn" style={{ background: "#fff3cd", border: "1px solid #f59e0b", borderRadius: 8, padding: "8px 12px", margin: "8px 0" }}>
     {title && <p style={{ fontSize: 12, fontWeight: 600, color: "#92400e", margin: "0 0 2px" }}>{title}</p>}
     <p style={{ fontSize: 12, color: "#92400e", margin: 0, lineHeight: 1.5 }}>{children}</p>
   </div>
 );
 
-const Shell = ({ tag, title, subtitle, timer, children, notes, dark }) => (
+const Shell = ({ tag, title, subtitle, timer, children, notes, dark }: { [k: string]: any }) => (
   <div style={{ background: dark ? PURPLE_DARK : "#fff", border: `1px solid ${dark ? "transparent" : "#e5e7eb"}`, borderRadius: 12, padding: "24px 28px 18px", minHeight: 360, display: "flex", flexDirection: "column", boxSizing: "border-box" }}>
     <div style={{ marginBottom: 12 }}>
       <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
@@ -113,13 +159,13 @@ const slides = [
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginTop: 6 }}>
         {[
           { num: "01", time: "5 min",  title: "Recap", desc: "Session 1 — API call, models, coroutines" },
-          { num: "02", time: "8 min",  title: "The three UI states", desc: "Loading, success, error — every networked screen needs all three" },
-          { num: "03", time: "8 min",  title: "Sealed classes and enums for state", desc: "Modelling the three states cleanly in code" },
-          { num: "04", time: "8 min",  title: "The retry pattern", desc: "How to let users recover from a failed request" },
-          { num: "05", time: "8 min",  title: "Image loading from URLs", desc: "Coil (Android) and AsyncImage (SwiftUI)" },
-          { num: "06", time: "5 min",  title: "Handling missing images", desc: "Fallbacks, placeholders, and error states for images" },
-          { num: "07", time: "12 min", title: "Live code-along", desc: "Add all three states and image loading to the album browser" },
-          { num: "08", time: "6 min",  title: "Lab intro + Assignment 4 overview", desc: "What you build today and the week's assignment" },
+          { num: "02", time: "5 min",  title: "Polish matters", desc: "What one hour of work does to UX" },
+          { num: "03", time: "8 min",  title: "The three UI states", desc: "Loading, Success, Error — every networked screen needs all three" },
+          { num: "04", time: "8 min",  title: "Sealed classes and enums", desc: "Why they exist, what problem they solve, then the code" },
+          { num: "05", time: "10 min", title: "The retry pattern", desc: "State machine approach + step-by-step code" },
+          { num: "06", time: "8 min",  title: "Image loading from URLs", desc: "Why a library, then Coil and AsyncImage" },
+          { num: "07", time: "12 min", title: "Live code-along (3 steps)", desc: "UiState → render states → AsyncImage in row" },
+          { num: "08", time: "4 min",  title: "Lab intro + Assignment 4", desc: "What you build today and this week" },
         ].map(item => (
           <div key={item.num} style={{ display: "flex", gap: 10, padding: "9px 11px", background: GRAY, borderRadius: 8, alignItems: "flex-start" }}>
             <span style={{ fontSize: 16, fontWeight: 800, color: PURPLE_LIGHT, flexShrink: 0, lineHeight: 1, minWidth: 22 }}>{item.num}</span>
@@ -136,7 +182,7 @@ const slides = [
     </Shell>
   ),
 
-  // 3b: Polished vs unpolished
+  // 4: Polish matters
   () => (
     <Shell tag="Polish matters" title="The difference one hour of work makes" subtitle="Both apps fetch the same data — one feels finished, one feels broken" notes="Let students look at this slide for 30 seconds silently before you say anything. Then ask: which app would you keep on your phone? The answer is obvious. The point: the data is identical. The code that fetches it is identical. The only difference is how the three states are handled. That is what today's session is about.">
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginTop: 10 }}>
@@ -188,33 +234,15 @@ const slides = [
     </Shell>
   ),
 
-  // 4: The three states
+  // 5: The three UI states
   () => (
     <Shell tag="UI states" timer="8" title="The three states of every networked screen" subtitle="Right now your app only handles one of them" notes="Draw this as a state diagram on the board. Start circle → Loading → (success arrow) → Success. Start circle → Loading → (error arrow) → Error → (retry arrow) → Loading. The retry arrow is what most beginner apps miss — they show an error but give the user no way out.">
       <Discussion>{"Your album browser currently shows a blank white screen for a second before the list appears. What is actually happening during that blank second? What should the user see instead?"}</Discussion>
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 10, marginTop: 10 }}>
         {[
-          {
-            state: "Loading",
-            when: "Request is in flight — waiting for the server",
-            show: "A spinner or skeleton UI",
-            missing: "Your app shows a blank screen",
-            bg: "#E6F1FB", border: "#B5D4F4", text: "#0C447C", accent: "#378ADD"
-          },
-          {
-            state: "Success",
-            when: "Data arrived — parse complete",
-            show: "The list of artists",
-            missing: "This is what your app does — but only after the blank flash",
-            bg: TEAL_LIGHT, border: TEAL, text: "#085041", accent: TEAL
-          },
-          {
-            state: "Error",
-            when: "Network failed, server error, bad key",
-            show: "A message + retry button",
-            missing: "Your app shows nothing — user thinks it crashed",
-            bg: "#FCEBEB", border: "#F7C1C1", text: "#791F1F", accent: "#E24B4A"
-          },
+          { state: "Loading", when: "Request is in flight — waiting for the server", show: "A spinner or skeleton UI", missing: "Your app shows a blank screen", bg: "#E6F1FB", border: "#B5D4F4", text: "#0C447C", accent: "#378ADD" },
+          { state: "Success", when: "Data arrived — parse complete", show: "The list of artists", missing: "This is what your app does — but only after the blank flash", bg: TEAL_LIGHT, border: TEAL, text: "#085041", accent: TEAL },
+          { state: "Error", when: "Network failed, server error, bad key", show: "A message + retry button", missing: "Your app shows nothing — user thinks it crashed", bg: "#FCEBEB", border: "#F7C1C1", text: "#791F1F", accent: "#E24B4A" },
         ].map(s => (
           <div key={s.state} style={{ background: s.bg, border: `1px solid ${s.border}`, borderRadius: 8, padding: "12px 14px" }}>
             <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 6 }}>
@@ -231,191 +259,141 @@ const slides = [
     </Shell>
   ),
 
-  // 5: Modelling state with sealed class / enum
+  // 6: NEW — Sealed classes and enums — the concept
+  () => (
+    <Shell tag="UI states" title="Sealed classes and enums — why they exist" subtitle="The problem with three boolean flags, and a better way" notes="This is the most important conceptual slide before the code. Do not skip it. Students who understand WHY sealed class / enum exists will find the code trivial. Students who just see the code without this motivation will find it confusing. The compiler guarantee is the key insight.">
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14, marginTop: 6 }}>
+        <div>
+          <p style={{ fontSize: 12, fontWeight: 700, color: "#b91c1c", margin: "0 0 8px" }}>The naive approach — three boolean flags</p>
+          <pre style={{ margin: "0 0 10px", background: "#1e1e2e", color: "#fca5a5", fontSize: 11, padding: "10px 12px", borderRadius: 8, lineHeight: 1.6, fontFamily: "monospace", whiteSpace: "pre-wrap" }}>{`var isLoading by remember { mutableStateOf(true) }
+var hasError  by remember { mutableStateOf(false) }
+var artists   by remember { mutableStateOf<List<Artist>>(emptyList()) }
+
+// 3 booleans = 8 possible combinations.
+// Most are IMPOSSIBLE (loading + error at the same time?).
+// The compiler cannot tell you which ones you forgot to handle.`}</pre>
+          <div style={{ background: "#fff3f3", border: "1px solid #fca5a5", borderRadius: 8, padding: "10px 12px" }}>
+            <p style={{ fontSize: 11, fontWeight: 700, color: "#b91c1c", margin: "0 0 6px" }}>Problems with this approach</p>
+            <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+              {[
+                "8 possible flag combinations — most are invalid states",
+                "Compiler cannot warn you if you forget the error case",
+                "No single place to hold the associated data (error message, artist list)",
+                "Easy to get into impossible states (isLoading = true AND hasError = true)",
+              ].map(t => (
+                <div key={t} style={{ display: "flex", gap: 6, alignItems: "flex-start" }}>
+                  <span style={{ color: "#b91c1c", fontWeight: 700, flexShrink: 0, marginTop: 1 }}>✗</span>
+                  <span style={{ fontSize: 11, color: "#b91c1c", lineHeight: 1.4 }}>{t}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+        <div>
+          <p style={{ fontSize: 12, fontWeight: 700, color: TEAL, margin: "0 0 8px" }}>The better approach — sealed class / enum</p>
+          <div style={{ background: GRAY, borderRadius: 8, padding: "12px 14px", marginBottom: 10 }}>
+            <p style={{ fontSize: 12, fontWeight: 600, color: TEXT, margin: "0 0 8px" }}>What sealed class / enum gives you</p>
+            {[
+              { title: "Exactly 3 states", desc: "Loading, Success, or Error — no impossible combinations" },
+              { title: "Associated data", desc: "Success carries the artist list. Error carries the message. Each state owns its data." },
+              { title: "Exhaustive checking", desc: "The compiler warns you if your when/switch forgets a case. You cannot accidentally miss Error." },
+              { title: "One source of truth", desc: "One variable replaces three. The state machine is self-documenting." },
+            ].map(p => (
+              <div key={p.title} style={{ display: "flex", gap: 6, marginBottom: 7, alignItems: "flex-start" }}>
+                <span style={{ color: TEAL, fontWeight: 700, flexShrink: 0, marginTop: 1 }}>✓</span>
+                <div>
+                  <span style={{ fontSize: 12, fontWeight: 600, color: TEXT }}>{p.title}: </span>
+                  <span style={{ fontSize: 12, color: MUTED, lineHeight: 1.4 }}>{p.desc}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+          <Info>{"A sealed class in Kotlin and an enum in Swift are both ways of saying: this variable can be EXACTLY ONE of a known set of cases. The compiler enforces this at compile time — not at runtime."}</Info>
+        </div>
+      </div>
+    </Shell>
+  ),
+
+  // 7: Sealed class / enum — the code (OSToggle)
   () => (
     <Shell tag="UI states" title="Modelling state cleanly — sealed classes and enums" notes="The key benefit of sealed class / enum over three separate Boolean flags: when you write a when/switch expression, the compiler forces you to handle every case. You cannot accidentally forget the error state. This is exhaustive pattern matching — a powerful feature of both Kotlin and Swift.">
-      <div style={{ display: "flex", gap: 10, marginTop: 6 }}>
-        <CodePane title="Kotlin — sealed class" accent={PURPLE}>
-{`// A sealed class restricts which subclasses can exist
-// The compiler knows ALL possible cases at compile time
+      <div style={{ marginTop: 6 }}>
+        <OSToggle
+          android={
+            <CodePane title="Kotlin — sealed class" accent={PURPLE}>
+{`// A sealed class restricts which subclasses can exist.
+// The compiler knows ALL possible states at compile time.
 sealed class UiState<out T> {
-    // Loading — no data yet
-    object Loading : UiState<Nothing>()
-
-    // Success — carries the data
-    data class Success<T>(val data: T) : UiState<T>()
-
-    // Error — carries the error message
-    data class Error(val message: String) : UiState<Nothing>()
+    object Loading : UiState<Nothing>()           // no data yet
+    data class Success<T>(val data: T) : UiState<T>()  // carries data
+    data class Error(val message: String) : UiState<Nothing>() // carries message
 }
 
-// Using it:
+// Declare the screen state:
 var uiState by remember {
     mutableStateOf<UiState<List<Artist>>>(UiState.Loading)
 }
 
-// when is EXHAUSTIVE — compiler warns if you miss a case:
+// when is EXHAUSTIVE — the compiler warns if you miss a case:
 when (val state = uiState) {
     is UiState.Loading  -> { /* show spinner  */ }
-    is UiState.Success  -> { /* show list     */ }
-    is UiState.Error    -> { /* show error    */ }
+    is UiState.Success  -> { /* show list with state.data */ }
+    is UiState.Error    -> { /* show state.message + Retry */ }
     // No 'else' needed — sealed class covers all cases
 }`}
-        </CodePane>
-        <CodePane title="Swift — enum with associated values" accent={TEAL}>
-{`// Swift enum with associated values — same concept
+            </CodePane>
+          }
+          ios={
+            <CodePane title="Swift — enum with associated values" accent={TEAL}>
+{`// Swift enum with associated values — same concept as sealed class.
+// Each case can carry different associated data.
 enum UiState<T> {
-    case loading
-    case success(T)        // carries the data
-    case error(String)     // carries the message
+    case loading                // no data yet
+    case success(T)             // carries the data
+    case error(String)          // carries the error message
 }
 
-// Using it:
+// Declare the screen state:
 @State private var uiState: UiState<[Artist]> = .loading
 
-// switch is EXHAUSTIVE — compiler warns if you miss a case:
+// switch is EXHAUSTIVE — the compiler warns if you miss a case:
 switch uiState {
 case .loading:
     ProgressView("Loading...")
 case .success(let artists):
-    // show list with artists
-    Text("Loaded " + String(artists.count) + " artists")
+    // artists is the [Artist] list — directly usable here
+    Text("Loaded \\(artists.count) artists")
 case .error(let message):
     Text(message)
 // No 'default' needed — enum covers all cases
 }
 
-// Helper to check if we are loading (used for .task):
-var isLoading: Bool {
-    if case .loading = uiState { return true }
-    return false
+// Extension to check loading state (used with .task):
+extension UiState {
+    var isLoading: Bool {
+        if case .loading = self { return true }
+        return false
+    }
 }`}
-        </CodePane>
+            </CodePane>
+          }
+        />
       </div>
-      <Info>{"Using sealed class / enum instead of three separate Boolean variables (isLoading, hasError, hasData) means the compiler will catch it if you forget to handle a state. Three Booleans can produce 8 combinations — most of which are impossible."}</Info>
+      <Info>{"Using sealed class / enum means the compiler catches a forgotten state at build time — not at 2am when a user reports a blank screen. Three booleans can silently produce 8 combinations; a sealed class allows exactly 3."}</Info>
     </Shell>
   ),
 
-  // 6: The retry pattern
+  // 8: The retry pattern — how it works (conceptual)
   () => (
-    <Shell tag="Error handling" timer="8" title="The retry pattern — giving users a way out" notes="The retry pattern is simple but students often miss it. Show the before (error state with no button) and after (error state with Retry). The key implementation detail: the Retry button sets state back to Loading, which triggers the LaunchedEffect/task to re-run. Ask students: how does the screen know to re-fetch when state changes to Loading?">
-      <div style={{ display: "flex", gap: 10, marginTop: 6 }}>
-        <CodePane title="Compose — full three-state screen with retry" accent={PURPLE}>
-{`@Composable
-fun ArtistListScreen(onArtistClicked: (Artist) -> Unit = {}) {
-    var uiState by remember {
-        mutableStateOf<UiState<List<Artist>>>(UiState.Loading)
-    }
-
-    // Runs whenever uiState is Loading
-    LaunchedEffect(uiState) {
-        if (uiState !is UiState.Loading) return@LaunchedEffect
-        uiState = try {
-            val artists = LastFmApi.service
-                .getTopArtists().artists.artist
-            UiState.Success(artists)
-        } catch (e: Exception) {
-            UiState.Error(e.message ?: "Something went wrong")
-        }
-    }
-
-    when (val state = uiState) {
-        is UiState.Loading -> {
-            Box(Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center) {
-                CircularProgressIndicator(
-                    color = Color(0xFF534AB7))
-            }
-        }
-        is UiState.Error -> {
-            Column(
-                Modifier.fillMaxSize().padding(32.dp),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Text("Something went wrong",
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold)
-                Text(state.message, color = Color.Gray,
-                    textAlign = TextAlign.Center)
-                Spacer(Modifier.height(16.dp))
-                // Retry sets state back to Loading
-                // LaunchedEffect sees Loading and re-fetches
-                Button(onClick = {
-                    uiState = UiState.Loading
-                }) { Text("Retry") }
-            }
-        }
-        is UiState.Success -> {
-            // Your existing list + search from Week 3
-        }
-    }
-}`}
-        </CodePane>
-        <CodePane title="SwiftUI — full three-state screen with retry" accent={TEAL}>
-{`struct ArtistListScreen: View {
-    @State private var uiState: UiState<[Artist]> = .loading
-
-    var body: some View {
-        ZStack {
-            Color(UIColor.systemGray6).ignoresSafeArea()
-            switch uiState {
-            case .loading:
-                ProgressView("Loading artists...")
-                    .tint(Color(red:0.33,green:0.29,blue:0.72))
-
-            case .error(let message):
-                VStack(spacing: 12) {
-                    Text("Something went wrong")
-                        .font(.headline)
-                    Text(message)
-                        .font(.subheadline)
-                        .foregroundColor(.gray)
-                        .multilineTextAlignment(.center)
-                    // Retry sets state back to .loading
-                    // .task re-runs because isLoading changed
-                    Button("Retry") {
-                        uiState = .loading
-                    }
-                    .buttonStyle(.borderedProminent)
-                    .tint(Color(red:0.33,green:0.29,blue:0.72))
-                }
-                .padding(32)
-
-            case .success(let artists):
-                // Your existing list + search from Week 3
-                Text("Success: " + String(artists.count))
-            }
-        }
-        // id: uiState.isLoading makes .task re-run on retry
-        .task(id: uiState.isLoading) {
-            guard case .loading = uiState else { return }
-            do {
-                let artists = try await
-                    LastFmApiService.getTopArtists()
-                uiState = .success(artists)
-            } catch {
-                uiState = .error(error.localizedDescription)
-            }
-        }
-    }
-}`}
-        </CodePane>
-      </div>
-    </Shell>
-  ),
-
-  // 7: How retry works
-  () => (
-    <Shell tag="Error handling" title="How the retry pattern actually works" notes="This slide explains the mechanism behind the retry button. Students are often confused about why setting state to Loading causes a re-fetch. Walk through the flow step by step. The key insight: LaunchedEffect and .task both watch for state changes — when state becomes Loading again, they re-run.">
+    <Shell tag="Error handling" timer="10" title="The retry pattern — how it works" subtitle="The key insight: the Retry button does not call the API directly" notes="The retry pattern is simple but students often miss it. Show the before (error state with no button) and after (error state with Retry). Walk through the flow step by step. The key insight: the Retry button just resets the state machine back to Loading. The LaunchedEffect/task already knows how to fetch when the state is Loading — so it does it again automatically.">
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginTop: 6 }}>
         <div>
           <p style={{ fontSize: 13, fontWeight: 600, color: TEXT, margin: "0 0 10px" }}>The flow when Retry is tapped</p>
           {[
-            { n: 1, t: "User taps Retry button" },
-            { n: 2, t: "uiState is set to Loading" },
-            { n: 3, t: "State change triggers recomposition" },
-            { n: 4, t: "LaunchedEffect sees Loading → runs the API call again" },
+            { n: 1, t: "User taps the Retry button" },
+            { n: 2, t: "onClick sets uiState = UiState.Loading / .loading" },
+            { n: 3, t: "State change triggers recomposition / view update" },
+            { n: 4, t: "LaunchedEffect / .task sees Loading state → runs the fetch again" },
             { n: 5, t: "On success: uiState → Success → list appears" },
             { n: 6, t: "On failure: uiState → Error → message + Retry shown again" },
           ].map(s => (
@@ -427,31 +405,187 @@ fun ArtistListScreen(onArtistClicked: (Artist) -> Unit = {}) {
         </div>
         <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
           <div style={{ background: GRAY, borderRadius: 8, padding: "12px 14px" }}>
-            <p style={{ fontSize: 12, fontWeight: 600, color: TEXT, margin: "0 0 8px" }}>The key insight</p>
-            <p style={{ fontSize: 12, color: MUTED, margin: 0, lineHeight: 1.6 }}>The Retry button does not call the API directly. It just sets the state back to Loading. The LaunchedEffect/task already knows how to fetch data when the state is Loading — so it does it again automatically.</p>
+            <p style={{ fontSize: 12, fontWeight: 600, color: TEXT, margin: "0 0 8px" }}>Why this design is elegant</p>
+            <Bullet>One place to fetch data — not duplicated in multiple spots</Bullet>
+            <Bullet>Retry is free — just reset state to Loading</Bullet>
+            <Bullet>Pull-to-refresh later uses the exact same pattern</Bullet>
+            <Bullet>Loading state is shown immediately on retry</Bullet>
           </div>
           <div style={{ background: TEAL_LIGHT, border: `1px solid ${TEAL}`, borderRadius: 8, padding: "12px 14px" }}>
-            <p style={{ fontSize: 12, fontWeight: 600, color: TEAL, margin: "0 0 6px" }}>Why this design is good</p>
-            <Bullet>One place to fetch data — not duplicated in multiple places</Bullet>
-            <Bullet>Retry is free — just reset the state</Bullet>
-            <Bullet>Easy to add pull-to-refresh later — same pattern</Bullet>
+            <p style={{ fontSize: 12, fontWeight: 600, color: TEAL, margin: "0 0 6px" }}>The state diagram</p>
+            <div style={{ display: "flex", flexDirection: "column", gap: 4, fontFamily: "monospace", fontSize: 11 }}>
+              {[
+                { label: "Loading", bg: "#E6F1FB", color: "#0C447C" },
+                { label: "↓ success    ↓ error", bg: "transparent", color: MUTED },
+                { label: "Success   Error", bg: "transparent", color: TEXT },
+                { label: "               ↑ Retry", bg: "transparent", color: PURPLE },
+                { label: "       → Loading", bg: "transparent", color: MUTED },
+              ].map((r, i) => (
+                <div key={i} style={{ background: r.bg, padding: r.bg !== "transparent" ? "3px 8px" : 0, borderRadius: 4, color: r.color }}>{r.label}</div>
+              ))}
+            </div>
           </div>
-          <Warn title="Common mistake">{"Calling the API function directly from the Retry button onClick. This works but bypasses the loading state — the user sees the old error screen until the new data arrives. Always go through the state machine."}</Warn>
+          <Warn title="Common mistake">{"Calling the API function directly from the Retry button. This works but bypasses the Loading state — the user sees the old error screen until the new data arrives. Always go through the state machine."}</Warn>
         </div>
       </div>
     </Shell>
   ),
 
-  // 8: Image loading
+  // 9: Retry code — step 1: state + try/catch (OSToggle)
   () => (
-    <Shell tag="Image loading" timer="8" title="Loading images from URLs" subtitle="Coil (Android) and AsyncImage (SwiftUI)" notes="Image loading is something students are surprised to learn needs a library. Explain why: downloading an image from a URL is a network call (needs to be async), the image needs to be cached so it does not re-download on every scroll, and it needs a placeholder so the layout does not jump. Coil and AsyncImage handle all of this.">
-      <Discussion>{"If loading images from a URL is just a network call, why do we need a library for it? Could we do it ourselves with Retrofit or URLSession?"}</Discussion>
+    <Shell tag="Error handling" title="Retry pattern — step 1: state variable and try/catch" subtitle="Setting up the state machine and wrapping the API call">
+      <div style={{ marginTop: 8 }}>
+        <OSToggle
+          android={
+            <CodePane title="Kotlin — UiState variable + try/catch in LaunchedEffect" accent={PURPLE}>
+{`@Composable
+fun ArtistListScreen(onArtistClicked: (Artist) -> Unit = {}) {
+    // One variable replaces isLoading + hasError + artists
+    var uiState by remember {
+        mutableStateOf<UiState<List<Artist>>>(UiState.Loading)
+    }
+    var query by remember { mutableStateOf("") }
+
+    // LaunchedEffect re-runs whenever uiState changes.
+    // The guard clause means it only fetches when in Loading state.
+    LaunchedEffect(uiState) {
+        if (uiState !is UiState.Loading) return@LaunchedEffect
+        uiState = try {
+            // Success path — API call succeeded
+            UiState.Success(
+                LastFmApi.service.getTopArtists().artists.artist
+            )
+        } catch (e: Exception) {
+            // Error path — network failed, server error, etc.
+            UiState.Error(e.message ?: "Something went wrong")
+        }
+    }
+    // ... continue to rendering on the next slide
+}`}
+            </CodePane>
+          }
+          ios={
+            <CodePane title="Swift — UiState variable + try/catch in .task" accent={TEAL}>
+{`struct ArtistListScreen: View {
+    // One variable replaces multiple @State booleans
+    @State private var uiState: UiState<[Artist]> = .loading
+    @State private var query = ""
+
+    var body: some View {
+        ZStack {
+            Color(UIColor.systemGray6).ignoresSafeArea()
+            // ... rendering on next slide
+        }
+        .navigationTitle("Top Artists")
+        // id: uiState.isLoading — .task re-runs when this changes.
+        // The guard means it only fetches when in .loading state.
+        .task(id: uiState.isLoading) {
+            guard case .loading = uiState else { return }
+            do {
+                // Success path — API call succeeded
+                let artists = try await LastFmApiService.getTopArtists()
+                uiState = .success(artists)
+            } catch {
+                // Error path — network failed, decoding error, etc.
+                uiState = .error(error.localizedDescription)
+            }
+        }
+    }
+}`}
+            </CodePane>
+          }
+        />
+      </div>
+    </Shell>
+  ),
+
+  // 10: Retry code — step 2: rendering the states (OSToggle)
+  () => (
+    <Shell tag="Error handling" title="Retry pattern — step 2: render each state" subtitle="The when / switch that shows spinner, error, or list">
+      <div style={{ marginTop: 8 }}>
+        <OSToggle
+          android={
+            <CodePane title="Kotlin — when block rendering all three states" accent={PURPLE}>
+{`// Inside the Column(modifier = Modifier.fillMaxSize()):
+when (val state = uiState) {
+    is UiState.Loading -> {
+        Box(Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center) {
+            CircularProgressIndicator(color = Color(0xFF534AB7))
+        }
+    }
+    is UiState.Error -> {
+        Column(
+            Modifier.fillMaxSize().padding(32.dp),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text("Something went wrong",
+                fontSize = 18.sp, fontWeight = FontWeight.Bold)
+            Text(state.message,
+                color = Color.Gray, textAlign = TextAlign.Center)
+            Spacer(Modifier.height(16.dp))
+            // Retry sets state to Loading → LaunchedEffect re-fetches
+            Button(onClick = { uiState = UiState.Loading }) {
+                Text("Retry")
+            }
+        }
+    }
+    is UiState.Success -> {
+        // state.data is the List<Artist> — your existing list + search
+        ArtistListContent(artists = state.data, query = query,
+            onQueryChange = { query = it },
+            onArtistClicked = onArtistClicked)
+    }
+}`}
+            </CodePane>
+          }
+          ios={
+            <CodePane title="Swift — switch rendering all three states" accent={TEAL}>
+{`// Inside the ZStack:
+switch uiState {
+case .loading:
+    ProgressView("Loading artists...")
+        .tint(Color(red: 0.33, green: 0.29, blue: 0.72))
+
+case .error(let message):
+    VStack(spacing: 12) {
+        Text("Something went wrong")
+            .font(.headline)
+        Text(message)
+            .font(.subheadline)
+            .foregroundColor(.gray)
+            .multilineTextAlignment(.center)
+        // Retry sets state to .loading → .task re-fetches
+        Button("Retry") { uiState = .loading }
+            .buttonStyle(.borderedProminent)
+            .tint(Color(red: 0.33, green: 0.29, blue: 0.72))
+    }
+    .padding(32)
+
+case .success(let artists):
+    // artists is the [Artist] array — your existing list + search
+    ArtistListContent(artists: artists, query: $query,
+                      onArtistTapped: onArtistTapped)
+}`}
+            </CodePane>
+          }
+        />
+      </div>
+      <Info>{"Notice that the Retry button does not call any API directly. It just sets uiState back to Loading. The LaunchedEffect / .task already knows what to do when the state is Loading — so it does it again automatically."}</Info>
+    </Shell>
+  ),
+
+  // 11: Image loading — why a library
+  () => (
+    <Shell tag="Image loading" timer="8" title="Loading images from URLs — why you need a library" subtitle="It is more than just a network call" notes="Image loading is something students are surprised to learn needs a library. Explain why: downloading an image from a URL is a network call (needs to be async), the image needs to be cached so it does not re-download on every scroll, and it needs a placeholder so the layout does not jump. Coil and AsyncImage handle all of this.">
+      <Discussion>{"If loading an image from a URL is just a network call, why not just use Retrofit or URLSession to fetch the bytes and display them? What would go wrong if you did that on every scroll?"}</Discussion>
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginTop: 10, marginBottom: 10 }}>
         {[
-          { title: "Async loading", desc: "Downloads image on a background thread — UI never blocks" },
-          { title: "Caching", desc: "Stores downloaded images in memory and disk — no re-downloading on scroll" },
-          { title: "Placeholders", desc: "Shows a fallback while loading so layout does not jump" },
-          { title: "Error handling", desc: "Gracefully handles 404s, network failures, and empty URLs" },
+          { title: "Async loading", desc: "Downloads on a background thread — the UI never blocks while the image arrives" },
+          { title: "Memory + disk cache", desc: "Stores downloaded images so scrolling back does not re-download the same image. Without this, fast scrolling causes visible lag." },
+          { title: "Placeholders", desc: "Shows a fallback shape while loading so the layout does not jump when the image appears" },
+          { title: "Error handling", desc: "Gracefully handles 404s, empty URLs, and network failures — shows a fallback instead of crashing or leaving a blank space" },
         ].map(f => (
           <div key={f.title} style={{ background: GRAY, borderRadius: 8, padding: "10px 12px", display: "flex", gap: 8 }}>
             <span style={{ color: TEAL, fontWeight: 700, flexShrink: 0, marginTop: 1 }}>✓</span>
@@ -462,174 +596,137 @@ fun ArtistListScreen(onArtistClicked: (Artist) -> Unit = {}) {
           </div>
         ))}
       </div>
-      <div style={{ display: "flex", gap: 10 }}>
-        <CodePane title="Android — Coil AsyncImage" accent={PURPLE}>
-{`// implementation("io.coil-kt:coil-compose:2.4.0")
-
-AsyncImage(
-    model = imageUrl,         // the URL string
-    contentDescription = artist.name,
-    modifier = Modifier
-        .size(52.dp)
-        .clip(CircleShape),   // clip to circle shape
-    contentScale = ContentScale.Crop,
-    // Show a grey circle while loading:
-    placeholder = ColorPainter(Color(0xFFEEEDFE)),
-    // Show initial letter circle if image fails:
-    error = ColorPainter(Color(0xFF534AB7))
-)
-// That's it — Coil handles async, cache, errors`}
-        </CodePane>
-        <CodePane title="iOS — SwiftUI AsyncImage" accent={TEAL}>
-{`// Built into SwiftUI — no library needed
-
-AsyncImage(url: URL(string: imageUrl)) { phase in
-    switch phase {
-    case .success(let image):
-        // Image loaded — display it
-        image
-            .resizable()
-            .aspectRatio(contentMode: .fill)
-            .frame(width: 52, height: 52)
-            .clipShape(Circle())
-
-    case .failure:
-        // Load failed — show fallback
-        initialsAvatar(artist.name)
-
-    case .empty:
-        // Loading in progress — show placeholder
-        Circle()
-            .fill(Color(red:0.93,green:0.93,blue:1.0))
-            .frame(width:52,height:52)
-
-    @unknown default:
-        EmptyView()
-    }
-}
-// AsyncImage handles async and caching automatically`}
-        </CodePane>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+        <div style={{ background: PURPLE_LIGHT, borderRadius: 8, padding: "10px 14px" }}>
+          <p style={{ fontSize: 12, fontWeight: 700, color: PURPLE_DARK, margin: "0 0 4px" }}>Android: Coil</p>
+          <p style={{ fontSize: 12, color: PURPLE_DARK, margin: 0, lineHeight: 1.5 }}>A third-party library built for Compose. One dependency, then use the <code>AsyncImage</code> composable. Handles all four concerns above automatically.</p>
+        </div>
+        <div style={{ background: TEAL_LIGHT, border: `1px solid ${TEAL}`, borderRadius: 8, padding: "10px 14px" }}>
+          <p style={{ fontSize: 12, fontWeight: 700, color: TEAL, margin: "0 0 4px" }}>iOS: SwiftUI AsyncImage</p>
+          <p style={{ fontSize: 12, color: "#085041", margin: 0, lineHeight: 1.5 }}>Built into SwiftUI — no library needed. Provides a phase-based API so you can show different content while loading, on success, and on error.</p>
+        </div>
       </div>
     </Shell>
   ),
 
-  // 9: Handling missing images
+  // 12: Image loading code (OSToggle)
   () => (
-    <Shell tag="Image loading" title="Handling missing image URLs — always have a fallback" notes="Last.fm returns empty string for image URLs on many lesser-known artists. If you pass an empty string to Coil or AsyncImage, some versions will silently show nothing, others will log an error. Always check for empty before passing to the image component, and always have a fallback that looks intentional — not broken.">
-      <div style={{ display: "flex", gap: 10, marginTop: 6 }}>
-        <CodePane title="Compose — conditional image with fallback" accent={PURPLE}>
-{`@Composable
-fun ArtistAvatar(artist: Artist) {
-    val imageUrl = artist.getLargeImageUrl()
+    <Shell tag="Image loading" title="AsyncImage in practice — loading and fallback" subtitle="Toggle to see how each platform handles the same four cases" notes="Walk through each phase/case. The empty URL check is critical — Last.fm returns empty string for many lesser-known artists. Passing an empty string to AsyncImage causes platform-specific issues. Always check first.">
+      <div style={{ marginTop: 6 }}>
+        <OSToggle
+          android={
+            <CodePane title="Android — Coil AsyncImage with placeholder and error" accent={PURPLE}>
+{`// Step 1: add to build.gradle.kts
+// implementation("io.coil-kt:coil-compose:2.4.0")
 
-    if (imageUrl.isNotEmpty()) {
-        // URL exists — try to load it
-        AsyncImage(
-            model = imageUrl,
-            contentDescription = artist.name,
-            modifier = Modifier
-                .size(52.dp)
-                .clip(CircleShape),
-            contentScale = ContentScale.Crop,
-            error = ColorPainter(Color(0xFF534AB7))
-            // error = fallback if URL loads but image fails
+// Step 2: use in your ArtistRow composable
+val imageUrl = artist.getLargeImageUrl()
+
+if (imageUrl.isNotEmpty()) {
+    // URL exists — Coil handles async, cache, and decode
+    AsyncImage(
+        model = imageUrl,
+        contentDescription = artist.name,
+        modifier = Modifier
+            .size(52.dp)
+            .clip(CircleShape),
+        contentScale = ContentScale.Crop,
+        placeholder = ColorPainter(Color(0xFFEEEDFE)),  // grey circle while loading
+        error = ColorPainter(Color(0xFF534AB7))          // purple if load fails
+    )
+} else {
+    // URL is empty — show initial letter fallback
+    Box(
+        modifier = Modifier
+            .size(52.dp)
+            .background(Color(0xFF534AB7), CircleShape),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            artist.name.first().toString(),
+            color = Color.White,
+            fontSize = 22.sp,
+            fontWeight = FontWeight.Bold
         )
-    } else {
-        // URL is empty — show initial letter avatar
-        Box(
-            modifier = Modifier
-                .size(52.dp)
-                .background(Color(0xFF534AB7), CircleShape),
-            contentAlignment = Alignment.Center
-        ) {
-            Text(
-                artist.name.first().toString(),
-                color = Color.White,
-                fontSize = 22.sp,
-                fontWeight = FontWeight.Bold
-            )
-        }
-    }
-}
-
-// Rule: never pass an empty string to AsyncImage.
-// Check first, show fallback if empty.`}
-        </CodePane>
-        <CodePane title="SwiftUI — conditional image with fallback" accent={TEAL}>
-{`struct ArtistAvatar: View {
-    let artist: Artist
-
-    var body: some View {
-        if !artist.largeImageUrl.isEmpty,
-           let url = URL(string: artist.largeImageUrl) {
-            // URL exists and is valid — try to load
-            AsyncImage(url: url) { phase in
-                switch phase {
-                case .success(let image):
-                    image.resizable()
-                        .aspectRatio(contentMode: .fill)
-                        .frame(width:52,height:52)
-                        .clipShape(Circle())
-                default:
-                    // Loading or failed — show initial
-                    initialsCircle
-                }
-            }
-        } else {
-            // URL is empty — show initial
-            initialsCircle
-        }
-    }
-
-    var initialsCircle: some View {
-        Circle()
-            .fill(Color(red:0.33,green:0.29,blue:0.72))
-            .frame(width:52,height:52)
-            .overlay(
-                Text(String(artist.name.prefix(1)))
-                    .font(.title2).fontWeight(.bold)
-                    .foregroundColor(.white)
-            )
     }
 }`}
-        </CodePane>
+            </CodePane>
+          }
+          ios={
+            <CodePane title="iOS — SwiftUI AsyncImage with phase handling" accent={TEAL}>
+{`// Built into SwiftUI — no library needed
+
+let imageUrl = artist.largeImageUrl
+
+if !imageUrl.isEmpty, let url = URL(string: imageUrl) {
+    // URL exists and is valid — use AsyncImage with phase handling
+    AsyncImage(url: url) { phase in
+        switch phase {
+        case .success(let image):
+            // Image loaded successfully — display it
+            image
+                .resizable()
+                .aspectRatio(contentMode: .fill)
+                .frame(width: 52, height: 52)
+                .clipShape(Circle())
+
+        case .failure:
+            // Load failed (404, network error) — show initial
+            initialsCircle(for: artist.name)
+
+        case .empty:
+            // Still loading — show placeholder circle
+            Circle()
+                .fill(Color(red: 0.93, green: 0.93, blue: 1.0))
+                .frame(width: 52, height: 52)
+
+        @unknown default:
+            EmptyView()
+        }
+    }
+} else {
+    // URL empty or invalid — show initial letter fallback
+    initialsCircle(for: artist.name)
+}`}
+            </CodePane>
+          }
+        />
       </div>
+      <Warn title="Always check for empty URL first">{"Last.fm returns empty string for image URLs on many artists. Passing an empty string to Coil or SwiftUI AsyncImage produces inconsistent behaviour across versions. Check before passing."}</Warn>
     </Shell>
   ),
 
-  // 10: Live code-along intro
+  // 13: Code-along intro
   () => (
-    <Shell tag="Live code-along" timer="12" title="Completing the album browser" subtitle="Open your AlbumBrowser with the Session 1 API call." dark notes="Build on Session 1's code. The goal: add the three states, then image loading. Run the app and demonstrate turning WiFi off to trigger the error state, then tapping Retry to recover. Students should see the full state machine in action.">
+    <Shell tag="Live code-along" timer="12" title="Completing the album browser — 3 steps" subtitle="Open your AlbumBrowser with the Session 1 API call." dark notes="Build on Session 1's code. The goal: add the three states, then image loading. Run the app and demonstrate turning WiFi off to trigger the error state, then tapping Retry to recover. Students should see the full state machine in action.">
       <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr", gap: 12, marginTop: 8 }}>
         <div>
-          <p style={{ fontSize: 13, fontWeight: 600, color: "rgba(255,255,255,0.9)", margin: "0 0 10px" }}>What we are adding today</p>
+          <p style={{ fontSize: 13, fontWeight: 600, color: "rgba(255,255,255,0.9)", margin: "0 0 10px" }}>Three focused steps — each on its own slide</p>
           {[
-            { n: 1, t: "Define UiState sealed class / enum" },
-            { n: 2, t: "Update screen state var to UiState<List<Artist>>" },
-            { n: 3, t: "Update LaunchedEffect / .task with try/catch" },
-            { n: 4, t: "Add when/switch to render Loading, Error, Success" },
-            { n: 5, t: "Add Retry button to Error state" },
-            { n: 6, t: "Replace avatar Box with AsyncImage / AsyncImage" },
-            { n: 7, t: "Test: turn WiFi off → error state → Retry → success" },
+            { n: 1, t: "Define UiState + try/catch", desc: "Replace raw state vars with sealed class / enum + wrap fetch in try/catch" },
+            { n: 2, t: "Render the three states", desc: "Add when/switch for Loading spinner, Error message + Retry, Success list" },
+            { n: 3, t: "AsyncImage in ArtistRow", desc: "Replace the initial-letter Box with real image loading and a fallback" },
           ].map(s => (
-            <div key={s.n} style={{ display: "flex", gap: 8, margin: "5px 0", alignItems: "center" }}>
-              <span style={{ background: TEAL, color: "#fff", borderRadius: "50%", width: 20, height: 20, fontSize: 10, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>{s.n}</span>
-              <span style={{ fontSize: 13, color: "rgba(255,255,255,0.85)" }}>{s.t}</span>
+            <div key={s.n} style={{ display: "flex", gap: 10, margin: "8px 0", alignItems: "flex-start" }}>
+              <span style={{ background: TEAL, color: "#fff", borderRadius: "50%", width: 22, height: 22, fontSize: 11, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, marginTop: 1 }}>{s.n}</span>
+              <div>
+                <p style={{ fontSize: 13, color: "rgba(255,255,255,0.9)", fontWeight: 600, margin: 0 }}>{s.t}</p>
+                <p style={{ fontSize: 11, color: "rgba(255,255,255,0.55)", margin: "2px 0 0", lineHeight: 1.4 }}>{s.desc}</p>
+              </div>
             </div>
           ))}
         </div>
-        <div style={{ background: "rgba(255,255,255,0.08)", borderRadius: 10, padding: 14, display: "flex", flexDirection: "column", gap: 8 }}>
+        <div style={{ background: "rgba(255,255,255,0.08)", borderRadius: 10, padding: 14, display: "flex", flexDirection: "column", gap: 6 }}>
           <p style={{ fontSize: 11, fontWeight: 600, color: "rgba(255,255,255,0.5)", margin: 0, textTransform: "uppercase" }}>State machine</p>
           {[
-            { state: "Loading", bg: "#378ADD22", text: "#93C5FD", dot: "#378ADD" },
-            { state: "↓ success  ↓ error", bg: "transparent", text: "rgba(255,255,255,0.4)", dot: null },
-            { state: "Success", bg: `${TEAL}22`, text: TEAL, dot: TEAL },
-            { state: "Error + Retry →", bg: "#E24B4A22", text: "#FCA5A5", dot: "#E24B4A" },
-            { state: "→ Loading again", bg: "transparent", text: "rgba(255,255,255,0.4)", dot: null },
+            { label: "Loading", bg: "#378ADD22", color: "#93C5FD" },
+            { label: "↓ success  /  ↓ error", bg: "transparent", color: "rgba(255,255,255,0.35)" },
+            { label: "Success", bg: `${TEAL}22`, color: TEAL },
+            { label: "Error + Retry →", bg: "#E24B4A22", color: "#FCA5A5" },
+            { label: "→ Loading again", bg: "transparent", color: "rgba(255,255,255,0.35)" },
           ].map((s, i) => (
-            <div key={i} style={{ background: s.bg, borderRadius: 6, padding: s.dot ? "6px 10px" : "0 10px", display: "flex", gap: 6, alignItems: "center" }}>
-              {s.dot && <div style={{ width: 6, height: 6, borderRadius: "50%", background: s.dot, flexShrink: 0 }} />}
-              <p style={{ fontSize: 11, color: s.text, margin: 0, fontWeight: s.dot ? 600 : 400 }}>{s.state}</p>
+            <div key={i} style={{ background: s.bg, borderRadius: 6, padding: s.bg !== "transparent" ? "5px 10px" : "0 10px" }}>
+              <p style={{ fontSize: 11, color: s.color, margin: 0, fontWeight: s.bg !== "transparent" ? 600 : 400 }}>{s.label}</p>
             </div>
           ))}
         </div>
@@ -637,293 +734,488 @@ fun ArtistAvatar(artist: Artist) {
     </Shell>
   ),
 
-  // 11: Code-along — full screen
+  // 14: Code-along step 1 — UiState + try/catch
   () => (
-    <Shell tag="Live code-along" title="The complete networked screen" notes="Show this as the target state. Type it out incrementally — sealed class first, then update the state variable, then the LaunchedEffect, then the when block. The order matters: model the state before rendering it.">
-      <div style={{ display: "flex", gap: 10, marginTop: 6 }}>
-        <CodePane title="Full screen — Compose with all three states" accent={PURPLE}>
+    <Shell tag="Live code-along — Step 1 of 3" title="Define UiState and wrap the fetch" subtitle="Replace raw state variables with a sealed class / enum">
+      <div style={{ marginTop: 8 }}>
+        <ViewToggle
+          steps={
+            <OSToggle
+              android={
+                <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                  <Step n={1} title="Define the sealed class — three possible states">
+                    <pre style={{ margin: 0, background: "#1e1e2e", color: "#cdd6f4", fontSize: 10, padding: "8px 12px", borderRadius: 6, lineHeight: 1.6, fontFamily: "monospace", whiteSpace: "pre-wrap" }}>{`sealed class UiState<out T> {
+    object Loading : UiState<Nothing>()
+    data class Success<T>(val data: T) : UiState<T>()
+    data class Error(val message: String) : UiState<Nothing>()
+}`}</pre>
+                  </Step>
+                  <Step n={2} title="Replace the raw list state with a single UiState variable">
+                    <pre style={{ margin: 0, background: "#1e1e2e", color: "#cdd6f4", fontSize: 10, padding: "8px 12px", borderRadius: 6, lineHeight: 1.6, fontFamily: "monospace", whiteSpace: "pre-wrap" }}>{`var uiState by remember {
+    mutableStateOf<UiState<List<Artist>>>(UiState.Loading)
+}
+var query by remember { mutableStateOf("") }`}</pre>
+                  </Step>
+                  <Step n={3} title="LaunchedEffect — fetch on Loading, catch on error">
+                    <pre style={{ margin: 0, background: "#1e1e2e", color: "#cdd6f4", fontSize: 10, padding: "8px 12px", borderRadius: 6, lineHeight: 1.6, fontFamily: "monospace", whiteSpace: "pre-wrap" }}>{`LaunchedEffect(uiState) {
+    if (uiState !is UiState.Loading) return@LaunchedEffect
+    uiState = try {
+        UiState.Success(LastFmApi.service.getTopArtists().artists.artist)
+    } catch (e: Exception) {
+        UiState.Error(e.message ?: "Something went wrong")
+    }
+}`}</pre>
+                    <p style={{ fontSize: 11, color: MUTED, margin: "4px 0 0" }}>The guard prevents re-fetching when transitioning to Success or Error.</p>
+                  </Step>
+                </div>
+              }
+              ios={
+                <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                  <Step n={1} title="Define the enum — three cases with associated values" accent={TEAL}>
+                    <pre style={{ margin: 0, background: "#1e1e2e", color: "#cdd6f4", fontSize: 10, padding: "8px 12px", borderRadius: 6, lineHeight: 1.6, fontFamily: "monospace", whiteSpace: "pre-wrap" }}>{`enum UiState<T> {
+    case loading
+    case success(T)
+    case error(String)
+}
+extension UiState {
+    var isLoading: Bool {
+        if case .loading = self { return true }
+        return false
+    }
+}`}</pre>
+                  </Step>
+                  <Step n={2} title="Replace raw state with a single UiState variable" accent={TEAL}>
+                    <pre style={{ margin: 0, background: "#1e1e2e", color: "#cdd6f4", fontSize: 10, padding: "8px 12px", borderRadius: 6, lineHeight: 1.6, fontFamily: "monospace", whiteSpace: "pre-wrap" }}>{`@State private var uiState: UiState<[Artist]> = .loading
+@State private var query = ""`}</pre>
+                  </Step>
+                  <Step n={3} title=".task — fetch when isLoading, catch errors" accent={TEAL}>
+                    <pre style={{ margin: 0, background: "#1e1e2e", color: "#cdd6f4", fontSize: 10, padding: "8px 12px", borderRadius: 6, lineHeight: 1.6, fontFamily: "monospace", whiteSpace: "pre-wrap" }}>{`.task(id: uiState.isLoading) {
+    guard case .loading = uiState else { return }
+    do {
+        let artists = try await LastFmApiService.getTopArtists()
+        uiState = .success(artists)
+    } catch {
+        uiState = .error(error.localizedDescription)
+    }
+}`}</pre>
+                    <p style={{ fontSize: 11, color: MUTED, margin: "4px 0 0" }}>.task re-runs whenever isLoading changes — this is what powers the Retry button in step 2.</p>
+                  </Step>
+                </div>
+              }
+            />
+          }
+          full={
+            <OSToggle
+              android={
+                <CodePane title="Kotlin — sealed class + state + LaunchedEffect" accent={PURPLE}>
 {`sealed class UiState<out T> {
     object Loading : UiState<Nothing>()
     data class Success<T>(val data: T) : UiState<T>()
     data class Error(val message: String) : UiState<Nothing>()
 }
 
-@Composable
-fun ArtistListScreen(onArtistClicked: (Artist) -> Unit = {}) {
-    var uiState by remember {
-        mutableStateOf<UiState<List<Artist>>>(UiState.Loading)
-    }
-    var query by remember { mutableStateOf("") }
+var uiState by remember { mutableStateOf<UiState<List<Artist>>>(UiState.Loading) }
+var query by remember { mutableStateOf("") }
 
-    LaunchedEffect(uiState) {
-        if (uiState !is UiState.Loading) return@LaunchedEffect
-        uiState = try {
-            UiState.Success(
-                LastFmApi.service.getTopArtists().artists.artist
-            )
-        } catch (e: Exception) {
-            UiState.Error(e.message ?: "Something went wrong")
-        }
-    }
-
-    Column(modifier = Modifier.fillMaxSize()
-        .background(Color(0xFFF5F5F5))) {
-        when (val state = uiState) {
-            is UiState.Loading -> {
-                Box(Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center) {
-                    CircularProgressIndicator(
-                        color = Color(0xFF534AB7))
-                }
-            }
-            is UiState.Error -> {
-                Column(
-                    Modifier.fillMaxSize().padding(32.dp),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Text("Something went wrong",
-                        fontSize=18.sp, fontWeight=FontWeight.Bold)
-                    Text(state.message, color=Color.Gray)
-                    Spacer(Modifier.height(16.dp))
-                    Button(onClick = { uiState = UiState.Loading }) {
-                        Text("Retry")
-                    }
-                }
-            }
-            is UiState.Success -> {
-                OutlinedTextField(
-                    value = query, onValueChange = { query = it },
-                    placeholder = { Text("Search...") },
-                    modifier = Modifier.fillMaxWidth().padding(16.dp),
-                    singleLine = true)
-                val filtered = state.data.filter {
-                    it.name.contains(query, ignoreCase = true)
-                }
-                LazyColumn(contentPadding = PaddingValues(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                    items(filtered, key={it.name}) { artist ->
-                        ArtistRow(artist,
-                            onClick={onArtistClicked(artist)})
-                    }
-                }
-            }
-        }
+LaunchedEffect(uiState) {
+    if (uiState !is UiState.Loading) return@LaunchedEffect
+    uiState = try {
+        UiState.Success(LastFmApi.service.getTopArtists().artists.artist)
+    } catch (e: Exception) {
+        UiState.Error(e.message ?: "Something went wrong")
     }
 }`}
-        </CodePane>
-        <CodePane title="ArtistRow with AsyncImage — Compose" accent={TEAL}>
-{`@Composable
-fun ArtistRow(artist: Artist, onClick: () -> Unit = {}) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable { onClick() }
-            .background(Color.White,
-                RoundedCornerShape(12.dp))
-            .padding(12.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(12.dp)
-    ) {
-        val imageUrl = artist.getLargeImageUrl()
-        if (imageUrl.isNotEmpty()) {
-            AsyncImage(
-                model = imageUrl,
-                contentDescription = artist.name,
-                modifier = Modifier
-                    .size(52.dp)
-                    .clip(CircleShape),
-                contentScale = ContentScale.Crop,
-                error = ColorPainter(Color(0xFF534AB7))
-            )
-        } else {
-            Box(
-                modifier = Modifier
-                    .size(52.dp)
-                    .background(
-                        Color(0xFF534AB7), CircleShape),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    artist.name.first().toString(),
-                    color = Color.White, fontSize = 22.sp,
-                    fontWeight = FontWeight.Bold
-                )
-            }
-        }
-        Column(modifier = Modifier.weight(1f)) {
-            Text(artist.name, fontSize=15.sp,
-                fontWeight=FontWeight.Bold)
-            Text(
-                formatListeners(
-                    artist.listeners.toLongOrNull() ?: 0L),
-                fontSize=13.sp, color=Color.Gray)
-        }
-    }
-}
-
-fun formatListeners(n: Long) = when {
-    n >= 1_000_000 ->
-        String.format("%.1fM listeners", n/1_000_000.0)
-    n >= 1_000     ->
-        String.format("%.0fK listeners", n/1_000.0)
-    else           -> "$n listeners"
-}`}
-        </CodePane>
-      </div>
-    </Shell>
-  ),
-
-  // 11b: SwiftUI full screen
-  () => (
-    <Shell tag="Live code-along" title="The complete networked screen — SwiftUI" notes="Walk through this alongside the Compose version. Point out the structural parallels: UiState enum mirrors the sealed class, .task mirrors LaunchedEffect, switch mirrors when. The concepts are identical — the syntax is different. Ask students to spot the differences before you explain them.">
-      <div style={{ display: "flex", gap: 10, marginTop: 6 }}>
-        <CodePane title="Full screen — SwiftUI with all three states" accent={TEAL}>
+                </CodePane>
+              }
+              ios={
+                <CodePane title="Swift — enum + state + .task" accent={TEAL}>
 {`enum UiState<T> {
     case loading
     case success(T)
     case error(String)
 }
-
-struct ArtistListScreen: View {
-    @State private var uiState: UiState<[Artist]> = .loading
-    @State private var query = ""
-
-    var body: some View {
-        ZStack {
-            Color(UIColor.systemGray6).ignoresSafeArea()
-            switch uiState {
-            case .loading:
-                ProgressView("Loading artists...")
-                    .tint(Color(red:0.33,green:0.29,blue:0.72))
-
-            case .error(let message):
-                VStack(spacing: 12) {
-                    Text("Something went wrong")
-                        .font(.headline)
-                    Text(message)
-                        .font(.subheadline)
-                        .foregroundColor(.gray)
-                        .multilineTextAlignment(.center)
-                    Button("Retry") { uiState = .loading }
-                        .buttonStyle(.borderedProminent)
-                        .tint(Color(red:0.33,green:0.29,blue:0.72))
-                }
-                .padding(32)
-
-            case .success(let artists):
-                VStack(spacing: 0) {
-                    HStack {
-                        Image(systemName: "magnifyingglass")
-                            .foregroundColor(.gray)
-                        TextField("Search artists...", text: $query)
-                            .font(.subheadline)
-                    }
-                    .padding(10).background(Color.white)
-                    .cornerRadius(12)
-                    .padding(.horizontal,16).padding(.vertical,10)
-
-                    let filtered = artists.filter {
-                        query.isEmpty ||
-                        $0.name.localizedCaseInsensitiveContains(query)
-                    }
-                    List(filtered) { artist in
-                        NavigationLink(
-                            destination: ArtistDetailScreen(artist: artist)
-                        ) { ArtistRow(artist: artist) }
-                        .listRowBackground(Color.clear)
-                        .listRowSeparator(.hidden)
-                    }
-                    .listStyle(.plain)
-                }
-            }
-        }
-        .navigationTitle("Top Artists")
-        .task(id: uiState.isLoading) {
-            guard case .loading = uiState else { return }
-            do {
-                let artists = try await LastFmApiService.getTopArtists()
-                uiState = .success(artists)
-            } catch {
-                uiState = .error(error.localizedDescription)
-            }
-        }
-    }
-}
-
 extension UiState {
     var isLoading: Bool {
         if case .loading = self { return true }
         return false
     }
+}
+
+@State private var uiState: UiState<[Artist]> = .loading
+@State private var query = ""
+
+// In body:
+.task(id: uiState.isLoading) {
+    guard case .loading = uiState else { return }
+    do {
+        let artists = try await LastFmApiService.getTopArtists()
+        uiState = .success(artists)
+    } catch {
+        uiState = .error(error.localizedDescription)
+    }
 }`}
-        </CodePane>
-        <CodePane title="ArtistRow with AsyncImage — SwiftUI" accent={PURPLE}>
+                </CodePane>
+              }
+            />
+          }
+        />
+      </div>
+    </Shell>
+  ),
+
+  // 15: Code-along step 2 — render states
+  () => (
+    <Shell tag="Live code-along — Step 2 of 3" title="Render the three states" subtitle="Add the when / switch that drives Loading, Error, and Success">
+      <div style={{ marginTop: 8 }}>
+        <ViewToggle
+          steps={
+            <OSToggle
+              android={
+                <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                  <Step n={1} title="Loading — centered spinner while waiting">
+                    <pre style={{ margin: 0, background: "#1e1e2e", color: "#cdd6f4", fontSize: 10, padding: "8px 12px", borderRadius: 6, lineHeight: 1.6, fontFamily: "monospace", whiteSpace: "pre-wrap" }}>{`when (val state = uiState) {
+    is UiState.Loading -> {
+        Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            CircularProgressIndicator(color = Color(0xFF534AB7))
+        }
+    }`}</pre>
+                  </Step>
+                  <Step n={2} title="Error — message + Retry button that resets state to Loading">
+                    <pre style={{ margin: 0, background: "#1e1e2e", color: "#cdd6f4", fontSize: 10, padding: "8px 12px", borderRadius: 6, lineHeight: 1.6, fontFamily: "monospace", whiteSpace: "pre-wrap" }}>{`    is UiState.Error -> {
+        Column(Modifier.fillMaxSize().padding(32.dp),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally) {
+            Text("Something went wrong", fontSize = 18.sp, fontWeight = FontWeight.Bold)
+            Text(state.message, color = Color.Gray, textAlign = TextAlign.Center)
+            Spacer(Modifier.height(16.dp))
+            Button(onClick = { uiState = UiState.Loading }) { Text("Retry") }
+        }
+    }`}</pre>
+                  </Step>
+                  <Step n={3} title="Success — search field + filtered LazyColumn">
+                    <pre style={{ margin: 0, background: "#1e1e2e", color: "#cdd6f4", fontSize: 10, padding: "8px 12px", borderRadius: 6, lineHeight: 1.6, fontFamily: "monospace", whiteSpace: "pre-wrap" }}>{`    is UiState.Success -> {
+        OutlinedTextField(value = query, onValueChange = { query = it },
+            placeholder = { Text("Search artists...") },
+            modifier = Modifier.fillMaxWidth().padding(16.dp), singleLine = true)
+        val filtered = state.data.filter { it.name.contains(query, ignoreCase = true) }
+        LazyColumn(contentPadding = PaddingValues(16.dp),
+            verticalArrangement = Arrangement.spacedBy(4.dp)) {
+            items(filtered, key = { it.name }) { artist ->
+                ArtistRow(artist, onClick = { onArtistClicked(artist) })
+            }
+        }
+    }
+}`}</pre>
+                  </Step>
+                </div>
+              }
+              ios={
+                <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                  <Step n={1} title="Loading — centered ProgressView" accent={TEAL}>
+                    <pre style={{ margin: 0, background: "#1e1e2e", color: "#cdd6f4", fontSize: 10, padding: "8px 12px", borderRadius: 6, lineHeight: 1.6, fontFamily: "monospace", whiteSpace: "pre-wrap" }}>{`switch uiState {
+case .loading:
+    ProgressView("Loading artists...")
+        .tint(Color(red: 0.33, green: 0.29, blue: 0.72))`}</pre>
+                  </Step>
+                  <Step n={2} title="Error — message + Retry button that resets to .loading" accent={TEAL}>
+                    <pre style={{ margin: 0, background: "#1e1e2e", color: "#cdd6f4", fontSize: 10, padding: "8px 12px", borderRadius: 6, lineHeight: 1.6, fontFamily: "monospace", whiteSpace: "pre-wrap" }}>{`case .error(let message):
+    VStack(spacing: 12) {
+        Text("Something went wrong").font(.headline)
+        Text(message).font(.subheadline).foregroundColor(.gray)
+            .multilineTextAlignment(.center)
+        Button("Retry") { uiState = .loading }
+            .buttonStyle(.borderedProminent)
+    }.padding(32)`}</pre>
+                  </Step>
+                  <Step n={3} title="Success — search field + filtered List" accent={TEAL}>
+                    <pre style={{ margin: 0, background: "#1e1e2e", color: "#cdd6f4", fontSize: 10, padding: "8px 12px", borderRadius: 6, lineHeight: 1.6, fontFamily: "monospace", whiteSpace: "pre-wrap" }}>{`case .success(let artists):
+    VStack(spacing: 0) {
+        HStack {
+            Image(systemName: "magnifyingglass").foregroundColor(.gray)
+            TextField("Search artists...", text: $query).font(.subheadline)
+        }
+        .padding(10).background(Color.white).cornerRadius(12).padding(16)
+        let filtered = artists.filter {
+            query.isEmpty || $0.name.localizedCaseInsensitiveContains(query)
+        }
+        List(filtered) { artist in
+            NavigationLink(destination: ArtistDetailScreen(artist: artist)) {
+                ArtistRow(artist: artist)
+            }.listRowBackground(Color.clear).listRowSeparator(.hidden)
+        }.listStyle(.plain)
+    }
+}`}</pre>
+                  </Step>
+                </div>
+              }
+            />
+          }
+          full={
+            <OSToggle
+              android={
+                <CodePane title="Kotlin — full when block" accent={PURPLE}>
+{`Column(modifier = Modifier.fillMaxSize().background(Color(0xFFF5F5F5))) {
+    when (val state = uiState) {
+        is UiState.Loading -> {
+            Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                CircularProgressIndicator(color = Color(0xFF534AB7))
+            }
+        }
+        is UiState.Error -> {
+            Column(Modifier.fillMaxSize().padding(32.dp),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally) {
+                Text("Something went wrong", fontSize = 18.sp, fontWeight = FontWeight.Bold)
+                Text(state.message, color = Color.Gray, textAlign = TextAlign.Center)
+                Spacer(Modifier.height(16.dp))
+                Button(onClick = { uiState = UiState.Loading }) { Text("Retry") }
+            }
+        }
+        is UiState.Success -> {
+            OutlinedTextField(value = query, onValueChange = { query = it },
+                placeholder = { Text("Search artists...") },
+                modifier = Modifier.fillMaxWidth().padding(16.dp), singleLine = true)
+            val filtered = state.data.filter { it.name.contains(query, ignoreCase = true) }
+            LazyColumn(contentPadding = PaddingValues(16.dp),
+                verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                items(filtered, key = { it.name }) { artist ->
+                    ArtistRow(artist, onClick = { onArtistClicked(artist) })
+                }
+            }
+        }
+    }
+}`}
+                </CodePane>
+              }
+              ios={
+                <CodePane title="Swift — full switch block" accent={TEAL}>
+{`switch uiState {
+case .loading:
+    ProgressView("Loading artists...").tint(Color(red: 0.33, green: 0.29, blue: 0.72))
+
+case .error(let message):
+    VStack(spacing: 12) {
+        Text("Something went wrong").font(.headline)
+        Text(message).font(.subheadline).foregroundColor(.gray)
+            .multilineTextAlignment(.center)
+        Button("Retry") { uiState = .loading }.buttonStyle(.borderedProminent)
+    }.padding(32)
+
+case .success(let artists):
+    VStack(spacing: 0) {
+        HStack {
+            Image(systemName: "magnifyingglass").foregroundColor(.gray)
+            TextField("Search artists...", text: $query).font(.subheadline)
+        }
+        .padding(10).background(Color.white).cornerRadius(12).padding(16)
+        let filtered = artists.filter {
+            query.isEmpty || $0.name.localizedCaseInsensitiveContains(query)
+        }
+        List(filtered) { artist in
+            NavigationLink(destination: ArtistDetailScreen(artist: artist)) {
+                ArtistRow(artist: artist)
+            }.listRowBackground(Color.clear).listRowSeparator(.hidden)
+        }.listStyle(.plain)
+    }
+}`}
+                </CodePane>
+              }
+            />
+          }
+        />
+      </div>
+    </Shell>
+  ),
+
+  // 16: Code-along step 3 — ArtistRow with AsyncImage (OSToggle, merged)
+  () => (
+    <Shell tag="Live code-along — Step 3 of 3" title="ArtistRow with AsyncImage and fallback" subtitle="Replace the initial-letter Box with real image loading">
+      <div style={{ marginTop: 8 }}>
+        <ViewToggle
+          steps={
+            <OSToggle
+              android={
+                <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                  <Step n={1} title="Outer Row — layout you already know from Week 3">
+                    <pre style={{ margin: 0, background: "#1e1e2e", color: "#cdd6f4", fontSize: 10, padding: "8px 12px", borderRadius: 6, lineHeight: 1.6, fontFamily: "monospace", whiteSpace: "pre-wrap" }}>{`Row(
+    modifier = Modifier.fillMaxWidth().clickable { onClick() }
+        .background(Color.White, RoundedCornerShape(12.dp)).padding(12.dp),
+    verticalAlignment = Alignment.CenterVertically,
+    horizontalArrangement = Arrangement.spacedBy(12.dp)
+) { /* image slot + text column go here */ }`}</pre>
+                  </Step>
+                  <Step n={2} title="AsyncImage — show image if URL exists, initials circle as fallback">
+                    <pre style={{ margin: 0, background: "#1e1e2e", color: "#cdd6f4", fontSize: 10, padding: "8px 12px", borderRadius: 6, lineHeight: 1.6, fontFamily: "monospace", whiteSpace: "pre-wrap" }}>{`val imageUrl = artist.getLargeImageUrl()
+if (imageUrl.isNotEmpty()) {
+    AsyncImage(
+        model = imageUrl,
+        contentDescription = artist.name,
+        modifier = Modifier.size(52.dp).clip(CircleShape),
+        contentScale = ContentScale.Crop,
+        placeholder = ColorPainter(Color(0xFFEEEDFE)), // purple tint while loading
+        error = ColorPainter(Color(0xFF534AB7))         // purple on failure
+    )
+} else {
+    Box(Modifier.size(52.dp).background(Color(0xFF534AB7), CircleShape),
+        contentAlignment = Alignment.Center) {
+        Text(artist.name.first().toString(), color = Color.White,
+            fontSize = 22.sp, fontWeight = FontWeight.Bold)
+    }
+}`}</pre>
+                  </Step>
+                  <Step n={3} title="Text column + formatListeners helper">
+                    <pre style={{ margin: 0, background: "#1e1e2e", color: "#cdd6f4", fontSize: 10, padding: "8px 12px", borderRadius: 6, lineHeight: 1.6, fontFamily: "monospace", whiteSpace: "pre-wrap" }}>{`Column(modifier = Modifier.weight(1f)) {
+    Text(artist.name, fontSize = 15.sp, fontWeight = FontWeight.Bold)
+    Text(formatListeners(artist.listeners.toLongOrNull() ?: 0L),
+        fontSize = 13.sp, color = Color.Gray)
+}
+
+fun formatListeners(n: Long) = when {
+    n >= 1_000_000 -> String.format("%.1fM listeners", n / 1_000_000.0)
+    n >= 1_000     -> String.format("%.0fK listeners", n / 1_000.0)
+    else           -> "$n listeners"
+}`}</pre>
+                  </Step>
+                </div>
+              }
+              ios={
+                <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                  <Step n={1} title="Outer HStack — layout you already know from Week 3" accent={TEAL}>
+                    <pre style={{ margin: 0, background: "#1e1e2e", color: "#cdd6f4", fontSize: 10, padding: "8px 12px", borderRadius: 6, lineHeight: 1.6, fontFamily: "monospace", whiteSpace: "pre-wrap" }}>{`HStack(spacing: 12) {
+    /* image slot */
+    /* text column */
+    Spacer()
+}
+.padding(12)
+.background(Color.white)
+.cornerRadius(12)`}</pre>
+                  </Step>
+                  <Step n={2} title="AsyncImage — phase switch, initials circle as fallback" accent={TEAL}>
+                    <pre style={{ margin: 0, background: "#1e1e2e", color: "#cdd6f4", fontSize: 10, padding: "8px 12px", borderRadius: 6, lineHeight: 1.6, fontFamily: "monospace", whiteSpace: "pre-wrap" }}>{`if !artist.largeImageUrl.isEmpty,
+   let url = URL(string: artist.largeImageUrl) {
+    AsyncImage(url: url) { phase in
+        switch phase {
+        case .success(let image):
+            image.resizable().aspectRatio(contentMode: .fill)
+                .frame(width: 52, height: 52).clipShape(Circle())
+        default: initialsCircle  // loading + error both show initials
+        }
+    }
+} else { initialsCircle }
+
+var initialsCircle: some View {
+    Circle().fill(Color(red: 0.33, green: 0.29, blue: 0.72))
+        .frame(width: 52, height: 52)
+        .overlay(Text(String(artist.name.prefix(1)))
+            .font(.title2).fontWeight(.bold).foregroundColor(.white))
+}`}</pre>
+                  </Step>
+                  <Step n={3} title="Text column + formatListeners helper" accent={TEAL}>
+                    <pre style={{ margin: 0, background: "#1e1e2e", color: "#cdd6f4", fontSize: 10, padding: "8px 12px", borderRadius: 6, lineHeight: 1.6, fontFamily: "monospace", whiteSpace: "pre-wrap" }}>{`VStack(alignment: .leading, spacing: 2) {
+    Text(artist.name).font(.subheadline).fontWeight(.bold)
+    Text(formatListeners(artist.listeners)).font(.caption).foregroundColor(.gray)
+}
+
+func formatListeners(_ raw: String) -> String {
+    guard let n = Int(raw) else { return raw }
+    if n >= 1_000_000 { return String(format: "%.1fM listeners", Double(n) / 1_000_000) }
+    if n >= 1_000     { return String(format: "%.0fK listeners", Double(n) / 1_000) }
+    return "\\(n) listeners"
+}`}</pre>
+                  </Step>
+                </div>
+              }
+            />
+          }
+          full={
+            <OSToggle
+              android={
+                <CodePane title="Kotlin — full ArtistRow composable" accent={PURPLE}>
+{`@Composable
+fun ArtistRow(artist: Artist, onClick: () -> Unit = {}) {
+    Row(
+        modifier = Modifier.fillMaxWidth().clickable { onClick() }
+            .background(Color.White, RoundedCornerShape(12.dp)).padding(12.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        val imageUrl = artist.getLargeImageUrl()
+        if (imageUrl.isNotEmpty()) {
+            AsyncImage(model = imageUrl, contentDescription = artist.name,
+                modifier = Modifier.size(52.dp).clip(CircleShape),
+                contentScale = ContentScale.Crop,
+                placeholder = ColorPainter(Color(0xFFEEEDFE)),
+                error = ColorPainter(Color(0xFF534AB7)))
+        } else {
+            Box(Modifier.size(52.dp).background(Color(0xFF534AB7), CircleShape),
+                contentAlignment = Alignment.Center) {
+                Text(artist.name.first().toString(), color = Color.White,
+                    fontSize = 22.sp, fontWeight = FontWeight.Bold)
+            }
+        }
+        Column(modifier = Modifier.weight(1f)) {
+            Text(artist.name, fontSize = 15.sp, fontWeight = FontWeight.Bold)
+            Text(formatListeners(artist.listeners.toLongOrNull() ?: 0L),
+                fontSize = 13.sp, color = Color.Gray)
+        }
+    }
+}
+
+fun formatListeners(n: Long) = when {
+    n >= 1_000_000 -> String.format("%.1fM listeners", n / 1_000_000.0)
+    n >= 1_000     -> String.format("%.0fK listeners", n / 1_000.0)
+    else           -> "$n listeners"
+}`}
+                </CodePane>
+              }
+              ios={
+                <CodePane title="Swift — full ArtistRow view" accent={TEAL}>
 {`struct ArtistRow: View {
     let artist: Artist
-
     var body: some View {
         HStack(spacing: 12) {
-            // Image or fallback
             if !artist.largeImageUrl.isEmpty,
                let url = URL(string: artist.largeImageUrl) {
                 AsyncImage(url: url) { phase in
                     switch phase {
                     case .success(let image):
-                        image.resizable()
-                            .aspectRatio(contentMode: .fill)
-                            .frame(width:52,height:52)
-                            .clipShape(Circle())
-                    default:
-                        initialsCircle
+                        image.resizable().aspectRatio(contentMode: .fill)
+                            .frame(width: 52, height: 52).clipShape(Circle())
+                    default: initialsCircle
                     }
                 }
-            } else {
-                initialsCircle
-            }
-
+            } else { initialsCircle }
             VStack(alignment: .leading, spacing: 2) {
-                Text(artist.name)
-                    .font(.subheadline).fontWeight(.bold)
-                Text(formatListeners(artist.listeners))
-                    .font(.caption).foregroundColor(.gray)
+                Text(artist.name).font(.subheadline).fontWeight(.bold)
+                Text(formatListeners(artist.listeners)).font(.caption).foregroundColor(.gray)
             }
             Spacer()
         }
-        .padding(12)
-        .background(Color.white)
-        .cornerRadius(12)
+        .padding(12).background(Color.white).cornerRadius(12)
     }
-
     var initialsCircle: some View {
-        Circle()
-            .fill(Color(red:0.33,green:0.29,blue:0.72))
-            .frame(width:52,height:52)
-            .overlay(
-                Text(String(artist.name.prefix(1)))
-                    .font(.title2).fontWeight(.bold)
-                    .foregroundColor(.white)
-            )
+        Circle().fill(Color(red: 0.33, green: 0.29, blue: 0.72))
+            .frame(width: 52, height: 52)
+            .overlay(Text(String(artist.name.prefix(1)))
+                .font(.title2).fontWeight(.bold).foregroundColor(.white))
     }
-
     func formatListeners(_ raw: String) -> String {
         guard let n = Int(raw) else { return raw }
-        if n >= 1_000_000 {
-            return String(format:"%.1fM listeners",
-                          Double(n)/1_000_000)
-        } else if n >= 1_000 {
-            return String(format:"%.0fK listeners",
-                          Double(n)/1_000)
-        }
-        return "\(n) listeners"
+        if n >= 1_000_000 { return String(format: "%.1fM listeners", Double(n) / 1_000_000) }
+        if n >= 1_000     { return String(format: "%.0fK listeners", Double(n) / 1_000) }
+        return "\\(n) listeners"
     }
 }`}
-        </CodePane>
+                </CodePane>
+              }
+            />
+          }
+        />
       </div>
     </Shell>
   ),
 
-  // 12: Lab intro + assignment
+  // 17: Lab intro + assignment
   () => (
     <Shell tag="Lab intro" timer="6" title="Lab time + Assignment 4 overview" subtitle="Go to the Lab tab on the course site — Session 2 Lab." notes="Keep this brief. The lab follows the slides closely. For Assignment 4, emphasise that students should read their chosen API's documentation thoroughly before writing any models — the JSON structure tells them exactly what data classes they need.">
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginTop: 6 }}>
@@ -968,16 +1260,16 @@ extension UiState {
     </Shell>
   ),
 
-  // 13: Closing
+  // 18: Closing
   () => (
     <div style={{ background: `linear-gradient(135deg, ${PURPLE_DARK} 0%, ${PURPLE} 100%)`, borderRadius: 12, padding: "44px 40px", minHeight: 360, display: "flex", flexDirection: "column", justifyContent: "space-between", boxSizing: "border-box" }}>
       <div>
         <h2 style={{ fontSize: 28, fontWeight: 800, color: "#fff", margin: "0 0 8px" }}>Week 4 complete.</h2>
-        <p style={{ fontSize: 15, color: "rgba(255,255,255,0.7)", margin: "0 0 24px" }}>Your app now fetches real data, handles failure, and loads images from the internet. That is a production-quality screen.</p>
+        <p style={{ fontSize: 15, color: "rgba(255,255,255,0.7)", margin: "0 0 24px" }}>Your app now fetches real data, handles failure gracefully, and loads images from the internet. That is a production-quality screen.</p>
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
           <div style={{ background: "rgba(255,255,255,0.1)", borderRadius: 8, padding: "12px 16px" }}>
             <p style={{ fontSize: 11, fontWeight: 700, color: "rgba(255,255,255,0.6)", margin: "0 0 8px", textTransform: "uppercase", letterSpacing: ".06em" }}>What you learned this week</p>
-            {["HTTP request/response cycle", "REST APIs and JSON parsing", "Data classes matching JSON structure", "Coroutines (Kotlin) + async/await (Swift)", "Retrofit + URLSession networking", "The three UI states: Loading, Success, Error", "Sealed classes and enums for state modelling", "Image loading with Coil and AsyncImage"].map(t => (
+            {["HTTP request/response cycle", "REST APIs and JSON parsing", "Data classes / structs matching JSON structure", "Threads — blocking vs suspending", "Coroutines (Kotlin) + async/await (Swift)", "What Retrofit and Gson do, and why they exist", "The three UI states: Loading, Success, Error", "Sealed classes and enums — exhaustive state modelling", "Image loading with Coil and AsyncImage"].map(t => (
               <div key={t} style={{ display: "flex", gap: 6, margin: "4px 0" }}>
                 <span style={{ color: TEAL, flexShrink: 0 }}>▸</span>
                 <span style={{ fontSize: 12, color: "rgba(255,255,255,0.8)" }}>{t}</span>

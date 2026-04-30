@@ -20,7 +20,53 @@ const CodePane = ({ title, accent = PURPLE, children }) => (
   </div>
 );
 
-const Bullet = ({ children, sub }) => (
+const Step = ({ n, title, children, accent = PURPLE }) => (
+  <div style={{ marginBottom: 10, paddingLeft: 24, borderLeft: `2px solid #e5e7eb`, position: "relative" }}>
+    <div style={{ position: "absolute", left: -14, top: 0, width: 26, height: 26, borderRadius: "50%", background: "#fff", border: `2px solid ${accent}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 800, color: accent }}>
+      {n}
+    </div>
+    <p style={{ fontSize: 12, fontWeight: 700, color: TEXT, margin: "2px 0 6px" }}>{title}</p>
+    <div>{children}</div>
+  </div>
+);
+
+const OSToggle = ({ android, ios }) => {
+  const [platform, setPlatform] = useState<'android' | 'ios'>('android');
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+      <div style={{ display: "flex", borderRadius: 8, overflow: "hidden", border: "1px solid #e5e7eb", width: "fit-content" }}>
+        <button onClick={() => setPlatform('android')} style={{ padding: "5px 16px", fontSize: 11, fontWeight: 700, letterSpacing: ".04em", background: platform === 'android' ? PURPLE : "#fff", color: platform === 'android' ? "#fff" : MUTED, border: "none", borderRight: "1px solid #e5e7eb", cursor: "pointer" }}>
+          Android · Kotlin
+        </button>
+        <button onClick={() => setPlatform('ios')} style={{ padding: "5px 16px", fontSize: 11, fontWeight: 700, letterSpacing: ".04em", background: platform === 'ios' ? TEAL : "#fff", color: platform === 'ios' ? "#fff" : MUTED, border: "none", cursor: "pointer" }}>
+          iOS · Swift
+        </button>
+      </div>
+      {platform === 'android' ? android : ios}
+    </div>
+  );
+};
+
+const ViewToggle = ({ steps, full }) => {
+  const [view, setView] = useState<'steps' | 'full'>('steps');
+  return (
+    <div>
+      <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 6 }}>
+        <div style={{ display: "flex", borderRadius: 20, overflow: "hidden", border: "1px solid #e5e7eb", width: "fit-content" }}>
+          <button onClick={() => setView('steps')} style={{ padding: "3px 12px", fontSize: 10, fontWeight: 700, letterSpacing: ".04em", background: view === 'steps' ? PURPLE : "#fff", color: view === 'steps' ? "#fff" : MUTED, border: "none", borderRight: "1px solid #e5e7eb", cursor: "pointer" }}>
+            Step by step
+          </button>
+          <button onClick={() => setView('full')} style={{ padding: "3px 12px", fontSize: 10, fontWeight: 700, letterSpacing: ".04em", background: view === 'full' ? PURPLE : "#fff", color: view === 'full' ? "#fff" : MUTED, border: "none", cursor: "pointer" }}>
+            Full code
+          </button>
+        </div>
+      </div>
+      {view === 'steps' ? steps : full}
+    </div>
+  );
+};
+
+const Bullet = ({ children, sub }: { [k: string]: any }) => (
   <div style={{ display: "flex", gap: 8, margin: sub ? "3px 0 3px 20px" : "7px 0", alignItems: "flex-start" }}>
     <span style={{ color: sub ? TEAL : PURPLE, fontWeight: 700, fontSize: sub ? 12 : 14, marginTop: 1, flexShrink: 0 }}>{sub ? "◦" : "▸"}</span>
     <span style={{ fontSize: sub ? 13 : 14, color: sub ? MUTED : TEXT, lineHeight: 1.5 }}>{children}</span>
@@ -47,14 +93,14 @@ const Info = ({ children }) => (
   </div>
 );
 
-const Warn = ({ title, children }) => (
+const Warn = ({ title, children }: { [k: string]: any }) => (
   <div className="callout-warn" style={{ background: "#fff3cd", border: "1px solid #f59e0b", borderRadius: 8, padding: "8px 12px", margin: "8px 0" }}>
     {title && <p style={{ fontSize: 12, fontWeight: 600, color: "#92400e", margin: "0 0 2px" }}>{title}</p>}
     <p style={{ fontSize: 12, color: "#92400e", margin: 0, lineHeight: 1.5 }}>{children}</p>
   </div>
 );
 
-const Shell = ({ tag, title, subtitle, timer, children, notes, dark }) => (
+const Shell = ({ tag, title, subtitle, timer, children, notes, dark }: { [k: string]: any }) => (
   <div style={{ background: dark ? PURPLE_DARK : "#fff", border: `1px solid ${dark ? "transparent" : "#e5e7eb"}`, borderRadius: 12, padding: "24px 28px 18px", minHeight: 360, display: "flex", flexDirection: "column", boxSizing: "border-box" }}>
     <div style={{ marginBottom: 12 }}>
       <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
@@ -147,11 +193,11 @@ const slides = [
           { num: "01", time: "3 min",  title: "Every app you love", desc: "The moment hardcoded data became real" },
           { num: "02", time: "5 min",  title: "Recap", desc: "Weeks 1-3 — the foundation that stays the same" },
           { num: "03", time: "10 min", title: "HTTP and REST APIs", desc: "How the internet works — requests, responses, JSON" },
-          { num: "04", time: "8 min",  title: "Reading API documentation", desc: "How to find what you need in the Last.fm docs" },
-          { num: "05", time: "10 min", title: "Coroutines and async/await", desc: "Why network calls need special handling — and how" },
-          { num: "06", time: "8 min",  title: "Retrofit and URLSession setup", desc: "The libraries that do the heavy lifting" },
-          { num: "07", time: "12 min", title: "Live code-along", desc: "Make the first Last.fm API call and display results" },
-          { num: "08", time: "4 min",  title: "Lab intro + Q&A", desc: "What you build today" },
+          { num: "04", time: "5 min",  title: "Reading API documentation", desc: "How to find what you need in the Last.fm docs" },
+          { num: "05", time: "12 min", title: "Async — the mental model and the code", desc: "Why network calls are different, and the keywords that fix it" },
+          { num: "06", time: "10 min", title: "Retrofit and URLSession", desc: "What they are, why they exist, and step-by-step setup" },
+          { num: "07", time: "12 min", title: "Live code-along (3 steps)", desc: "Models → API service → connect to screen" },
+          { num: "08", time: "3 min",  title: "Lab intro + Q&A", desc: "What you build today" },
         ].map(item => (
           <div key={item.num} style={{ display: "flex", gap: 10, padding: "9px 11px", background: GRAY, borderRadius: 8, alignItems: "flex-start" }}>
             <span style={{ fontSize: 16, fontWeight: 800, color: PURPLE_LIGHT, flexShrink: 0, lineHeight: 1, minWidth: 22 }}>{item.num}</span>
@@ -318,7 +364,7 @@ const slides = [
 
   // 8: Why async matters
   () => (
-    <Shell tag="Async" timer="10" title="Why network calls need special handling" subtitle="The problem with doing slow work on the main thread" notes="This is a conceptual slide — no code yet. The restaurant analogy works brilliantly here. Ask students: have you ever been in a restaurant where the waiter disappeared for 10 minutes while you waited? That is what blocking the main thread feels like to the user. The UI freezes completely. Coroutines and async/await let the waiter take your order and come back when the food is ready.">
+    <Shell tag="Async" timer="12" title="Why network calls need special handling" subtitle="The problem with doing slow work on the main thread" notes="This is a conceptual slide — no code yet. The restaurant analogy works brilliantly here. Ask students: have you ever been in a restaurant where the waiter disappeared for 10 minutes while you waited? That is what blocking the main thread feels like to the user. The UI freezes completely. Coroutines and async/await let the waiter take your order and come back when the food is ready.">
       <Discussion>{"Imagine you are at a restaurant. The waiter takes your order, then stands at your table staring at you in silence for 10 minutes while the kitchen prepares your food. Nothing else happens in the restaurant. How does that feel? That is what happens when a network call blocks the main thread."}</Discussion>
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginTop: 10 }}>
         <div style={{ background: "#fff3f3", border: "1px solid #fca5a5", borderRadius: 8, padding: "14px 16px" }}>
@@ -343,40 +389,92 @@ const slides = [
     </Shell>
   ),
 
-  // 9: Coroutines vs async/await
+  // 9: NEW — suspend / async mental model
   () => (
-    <Shell tag="Async" title="Coroutines vs async/await — same idea, different syntax" notes="Students often think coroutines and async/await are completely different things. Emphasise that they solve the exact same problem with very similar concepts. The keyword suspend in Kotlin and async in Swift both mean: this function can pause without blocking. The difference is mostly syntax. Claude can translate between them instantly.">
-      <div style={{ display: "flex", gap: 10, marginTop: 6 }}>
-        <CodePane title="Kotlin — coroutines and suspend" accent={PURPLE}>
-{`// 'suspend' = this function can pause without blocking
-// It must be called from a coroutine or another suspend function
+    <Shell tag="Async" title="suspend and async — the mental model" subtitle="What pausing without blocking actually looks like in practice">
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14, marginTop: 6 }}>
+        <div>
+          <div style={{ background: GRAY, borderRadius: 8, padding: "12px 14px", marginBottom: 10 }}>
+            <p style={{ fontSize: 12, fontWeight: 700, color: TEXT, margin: "0 0 8px" }}>What is a thread?</p>
+            <p style={{ fontSize: 12, color: MUTED, margin: "0 0 8px", lineHeight: 1.6 }}>A thread is a worker that executes your code one instruction at a time. Your app has one <strong style={{ color: TEXT }}>main thread</strong> — it is the only one allowed to update the UI.</p>
+            <p style={{ fontSize: 12, color: MUTED, margin: 0, lineHeight: 1.6 }}>When that thread is busy doing a network call, it cannot redraw the screen, respond to taps, or do anything else. From the user's perspective: the app is frozen.</p>
+          </div>
+          <div style={{ background: GRAY, borderRadius: 8, padding: "12px 14px" }}>
+            <p style={{ fontSize: 12, fontWeight: 700, color: TEXT, margin: "0 0 8px" }}>What suspend / async actually does</p>
+            <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+              {[
+                { n: 1, t: "Main thread starts the network call" },
+                { n: 2, t: "Main thread says \"notify me when done\" and steps away" },
+                { n: 3, t: "A background thread handles the actual network work" },
+                { n: 4, t: "Main thread is free — it keeps drawing UI and handling taps" },
+                { n: 5, t: "Background thread finishes → main thread resumes with the data" },
+              ].map(s => (
+                <div key={s.n} style={{ display: "flex", gap: 8, alignItems: "flex-start" }}>
+                  <span style={{ background: TEAL, color: "#fff", borderRadius: "50%", width: 18, height: 18, fontSize: 10, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, marginTop: 1 }}>{s.n}</span>
+                  <span style={{ fontSize: 12, color: TEXT, lineHeight: 1.5 }}>{s.t}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+        <div>
+          <p style={{ fontSize: 12, fontWeight: 700, color: TEXT, margin: "0 0 8px" }}>The keywords at a glance</p>
+          <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 10 }}>
+            {[
+              { kotlin: "suspend fun", swift: "async func", what: "This function can pause without blocking — safe to call a network API inside it" },
+              { kotlin: "LaunchedEffect(Unit)", swift: ".task modifier", what: "Starts a coroutine/task when the view appears — the right place to load data" },
+              { kotlin: "viewModelScope.launch", swift: "Task { }", what: "Manually start a coroutine or async task from non-UI code" },
+            ].map(row => (
+              <div key={row.kotlin} style={{ background: GRAY, borderRadius: 8, padding: "10px 12px" }}>
+                <div style={{ display: "flex", gap: 6, alignItems: "center", marginBottom: 4 }}>
+                  <code style={{ fontSize: 10, background: PURPLE_LIGHT, color: PURPLE, padding: "1px 7px", borderRadius: 3, whiteSpace: "nowrap" }}>{row.kotlin}</code>
+                  <span style={{ fontSize: 10, color: MUTED }}>↔</span>
+                  <code style={{ fontSize: 10, background: TEAL_LIGHT, color: TEAL, padding: "1px 7px", borderRadius: 3, whiteSpace: "nowrap" }}>{row.swift}</code>
+                </div>
+                <p style={{ fontSize: 11, color: MUTED, margin: 0, lineHeight: 1.4 }}>{row.what}</p>
+              </div>
+            ))}
+          </div>
+          <Info>{"suspend and async do NOT make network calls faster. They keep the UI thread free so your app stays responsive while waiting. The network call takes the same amount of time either way."}</Info>
+          <Warn>{"Retrofit automatically runs @GET functions on a background thread. URLSession.shared.data() also runs on a background thread. You do not need to manually switch threads for basic API calls."}</Warn>
+        </div>
+      </div>
+    </Shell>
+  ),
+
+  // 10: Coroutines vs async/await — code (OSToggle)
+  () => (
+    <Shell tag="Async" title="Coroutines vs async/await — same idea, different syntax" notes="Students often think coroutines and async/await are completely different things. Emphasise that they solve the exact same problem with very similar concepts. The keyword suspend in Kotlin and async in Swift both mean: this function can pause without blocking. The difference is mostly syntax.">
+      <div style={{ marginTop: 6 }}>
+        <OSToggle
+          android={
+            <CodePane title="Kotlin — suspend functions and coroutines" accent={PURPLE}>
+{`// 'suspend' marks a function that can pause without blocking
+// Must be called from inside a coroutine or another suspend function
 suspend fun getTopArtists(): List<Artist> {
-    // This network call pauses here until data arrives
-    // The thread is FREE while waiting — not blocked
-    return api.fetchTopArtists()
+    return LastFmApi.service.getTopArtists().artists.artist
 }
 
-// LaunchedEffect = a coroutine that runs when the
-// Composable first enters the composition
+// LaunchedEffect — a coroutine that runs when the Composable appears
+// key = Unit means "run exactly once on first composition"
 LaunchedEffect(Unit) {
-    // 'Unit' means run once, on first composition
-    artists = getTopArtists()  // suspend call — safe here
+    artists = getTopArtists()   // safe to call suspend functions here
 }
 
-// viewModelScope is another common coroutine scope:
+// viewModelScope is an alternative coroutine scope from a ViewModel:
 viewModelScope.launch {
     artists = getTopArtists()
 }
 
-// Rule: network calls must happen inside a coroutine
-// LaunchedEffect, viewModelScope.launch, or withContext`}
-        </CodePane>
-        <CodePane title="Swift — async/await" accent={TEAL}>
-{`// 'async' = this function can pause without blocking
-// 'throws' = it can fail and throw an error
+// Rule: network calls must happen inside a coroutine scope.
+// LaunchedEffect and viewModelScope.launch are both valid scopes.`}
+            </CodePane>
+          }
+          ios={
+            <CodePane title="Swift — async/await" accent={TEAL}>
+{`// 'async' = can pause without blocking
+// 'throws' = can fail and throw an error you must handle
 func getTopArtists() async throws -> [Artist] {
-    // This pauses here until data arrives
-    // The thread is FREE while waiting — not blocked
     let (data, _) = try await URLSession.shared
         .data(from: url)
     return try JSONDecoder().decode(
@@ -384,19 +482,21 @@ func getTopArtists() async throws -> [Artist] {
     ).artists.artist
 }
 
-// .task modifier = runs when the view appears
+// .task modifier — runs when the view appears
 // Automatically cancelled when the view disappears
 .task {
     do {
         artists = try await getTopArtists()
     } catch {
-        print(error)
+        print(error.localizedDescription)
     }
 }
 
 // Rule: async functions must be called with 'await'
-// inside a Task { } or .task modifier`}
-        </CodePane>
+// inside a Task { } or .task modifier.`}
+            </CodePane>
+          }
+        />
       </div>
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8, marginTop: 10 }}>
         {[
@@ -417,17 +517,75 @@ func getTopArtists() async throws -> [Artist] {
     </Shell>
   ),
 
-  // 10: Retrofit setup
+  // 11: NEW — What is Retrofit?
   () => (
-    <Shell tag="Retrofit + URLSession" timer="8" title="Setting up Retrofit and URLSession" subtitle="The libraries that handle HTTP so you do not have to" notes="Retrofit is the most widely used HTTP client on Android. URLSession is built into iOS — no installation needed. Focus on what each piece does rather than how it works internally. Students do not need to understand Retrofit's internals — they need to know: define an interface with @GET, create a Retrofit instance, call the function.">
-      <div style={{ display: "flex", gap: 10, marginTop: 6 }}>
-        <CodePane title="Android — Retrofit setup" accent={PURPLE}>
-{`// 1. Add to build.gradle.kts:
-// implementation("com.squareup.retrofit2:retrofit:2.9.0")
-// implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+    <Shell tag="Retrofit + URLSession" timer="10" title="What is Retrofit — and why does it exist?" subtitle="The problem it solves, and the idea behind annotated interfaces" notes="The before/after comparison is the most effective teaching tool here. Show students the raw HttpURLConnection code and let them feel the pain, then show the Retrofit version. The reaction is always immediate. Then explain the two pieces: Retrofit handles the HTTP plumbing, Gson converts JSON to objects. URLSession and JSONDecoder play the same roles on iOS.">
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14, marginTop: 6 }}>
+        <div>
+          <p style={{ fontSize: 12, fontWeight: 700, color: "#b91c1c", margin: "0 0 6px" }}>Without Retrofit — the manual way</p>
+          <pre style={{ margin: "0 0 10px", background: "#1e1e2e", color: "#fca5a5", fontSize: 10, padding: "10px 12px", borderRadius: 8, lineHeight: 1.6, fontFamily: "monospace", whiteSpace: "pre-wrap" }}>{`val url = URL("https://ws.audioscrobbler.com/2.0/
+    ?method=chart.gettopartists&api_key=...")
+val conn = url.openConnection() as HttpURLConnection
+conn.requestMethod = "GET"
+val stream = conn.inputStream
+val json = stream.bufferedReader().readText()
+// Now manually parse every field from a raw JSON string...
+val obj = JSONObject(json)
+val arr = obj.getJSONObject("artists")
+              .getJSONArray("artist")
+// ...repeat for every field on every object`}</pre>
+          <p style={{ fontSize: 12, fontWeight: 700, color: TEAL, margin: "0 0 6px" }}>With Retrofit — what you actually write</p>
+          <pre style={{ margin: 0, background: "#1e1e2e", color: "#9FE1CB", fontSize: 10, padding: "10px 12px", borderRadius: 8, lineHeight: 1.6, fontFamily: "monospace", whiteSpace: "pre-wrap" }}>{`@GET(".")
+suspend fun getTopArtists(
+    @Query("method") method: String = "chart.gettopartists",
+    @Query("api_key") apiKey: String = API_KEY,
+    @Query("format") format: String = "json"
+): TopArtistsResponse
+// Retrofit + Gson handle everything else`}</pre>
+        </div>
+        <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+          <div style={{ background: GRAY, borderRadius: 8, padding: "12px 14px" }}>
+            <p style={{ fontSize: 12, fontWeight: 700, color: TEXT, margin: "0 0 10px" }}>The two pieces working together</p>
+            {[
+              { name: "Retrofit", color: PURPLE, role: "Reads your @GET annotations and builds the HTTP request. Sends it on a background thread. Hands the raw JSON response to Gson." },
+              { name: "Gson", color: "#E67E22", role: "Converts the raw JSON string into your Kotlin data classes automatically. The field names in your class must match the JSON keys exactly." },
+            ].map(p => (
+              <div key={p.name} style={{ marginBottom: 10 }}>
+                <div style={{ display: "flex", gap: 6, alignItems: "center", marginBottom: 4 }}>
+                  <div style={{ width: 10, height: 10, borderRadius: "50%", background: p.color, flexShrink: 0 }} />
+                  <p style={{ fontSize: 12, fontWeight: 700, color: p.color, margin: 0 }}>{p.name}</p>
+                </div>
+                <p style={{ fontSize: 11, color: MUTED, margin: "0 0 0 16px", lineHeight: 1.5 }}>{p.role}</p>
+              </div>
+            ))}
+          </div>
+          <div style={{ background: TEAL_LIGHT, border: `1px solid ${TEAL}`, borderRadius: 8, padding: "12px 14px" }}>
+            <p style={{ fontSize: 12, fontWeight: 700, color: TEAL, margin: "0 0 6px" }}>iOS — no Retrofit needed</p>
+            <p style={{ fontSize: 12, color: "#085041", margin: 0, lineHeight: 1.5 }}>URLSession is built into the iOS SDK and handles the HTTP request. JSONDecoder is Swift's equivalent of Gson — it maps JSON keys to your struct properties. Together they replace Retrofit + Gson entirely, with no additional libraries.</p>
+          </div>
+          <Info>{"Retrofit's key insight: you describe WHAT you want (an endpoint with these parameters), not HOW to fetch it. Retrofit generates the implementation for you at runtime."}</Info>
+        </div>
+      </div>
+    </Shell>
+  ),
 
-// 2. Define the API interface
-interface LastFmApiService {
+  // 12: Retrofit + URLSession setup — step by step (OSToggle)
+  () => (
+    <Shell tag="Retrofit + URLSession" title="Setting up Retrofit and URLSession — step by step" subtitle="Toggle between platforms to see how each one is configured" notes="Walk through each step with students — do not paste the whole thing at once. Each step is a small, isolated task. Students often get overwhelmed when they see a full setup block; breaking it into steps shows them it is not as complex as it looks.">
+      <div style={{ marginTop: 8 }}>
+        <OSToggle
+          android={
+            <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+              <Step n={1} title="Add dependencies to build.gradle.kts">
+                <pre style={{ margin: 0, background: "#1e1e2e", color: "#cdd6f4", fontSize: 10, padding: "8px 12px", borderRadius: 6, lineHeight: 1.6, fontFamily: "monospace", whiteSpace: "pre-wrap" }}>{`implementation("com.squareup.retrofit2:retrofit:2.9.0")
+implementation("com.squareup.retrofit2:converter-gson:2.9.0")`}</pre>
+              </Step>
+              <Step n={2} title="Add INTERNET permission to AndroidManifest.xml">
+                <pre style={{ margin: 0, background: "#1e1e2e", color: "#cdd6f4", fontSize: 10, padding: "8px 12px", borderRadius: 6, lineHeight: 1.6, fontFamily: "monospace", whiteSpace: "pre-wrap" }}>{`<uses-permission android:name="android.permission.INTERNET" />`}</pre>
+                <p style={{ fontSize: 11, color: MUTED, margin: "4px 0 0" }}>Without this, all network calls fail silently on Android.</p>
+              </Step>
+              <Step n={3} title="Define the API interface — describe what you want">
+                <pre style={{ margin: 0, background: "#1e1e2e", color: "#cdd6f4", fontSize: 10, padding: "8px 12px", borderRadius: 6, lineHeight: 1.6, fontFamily: "monospace", whiteSpace: "pre-wrap" }}>{`interface LastFmApiService {
     @GET(".")
     suspend fun getTopArtists(
         @Query("method") method: String = "chart.gettopartists",
@@ -435,11 +593,10 @@ interface LastFmApiService {
         @Query("format") format: String = "json",
         @Query("limit") limit: Int = 20
     ): TopArtistsResponse
-    // Retrofit automatically converts JSON to TopArtistsResponse
-}
-
-// 3. Create a singleton instance
-object LastFmApi {
+}`}</pre>
+              </Step>
+              <Step n={4} title="Create a singleton — one instance for the whole app">
+                <pre style={{ margin: 0, background: "#1e1e2e", color: "#cdd6f4", fontSize: 10, padding: "8px 12px", borderRadius: 6, lineHeight: 1.6, fontFamily: "monospace", whiteSpace: "pre-wrap" }}>{`object LastFmApi {
     val service: LastFmApiService by lazy {
         Retrofit.Builder()
             .baseUrl("https://ws.audioscrobbler.com/2.0/")
@@ -447,95 +604,107 @@ object LastFmApi {
             .build()
             .create(LastFmApiService::class.java)
     }
-}
-
-// 4. Call it from a coroutine:
-LaunchedEffect(Unit) {
-    val response = LastFmApi.service.getTopArtists()
-    artists = response.artists.artist
-}`}
-        </CodePane>
-        <CodePane title="iOS — URLSession (built in)" accent={TEAL}>
-{`// No installation needed — URLSession is part of iOS SDK
-
-// 1. Build the URL with query parameters
-var components = URLComponents(
+}`}</pre>
+              </Step>
+            </div>
+          }
+          ios={
+            <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+              <Step n={1} title="No installation needed — URLSession is built into iOS" accent={TEAL}>
+                <div style={{ background: TEAL_LIGHT, border: `1px solid ${TEAL}`, borderRadius: 6, padding: "8px 12px" }}>
+                  <p style={{ fontSize: 12, color: "#085041", margin: 0, lineHeight: 1.5 }}>URLSession and JSONDecoder are part of the iOS SDK. No Podfile, no Swift Package Manager entry, no build.gradle changes. You can use them in any Swift file immediately.</p>
+                </div>
+              </Step>
+              <Step n={2} title="Build the URL with query parameters" accent={TEAL}>
+                <pre style={{ margin: 0, background: "#1e1e2e", color: "#cdd6f4", fontSize: 10, padding: "8px 12px", borderRadius: 6, lineHeight: 1.6, fontFamily: "monospace", whiteSpace: "pre-wrap" }}>{`var components = URLComponents(
     string: "https://ws.audioscrobbler.com/2.0/"
 )!
 components.queryItems = [
-    URLQueryItem(name: "method",
-                 value: "chart.gettopartists"),
+    URLQueryItem(name: "method", value: "chart.gettopartists"),
     URLQueryItem(name: "api_key", value: apiKey),
     URLQueryItem(name: "format",  value: "json"),
     URLQueryItem(name: "limit",   value: "20")
-]
-
-// 2. Make the request with async/await
+]`}</pre>
+              </Step>
+              <Step n={3} title="Fetch the data with async/await" accent={TEAL}>
+                <pre style={{ margin: 0, background: "#1e1e2e", color: "#cdd6f4", fontSize: 10, padding: "8px 12px", borderRadius: 6, lineHeight: 1.6, fontFamily: "monospace", whiteSpace: "pre-wrap" }}>{`// URLSession.shared = the default session (handles caching, cookies)
 let (data, _) = try await URLSession.shared
-    .data(from: components.url!)
-
-// 3. Decode JSON into your models
-// JSONDecoder maps JSON keys to struct properties
+    .data(from: components.url!)`}</pre>
+              </Step>
+              <Step n={4} title="Decode JSON into your models with JSONDecoder" accent={TEAL}>
+                <pre style={{ margin: 0, background: "#1e1e2e", color: "#cdd6f4", fontSize: 10, padding: "8px 12px", borderRadius: 6, lineHeight: 1.6, fontFamily: "monospace", whiteSpace: "pre-wrap" }}>{`// JSONDecoder maps JSON keys to struct property names
 let response = try JSONDecoder().decode(
     TopArtistsResponse.self,
     from: data
 )
-let artists = response.artists.artist
-
-// URLSession.shared = the default session
-// JSONDecoder = the Swift equivalent of Retrofit + Gson`}
-        </CodePane>
+let artists = response.artists.artist`}</pre>
+              </Step>
+            </div>
+          }
+        />
       </div>
     </Shell>
   ),
 
-  // 11: Data models for JSON
+  // 13: Data models for JSON (OSToggle)
   () => (
-    <Shell tag="JSON parsing" title="Mapping JSON to data classes and structs" notes="Walk through the JSON shape and then the data class that mirrors it. Emphasise that the field names MUST match exactly — this is the most common source of bugs for beginners. Show what happens when a field name is wrong: Gson returns null, JSONDecoder throws. The #text field is a great teaching moment because it looks illegal in Kotlin/Swift but both have a way to handle it.">
-      <div style={{ display: "flex", gap: 10, marginTop: 6 }}>
-        <div style={{ flex: 1, background: GRAY, borderRadius: 8, padding: "12px 14px" }}>
-          <p style={{ fontSize: 12, fontWeight: 600, color: TEXT, margin: "0 0 8px" }}>Last.fm JSON structure</p>
-          <pre style={{ margin: 0, background: "#1e1e2e", color: "#cdd6f4", fontSize: 11, padding: "10px 12px", borderRadius: 6, lineHeight: 1.6, fontFamily: "monospace", whiteSpace: "pre-wrap" }}>{`{
-  "artists": {           // ArtistsWrapper
-    "artist": [          // List<Artist>
+    <Shell tag="JSON parsing" title="Mapping JSON to data classes and structs" subtitle="One class or struct per JSON object — field names must match exactly" notes="Walk through the JSON shape and then the data class that mirrors it. Emphasise that the field names MUST match exactly — this is the most common source of bugs for beginners. The #text field is a great teaching moment because it looks illegal in Kotlin/Swift but both have a way to handle it.">
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1.5fr", gap: 10, marginTop: 6 }}>
+        <div>
+          <p style={{ fontSize: 12, fontWeight: 600, color: TEXT, margin: "0 0 6px" }}>The JSON from Last.fm</p>
+          <pre style={{ margin: "0 0 10px", background: "#1e1e2e", color: "#cdd6f4", fontSize: 11, padding: "10px 12px", borderRadius: 6, lineHeight: 1.6, fontFamily: "monospace", whiteSpace: "pre-wrap" }}>{`{
+  "artists": {          // → ArtistsWrapper
+    "artist": [         // → List<Artist> / [Artist]
       {
-        "name": "...",   // String
-        "listeners":"...",// String
-        "image": [       // List<ArtistImage>
+        "name": "...",  // → String
+        "listeners":".",// → String
+        "image": [      // → List<ArtistImage>
           {
-            "#text":"...",// unusual key!
-            "size": "..."
+            "#text":".",// ⚠ unusual key!
+            "size": "."
           }
         ]
       }
     ]
   }
 }`}</pre>
+          <div style={{ background: "#fff3cd", border: "1px solid #f59e0b", borderRadius: 8, padding: "10px 12px" }}>
+            <p style={{ fontSize: 11, fontWeight: 700, color: "#92400e", margin: "0 0 4px" }}>The three mapping rules</p>
+            <div style={{ fontSize: 11, color: "#92400e", lineHeight: 1.6 }}>
+              <div>① One class per JSON object</div>
+              <div>② One property per JSON key</div>
+              <div>③ Property names must match keys <em>exactly</em></div>
+            </div>
+          </div>
         </div>
-        <CodePane title="Kotlin — data classes mirror the JSON" accent={PURPLE}>
+        <div>
+          <OSToggle
+            android={
+              <CodePane title="Kotlin — data classes mirror the JSON" accent={PURPLE}>
 {`data class TopArtistsResponse(
     val artists: ArtistsWrapper
 )
-
 data class ArtistsWrapper(
     val artist: List<Artist>
 )
-
 data class Artist(
     val name: String,
     val listeners: String,
     val image: List<ArtistImage>
 )
-
 data class ArtistImage(
-    // #text is not valid Kotlin — use @SerializedName
+    // #text is not valid Kotlin — @SerializedName maps it
     @SerializedName("#text") val url: String,
     val size: String
 )
-// Rule: one data class per JSON object.
-// Field names must match JSON keys exactly.`}
-        </CodePane>
-        <CodePane title="Swift — structs with CodingKeys" accent={TEAL}>
+
+// Helper to get the largest image URL:
+fun Artist.getLargeImageUrl(): String =
+    image.lastOrNull { it.size == "extralarge" }?.url ?: ""`}
+              </CodePane>
+            }
+            ios={
+              <CodePane title="Swift — Codable structs + CodingKeys" accent={TEAL}>
 {`struct TopArtistsResponse: Codable {
     let artists: ArtistsWrapper
 }
@@ -547,39 +716,44 @@ struct Artist: Codable, Identifiable {
     let name: String
     let listeners: String
     let image: [ArtistImage]
+
+    var largeImageUrl: String {
+        image.last { $0.size == "extralarge" }?.text ?? ""
+    }
 }
 struct ArtistImage: Codable {
-    let text: String
+    let text: String   // "text" maps to "#text" in JSON
     let size: String
-    // CodingKeys maps "#text" to "text"
     enum CodingKeys: String, CodingKey {
-        case text = "#text"
+        case text = "#text"  // CodingKeys remaps the key
         case size
     }
 }`}
-        </CodePane>
+              </CodePane>
+            }
+          />
+        </div>
       </div>
     </Shell>
   ),
 
-  // 12: Live code-along intro
+  // 14: Code-along intro
   () => (
-    <Shell tag="Live code-along" timer="12" title="Making the first API call" subtitle="Open your AlbumBrowser from Week 3." dark notes="Open the Week 3 project. Walk through each step deliberately. The goal is for students to see the exact moment the hardcoded list disappears and real API data appears. That moment is worth pausing on — it is the most exciting thing that has happened in the course so far.">
+    <Shell tag="Live code-along" timer="12" title="Making the first API call — 3 steps" subtitle="Open your AlbumBrowser from Week 3. We build on it." dark notes="Open the Week 3 project. Walk through each step deliberately. The goal is for students to see the exact moment the hardcoded list disappears and real API data appears. That moment is worth pausing on — it is the most exciting thing that has happened in the course so far.">
       <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr", gap: 12, marginTop: 8 }}>
         <div>
-          <p style={{ fontSize: 13, fontWeight: 600, color: "rgba(255,255,255,0.9)", margin: "0 0 10px" }}>What we are doing today</p>
+          <p style={{ fontSize: 13, fontWeight: 600, color: "rgba(255,255,255,0.9)", margin: "0 0 10px" }}>Three focused steps — each on its own slide</p>
           {[
-            { n: 1, t: "Add Retrofit dependency (Android only)" },
-            { n: 2, t: "Add INTERNET permission to AndroidManifest" },
-            { n: 3, t: "Paste Last.fm URL in browser — read the JSON" },
-            { n: 4, t: "Define TopArtistsResponse, Artist, ArtistImage models" },
-            { n: 5, t: "Create LastFmApiService interface and singleton" },
-            { n: 6, t: "Update list screen — LaunchedEffect / .task to call API" },
-            { n: 7, t: "Run it — watch hardcoded data become real data" },
+            { n: 1, t: "Define data models", desc: "TopArtistsResponse → ArtistsWrapper → Artist → ArtistImage" },
+            { n: 2, t: "Create the API service", desc: "The @GET interface + Retrofit singleton (Android) or fetchArtists() function (iOS)" },
+            { n: 3, t: "Connect to the screen", desc: "Replace hardcoded data with LaunchedEffect / .task — watch real data appear" },
           ].map(s => (
-            <div key={s.n} style={{ display: "flex", gap: 8, margin: "5px 0", alignItems: "center" }}>
-              <span style={{ background: TEAL, color: "#fff", borderRadius: "50%", width: 20, height: 20, fontSize: 10, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>{s.n}</span>
-              <span style={{ fontSize: 13, color: "rgba(255,255,255,0.85)" }}>{s.t}</span>
+            <div key={s.n} style={{ display: "flex", gap: 10, margin: "8px 0", alignItems: "flex-start" }}>
+              <span style={{ background: TEAL, color: "#fff", borderRadius: "50%", width: 22, height: 22, fontSize: 11, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, marginTop: 1 }}>{s.n}</span>
+              <div>
+                <p style={{ fontSize: 13, color: "rgba(255,255,255,0.9)", fontWeight: 600, margin: 0 }}>{s.t}</p>
+                <p style={{ fontSize: 11, color: "rgba(255,255,255,0.55)", margin: "2px 0 0", lineHeight: 1.4 }}>{s.desc}</p>
+              </div>
             </div>
           ))}
         </div>
@@ -600,109 +774,368 @@ struct ArtistImage: Codable {
     </Shell>
   ),
 
-  // 13: Code-along — the full call
+  // 15: Code-along step 1 — data models
   () => (
-    <Shell tag="Live code-along" title="Putting it all together" notes="Type this out — do not paste. Deliberately make a typo in a field name so students see what a JSON parsing error looks like and how to fix it. The moment the real API data appears in the list is worth pausing on — ask students how this feels compared to the hardcoded version.">
-      <div style={{ display: "flex", gap: 10, marginTop: 6 }}>
-        <CodePane title="Full screen with API call — Compose" accent={PURPLE}>
-{`@Composable
-fun ArtistListScreen(onArtistClicked: (Artist) -> Unit = {}) {
-    var artists by remember {
-        mutableStateOf<List<Artist>>(emptyList())
+    <Shell tag="Live code-along — Step 1 of 3" title="Define your data models" subtitle="One class or struct per JSON object — build them from the outside in">
+      <div style={{ marginTop: 8 }}>
+        <ViewToggle
+          steps={
+            <OSToggle
+              android={
+                <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                  <Step n={1} title="The outer wrappers — mirror the JSON nesting">
+                    <pre style={{ margin: 0, background: "#1e1e2e", color: "#cdd6f4", fontSize: 10, padding: "8px 12px", borderRadius: 6, lineHeight: 1.6, fontFamily: "monospace", whiteSpace: "pre-wrap" }}>{`data class TopArtistsResponse(val artists: ArtistsWrapper)
+data class ArtistsWrapper(val artist: List<Artist>)`}</pre>
+                  </Step>
+                  <Step n={2} title="The Artist class — one property per JSON field">
+                    <pre style={{ margin: 0, background: "#1e1e2e", color: "#cdd6f4", fontSize: 10, padding: "8px 12px", borderRadius: 6, lineHeight: 1.6, fontFamily: "monospace", whiteSpace: "pre-wrap" }}>{`data class Artist(
+    val name: String,
+    val listeners: String,    // Last.fm sends listener counts as strings
+    val image: List<ArtistImage>
+)`}</pre>
+                  </Step>
+                  <Step n={3} title='ArtistImage — @SerializedName handles the "#text" key'>
+                    <pre style={{ margin: 0, background: "#1e1e2e", color: "#cdd6f4", fontSize: 10, padding: "8px 12px", borderRadius: 6, lineHeight: 1.6, fontFamily: "monospace", whiteSpace: "pre-wrap" }}>{`data class ArtistImage(
+    @SerializedName("#text") val url: String,  // "#text" is illegal as a Kotlin identifier
+    val size: String                           // "small", "medium", "large", "extralarge"
+)`}</pre>
+                  </Step>
+                  <Step n={4} title="Helper — get the largest image URL">
+                    <pre style={{ margin: 0, background: "#1e1e2e", color: "#cdd6f4", fontSize: 10, padding: "8px 12px", borderRadius: 6, lineHeight: 1.6, fontFamily: "monospace", whiteSpace: "pre-wrap" }}>{`fun Artist.getLargeImageUrl(): String =
+    image.lastOrNull { it.size == "extralarge" }?.url ?: ""`}</pre>
+                  </Step>
+                </div>
+              }
+              ios={
+                <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                  <Step n={1} title="The outer wrappers — mirror the JSON nesting" accent={TEAL}>
+                    <pre style={{ margin: 0, background: "#1e1e2e", color: "#cdd6f4", fontSize: 10, padding: "8px 12px", borderRadius: 6, lineHeight: 1.6, fontFamily: "monospace", whiteSpace: "pre-wrap" }}>{`struct TopArtistsResponse: Codable { let artists: ArtistsWrapper }
+struct ArtistsWrapper: Codable { let artist: [Artist] }`}</pre>
+                  </Step>
+                  <Step n={2} title="The Artist struct — one property per JSON field" accent={TEAL}>
+                    <pre style={{ margin: 0, background: "#1e1e2e", color: "#cdd6f4", fontSize: 10, padding: "8px 12px", borderRadius: 6, lineHeight: 1.6, fontFamily: "monospace", whiteSpace: "pre-wrap" }}>{`struct Artist: Codable, Identifiable {
+    var id: String { name }
+    let name: String
+    let listeners: String    // Last.fm sends listener counts as strings
+    let image: [ArtistImage]
+    var largeImageUrl: String {
+        image.last { $0.size == "extralarge" }?.text ?? ""
     }
-    var query by remember { mutableStateOf("") }
-
-    // Runs once when the screen first appears
-    LaunchedEffect(Unit) {
-        artists = LastFmApi.service
-            .getTopArtists()
-            .artists
-            .artist
+}`}</pre>
+                  </Step>
+                  <Step n={3} title='ArtistImage — CodingKeys remaps "#text" to a valid name' accent={TEAL}>
+                    <pre style={{ margin: 0, background: "#1e1e2e", color: "#cdd6f4", fontSize: 10, padding: "8px 12px", borderRadius: 6, lineHeight: 1.6, fontFamily: "monospace", whiteSpace: "pre-wrap" }}>{`struct ArtistImage: Codable {
+    let text: String    // our name for the property
+    let size: String
+    enum CodingKeys: String, CodingKey {
+        case text = "#text"    // tells JSONDecoder: JSON key "#text" → property "text"
+        case size
     }
+}`}</pre>
+                  </Step>
+                </div>
+              }
+            />
+          }
+          full={
+            <OSToggle
+              android={
+                <CodePane title="Kotlin — all data models" accent={PURPLE}>
+{`data class TopArtistsResponse(val artists: ArtistsWrapper)
+data class ArtistsWrapper(val artist: List<Artist>)
 
-    val filtered = artists.filter {
-        it.name.contains(query, ignoreCase = true)
+data class Artist(
+    val name: String,
+    val listeners: String,
+    val image: List<ArtistImage>
+)
+
+data class ArtistImage(
+    @SerializedName("#text") val url: String,
+    val size: String
+)
+
+fun Artist.getLargeImageUrl(): String =
+    image.lastOrNull { it.size == "extralarge" }?.url ?: ""`}
+                </CodePane>
+              }
+              ios={
+                <CodePane title="Swift — all data models" accent={TEAL}>
+{`struct TopArtistsResponse: Codable { let artists: ArtistsWrapper }
+struct ArtistsWrapper: Codable { let artist: [Artist] }
+
+struct Artist: Codable, Identifiable {
+    var id: String { name }
+    let name: String
+    let listeners: String
+    let image: [ArtistImage]
+    var largeImageUrl: String {
+        image.last { $0.size == "extralarge" }?.text ?? ""
     }
+}
 
-    Column(modifier = Modifier.fillMaxSize()
-        .background(Color(0xFFF5F5F5))) {
-        OutlinedTextField(
-            value = query,
-            onValueChange = { query = it },
-            placeholder = { Text("Search artists...") },
-            modifier = Modifier.fillMaxWidth().padding(16.dp),
-            singleLine = true,
-            shape = RoundedCornerShape(12.dp)
-        )
-        LazyColumn(
-            contentPadding = PaddingValues(horizontal=16.dp),
-            verticalArrangement = Arrangement.spacedBy(4.dp)
-        ) {
-            items(filtered, key = { it.name }) { artist ->
-                ArtistRow(artist,
-                    onClick = { onArtistClicked(artist) })
-            }
-        }
+struct ArtistImage: Codable {
+    let text: String
+    let size: String
+    enum CodingKeys: String, CodingKey {
+        case text = "#text"
+        case size
     }
 }`}
-        </CodePane>
-        <CodePane title="Full screen with API call — SwiftUI" accent={TEAL}>
-{`struct ArtistListScreen: View {
-    @State private var artists: [Artist] = []
-    @State private var query = ""
-
-    var filtered: [Artist] {
-        if query.isEmpty { return artists }
-        return artists.filter {
-            $0.name.localizedCaseInsensitiveContains(query)
-        }
-    }
-
-    var body: some View {
-        ZStack {
-            Color(UIColor.systemGray6).ignoresSafeArea()
-            VStack(spacing: 0) {
-                HStack {
-                    Image(systemName:"magnifyingglass")
-                        .foregroundColor(.gray)
-                    TextField("Search artists...",
-                              text: $query)
-                        .font(.subheadline)
-                }
-                .padding(10).background(Color.white)
-                .cornerRadius(12)
-                .padding(.horizontal,16).padding(.vertical,10)
-
-                List(filtered) { artist in
-                    NavigationLink(
-                        destination: ArtistDetailScreen(
-                            artist: artist)
-                    ) {
-                        ArtistRow(artist: artist)
-                    }
-                    .listRowBackground(Color.clear)
-                    .listRowSeparator(.hidden)
-                }
-                .listStyle(.plain)
-            }
-        }
-        .navigationTitle("Top Artists")
-        .task {
-            do {
-                artists = try await
-                    LastFmApiService.getTopArtists()
-            } catch {
-                print(error.localizedDescription)
-            }
-        }
-    }
-}`}
-        </CodePane>
+                </CodePane>
+              }
+            />
+          }
+        />
       </div>
+      <Info>{"Build models from the outside in — TopArtistsResponse first, then Artist, then ArtistImage. Each level of nesting in the JSON becomes its own class or struct."}</Info>
     </Shell>
   ),
 
-  // 14: Lab intro
+  // 16: Code-along step 2 — API service
+  () => (
+    <Shell tag="Live code-along — Step 2 of 3" title="Create the API service" subtitle="The layer between your screen and the network">
+      <div style={{ marginTop: 8 }}>
+        <ViewToggle
+          steps={
+            <OSToggle
+              android={
+                <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                  <Step n={1} title="Define the interface — describe the endpoint you want">
+                    <pre style={{ margin: 0, background: "#1e1e2e", color: "#cdd6f4", fontSize: 10, padding: "8px 12px", borderRadius: 6, lineHeight: 1.6, fontFamily: "monospace", whiteSpace: "pre-wrap" }}>{`interface LastFmApiService {
+    @GET(".")
+    suspend fun getTopArtists(
+        @Query("method") method: String = "chart.gettopartists",
+        @Query("api_key") apiKey: String = BuildConfig.LAST_FM_KEY,
+        @Query("format") format: String = "json",
+        @Query("limit")  limit:  Int    = 20
+    ): TopArtistsResponse    // Retrofit + Gson decode the JSON automatically
+}`}</pre>
+                  </Step>
+                  <Step n={2} title="Create the singleton — one Retrofit instance for the whole app">
+                    <pre style={{ margin: 0, background: "#1e1e2e", color: "#cdd6f4", fontSize: 10, padding: "8px 12px", borderRadius: 6, lineHeight: 1.6, fontFamily: "monospace", whiteSpace: "pre-wrap" }}>{`object LastFmApi {
+    val service: LastFmApiService by lazy {    // created only on first use
+        Retrofit.Builder()
+            .baseUrl("https://ws.audioscrobbler.com/2.0/")
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+            .create(LastFmApiService::class.java)
+    }
+}
+// Usage: LastFmApi.service.getTopArtists()`}</pre>
+                  </Step>
+                </div>
+              }
+              ios={
+                <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                  <Step n={1} title="Declare the struct and build the URL" accent={TEAL}>
+                    <pre style={{ margin: 0, background: "#1e1e2e", color: "#cdd6f4", fontSize: 10, padding: "8px 12px", borderRadius: 6, lineHeight: 1.6, fontFamily: "monospace", whiteSpace: "pre-wrap" }}>{`struct LastFmApiService {
+    private static let apiKey  = "YOUR_API_KEY_HERE"
+    private static let baseURL = "https://ws.audioscrobbler.com/2.0/"
+
+    static func getTopArtists() async throws -> [Artist] {
+        var components = URLComponents(string: baseURL)!
+        components.queryItems = [
+            URLQueryItem(name: "method", value: "chart.gettopartists"),
+            URLQueryItem(name: "api_key", value: apiKey),
+            URLQueryItem(name: "format",  value: "json"),
+            URLQueryItem(name: "limit",   value: "20"),
+        ]`}</pre>
+                  </Step>
+                  <Step n={2} title="Fetch the data and decode JSON" accent={TEAL}>
+                    <pre style={{ margin: 0, background: "#1e1e2e", color: "#cdd6f4", fontSize: 10, padding: "8px 12px", borderRadius: 6, lineHeight: 1.6, fontFamily: "monospace", whiteSpace: "pre-wrap" }}>{`        let (data, _) = try await URLSession.shared
+            .data(from: components.url!)
+        return try JSONDecoder()
+            .decode(TopArtistsResponse.self, from: data)
+            .artists.artist
+    }
+}
+// Usage: try await LastFmApiService.getTopArtists()`}</pre>
+                  </Step>
+                </div>
+              }
+            />
+          }
+          full={
+            <OSToggle
+              android={
+                <CodePane title="Kotlin — interface + singleton" accent={PURPLE}>
+{`interface LastFmApiService {
+    @GET(".")
+    suspend fun getTopArtists(
+        @Query("method") method: String = "chart.gettopartists",
+        @Query("api_key") apiKey: String = BuildConfig.LAST_FM_KEY,
+        @Query("format") format: String = "json",
+        @Query("limit")  limit:  Int    = 20
+    ): TopArtistsResponse
+}
+
+object LastFmApi {
+    val service: LastFmApiService by lazy {
+        Retrofit.Builder()
+            .baseUrl("https://ws.audioscrobbler.com/2.0/")
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+            .create(LastFmApiService::class.java)
+    }
+}`}
+                </CodePane>
+              }
+              ios={
+                <CodePane title="Swift — LastFmApiService struct" accent={TEAL}>
+{`struct LastFmApiService {
+    private static let apiKey  = "YOUR_API_KEY_HERE"
+    private static let baseURL = "https://ws.audioscrobbler.com/2.0/"
+
+    static func getTopArtists() async throws -> [Artist] {
+        var components = URLComponents(string: baseURL)!
+        components.queryItems = [
+            URLQueryItem(name: "method", value: "chart.gettopartists"),
+            URLQueryItem(name: "api_key", value: apiKey),
+            URLQueryItem(name: "format",  value: "json"),
+            URLQueryItem(name: "limit",   value: "20"),
+        ]
+        let (data, _) = try await URLSession.shared
+            .data(from: components.url!)
+        return try JSONDecoder()
+            .decode(TopArtistsResponse.self, from: data)
+            .artists.artist
+    }
+}`}
+                </CodePane>
+              }
+            />
+          }
+        />
+      </div>
+      <Warn title="Store your API key safely">{"Never hardcode your key as a plain String in a committed file. Use local.properties on Android or a Config.xcconfig on iOS to keep it out of source control."}</Warn>
+    </Shell>
+  ),
+
+  // 17: Code-along step 3 — connect to the screen
+  () => (
+    <Shell tag="Live code-along — Step 3 of 3" title="Connect the API call to your screen" subtitle="Replace the hardcoded list — watch real data appear">
+      <div style={{ marginTop: 8 }}>
+        <ViewToggle
+          steps={
+            <OSToggle
+              android={
+                <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                  <Step n={1} title="Declare state — empty list to start">
+                    <pre style={{ margin: 0, background: "#1e1e2e", color: "#cdd6f4", fontSize: 10, padding: "8px 12px", borderRadius: 6, lineHeight: 1.6, fontFamily: "monospace", whiteSpace: "pre-wrap" }}>{`var artists by remember { mutableStateOf<List<Artist>>(emptyList()) }
+var query   by remember { mutableStateOf("") }`}</pre>
+                  </Step>
+                  <Step n={2} title="LaunchedEffect — fetch once when the screen first appears">
+                    <pre style={{ margin: 0, background: "#1e1e2e", color: "#cdd6f4", fontSize: 10, padding: "8px 12px", borderRadius: 6, lineHeight: 1.6, fontFamily: "monospace", whiteSpace: "pre-wrap" }}>{`LaunchedEffect(Unit) {        // Unit = run exactly once on first composition
+    artists = LastFmApi.service
+        .getTopArtists()      // suspend call — safe inside LaunchedEffect
+        .artists
+        .artist
+}`}</pre>
+                  </Step>
+                  <Step n={3} title="Filter and display — same LazyColumn as Week 3">
+                    <pre style={{ margin: 0, background: "#1e1e2e", color: "#cdd6f4", fontSize: 10, padding: "8px 12px", borderRadius: 6, lineHeight: 1.6, fontFamily: "monospace", whiteSpace: "pre-wrap" }}>{`val filtered = artists.filter {
+    it.name.contains(query, ignoreCase = true)
+}
+LazyColumn(contentPadding = PaddingValues(horizontal = 16.dp)) {
+    items(filtered, key = { it.name }) { artist ->
+        ArtistRow(artist, onClick = { onArtistClicked(artist) })
+    }
+}`}</pre>
+                  </Step>
+                </div>
+              }
+              ios={
+                <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                  <Step n={1} title="Declare state and filtered computed property" accent={TEAL}>
+                    <pre style={{ margin: 0, background: "#1e1e2e", color: "#cdd6f4", fontSize: 10, padding: "8px 12px", borderRadius: 6, lineHeight: 1.6, fontFamily: "monospace", whiteSpace: "pre-wrap" }}>{`@State private var artists: [Artist] = []
+@State private var query = ""
+
+var filtered: [Artist] {
+    if query.isEmpty { return artists }
+    return artists.filter {
+        $0.name.localizedCaseInsensitiveContains(query)
+    }
+}`}</pre>
+                  </Step>
+                  <Step n={2} title=".task — fetch when the view appears" accent={TEAL}>
+                    <pre style={{ margin: 0, background: "#1e1e2e", color: "#cdd6f4", fontSize: 10, padding: "8px 12px", borderRadius: 6, lineHeight: 1.6, fontFamily: "monospace", whiteSpace: "pre-wrap" }}>{`.task {
+    do {
+        artists = try await LastFmApiService.getTopArtists()
+    } catch {
+        print(error.localizedDescription)
+    }
+}`}</pre>
+                  </Step>
+                  <Step n={3} title="Display — same List as Week 3" accent={TEAL}>
+                    <pre style={{ margin: 0, background: "#1e1e2e", color: "#cdd6f4", fontSize: 10, padding: "8px 12px", borderRadius: 6, lineHeight: 1.6, fontFamily: "monospace", whiteSpace: "pre-wrap" }}>{`List(filtered) { artist in
+    NavigationLink(
+        destination: ArtistDetailScreen(artist: artist)
+    ) { ArtistRow(artist: artist) }
+    .listRowBackground(Color.clear)
+    .listRowSeparator(.hidden)
+}
+.listStyle(.plain)`}</pre>
+                  </Step>
+                </div>
+              }
+            />
+          }
+          full={
+            <OSToggle
+              android={
+                <CodePane title="Kotlin — state + LaunchedEffect + LazyColumn" accent={PURPLE}>
+{`var artists by remember { mutableStateOf<List<Artist>>(emptyList()) }
+var query   by remember { mutableStateOf("") }
+
+LaunchedEffect(Unit) {
+    artists = LastFmApi.service.getTopArtists().artists.artist
+}
+
+val filtered = artists.filter { it.name.contains(query, ignoreCase = true) }
+LazyColumn(contentPadding = PaddingValues(horizontal = 16.dp)) {
+    items(filtered, key = { it.name }) { artist ->
+        ArtistRow(artist, onClick = { onArtistClicked(artist) })
+    }
+}`}
+                </CodePane>
+              }
+              ios={
+                <CodePane title="Swift — state + .task + List" accent={TEAL}>
+{`@State private var artists: [Artist] = []
+@State private var query = ""
+
+var filtered: [Artist] {
+    if query.isEmpty { return artists }
+    return artists.filter { $0.name.localizedCaseInsensitiveContains(query) }
+}
+
+// In body:
+.task {
+    do {
+        artists = try await LastFmApiService.getTopArtists()
+    } catch { print(error.localizedDescription) }
+}
+
+List(filtered) { artist in
+    NavigationLink(destination: ArtistDetailScreen(artist: artist)) {
+        ArtistRow(artist: artist)
+    }
+    .listRowBackground(Color.clear)
+    .listRowSeparator(.hidden)
+}
+.listStyle(.plain)`}
+                </CodePane>
+              }
+            />
+          }
+        />
+      </div>
+      <Info>{"The list, search, and navigation code did not change — only the data source did. That is the benefit of the clean state management you built in Weeks 1-3."}</Info>
+    </Shell>
+  ),
+
+  // 18: Lab intro
   () => (
     <Shell tag="Lab intro" timer="4" title="Lab time — your first real API call" subtitle="Go to the Lab tab on the course site — Session 1 Lab." notes="Remind students to check the API Setup tab first if they have not already registered their Last.fm key. Without the key, they cannot complete the lab. Also remind them to make a copy of their Week 3 project before starting.">
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginTop: 6 }}>
@@ -746,7 +1179,7 @@ fun ArtistListScreen(onArtistClicked: (Artist) -> Unit = {}) {
     </Shell>
   ),
 
-  // 15: Closing
+  // 19: Closing
   () => (
     <div style={{ background: `linear-gradient(135deg, ${PURPLE_DARK} 0%, ${PURPLE} 100%)`, borderRadius: 12, padding: "44px 40px", minHeight: 360, display: "flex", flexDirection: "column", justifyContent: "space-between", boxSizing: "border-box" }}>
       <div>
@@ -755,7 +1188,7 @@ fun ArtistListScreen(onArtistClicked: (Artist) -> Unit = {}) {
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
           <div style={{ background: "rgba(255,255,255,0.1)", borderRadius: 8, padding: "12px 16px" }}>
             <p style={{ fontSize: 11, fontWeight: 700, color: "rgba(255,255,255,0.6)", margin: "0 0 8px", textTransform: "uppercase", letterSpacing: ".06em" }}>What you learned today</p>
-            {["How HTTP request/response works", "What a REST API is and how to read its docs", "JSON structure and how to map it to data classes", "suspend functions and coroutines in Kotlin", "async/await and .task in Swift", "Retrofit setup and the @GET interface pattern", "URLSession and JSONDecoder in Swift"].map(t => (
+            {["How HTTP request/response works", "What a REST API is and how to read its docs", "JSON structure and how to map it to data classes", "What a thread is, and why blocking it freezes the UI", "suspend functions and coroutines in Kotlin", "async/await and .task in Swift", "What Retrofit and Gson do — and why they exist", "URLSession and JSONDecoder in Swift"].map(t => (
               <div key={t} style={{ display: "flex", gap: 6, margin: "4px 0" }}>
                 <span style={{ color: TEAL, flexShrink: 0 }}>▸</span>
                 <span style={{ fontSize: 12, color: "rgba(255,255,255,0.8)" }}>{t}</span>
