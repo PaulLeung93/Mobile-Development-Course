@@ -111,21 +111,22 @@ const ViewToggle = ({ steps, full }: { [k: string]: any }) => {
   );
 };
 
-const Shell = ({ tag, timer, title, subtitle, children, notes }: { [k: string]: any }) => (
-  <div style={{ background: "var(--color-background-primary)", border: "0.5px solid var(--color-border-tertiary)", borderRadius: 12, padding: "20px 22px", minHeight: 340 }}>
+const Shell = ({ tag, timer, title, subtitle, children, notes, dark }: { [k: string]: any }) => (
+  <div style={{ background: dark ? PURPLE_DARK : "var(--color-background-primary)", border: dark ? "none" : "0.5px solid var(--color-border-tertiary)", borderRadius: 12, padding: "20px 22px", minHeight: 340 }}>
     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 12 }}>
       <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
         <Tag color="purple">Week 5 · S1</Tag>
-        {tag && <Tag color="teal">{tag}</Tag>}
+        {tag && <Tag color={dark ? "amber" : "teal"}>{tag}</Tag>}
       </div>
-      {timer && <span style={{ fontSize: 11, color: MUTED, background: GRAY, padding: "2px 8px", borderRadius: 20 }}>{timer} min</span>}
+      {timer && <span style={{ fontSize: 11, color: dark ? "rgba(255,255,255,0.5)" : MUTED, background: dark ? "rgba(255,255,255,0.1)" : GRAY, padding: "2px 8px", borderRadius: 20 }}>{timer} min</span>}
     </div>
-    <h2 style={{ fontSize: 18, fontWeight: 500, color: TEXT, margin: "0 0 4px", lineHeight: 1.3 }}>{title}</h2>
-    {subtitle && <p style={{ fontSize: 13, color: MUTED, margin: "0 0 12px" }}>{subtitle}</p>}
+    <h2 style={{ fontSize: 18, fontWeight: 500, color: dark ? "#fff" : TEXT, margin: "0 0 4px", lineHeight: 1.3 }}>{title}</h2>
+    {subtitle && <p style={{ fontSize: 13, color: dark ? "rgba(255,255,255,0.6)" : MUTED, margin: "0 0 12px" }}>{subtitle}</p>}
     <div style={{ marginTop: 10 }}>{children}</div>
     {notes && <Notes>{notes}</Notes>}
   </div>
 );
+
 
 const slides = [
   // 1: Title
