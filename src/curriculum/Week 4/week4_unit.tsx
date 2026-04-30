@@ -1566,28 +1566,54 @@ function Project() {
 function Resources() {
   return (
     <div>
-      <h2 style={{ fontSize: 18, fontWeight: 600, margin: "24px 0 8px" }}>Official documentation</h2>
-      <ul style={{ fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 2.2, paddingLeft: 20 }}>
-        <li><a href="https://square.github.io/retrofit/" style={{ color: "var(--color-text-info)" }}>Retrofit — square.github.io</a></li>
-        <li><a href="https://coil-kt.github.io/coil/compose/" style={{ color: "var(--color-text-info)" }}>Coil for Compose — coil-kt.github.io</a></li>
-        <li><a href="https://developer.apple.com/documentation/foundation/urlsession" style={{ color: "var(--color-text-info)" }}>URLSession — developer.apple.com</a></li>
-        <li><a href="https://developer.apple.com/documentation/swiftui/asyncimage" style={{ color: "var(--color-text-info)" }}>AsyncImage — developer.apple.com</a></li>
-        <li><a href="https://kotlinlang.org/docs/coroutines-overview.html" style={{ color: "var(--color-text-info)" }}>Coroutines overview — kotlinlang.org</a></li>
-        <li><a href="https://docs.swift.org/swift-book/documentation/the-swift-programming-language/concurrency/" style={{ color: "var(--color-text-info)" }}>Swift concurrency — swift.org</a></li>
-      </ul>
-      <h2 style={{ fontSize: 18, fontWeight: 600, margin: "24px 0 8px" }}>Last.fm API</h2>
-      <ul style={{ fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 2.2, paddingLeft: 20 }}>
-        <li><a href="https://www.last.fm/api" style={{ color: "var(--color-text-info)" }}>Last.fm API documentation</a></li>
-        <li><a href="https://www.last.fm/api/account/create" style={{ color: "var(--color-text-info)" }}>Create a Last.fm API account</a></li>
-        <li><a href="https://www.last.fm/api/show/chart.getTopArtists" style={{ color: "var(--color-text-info)" }}>chart.getTopArtists endpoint docs</a></li>
-        <li><a href="https://www.last.fm/api/show/artist.getInfo" style={{ color: "var(--color-text-info)" }}>artist.getInfo endpoint docs</a></li>
-      </ul>
-      <h2 style={{ fontSize: 18, fontWeight: 600, margin: "24px 0 8px" }}>Extra practice</h2>
-      <ul style={{ fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 2.2, paddingLeft: 20 }}>
-        <li><a href="https://developer.android.com/courses/android-basics-compose/unit-5" style={{ color: "var(--color-text-info)" }}>Android Basics with Compose — Unit 5: Connect to the internet</a></li>
-        <li><a href="https://developer.apple.com/tutorials/data" style={{ color: "var(--color-text-info)" }}>Fetching and caching data in SwiftUI — Apple tutorial</a></li>
-        <li><a href="https://jsonplaceholder.typicode.com" style={{ color: "var(--color-text-info)" }}>JSONPlaceholder — free fake REST API for practice</a></li>
-      </ul>
+      <h1 style={{ fontSize: 20, fontWeight: 500, margin: "0 0 6px", color: "var(--color-text-primary)" }}>Week 4 Resources</h1>
+      
+      <div style={{ fontSize: 13, lineHeight: 1.8 }}>
+        <p>A list of helpful links relevant to this unit.</p>
+
+        <h4 style={{ fontSize: 14, fontWeight: 600, marginTop: 12 }}>📹 Session Recordings</h4>
+        <ul style={{ paddingLeft: 20 }}>
+          <li><a href="#" style={{ color: "var(--color-text-info)" }}>Weekly Video Playlist</a></li>
+          <li><a href="#" style={{ color: "var(--color-text-info)" }}>Office Hours Video Playlist</a></li>
+        </ul>
+        <p style={{ fontSize: 12, color: "var(--color-text-tertiary)" }}>Note: It may take up to 24-48 hours after the session to appear on the playlist.</p>
+
+        <h4 style={{ fontSize: 14, fontWeight: 600, marginTop: 16 }}>🎵 Last.fm API</h4>
+        <ul style={{ paddingLeft: 20 }}>
+          <li><a href="https://www.last.fm/api" style={{ color: "var(--color-text-info)" }}>Last.fm API documentation</a></li>
+          <li><a href="https://www.last.fm/api/account/create" style={{ color: "var(--color-text-info)" }}>Create a Last.fm API account</a></li>
+          <li><a href="https://www.last.fm/api/show/chart.getTopArtists" style={{ color: "var(--color-text-info)" }}>chart.getTopArtists endpoint docs</a></li>
+          <li><a href="https://www.last.fm/api/show/artist.getInfo" style={{ color: "var(--color-text-info)" }}>artist.getInfo endpoint docs</a></li>
+        </ul>
+
+        <h4 style={{ fontSize: 14, fontWeight: 600, marginTop: 16 }}>📖 Official Documentation (Android)</h4>
+        <ul style={{ paddingLeft: 20 }}>
+          <li><a href="https://square.github.io/retrofit/" style={{ color: "var(--color-text-info)" }}>Retrofit</a> — square.github.io</li>
+          <li><a href="https://coil-kt.github.io/coil/compose/" style={{ color: "var(--color-text-info)" }}>Coil for Compose</a> — coil-kt.github.io</li>
+          <li><a href="https://kotlinlang.org/docs/coroutines-overview.html" style={{ color: "var(--color-text-info)" }}>Coroutines overview</a> — kotlinlang.org</li>
+        </ul>
+
+        <h4 style={{ fontSize: 14, fontWeight: 600, marginTop: 16 }}>📖 Official Documentation (iOS)</h4>
+        <ul style={{ paddingLeft: 20 }}>
+          <li><a href="https://developer.apple.com/documentation/foundation/urlsession" style={{ color: "var(--color-text-info)" }}>URLSession</a> — developer.apple.com</li>
+          <li><a href="https://developer.apple.com/documentation/swiftui/asyncimage" style={{ color: "var(--color-text-info)" }}>AsyncImage</a> — developer.apple.com</li>
+          <li><a href="https://docs.swift.org/swift-book/documentation/the-swift-programming-language/concurrency/" style={{ color: "var(--color-text-info)" }}>Swift concurrency</a> — swift.org</li>
+        </ul>
+
+        <h4 style={{ fontSize: 14, fontWeight: 600, marginTop: 16 }}>🔒 API Key Security</h4>
+        <ul style={{ paddingLeft: 20 }}>
+          <li><a href="https://jordanmungujakisa.com/article/how-to-hide-api-keys-in-android-apps" style={{ color: "var(--color-text-info)" }}>Secure API Keys in Android (local.properties)</a></li>
+          <li><a href="https://nshipster.com/secrets/" style={{ color: "var(--color-text-info)" }}>Secure API Keys in iOS (NSHipster .xcconfig guide)</a></li>
+        </ul>
+
+        <h4 style={{ fontSize: 14, fontWeight: 600, marginTop: 16 }}>🌐 Extra Practice & Public APIs</h4>
+        <ul style={{ paddingLeft: 20 }}>
+          <li><a href="https://github.com/public-apis/public-apis" style={{ color: "var(--color-text-info)" }}>Public APIs Directory</a> — Massive list of free APIs</li>
+          <li><a href="https://jsonplaceholder.typicode.com" style={{ color: "var(--color-text-info)" }}>JSONPlaceholder</a> — free fake REST API for practice</li>
+          <li><a href="https://developer.android.com/courses/android-basics-compose/unit-5" style={{ color: "var(--color-text-info)" }}>Android Basics with Compose — Unit 5: Connect to the internet</a></li>
+          <li><a href="https://developer.apple.com/tutorials/data" style={{ color: "var(--color-text-info)" }}>Fetching and caching data in SwiftUI — Apple tutorial</a></li>
+        </ul>
+      </div>
     </div>
   );
 }
