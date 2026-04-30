@@ -222,52 +222,70 @@ const slides = [
   // 4 ─ Why mobile is uniquely positioned
   () => (
     <Shell tag="Concept" tagColor="teal" timer="5" title="Why mobile is uniquely positioned for multimodal AI" subtitle="A phone is a rich input machine — not just a small screen">
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 12 }}>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+        {[
+          { icon: "📷", label: "Camera", desc: "Photos, video, live frames, document scanning, AR overlays — the most versatile sensor on any device", color: TEAL_LIGHT, fg: TEAL_DARK },
+          { icon: "🎙️", label: "Microphone", desc: "Voice commands, ambient sound classification, speech-to-text for hands-free AI interaction", color: TEAL_LIGHT, fg: TEAL_DARK },
+          { icon: "📍", label: "GPS & Location", desc: "Geofencing, region-aware responses, location-tagged photos — context no desktop has", color: BLUE_LIGHT, fg: BLUE },
+          { icon: "🏃", label: "Accelerometer & Gyroscope", desc: "Motion state (walking, driving, still), shake gestures, pose estimation, activity-aware AI", color: BLUE_LIGHT, fg: BLUE },
+          { icon: "👆", label: "Touch & Stylus", desc: "Handwriting recognition, drawn diagrams as AI input, pressure-sensitive gestures, pinch-to-crop", color: PURPLE_LIGHT, fg: PURPLE_DARK },
+          { icon: "📡", label: "Bluetooth, NFC & UWB", desc: "Proximity to IoT devices, smart tag reading, spatial awareness of nearby hardware", color: PURPLE_LIGHT, fg: PURPLE_DARK },
+          { icon: "🔐", label: "Biometrics", desc: "Face ID / fingerprint to gate sensitive AI actions, per-user personalisation, secure confirmations", color: AMBER_LIGHT, fg: AMBER_DARK },
+          { icon: "🔋", label: "Always-on Presence", desc: "A phone is always with you — background triggers, notifications, geofence + AI, passive context capture", color: AMBER_LIGHT, fg: AMBER_DARK },
+        ].map(s => (
+          <div key={s.label} style={{ display: "flex", gap: 8, background: s.color, borderRadius: 8, padding: "8px 10px" }}>
+            <span style={{ fontSize: 16, flexShrink: 0 }}>{s.icon}</span>
+            <div>
+              <p style={{ fontSize: 11, fontWeight: 700, color: s.fg, margin: "0 0 1px" }}>{s.label}</p>
+              <p style={{ fontSize: 10, color: s.fg, margin: 0, lineHeight: 1.35, opacity: 0.85 }}>{s.desc}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+      <div style={{ background: AMBER_LIGHT, borderRadius: 8, padding: "8px 12px", marginTop: 10 }}>
+        <p style={{ fontSize: 11, color: AMBER_DARK, margin: 0, lineHeight: 1.5 }}>
+          <strong>The takeaway:</strong> A phone doesn't just have a camera — it's an always-on, context-rich sensor platform. The most compelling AI features on mobile are the ones that would be impossible anywhere else.
+        </p>
+      </div>
+      <Notes>Walk through each row and ask students which ones they've seen used in real apps. Most will get camera and mic immediately, but GPS + AI (e.g. Google Maps suggestions), accelerometer + AI (e.g. fall detection), and Bluetooth + AI (e.g. AirTag) are often surprising. The point: desktop AI apps are limited to text and file upload. Mobile AI apps can sense the real world.</Notes>
+    </Shell>
+  ),
+
+  // 4b ─ Discussion: mobile-only AI ideas
+  () => (
+    <Shell tag="Discussion" tagColor="teal" timer="3" title="What can you build that only works on a phone?" subtitle="Combine two or more of those inputs — what app idea emerges?">
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 10 }}>
         <div>
-          <p style={{ fontSize: 11, fontWeight: 700, color: TEAL_DARK, margin: "0 0 8px", textTransform: "uppercase", letterSpacing: ".05em" }}>What a phone can capture</p>
+          <p style={{ fontSize: 11, fontWeight: 700, color: TEAL_DARK, margin: "0 0 8px", textTransform: "uppercase", letterSpacing: ".05em" }}>Starter combinations</p>
           <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
             {[
-              { icon: "📷", label: "Visual", desc: "Photos, video, live frames, screenshots, documents held up to camera" },
-              { icon: "🎙️", label: "Audio", desc: "Voice, ambient sound, recorded speech — transcribed then sent to Claude" },
-              { icon: "📄", label: "Documents", desc: "PDFs and text files from local storage or cloud sync" },
-              { icon: "📍", label: "Context", desc: "Location, time of day, motion state, ambient light" },
-            ].map(s => (
-              <div key={s.label} style={{ display: "flex", gap: 10, background: TEAL_LIGHT, borderRadius: 8, padding: "8px 10px" }}>
-                <span style={{ fontSize: 18, flexShrink: 0 }}>{s.icon}</span>
-                <div>
-                  <p style={{ fontSize: 12, fontWeight: 700, color: TEAL_DARK, margin: "0 0 1px" }}>{s.label}</p>
-                  <p style={{ fontSize: 11, color: TEAL_DARK, margin: 0, lineHeight: 1.4, opacity: 0.85 }}>{s.desc}</p>
-                </div>
+              { combo: "📷 + 📍", idea: "Point at a plant → identify species by region" },
+              { combo: "🎙️ + 📷", idea: "\"What am I looking at?\" — spoken question about a live frame" },
+              { combo: "📷 + 👆", idea: "Circle an object in a photo → ask AI about just that area" },
+              { combo: "🏃 + 🔋", idea: "Detect driving → auto-summarise missed messages on arrival" },
+              { combo: "📡 + 📍", idea: "Walk near a museum exhibit (NFC) → AI narrates its history" },
+              { combo: "🔐 + 🎙️", idea: "Face-verified voice journal → private AI life coach" },
+            ].map(r => (
+              <div key={r.combo} style={{ display: "flex", gap: 8, background: TEAL_LIGHT, borderRadius: 8, padding: "7px 10px" }}>
+                <span style={{ fontSize: 11, fontWeight: 700, color: TEAL_DARK, flexShrink: 0, minWidth: 44 }}>{r.combo}</span>
+                <span style={{ fontSize: 11, color: TEAL_DARK, lineHeight: 1.4 }}>{r.idea}</span>
               </div>
             ))}
           </div>
         </div>
-        <div>
-          <p style={{ fontSize: 11, fontWeight: 700, color: MUTED, margin: "0 0 8px", textTransform: "uppercase", letterSpacing: ".05em" }}>What a desktop can capture</p>
-          <div style={{ display: "flex", flexDirection: "column", gap: 6, marginBottom: 12 }}>
-            {[
-              { icon: "⌨️", label: "Text input", desc: "Typed queries, pasted content" },
-              { icon: "📁", label: "File upload", desc: "Manually chosen files from disk" },
-              { icon: "🖥️", label: "Webcam (maybe)", desc: "Not always present, rarely used in apps" },
-            ].map(s => (
-              <div key={s.label} style={{ display: "flex", gap: 10, background: GRAY, borderRadius: 8, padding: "8px 10px" }}>
-                <span style={{ fontSize: 18, flexShrink: 0 }}>{s.icon}</span>
-                <div>
-                  <p style={{ fontSize: 12, fontWeight: 700, color: MUTED, margin: "0 0 1px" }}>{s.label}</p>
-                  <p style={{ fontSize: 11, color: MUTED, margin: 0, lineHeight: 1.4 }}>{s.desc}</p>
-                </div>
-              </div>
-            ))}
+        <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+          <Discussion>{"Think of an app idea that's only possible on mobile — not just because it's on a phone, but because it genuinely needs two or more of these inputs working together. Share with a neighbour."}</Discussion>
+          <div style={{ background: PURPLE_LIGHT, borderRadius: 8, padding: "10px 14px" }}>
+            <p style={{ fontSize: 11, fontWeight: 700, color: PURPLE_DARK, margin: "0 0 4px", textTransform: "uppercase", letterSpacing: ".05em" }}>The litmus test</p>
+            <p style={{ fontSize: 12, color: PURPLE_DARK, margin: 0, lineHeight: 1.5 }}>Could a user accomplish this by uploading a file to a website? If yes, it's not a mobile-native AI feature. If no — you've found something worth building.</p>
           </div>
-          <div style={{ background: AMBER_LIGHT, borderRadius: 8, padding: "10px 12px" }}>
-            <p style={{ fontSize: 12, color: AMBER_DARK, margin: 0, lineHeight: 1.5 }}>
-              <strong>The gap:</strong> A phone can passively capture rich, real-world context. The AI features most compelling on mobile are the ones that would be impossible anywhere else.
-            </p>
+          <div style={{ background: GRAY, borderRadius: 8, padding: "10px 14px" }}>
+            <p style={{ fontSize: 11, fontWeight: 700, color: TEXT, margin: "0 0 4px" }}>Today's lab</p>
+            <p style={{ fontSize: 12, color: MUTED, margin: 0, lineHeight: 1.5 }}>We start with the most universal mobile input: the <strong>camera</strong>. Take a photo → send to Claude → get a description. But keep your multi-sensor idea in mind — it could be your final project.</p>
           </div>
         </div>
       </div>
-      <Discussion>{"Think of an app idea that's only possible on mobile — not just because it's on a phone, but because it needs a phone's inputs. Camera? Mic? Location + camera combined?"}</Discussion>
-      <Notes>Reframe from the usual "mobile is just a small screen" narrative. The point is the input surface is qualitatively richer, not just physically different. Good examples to seed: plant ID (camera), voice journaling with AI analysis (mic), receipt scanning (camera + document parsing), "describe my surroundings" accessibility (camera + location). Keep discussion to 60 seconds.</Notes>
+      <Notes>Give students 60–90 seconds to brainstorm with a neighbour. Then cold-call 2–3 pairs. The best answers always involve sensor fusion — not just "camera + AI" but "camera + location + time of day." Reinforce that today's lab is the foundation: once you can send one image, combining it with other sensor data is just adding more context to the prompt string.</Notes>
     </Shell>
   ),
 
