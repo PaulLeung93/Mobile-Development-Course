@@ -63,6 +63,19 @@ const Step = ({ num, title, children }) => (
   </div>
 );
 
+const VStep = ({ num, title, children, last = false }) => (
+  <div style={{ display: "flex", gap: 12 }}>
+    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", flexShrink: 0 }}>
+      <div style={{ width: 26, height: 26, borderRadius: "50%", background: "var(--platform-accent, #534AB7)", color: "#fff", fontSize: 12, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center" }}>{num}</div>
+      {!last && <div style={{ width: 2, flex: 1, minHeight: 20, background: "var(--color-border-tertiary)", margin: "3px 0" }} />}
+    </div>
+    <div style={{ paddingBottom: last ? 8 : 24, flex: 1, minWidth: 0 }}>
+      <h4 style={{ fontSize: 13, fontWeight: 600, margin: "3px 0 8px", color: "var(--color-text-primary)" }}>{title}</h4>
+      <div style={{ fontSize: 13, lineHeight: 1.7 }}>{children}</div>
+    </div>
+  </div>
+);
+
 const Link = ({ children }) => <span style={{ color: P_C, textDecoration: "underline", cursor: "pointer" }}>{children}</span>;
 const IC = ({ children }) => <code style={{ background: "var(--color-background-secondary)", border: "0.5px solid var(--color-border-tertiary)", borderRadius: 4, padding: "1px 5px", fontSize: 12 }}>{children}</code>;
 
@@ -151,7 +164,7 @@ const LabSession1 = ({ platform }) => (
       In this lab you{"'"}ll add a local database to your Week 4 album browser so users can save favourites that persist across app restarts. Budget about 50–60 minutes.
     </p>
 
-    <div style={{ fontSize: 13, lineHeight: 1.7 }}>
+    <div style={{ fontSize: 13, lineHeight: 1.7, marginBottom: 24 }}>
       <strong>{"🎯"} Goals</strong>
       <ul style={{ paddingLeft: 20, margin: "6px 0 12px" }}>
         <li>Understand the difference between in-memory state (gone on restart) and persisted storage (survives restart)</li>
@@ -162,13 +175,13 @@ const LabSession1 = ({ platform }) => (
       </ul>
     </div>
 
-    <Step num={0} title="Open your album browser from Week 4 (~2 min)">
+    <VStep num={0} title="Open your album browser from Week 4 (~2 min)">
       <p>Make sure your Week 4 app is fetching real data from Last.fm before adding persistence on top.</p>
       {platform === "Android" && <Tip>Add the Room dependency now before starting. It takes a minute to sync and you don{"'"}t want to wait mid-lab.</Tip>}
       <Checkpoint num={0}>Your Week 4 album browser is running and showing data from the API.</Checkpoint>
-    </Step>
+    </VStep>
 
-    <Step num={1} title="Add dependencies (~5 min)">
+    <VStep num={1} title="Add dependencies (~5 min)">
       {platform === "Android" ? (
         <>
           <p>Add Room to your Gradle file:</p>
@@ -188,19 +201,44 @@ plugins {
         <p>SwiftData is built into iOS 17+ — no dependencies needed. If you{"'"}re targeting iOS 16 or below, use Core Data instead and let the instructor know.</p>
       )}
       <Checkpoint num={1}>Project {platform === "Android" ? "syncs" : "builds"} without errors. You{"'"}re ready to define the database schema.</Checkpoint>
-    </Step>
+    </VStep>
 
-    <Step num={2} title="Define the favourite entity (~8 min)">
+    <VStep num={2} title="Define the favourite entity (~8 min)">
       <p>A database {platform === "Android" ? "entity" : "model"} is a table definition. Each favourite album will be one row in this table.</p>
-      {platform === "Android" ? (
-        <CodeB title="Kotlin — FavouriteAlbum.kt" accent={BL}>{`@Entity(tableName = "favourites")
+
+      <VStep num="a" title="Create the class" last>
+        <p>Create a new file named {platform === "Android" ? <IC>FavouriteAlbum.kt</IC> : <IC>FavouriteAlbum.swift</IC>}. {platform === "Android" ? "Define a data class that holds the " : "Define a class that holds the "}<IC>name</IC>, <IC>artist</IC>, and <IC>imageUrl</IC> as strings. Add the necessary {platform === "Android" ? "Room annotations to mark it as an entity and make the name the primary key." : "SwiftData macro to mark it as a model, and ensure the name is unique."}</p>
+        <Section title="💡 Show me the syntax">
+          {platform === "Android" ? (
+            <CodeB title="Kotlin" accent={BL}>{`@Entity(tableName = "table_name")
+data class MyEntity(
+    @PrimaryKey val id: String,
+    // ...
+)`}</CodeB>
+          ) : (
+            <CodeB title="Swift" accent={GR}>{`import SwiftData
+
+@Model
+class MyModel {
+    @Attribute(.unique) var id: String
+    // ...
+    
+    init(...) {
+        // ...
+    }
+}`}</CodeB>
+          )}
+        </Section>
+        <Section title={platform === "Android" ? "✅ Check your work — show me the complete FavouriteAlbum.kt" : "✅ Check your work — show me the complete FavouriteAlbum.swift"}>
+          {platform === "Android" ? (
+            <CodeB title="Kotlin — FavouriteAlbum.kt" accent={BL}>{`@Entity(tableName = "favourites")
 data class FavouriteAlbum(
     @PrimaryKey val name: String,
     val artist: String,
     val imageUrl: String
 )`}</CodeB>
-      ) : (
-        <CodeB title="Swift — FavouriteAlbum.swift" accent={GR}>{`import SwiftData
+          ) : (
+            <CodeB title="Swift — FavouriteAlbum.swift" accent={GR}>{`import SwiftData
 
 @Model
 class FavouriteAlbum {
@@ -214,15 +252,21 @@ class FavouriteAlbum {
         self.imageUrl = imageUrl
     }
 }`}</CodeB>
-      )}
+          )}
+        </Section>
+      </VStep>
       <Checkpoint num={2}>The {platform === "Android" ? "entity" : "model"} file compiles with no errors.</Checkpoint>
-    </Step>
+    </VStep>
 
-    <Step num={3} title={platform === "Android" ? "Create the DAO and Database (~10 min)" : "Configure the model container (~10 min)"}>
+    <VStep num={3} title={platform === "Android" ? "Create the DAO and Database (~10 min)" : "Configure the model container (~10 min)"}>
       {platform === "Android" ? (
         <>
           <p>A DAO (Data Access Object) defines how to read and write favourites. Each function maps to a SQL query.</p>
-          <CodeB title="Kotlin — FavouriteDao.kt + AppDatabase.kt" accent={BL}>{`@Dao
+
+          <VStep num="a" title="Create the DAO interface">
+            <p>Create <IC>FavouriteDao.kt</IC>. Add a <IC>@Dao</IC> interface. Inside, define three operations: a function returning a <IC>Flow&lt;List&lt;FavouriteAlbum&gt;&gt;</IC> for getting all favourites, a <IC>suspend</IC> function for inserting an album (replacing on conflict), and a <IC>suspend</IC> function for deleting an album.</p>
+            <Section title="✅ Check your work — show me the complete FavouriteDao.kt">
+              <CodeB title="Kotlin — FavouriteDao.kt" accent={BL}>{`@Dao
 interface FavouriteDao {
     @Query("SELECT * FROM favourites")
     fun getAll(): Flow<List<FavouriteAlbum>>
@@ -232,17 +276,31 @@ interface FavouriteDao {
 
     @Delete
     suspend fun delete(album: FavouriteAlbum)
-}
+}`}</CodeB>
+            </Section>
+          </VStep>
 
-@Database(entities = [FavouriteAlbum::class], version = 1)
+          <VStep num="b" title="Create the AppDatabase" last>
+            <p>Create <IC>AppDatabase.kt</IC>. Create an abstract class that extends <IC>RoomDatabase</IC>. Annotate it with <IC>@Database</IC>, passing in your <IC>FavouriteAlbum</IC> entity class and setting the version to 1. Add an abstract function that returns your <IC>FavouriteDao</IC>.</p>
+            <Section title="✅ Check your work — show me the complete AppDatabase.kt">
+              <CodeB title="Kotlin — AppDatabase.kt" accent={BL}>{`@Database(entities = [FavouriteAlbum::class], version = 1)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun favouriteDao(): FavouriteDao
 }`}</CodeB>
+            </Section>
+          </VStep>
         </>
       ) : (
         <>
           <p>Configure the model container in your App entry point. SwiftData handles querying through the <IC>@Query</IC> property wrapper — no DAO needed.</p>
-          <CodeB title="Swift — App entry point" accent={GR}>{`@main
+
+          <VStep num="a" title="Add the model container" last>
+            <p>Open your main App entry point file (usually <IC>AppNameApp.swift</IC>). Add the <IC>.modelContainer</IC> modifier to the <IC>WindowGroup</IC>, passing in the <IC>FavouriteAlbum.self</IC> type.</p>
+            <Section title="✅ Check your work — show me the complete App entry point">
+              <CodeB title="Swift — App entry point" accent={GR}>{`import SwiftUI
+import SwiftData
+
+@main
 struct AlbumBrowserApp: App {
     var body: some Scene {
         WindowGroup {
@@ -250,31 +308,78 @@ struct AlbumBrowserApp: App {
         }
         .modelContainer(for: FavouriteAlbum.self)
     }
-}
-
-// In your View, access the database with:
-@Environment(\\.modelContext) private var context
-@Query private var favourites: [FavouriteAlbum]`}</CodeB>
+}`}</CodeB>
+            </Section>
+          </VStep>
         </>
       )}
       <Tip>{platform === "Android" ? "A DAO is Android's way of defining database operations as Kotlin functions. Each @Query, @Insert, and @Delete annotation maps to SQL under the hood." : "SwiftData handles persistence through the ModelContext — you insert, delete, and query directly. The @Query property wrapper automatically observes changes and updates your view."}</Tip>
       <Checkpoint num={3}>The database setup compiles. You haven{"'"}t inserted any data yet — that{"'"}s next.</Checkpoint>
-    </Step>
+    </VStep>
 
-    <Step num={4} title="Add and remove favourites (~15 min)">
+    <VStep num={4} title="Add and remove favourites (~15 min)">
       <p>Wire up the UI. Add a heart/favourite button to each album row. Tapping it should insert or delete the album from the local database.</p>
-      {platform === "Android" ? (
-        <CodeB title="Kotlin — toggle favourite in Composable" accent={BL}>{`// Get database instance
-val db = Room.databaseBuilder(
-    context, AppDatabase::class.java, "album-db"
-).build()
+
+      <VStep num="a" title="Read the favourites state">
+        <p>In the view that displays your list or row, {platform === "Android" ? "get the database instance and collect the list of favourites as state. You'll need to use Room.databaseBuilder to get your AppDatabase." : "use the @Environment property wrapper to access the model context, and the @Query wrapper to get the array of favourites."}</p>
+        <Section title="✅ Check your work: Setup Code" type="check">
+          {platform === "Android" ? (
+            <CodeB title="Kotlin — Setup in Composable" accent={BL}>{`// Get database instance
+val context = LocalContext.current
+val db = remember {
+    Room.databaseBuilder(
+        context, AppDatabase::class.java, "album-db"
+    ).build()
+}
 val dao = db.favouriteDao()
-val favourites by dao.getAll().collectAsState(initial = emptyList())
+val favourites by dao.getAll().collectAsState(initial = emptyList())`}</CodeB>
+          ) : (
+            <CodeB title="Swift — Setup in SwiftUI View" accent={GR}>{`@Environment(\\.modelContext) private var context
+@Query private var favourites: [FavouriteAlbum]`}</CodeB>
+          )}
+        </Section>
+      </VStep>
 
-// Check if an album is favourited
-val isFav = favourites.any { it.name == album.name }
+      <VStep num="b" title="Check if the album is a favourite">
+        <p>Use the array of favourites you just retrieved to see if the current album is already saved. Create a boolean variable called <IC>isFav</IC> that is true if the album is found in the list.</p>
+        <Section title="✅ Check your work: isFav logic" type="check">
+          {platform === "Android" ? (
+            <CodeB title="Kotlin" accent={BL}>{`val isFav = favourites.any { it.name == album.name }`}</CodeB>
+          ) : (
+            <CodeB title="Swift" accent={GR}>{`let isFav = favourites.contains { $0.name == album.name }`}</CodeB>
+          )}
+        </Section>
+      </VStep>
+      
+      <VStep num="c" title="Add an interactive button">
+        <p>Add an icon button to each row. Use your <IC>isFav</IC> boolean to change the icon: if true, show a filled red heart; if false, show an outlined gray heart.</p>
+        <Section title="✅ Check your work: UI Button" type="check">
+          {platform === "Android" ? (
+            <CodeB title="Kotlin — IconButton" accent={BL}>{`IconButton(onClick = { /* TODO: Toggle favourite */ }) {
+    Icon(
+        if (isFav) Icons.Filled.Favorite
+        else Icons.Outlined.FavoriteBorder,
+        tint = if (isFav) Color.Red else Color.Gray
+    )
+}`}</CodeB>
+          ) : (
+            <CodeB title="Swift — Button" accent={GR}>{`Button(action: {
+    // TODO: Toggle favourite
+}) {
+    Image(systemName: isFav ? "heart.fill" : "heart")
+        .foregroundColor(isFav ? .red : .gray)
+}`}</CodeB>
+          )}
+        </Section>
+      </VStep>
 
-// Toggle favourite on tap
+      <VStep num="d" title="Implement the toggle action" last>
+        <p>Inside your button's tap action, write an if-statement: if the album is already favourited, <strong>delete</strong> it from the database. Otherwise, <strong>insert</strong> a new <IC>FavouriteAlbum</IC> into the database.</p>
+        <Tip>{platform === "Android" ? "Because DAO operations are suspend functions, you must run them inside a coroutine scope. Use rememberCoroutineScope() to get a scope." : "To delete an object in SwiftData, you must pass the actual model instance retrieved from the database, not just create a new one with the same name."}</Tip>
+        <Section title="✅ Check your work: Complete toggle logic" type="check">
+          {platform === "Android" ? (
+            <CodeB title="Kotlin — toggle favourite in Composable" accent={BL}>{`// Toggle favourite on tap
+val scope = rememberCoroutineScope()
 IconButton(onClick = {
     scope.launch {
         if (isFav) dao.delete(
@@ -291,14 +396,8 @@ IconButton(onClick = {
         tint = if (isFav) Color.Red else Color.Gray
     )
 }`}</CodeB>
-      ) : (
-        <CodeB title="Swift — toggle favourite in SwiftUI View" accent={GR}>{`@Environment(\\.modelContext) private var context
-@Query private var favourites: [FavouriteAlbum]
-
-// Check if an album is favourited
-let isFav = favourites.contains { $0.name == album.name }
-
-// Toggle favourite on tap
+          ) : (
+            <CodeB title="Swift — toggle favourite in SwiftUI View" accent={GR}>{`// Toggle favourite on tap
 Button(action: {
     if isFav {
         if let existing = favourites.first(where: {
@@ -317,11 +416,14 @@ Button(action: {
     Image(systemName: isFav ? "heart.fill" : "heart")
         .foregroundColor(isFav ? .red : .gray)
 }`}</CodeB>
-      )}
-      <Checkpoint num={4}>Tap the heart to favourite an album. Force-quit the app and reopen it — your favourites should still be there. This is the key moment: <strong>data survives a restart!</strong></Checkpoint>
-    </Step>
+          )}
+        </Section>
+      </VStep>
 
-    <Step num={5} title="Display a favourites section (~8 min)">
+      <Checkpoint num={4}>Tap the heart to favourite an album. Force-quit the app and reopen it — your favourites should still be there. This is the key moment: <strong>data survives a restart!</strong></Checkpoint>
+    </VStep>
+
+    <VStep num={5} title="Display a favourites section (~8 min)">
       <p>Add a way for users to see only their favourited albums. This could be a separate tab, a filter toggle, or a dedicated section at the top of the list.</p>
       <ul style={{ paddingLeft: 20, margin: "6px 0" }}>
         <li>Favourites are displayed in a dedicated section or tab</li>
@@ -329,22 +431,22 @@ Button(action: {
         <li>An empty state message appears when there are no favourites yet</li>
       </ul>
       <Checkpoint num={5}>Your favourites section shows saved albums, updates live, and handles the empty state.</Checkpoint>
-    </Step>
+    </VStep>
 
-    <Step num={6} title="Ask Claude to translate (~5 min)">
+    <VStep num={6} title="Ask Claude to translate (~5 min)">
       <AiOpp>
         <em>Use AI as a platform translator →</em> Paste your {platform === "Android" ? "Entity, DAO, and Database" : "SwiftData Model and View"} code into Claude and ask: <strong>{"\""}Can you show me the equivalent {platform === "Android" ? "SwiftData" : "Room"} setup and explain the key differences?{"\"}"}</strong>
       </AiOpp>
-    </Step>
+    </VStep>
 
-    <Step num={7} title="Reflect (~3 min)">
+    <VStep num={7} title="Reflect (~3 min)" last>
       <CodeB title="Lab 9 Reflection">{`// 1. What is the difference between saving data in a state
 //    variable vs saving it in Room / SwiftData?
 // 2. Why does the favourites list update automatically when
 //    you insert or delete? (Hint: think about Flow / @Query)
 // 3. What surprised you about the Room vs SwiftData comparison?`}</CodeB>
       <Checkpoint num={7}>Show a TA your favourites feature. Demonstrate that favourites persist after a force-quit. Walk them through your reflection.</Checkpoint>
-    </Step>
+    </VStep>
 
     <Section title="🚀 Stretch Features">
       <ul style={{ paddingLeft: 20, fontSize: 13, lineHeight: 1.8 }}>
@@ -364,7 +466,7 @@ const LabSession2 = ({ platform }) => (
       In this lab you{"'"}ll implement the offline-first pattern — showing cached data immediately while fetching fresh data in the background — and add a persistent user preference. Budget about 50–60 minutes.
     </p>
 
-    <div style={{ fontSize: 13, lineHeight: 1.7 }}>
+    <div style={{ fontSize: 13, lineHeight: 1.7, marginBottom: 20 }}>
       <strong>{"🎯"} Goals</strong>
       <ul style={{ paddingLeft: 20, margin: "6px 0 12px" }}>
         <li>Cache the Last.fm API response in {platform === "Android" ? "Room" : "SwiftData"} so the app shows data instantly on relaunch</li>
@@ -375,22 +477,26 @@ const LabSession2 = ({ platform }) => (
       </ul>
     </div>
 
-    <Step num={0} title="Open your album browser with favourites (~2 min)">
+    <VStep num={0} title="Verify prerequisites (~2 min)">
       <Tip>The offline-first pattern requires a working API call (Week 4) and {platform === "Android" ? "Room" : "SwiftData"} already set up (Session 1). Make sure both are working before you start.</Tip>
-    </Step>
+    </VStep>
 
-    <Step num={1} title="Create a cache entity (~5 min)">
+    <VStep num={1} title="Create a cache entity (~5 min)">
       <p>You already have a <IC>FavouriteAlbum</IC> {platform === "Android" ? "entity" : "model"}. Now create a separate one for caching API results. The difference: favourites are user-curated, the cache is a mirror of the last API response.</p>
-      {platform === "Android" ? (
-        <CodeB title="Kotlin — CachedAlbum.kt" accent={BL}>{`@Entity(tableName = "cached_albums")
+      
+      <VStep num="a" title="Define the model">
+        <p>Create a new model called <IC>CachedAlbum</IC>. It should have the same properties as your API result (name, artist, imageUrl, listeners).</p>
+        <Section title="Check your work: CachedAlbum definition" type="check">
+          {platform === "Android" ? (
+            <CodeB title="Kotlin — CachedAlbum.kt" accent={BL}>{`@Entity(tableName = "cached_albums")
 data class CachedAlbum(
     @PrimaryKey val name: String,
     val artist: String,
     val imageUrl: String,
     val listeners: Int
 )`}</CodeB>
-      ) : (
-        <CodeB title="Swift — CachedAlbum.swift" accent={GR}>{`@Model
+          ) : (
+            <CodeB title="Swift — CachedAlbum.swift" accent={GR}>{`@Model
 class CachedAlbum {
     @Attribute(.unique) var name: String
     var artist: String
@@ -405,11 +511,47 @@ class CachedAlbum {
         self.listeners = listeners
     }
 }`}</CodeB>
-      )}
-      <Checkpoint num={1}>The cache entity compiles. {platform === "Android" ? "Add the corresponding DAO methods and update your @Database annotation to include this new entity." : "Update the model container in your App entry point to include this new type."}</Checkpoint>
-    </Step>
+          )}
+        </Section>
+      </VStep>
 
-    <Step num={2} title="Implement the offline-first pattern (~15 min)">
+      <VStep num="b" title={`Register with ${platform === "Android" ? "Database" : "Context"}`} last>
+        <p>{platform === "Android" ? "Update your AppDatabase to include this new entity class, and add the corresponding DAO methods." : "Update the model container in your App entry point to include this new type."}</p>
+        <Section title={`Check your work: Registration`} type="check">
+          {platform === "Android" ? (
+            <CodeB title="Kotlin — Database setup" accent={BL}>{`@Database(entities = [FavouriteAlbum::class, CachedAlbum::class], version = 1)
+abstract class AppDatabase : RoomDatabase() {
+    // ...
+    abstract fun cachedDao(): CachedDao
+}
+
+@Dao
+interface CachedDao {
+    @Query("SELECT * FROM cached_albums")
+    fun getAllCached(): Flow<List<CachedAlbum>>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAllCached(albums: List<CachedAlbum>)
+
+    @Query("DELETE FROM cached_albums")
+    suspend fun clearCache()
+}`}</CodeB>
+          ) : (
+            <CodeB title="Swift — ModelContainer setup" accent={GR}>{`@main
+struct MyApp: App {
+    var body: some Scene {
+        WindowGroup {
+            ContentView()
+        }
+        .modelContainer(for: [FavouriteAlbum.self, CachedAlbum.self])
+    }
+}`}</CodeB>
+          )}
+        </Section>
+      </VStep>
+    </VStep>
+
+    <VStep num={2} title="Implement the offline-first pattern (~15 min)">
       <p>The pattern is simple:</p>
       <ol style={{ paddingLeft: 20, margin: "6px 0" }}>
         <li>On app launch, immediately load data from the local cache</li>
@@ -417,8 +559,16 @@ class CachedAlbum {
         <li>When fresh data arrives, update the cache and the UI</li>
         <li>If the network call fails, the user still sees the cached data</li>
       </ol>
-      {platform === "Android" ? (
-        <CodeB title="Kotlin — offline-first pattern" accent={BL}>{`// 1. Load from cache first
+
+      <VStep num="a" title="Load cached data">
+        <p>Set up your UI to observe the cached albums from the database instead of directly holding the API response in state.</p>
+      </VStep>
+
+      <VStep num="b" title="Refresh on launch" last>
+        <p>When the view appears, fetch fresh data from the API. Instead of updating the UI state directly, update the database cache. Since your UI is observing the cache, it will update automatically.</p>
+        <Section title="Check your work: Offline-first pattern" type="check">
+          {platform === "Android" ? (
+            <CodeB title="Kotlin — offline-first pattern" accent={BL}>{`// 1. Load from cache first
 val cached = dao.getAllCached()  // Returns Flow<List<CachedAlbum>>
 // Display cached data immediately
 
@@ -435,8 +585,8 @@ viewModelScope.launch {
         Log.d("Offline", "Using cached data: \${e.message}")
     }
 }`}</CodeB>
-      ) : (
-        <CodeB title="Swift — offline-first pattern" accent={GR}>{`// 1. @Query loads cached data instantly on launch
+          ) : (
+            <CodeB title="Swift — offline-first pattern" accent={GR}>{`// 1. @Query loads cached data instantly on launch
 @Query private var cachedAlbums: [CachedAlbum]
 
 // 2. Fetch fresh data in background
@@ -453,14 +603,25 @@ func refreshFromAPI() async {
         print("Using cached data: \\(error)")
     }
 }`}</CodeB>
-      )}
-      <Checkpoint num={2}>Launch the app with WiFi on — data loads. Force-quit. Turn WiFi off. Reopen the app — <strong>cached data appears instantly</strong>. Turn WiFi back on — the list silently refreshes with live data.</Checkpoint>
-    </Step>
+          )}
+        </Section>
+        <Checkpoint num={2}>Launch the app with WiFi on — data loads. Force-quit. Turn WiFi off. Reopen the app — <strong>cached data appears instantly</strong>. Turn WiFi back on — the list silently refreshes with live data.</Checkpoint>
+      </VStep>
+    </VStep>
 
-    <Step num={3} title={`Save a user preference with ${platform === "Android" ? "DataStore" : "UserDefaults"} (~10 min)`}>
+    <VStep num={3} title={`Save a user preference with ${platform === "Android" ? "DataStore" : "UserDefaults"} (~10 min)`}>
       <p>Add a view mode preference — List or Grid — that is remembered between sessions.</p>
-      {platform === "Android" ? (
-        <CodeB title="Kotlin — DataStore preferences" accent={BL}>{`// build.gradle.kts — add dependency:
+      
+      <VStep num="a" title="Implement preferences storage">
+        <p>Use {platform === "Android" ? "DataStore" : "UserDefaults"} to persist the selected view mode.</p>
+        <Tip>{platform === "Android" ? "DataStore" : "UserDefaults"} is for simple key-value preferences — a theme setting, a sort order, a boolean flag. {platform === "Android" ? "Room" : "SwiftData"} is for structured relational data — a list of favourites, a cache of API responses. Use the simplest tool that fits.</Tip>
+      </VStep>
+
+      <VStep num="b" title="Connect preference to UI" last>
+        <p>Add a toggle button that switches the view mode and saves the new choice.</p>
+        <Section title={`Check your work: ${platform === "Android" ? "DataStore" : "UserDefaults"}`} type="check">
+          {platform === "Android" ? (
+            <CodeB title="Kotlin — DataStore preferences" accent={BL}>{`// build.gradle.kts — add dependency:
 implementation("androidx.datastore:datastore-preferences:1.0.0")
 
 // PreferencesManager.kt:
@@ -485,8 +646,8 @@ class PreferencesManager(context: Context) {
 // In your Composable:
 val prefs = remember { PreferencesManager(context) }
 val viewMode by prefs.viewMode.collectAsState(initial = "list")`}</CodeB>
-      ) : (
-        <CodeB title="Swift — UserDefaults with @AppStorage" accent={GR}>{`// @AppStorage reads from and writes to UserDefaults automatically
+          ) : (
+            <CodeB title="Swift — UserDefaults with @AppStorage" accent={GR}>{`// @AppStorage reads from and writes to UserDefaults automatically
 // The value persists across app restarts — no extra setup needed
 @AppStorage("view_mode") private var viewMode = "list"
 
@@ -497,31 +658,74 @@ Button(action: {
     Image(systemName: viewMode == "list"
         ? "list.bullet" : "square.grid.2x2")
 }`}</CodeB>
-      )}
-      <Checkpoint num={3}>Toggle view mode, force-quit the app, reopen it — the view mode you selected is restored.</Checkpoint>
-      <Tip>{platform === "Android" ? "DataStore" : "UserDefaults"} is for simple key-value preferences — a theme setting, a sort order, a boolean flag. {platform === "Android" ? "Room" : "SwiftData"} is for structured relational data — a list of favourites, a cache of API responses. Use the simplest tool that fits.</Tip>
-    </Step>
+          )}
+        </Section>
+        <Checkpoint num={3}>Toggle view mode, force-quit the app, reopen it — the view mode you selected is restored.</Checkpoint>
+      </VStep>
+    </VStep>
 
-    <Step num={4} title="Ask Claude about persistence strategies (~5 min)">
+    <VStep num={4} title="Implement a Dark Mode toggle (~10 min)">
+      <p>Now that you know how to save preferences, add a global Dark Mode toggle that persists between app launches.</p>
+      
+      <VStep num="a" title="Add a new preference key">
+        <p>In your preferences storage ({platform === "Android" ? "DataStore" : "UserDefaults"}), add a boolean property to track if dark mode is enabled.</p>
+      </VStep>
+
+      <VStep num="b" title="Apply the theme globally" last>
+        <p>Read the preference at the root of your application and apply the theme to the entire app. Add a toggle somewhere in your UI to test it.</p>
+        <Section title="Check your work: Global Dark Mode" type="check">
+          {platform === "Android" ? (
+            <CodeB title="Kotlin — Global Theme" accent={BL}>{`// In PreferencesManager.kt:
+val isDarkMode: Flow<Boolean> = dataStore.data
+    .map { prefs -> prefs[DARK_MODE_KEY] ?: false }
+
+suspend fun setDarkMode(enabled: Boolean) {
+    dataStore.edit { prefs -> prefs[DARK_MODE_KEY] = enabled }
+}
+// don't forget to add DARK_MODE_KEY to companion object!
+
+// In MainActivity.kt (or root Composable):
+val prefs = remember { PreferencesManager(context) }
+val isDark by prefs.isDarkMode.collectAsState(initial = false)
+
+AppTheme(darkTheme = isDark) {
+    // Your entire app content
+}`}</CodeB>
+          ) : (
+            <CodeB title="Swift — preferredColorScheme" accent={GR}>{`// In your App or root ContentView:
+@AppStorage("is_dark_mode") private var isDarkMode = false
+
+var body: some Scene {
+    WindowGroup {
+        ContentView()
+            .preferredColorScheme(isDarkMode ? .dark : .light)
+    }
+}`}</CodeB>
+          )}
+        </Section>
+        <Checkpoint num={4}>Toggle dark mode, force-quit the app, reopen it — the app should remember its theme state and display it instantly on launch.</Checkpoint>
+      </VStep>
+    </VStep>
+
+    <VStep num={5} title="Ask Claude about persistence strategies (~5 min)">
       <AiOpp>
         <em>Use AI as a platform translator →</em> Ask Claude: <strong>{"\""}I just implemented the offline-first pattern and user preferences in {platform === "Android" ? "Compose" : "SwiftUI"}. Can you translate both to {platform === "Android" ? "SwiftUI" : "Compose"}? Then explain: what is the difference between {platform === "Android" ? "Room and DataStore" : "SwiftData and UserDefaults"}? When would you choose one over the other?{"\"}"}</strong>
       </AiOpp>
-    </Step>
+    </VStep>
 
-    <Step num={5} title="Reflect (~5 min)">
+    <VStep num={6} title="Reflect (~5 min)" last>
       <CodeB title="Lab 10 Reflection">{`// 1. Describe the offline-first pattern in one sentence.
 //    What does the user experience that makes it worth it?
-// 2. What is the difference between ${platform === "Android" ? "DataStore and Room" : "UserDefaults and SwiftData"}?
+// 2. What is the difference between \${platform === "Android" ? "DataStore and Room" : "UserDefaults and SwiftData"}?
 //    Give one example of something you'd store in each.
 // 3. How does this week's work change what your capstone
 //    app could do?`}</CodeB>
       <Checkpoint num={5}>Show a TA the offline-first behaviour and the persistent view mode. Walk them through your reflection.</Checkpoint>
-    </Step>
+    </VStep>
 
     <Section title="🚀 Stretch Features">
       <ul style={{ paddingLeft: 20, fontSize: 13, lineHeight: 1.8 }}>
         <li>Add a cache timestamp — show {"\""}Last updated 3 minutes ago{"\""} at the top of the list</li>
-        <li>Add a dark mode preference using {platform === "Android" ? "DataStore" : "UserDefaults"} that applies a dark theme to the whole app</li>
         <li>Add a sort preference — alphabetical vs by listeners — that persists across sessions</li>
       </ul>
     </Section>
