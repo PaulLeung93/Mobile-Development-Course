@@ -245,43 +245,209 @@ const slides = [
     </Shell>
   ),
 
-  // 6: How a local database works (concept)
+  // 6a: Concept overview — the three layers
   () => (
-    <Shell tag="Concept" timer="10" title="How a local database works" subtitle="Entities, DAOs, and the database layer" notes="This is the most important conceptual slide of the session. Draw the three layers on a whiteboard if you can: your UI code at the top, the DAO in the middle, the actual database at the bottom. Students who understand this layer separation will find Room and SwiftData much less magical and much easier to debug. Stress that the DAO is just an interface — they describe WHAT they want, not HOW to do it.">
+    <Shell tag="Concept · 1 of 3" timer="3" title="Three layers between your UI and the disk" subtitle="Every local database framework — Room, SwiftData, Core Data — follows this pattern" notes="This is a framing slide. Draw the three boxes on a whiteboard. The key insight: students only write code for the top two layers (Entity + DAO). The framework handles the bottom layer (SQLite) completely. Understanding this separation is what makes the next three code-along slides feel logical rather than magic.">
+      <div style={{ display: "flex", flexDirection: "column", gap: 8, marginTop: 4 }}>
+        {[
+          { label: "1 · Entity", sub: "@Entity / @Model", color: PURPLE_LIGHT, fg: PURPLE_DARK, body: "Describes the shape of one row. You write a plain Kotlin data class or Swift class — the annotations tell the framework how to store it.", icon: "📦" },
+          { label: "2 · DAO / ModelContext", sub: "Data Access Object", color: TEAL_LIGHT, fg: TEAL_DARK, body: "Declares what operations you want (get all, insert, delete). You write an interface or use a context — the framework generates the SQL.", icon: "🔌" },
+          { label: "3 · Database (SQLite)", sub: "Managed by Room / SwiftData", color: AMBER_LIGHT, fg: "#633806", body: "The actual file stored on the device. You never write SQL directly. The framework reads and writes this file based on your DAO calls.", icon: "💾" },
+        ].map(({ label, sub, color, fg, body, icon }) => (
+          <div key={label} style={{ display: "flex", gap: 12, background: color, borderRadius: 8, padding: "10px 14px", alignItems: "flex-start" }}>
+            <span style={{ fontSize: 20, flexShrink: 0, marginTop: 2 }}>{icon}</span>
+            <div>
+              <div style={{ display: "flex", gap: 8, alignItems: "baseline", marginBottom: 3 }}>
+                <p style={{ fontSize: 13, fontWeight: 700, color: fg, margin: 0 }}>{label}</p>
+                <p style={{ fontSize: 11, color: fg, margin: 0, opacity: 0.7 }}>{sub}</p>
+              </div>
+              <p style={{ fontSize: 12, color: fg, margin: 0, lineHeight: 1.6 }}>{body}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+      <div style={{ display: "flex", flexDirection: "column", gap: 4, marginTop: 10 }}>
+        <p style={{ fontSize: 11, fontWeight: 600, color: MUTED, margin: 0, textTransform: "uppercase", letterSpacing: ".05em" }}>Data flow</p>
+        <div style={{ display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
+          {["UI / ViewModel", "→", "DAO", "→", "SQLite file", "→", "Flow / @Query", "→", "UI re-renders"].map((t, i) => (
+            <span key={i} style={{ fontSize: 11, color: t === "→" ? MUTED : TEXT, fontWeight: t === "→" ? 400 : 600, background: t === "→" ? "transparent" : GRAY, borderRadius: 4, padding: t === "→" ? 0 : "2px 8px" }}>{t}</span>
+          ))}
+        </div>
+      </div>
+    </Shell>
+  ),
+
+  // 6b: Concept — Entity deep dive
+  () => (
+    <Shell tag="Concept · 2 of 3" timer="4" title="The Entity — your data's blueprint" subtitle="One class = one database table. Each property = one column." notes="The key mental model: an Entity is just a normal class with extra instructions (annotations/macros) telling the framework how to store it. The framework reads these instructions at compile time and generates the database schema automatically. Students often think of a database table as something complex — reframe it as just 'a spreadsheet with named columns'.">
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
-        <div>
-          <div style={{ background: PURPLE_LIGHT, borderRadius: 8, padding: "12px 14px", marginBottom: 8 }}>
-            <p style={{ fontSize: 12, fontWeight: 600, color: PURPLE_DARK, margin: "0 0 4px" }}>Entity (the data shape)</p>
-            <p style={{ fontSize: 12, color: PURPLE, margin: 0, lineHeight: 1.5 }}>A Kotlin data class or Swift struct annotated to describe one table row. One entity class = one table.</p>
+        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+          <div style={{ background: PURPLE_LIGHT, borderRadius: 8, padding: "12px 14px" }}>
+            <p style={{ fontSize: 12, fontWeight: 700, color: PURPLE_DARK, margin: "0 0 8px" }}>Think of it like a spreadsheet</p>
+            <div style={{ background: "#fff", borderRadius: 6, overflow: "hidden", fontSize: 11, border: `1px solid ${PURPLE_LIGHT}` }}>
+              {[["id", "name", "artist", "savedAt"], ["1", "Rumours", "Fleetwood Mac", "2024-01-10"], ["2", "OK Computer", "Radiohead", "2024-01-11"]].map((row, i) => (
+                <div key={i} style={{ display: "grid", gridTemplateColumns: "1fr 2fr 2fr 2fr", borderBottom: i < 2 ? `1px solid ${GRAY}` : "none" }}>
+                  {row.map((cell, j) => (
+                    <span key={j} style={{ padding: "4px 8px", color: i === 0 ? PURPLE_DARK : TEXT, fontWeight: i === 0 ? 700 : 400, background: i === 0 ? PURPLE_LIGHT : "transparent", fontSize: 10 }}>{cell}</span>
+                  ))}
+                </div>
+              ))}
+            </div>
+            <p style={{ fontSize: 11, color: PURPLE, margin: "6px 0 0", lineHeight: 1.5 }}>Each <strong>row</strong> is one instance of your Entity class. Each <strong>column</strong> is one property.</p>
           </div>
-          <div style={{ background: TEAL_LIGHT, borderRadius: 8, padding: "12px 14px", marginBottom: 8 }}>
-            <p style={{ fontSize: 12, fontWeight: 600, color: TEAL_DARK, margin: "0 0 4px" }}>DAO / ModelContext (the interface)</p>
-            <p style={{ fontSize: 12, color: TEAL_DARK, margin: 0, lineHeight: 1.5 }}>Data Access Object — a set of functions for inserting, deleting, and querying. You declare what you want; the framework writes the SQL.</p>
-          </div>
-          <div style={{ background: AMBER_LIGHT, borderRadius: 8, padding: "12px 14px" }}>
-            <p style={{ fontSize: 12, fontWeight: 600, color: "#633806", margin: "0 0 4px" }}>Database (the engine)</p>
-            <p style={{ fontSize: 12, color: "#633806", margin: 0, lineHeight: 1.5 }}>The actual SQLite file on disk. Room and SwiftData manage this for you — you never write raw SQL.</p>
+
+          <div style={{ background: TEAL_LIGHT, borderRadius: 8, padding: "10px 12px" }}>
+            <p style={{ fontSize: 12, fontWeight: 700, color: TEAL_DARK, margin: "0 0 4px" }}>The primary key rule</p>
+            <p style={{ fontSize: 11, color: TEAL_DARK, margin: 0, lineHeight: 1.5 }}>Every table needs one column that is <em>guaranteed unique</em> — an ID. Room's <code>@PrimaryKey(autoGenerate=true)</code> and SwiftData's automatic UUID both handle this for you.</p>
           </div>
         </div>
-        <div style={{ background: GRAY, borderRadius: 8, padding: "12px 14px", fontFamily: "monospace", fontSize: 11, lineHeight: 1.8 }}>
-          <p style={{ fontSize: 11, fontWeight: 600, color: MUTED, margin: "0 0 8px", textTransform: "uppercase", letterSpacing: ".05em" }}>How they connect</p>
-          <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-            <div style={{ background: PURPLE_LIGHT, borderRadius: 6, padding: "6px 10px", fontSize: 12, color: PURPLE_DARK }}>UI / ViewModel — "I want all favourites"</div>
-            <div style={{ textAlign: "center", fontSize: 16, color: MUTED }}>↓</div>
-            <div style={{ background: TEAL_LIGHT, borderRadius: 6, padding: "6px 10px", fontSize: 12, color: TEAL_DARK }}>DAO — getAllFavourites() / @Query</div>
-            <div style={{ textAlign: "center", fontSize: 16, color: MUTED }}>↓</div>
-            <div style={{ background: AMBER_LIGHT, borderRadius: 6, padding: "6px 10px", fontSize: 12, color: "#633806" }}>SQLite file on device storage</div>
-            <div style={{ textAlign: "center", fontSize: 16, color: MUTED }}>↓</div>
-            <div style={{ background: TEAL_LIGHT, borderRadius: 6, padding: "6px 10px", fontSize: 12, color: TEAL_DARK }}>Flow/publisher emits updated list</div>
-            <div style={{ textAlign: "center", fontSize: 16, color: MUTED }}>↓</div>
-            <div style={{ background: PURPLE_LIGHT, borderRadius: 6, padding: "6px 10px", fontSize: 12, color: PURPLE_DARK }}>UI re-renders automatically</div>
+
+        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+          <div style={{ background: GRAY, borderRadius: 8, padding: "10px 12px" }}>
+            <p style={{ fontSize: 11, fontWeight: 700, color: MUTED, margin: "0 0 6px", textTransform: "uppercase", letterSpacing: ".05em" }}>Android · Kotlin</p>
+            <pre style={preStyle}>{`@Entity(tableName = "favourites")
+data class FavouriteAlbum(
+    @PrimaryKey(autoGenerate = true)
+    val id: Int = 0,
+    val name: String,       // column: name
+    val artist: String,     // column: artist
+    val imageUrl: String,   // column: image_url
+    val savedAt: Long =
+        System.currentTimeMillis()
+)`}</pre>
+          </div>
+          <div style={{ background: GRAY, borderRadius: 8, padding: "10px 12px" }}>
+            <p style={{ fontSize: 11, fontWeight: 700, color: MUTED, margin: "0 0 6px", textTransform: "uppercase", letterSpacing: ".05em" }}>iOS · Swift</p>
+            <pre style={preStyle}>{`@Model
+final class FavouriteAlbum {
+    // SwiftData auto-generates a UUID
+    var name: String
+    var artist: String
+    var imageUrl: String
+    var savedAt: Date = .now
+
+    init(name: String, artist: String,
+         imageUrl: String) { ... }
+}`}</pre>
+          </div>
+          <div style={{ background: AMBER_LIGHT, borderRadius: 6, padding: "8px 10px" }}>
+            <p style={{ fontSize: 11, color: "#633806", margin: 0 }}><strong>@Entity ≈ @Model.</strong> Both mark a class as "store this on disk". The framework reads the annotations at compile time and creates the table automatically — you never write <code>CREATE TABLE</code>.</p>
           </div>
         </div>
       </div>
     </Shell>
   ),
 
-  // 7: Define the entity / model
+  // 6c: Concept — DAO deep dive
+  () => (
+    <Shell tag="Concept · 3 of 3" timer="4" title="The DAO — your wish list for the database" subtitle="You describe WHAT you want. The framework figures out HOW." notes="The DAO mental model is the most valuable thing in this session. Students should walk away understanding that a DAO is just an interface — they describe what operations they need, and Room generates all the SQL at compile time. SwiftData takes this even further by replacing the DAO with direct ModelContext calls + @Query. Make the 'waiter analogy' concrete: you tell the waiter what you want, the kitchen (SQLite) makes it — you don't go into the kitchen yourself.">
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+          <div style={{ background: PURPLE_LIGHT, borderRadius: 8, padding: "12px 14px" }}>
+            <p style={{ fontSize: 12, fontWeight: 700, color: PURPLE_DARK, margin: "0 0 6px" }}>The waiter analogy</p>
+            <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+              {[
+                { who: "You (the UI)", says: "\"Get me all favourites\"", bg: PURPLE_LIGHT, fg: PURPLE_DARK },
+                { who: "Waiter (DAO)", says: "Translates to SQL query", bg: TEAL_LIGHT, fg: TEAL_DARK },
+                { who: "Kitchen (SQLite)", says: "Runs the query, returns rows", bg: AMBER_LIGHT, fg: "#633806" },
+                { who: "Waiter (DAO)", says: "Returns typed Kotlin/Swift objects", bg: TEAL_LIGHT, fg: TEAL_DARK },
+                { who: "You (the UI)", says: "Renders the list", bg: PURPLE_LIGHT, fg: PURPLE_DARK },
+              ].map(({ who, says, bg, fg }) => (
+                <div key={who + says} style={{ display: "flex", gap: 8, alignItems: "center" }}>
+                  <span style={{ fontSize: 10, fontWeight: 700, color: fg, background: bg, borderRadius: 4, padding: "2px 6px", minWidth: 90, flexShrink: 0 }}>{who}</span>
+                  <span style={{ fontSize: 11, color: TEXT }}>{says}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div style={{ background: TEAL_LIGHT, borderRadius: 8, padding: "10px 12px" }}>
+            <p style={{ fontSize: 12, fontWeight: 700, color: TEAL_DARK, margin: "0 0 4px" }}>Why return Flow / use @Query?</p>
+            <p style={{ fontSize: 11, color: TEAL_DARK, margin: 0, lineHeight: 1.5 }}>A normal function returns data <em>once</em>. A <strong>Flow</strong> (Android) or <strong>@Query</strong> (iOS) is a <em>live subscription</em> — when the database changes, the UI is notified automatically. No polling, no manual refresh.</p>
+          </div>
+
+          <div style={{ background: AMBER_LIGHT, borderRadius: 8, padding: "10px 12px" }}>
+            <p style={{ fontSize: 12, fontWeight: 700, color: "#633806", margin: "0 0 4px" }}>Why suspend fun?</p>
+            <p style={{ fontSize: 11, color: "#633806", margin: 0, lineHeight: 1.5 }}>Writing to disk is slow. <code>suspend fun</code> ensures insert/delete operations run off the main thread — keeping your UI smooth and responsive.</p>
+          </div>
+        </div>
+
+        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+          <div style={{ background: GRAY, borderRadius: 8, padding: "10px 12px" }}>
+            <p style={{ fontSize: 11, fontWeight: 700, color: MUTED, margin: "0 0 6px", textTransform: "uppercase", letterSpacing: ".05em" }}>Android — Room DAO</p>
+            <pre style={preStyle}>{`@Dao
+interface FavouriteDao {
+
+  // READ — live, auto-updating list
+  @Query("SELECT * FROM favourites")
+  fun getAll(): Flow<List<FavouriteAlbum>>
+
+  // WRITE — runs off main thread
+  @Insert(onConflict = OnConflictStrategy.REPLACE)
+  suspend fun insert(item: FavouriteAlbum)
+
+  @Delete
+  suspend fun delete(item: FavouriteAlbum)
+}`}</pre>
+          </div>
+          <div style={{ background: GRAY, borderRadius: 8, padding: "10px 12px" }}>
+            <p style={{ fontSize: 11, fontWeight: 700, color: MUTED, margin: "0 0 6px", textTransform: "uppercase", letterSpacing: ".05em" }}>iOS — SwiftData (no DAO class needed)</p>
+            <pre style={preStyle}>{`// READ — live, auto-updating
+@Query var favourites: [FavouriteAlbum]
+
+// WRITE — ModelContext handles it
+context.insert(album)   // add
+context.delete(album)   // remove
+// SwiftData auto-saves on next run loop`}</pre>
+          </div>
+          <div style={{ background: PURPLE_LIGHT, borderRadius: 6, padding: "8px 10px" }}>
+            <p style={{ fontSize: 11, color: PURPLE_DARK, margin: 0 }}><strong>Key insight:</strong> Room DAO = an interface with annotations. SwiftData skips the interface entirely — you call <code>context.insert/delete</code> directly. Same result, different syntax.</p>
+          </div>
+        </div>
+      </div>
+    </Shell>
+  ),
+
+  // 7: Code-along intro
+  () => (
+    <Shell tag="Live code-along" timer="18" title="Building persistence — 3 steps" subtitle="Open your Week 4 app. We wire in a local database." notes="Pause here before opening any code. Ask students to open their Week 4 API project. Walk through what each step will feel like: Step 1 is data definition (no UI change), Step 2 is database plumbing (still no UI change), Step 3 is the payoff — tapping a heart saves the item and it persists across app restarts. Frame the goal: by the end, favourites survive closing the app." dark>
+      <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr", gap: 12, marginTop: 8 }}>
+        <div>
+          <p style={{ fontSize: 13, fontWeight: 600, color: "rgba(255,255,255,0.9)", margin: "0 0 10px" }}>Three focused steps — each on its own slide</p>
+          {[
+            { n: 1, t: "Define the data model", desc: "FavouriteItem entity / @Model class — the shape of one saved row" },
+            { n: 2, t: "Wire the database layer", desc: "DAO + AppDatabase (Android) · ModelContext + @Query (iOS)" },
+            { n: 3, t: "Connect it to the UI", desc: "Heart button reads / writes the database — favourites survive restart" },
+          ].map(s => (
+            <div key={s.n} style={{ display: "flex", gap: 10, margin: "8px 0", alignItems: "flex-start" }}>
+              <span style={{ background: TEAL, color: "#fff", borderRadius: "50%", width: 22, height: 22, fontSize: 11, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, marginTop: 1 }}>{s.n}</span>
+              <div>
+                <p style={{ fontSize: 13, color: "rgba(255,255,255,0.9)", fontWeight: 600, margin: 0 }}>{s.t}</p>
+                <p style={{ fontSize: 11, color: "rgba(255,255,255,0.55)", margin: "2px 0 0", lineHeight: 1.4 }}>{s.desc}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+        <div style={{ background: "rgba(255,255,255,0.08)", borderRadius: 10, padding: 14, display: "flex", flexDirection: "column", gap: 8 }}>
+          <p style={{ fontSize: 11, color: "rgba(255,255,255,0.5)", margin: 0, textTransform: "uppercase", fontWeight: 600 }}>The goal</p>
+          <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+            <div style={{ background: "rgba(255,0,0,0.15)", borderRadius: 6, padding: "8px 10px" }}>
+              <p style={{ fontSize: 10, color: "#fca5a5", fontWeight: 600, margin: "0 0 3px" }}>Before</p>
+              <p style={{ fontSize: 11, color: "rgba(255,255,255,0.6)", margin: 0 }}>Tapping ♡ does nothing. Closing the app forgets everything.</p>
+            </div>
+            <div style={{ fontSize: 16, textAlign: "center", color: TEAL }}>↓</div>
+            <div style={{ background: "rgba(29,158,117,0.2)", borderRadius: 6, padding: "8px 10px" }}>
+              <p style={{ fontSize: 10, color: TEAL, fontWeight: 600, margin: "0 0 3px" }}>After</p>
+              <p style={{ fontSize: 11, color: "rgba(255,255,255,0.6)", margin: 0 }}>Tapping ♡ saves to SQLite. Reopening the app — hearts are still filled.</p>
+            </div>
+          </div>
+          <p style={{ fontSize: 11, color: "rgba(255,255,255,0.4)", margin: "4px 0 0", lineHeight: 1.5 }}>Your list screen, search, and detail screens do not change. Only the heart button wires to the database.</p>
+        </div>
+      </div>
+    </Shell>
+  ),
+
+  // 8: Define the entity / model
   () => (
     <Shell tag="Code-Along · 1 of 3" timer="6" title="Step 1 — Define your data model" subtitle="The class that describes one saved item" notes="OSToggle lets students follow along on their own platform. @Entity (Kotlin) and @Model (Swift) serve identical purposes — mark this parallel explicitly. Stress that this is just an annotated data class/final class — nothing exotic yet.">
       <div style={{ marginTop: 8 }}>
