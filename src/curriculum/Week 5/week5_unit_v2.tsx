@@ -759,7 +759,7 @@ const ProjectTab = ({ platform, setPlatform }) => (
       {"📬"} Submit this project by the end of Week 6 Session 1 using the <strong>Submit</strong> button {"👉"} <span style={{ float: "right", background: P_C, color: "#fff", padding: "4px 14px", borderRadius: 6, fontSize: 12, fontWeight: 500, cursor: "pointer" }}>Submit</span>
     </div>
 
-    <h2 style={{ fontSize: 18, fontWeight: 600, margin: "0 0 4px" }}>Unit 5: Project — Persistent Networked App</h2>
+    <h2 style={{ fontSize: 18, fontWeight: 600, margin: "0 0 4px" }}>Unit 5: Project — PantryDB</h2>
     <PlatformToggle platform={platform} setPlatform={setPlatform} />
 
     <div style={{ background: AML, border: "1px solid #FAC775", borderRadius: 8, padding: "12px 16px", margin: "12px 0" }}>
@@ -767,26 +767,71 @@ const ProjectTab = ({ platform, setPlatform }) => (
       <p style={{ fontSize: 13, color: AM, margin: 0, lineHeight: 1.6 }}>Starting in Week 6, you{"'"}ll be working in teams on your capstone. The persistence skills you build here will carry directly into your capstone project.</p>
     </div>
 
-    <div style={{ fontSize: 13, lineHeight: 1.7 }}>
-      <p>Take the networked app you built for Assignment 4 (using your own API choice) and add local persistence. By the end, your app should feel like a real, polished mobile app — data loads instantly from cache, users can save favourites, and preferences are remembered.</p>
-
-      <strong>{"🎯"} Goals</strong>
-      <ul style={{ paddingLeft: 20, margin: "6px 0 14px" }}>
-        <li>Practice integrating a local database into an existing app</li>
-        <li>Build a feature (favourites) that users expect from real apps</li>
-        <li>Experience the full lifecycle: network → cache → display</li>
-      </ul>
-    </div>
+    {platform === "Android" ? (
+      <div style={{ fontSize: 13, lineHeight: 1.7 }}>
+        <p>
+          You{"'"}ll be working with <strong>PantryDB</strong> — a recipe browser app built on{" "}
+          <Link>TheMealDB API</Link>. The networking, navigation, and UI are already built for you.
+          Your job is to wire up the local database so that users can save recipes to their pantry
+          and find them again after the app restarts.
+        </p>
+        <div style={{ background: "var(--color-background-secondary)", border: "0.5px solid var(--color-border-tertiary)", borderRadius: 8, padding: "10px 14px", margin: "10px 0" }}>
+          <p style={{ fontSize: 12, fontWeight: 600, color: "var(--color-text-secondary)", margin: "0 0 4px", textTransform: "uppercase", letterSpacing: ".04em" }}>Starter code</p>
+          <p style={{ fontSize: 13, margin: 0 }}>{"🔗"} <Link>Download PantryDB starter project</Link> — open in Android Studio and sync Gradle before you start.</p>
+        </div>
+        <strong>{"🎯"} Goals</strong>
+        <ul style={{ paddingLeft: 20, margin: "6px 0 14px" }}>
+          <li>Build a Room database from scratch inside a working app</li>
+          <li>Understand how a Flow from a DAO drives live UI updates</li>
+          <li>Experience the full save → persist → restore lifecycle</li>
+        </ul>
+      </div>
+    ) : (
+      <div style={{ fontSize: 13, lineHeight: 1.7 }}>
+        <p>
+          You{"'"}ll be working with <strong>PantryDB</strong> — a recipe browser app built on{" "}
+          <Link>TheMealDB API</Link>. The networking, navigation, and UI are already built for you.
+          Your job is to wire up SwiftData so that users can save recipes to their pantry
+          and find them again after the app restarts.
+        </p>
+        <div style={{ background: "var(--color-background-secondary)", border: "0.5px solid var(--color-border-tertiary)", borderRadius: 8, padding: "10px 14px", margin: "10px 0" }}>
+          <p style={{ fontSize: 12, fontWeight: 600, color: "var(--color-text-secondary)", margin: "0 0 4px", textTransform: "uppercase", letterSpacing: ".04em" }}>Starter code</p>
+          <p style={{ fontSize: 13, margin: 0 }}>{"🔗"} <Link>Download PantryDB starter project</Link> — open in Xcode and build once before you start.</p>
+        </div>
+        <strong>{"🎯"} Goals</strong>
+        <ul style={{ paddingLeft: 20, margin: "6px 0 14px" }}>
+          <li>Build a SwiftData model and wire it into a working app</li>
+          <li>Understand how <IC>@Query</IC> drives live UI updates when the database changes</li>
+          <li>Experience the full save → persist → restore lifecycle</li>
+        </ul>
+      </div>
+    )}
 
     <Section title="✅ Required Features" defaultOpen={true}>
-      <ul style={{ paddingLeft: 20, fontSize: 13, lineHeight: 2 }}>
-        <li>{"☐"} App fetches data from an API (carried over from Week 4)</li>
-        <li>{"☐"} A <strong>favourites feature</strong> — users can save items to a local database ({platform === "Android" ? "Room" : "SwiftData"}) that persists across app restarts</li>
-        <li>{"☐"} A dedicated <strong>favourites section or tab</strong> that displays saved items</li>
-        <li>{"☐"} An <strong>empty state</strong> when there are no favourites</li>
-        <li>{"☐"} Users can <strong>remove</strong> items from favourites</li>
-        <li>{"☐"} Favourites <strong>survive a force-quit</strong> — relaunch the app and they{"'"}re still there</li>
-      </ul>
+      {platform === "Android" ? (
+        <ul style={{ paddingLeft: 20, fontSize: 13, lineHeight: 2 }}>
+          <li>{"☐"} Create <IC>FavouriteMeal.kt</IC> — a <IC>@Entity</IC> data class with fields for <IC>idMeal</IC>, <IC>strMeal</IC>, <IC>strMealThumb</IC>, <IC>strCategory</IC>, and <IC>strArea</IC></li>
+          <li>{"☐"} Create <IC>FavouriteMealDao.kt</IC> — a <IC>@Dao</IC> interface with <IC>getAll()</IC>, <IC>isSaved()</IC>, <IC>insert()</IC>, and <IC>delete()</IC></li>
+          <li>{"☐"} Create <IC>AppDatabase.kt</IC> — a <IC>@Database</IC> class with a <IC>getDatabase()</IC> singleton</li>
+          <li>{"☐"} The <strong>{"\""}Save to Pantry{"\""} button</strong> on the detail screen inserts the meal into the database</li>
+          <li>{"☐"} Tapping the button again <strong>removes</strong> the meal from the pantry</li>
+          <li>{"☐"} The button icon and label <strong>update immediately</strong> to reflect the saved state</li>
+          <li>{"☐"} The <strong>Pantry screen</strong> shows all saved meals as a scrollable list</li>
+          <li>{"☐"} The Pantry screen shows an <strong>empty state</strong> when nothing is saved</li>
+          <li>{"☐"} Saved meals <strong>survive a force-quit</strong> — relaunch the app and they{"'"}re still there</li>
+        </ul>
+      ) : (
+        <ul style={{ paddingLeft: 20, fontSize: 13, lineHeight: 2 }}>
+          <li>{"☐"} Create <IC>FavouriteMeal.swift</IC> — a <IC>@Model</IC> class with fields for <IC>idMeal</IC>, <IC>strMeal</IC>, <IC>strMealThumb</IC>, <IC>strCategory</IC>, and <IC>strArea</IC></li>
+          <li>{"☐"} Add <IC>.modelContainer(for: FavouriteMeal.self)</IC> to the App entry point</li>
+          <li>{"☐"} In <IC>DetailView</IC>, get the model context via <IC>@Environment(\.modelContext)</IC> and check if the meal is already saved</li>
+          <li>{"☐"} The <strong>{"\""}Save to Pantry{"\""} button</strong> calls <IC>context.insert(...)</IC> or <IC>context.delete(...)</IC> depending on saved state</li>
+          <li>{"☐"} The button icon and label <strong>update immediately</strong> to reflect the saved state</li>
+          <li>{"☐"} The <strong>Pantry screen</strong> uses <IC>@Query</IC> to display all saved meals as a scrollable list</li>
+          <li>{"☐"} The Pantry screen shows an <strong>empty state</strong> when nothing is saved</li>
+          <li>{"☐"} Saved meals <strong>survive a force-quit</strong> — relaunch the app and they{"'"}re still there</li>
+        </ul>
+      )}
     </Section>
 
     <Section title="🚀 Stretch Features">
@@ -804,7 +849,7 @@ const ProjectTab = ({ platform, setPlatform }) => (
           <>
             <li><Link>Room Persistence Library</Link> — Android developer docs</li>
             <li><Link>DataStore guide</Link> — Android Jetpack</li>
-            <li><Link>Room dependency setup</Link> — latest version and Gradle config</li>
+            <li><Link>KSP with Room</Link> — Kotlin Symbol Processing setup (replaces kapt)</li>
           </>
         ) : (
           <>
@@ -819,14 +864,33 @@ const ProjectTab = ({ platform, setPlatform }) => (
 
     <Section title="💡 Hints">
       <div style={{ fontSize: 13, lineHeight: 1.8 }}>
-        <p><strong>Where do I start?</strong></p>
-        <p style={{ marginLeft: 16 }}>Start by adding the favourites feature first — it{"'"}s the most straightforward. Get insert and delete working, verify persistence across restarts, then build the favourites section.</p>
-        <p><strong>My database changes aren{"'"}t showing up</strong></p>
-        <p style={{ marginLeft: 16 }}>{platform === "Android" ? "Make sure you're observing the Flow returned by the DAO — use collectAsState() in Compose. Also check that your @Database annotation includes the entity." : "Make sure the @Query property wrapper is watching the right model type and the model container is configured in your App entry point."}</p>
+        {platform === "Android" ? (
+          <>
+            <p><strong>Where do I start?</strong></p>
+            <p style={{ marginLeft: 16 }}>Start in <IC>PantryScreen.kt</IC> — the TODO comments walk you through creating all three database files first. Once the database compiles, move to <IC>DetailScreen.kt</IC> to wire up the save button.</p>
+            <p><strong>The app compiles but the Pantry screen stays empty</strong></p>
+            <p style={{ marginLeft: 16 }}>Check that you{"'"}re calling <IC>dao.getAll().collectAsState()</IC> and passing the result to your <IC>LazyColumn</IC>. If you{"'"}re hardcoding an empty list, the Flow is never being observed.</p>
+            <p><strong>The save button doesn{"'"}t seem to do anything</strong></p>
+            <p style={{ marginLeft: 16 }}>DAO insert and delete are <IC>suspend</IC> functions — they must run inside <IC>scope.launch {"{ }"}</IC>. If you call them directly without a coroutine scope, the code won{"'"}t compile.</p>
+          </>
+        ) : (
+          <>
+            <p><strong>Where do I start?</strong></p>
+            <p style={{ marginLeft: 16 }}>Start at the App entry point — add <IC>.modelContainer(for: FavouriteMeal.self)</IC> first. Then move to <IC>DetailView</IC> to wire up the save button, and finally <IC>PantryView</IC> to display the list.</p>
+            <p><strong>The Pantry screen stays empty</strong></p>
+            <p style={{ marginLeft: 16 }}>Make sure <IC>@Query</IC> is declared inside the view struct (not a parent), and that <IC>.modelContainer</IC> is attached at the App level — not just the view level.</p>
+            <p><strong>The save button doesn{"'"}t seem to do anything</strong></p>
+            <p style={{ marginLeft: 16 }}>To delete a record, you must pass the <em>actual model instance</em> from your <IC>@Query</IC> array — not a newly constructed object with the same ID. Use <IC>savedMeals.first {"{"} $0.idMeal == meal.id {"}"}</IC> to find it first.</p>
+          </>
+        )}
         <p><strong>I{"'"}m stuck on something</strong></p>
-        <p style={{ marginLeft: 16 }}>Don{"'"}t skip the Resources section! Use Claude as a debugging partner — paste your code and the error message.</p>
+        <p style={{ marginLeft: 16 }}>Use Claude as a debugging partner — paste your code and the error message.</p>
         <AiOpp>
-          <em>Use AI to debug persistence issues →</em> Paste your {platform === "Android" ? "entity, DAO, and the error message" : "SwiftData model, view code, and the error message"} into Claude and ask: <strong>{"\""}Review my {platform === "Android" ? "Room" : "SwiftData"} setup. Is there anything I{"'"}m missing that could cause data not to persist?{"\"}"}</strong>
+          <em>Use AI to debug persistence issues →</em> Paste your {platform === "Android" ? (
+            <><IC>FavouriteMeal.kt</IC>, <IC>FavouriteMealDao.kt</IC>, and the error message</>
+          ) : (
+            <>SwiftData model, view code, and the error message</>
+          )} into Claude and ask: <strong>{"\""}Review my {platform === "Android" ? "Room" : "SwiftData"} setup. Is there anything I{"'"}m missing that could cause data not to persist?{"\"}"}</strong>
         </AiOpp>
       </div>
     </Section>
@@ -836,11 +900,12 @@ const ProjectTab = ({ platform, setPlatform }) => (
       <div style={{ fontSize: 13, lineHeight: 1.8 }}>
         <p>Once you{"'"}ve completed all required features:</p>
         <ol style={{ paddingLeft: 20 }}>
-          <li>Create a GitHub repo (or use a new branch on your Week 4 repo)</li>
-          <li>Push your project code</li>
+          <li>Open the PantryDB starter project in {platform === "Android" ? "Android Studio" : "Xcode"}</li>
+          <li>Complete all TODO steps in the starter code</li>
+          <li>Create a GitHub repo and push your code</li>
           <li>Create a README using the <Link>Unit 5 Project — README Template</Link></li>
           <li>Mark off implemented features by changing <IC>{"-[ ]"}</IC> to <IC>{"-[x]"}</IC></li>
-          <li>Record a Video/GIF walkthrough showing favourites persisting across restarts</li>
+          <li>Record a Video/GIF showing a meal being saved, the app force-quit, and the meal still appearing on relaunch</li>
           <li>Add the Video/GIF to your repo and link it in the README</li>
           <li>Make the repo private and add <IC>codepathreview</IC> as a collaborator</li>
         </ol>
