@@ -22,6 +22,9 @@ import Week5S1 from './curriculum/Week 5/week5_session1_slides';
 import Week5S2 from './curriculum/Week 5/week5_session2_slides';
 import GitForTeams from './curriculum/Week 5/git_for_teams_slides';
 import GitUnit from './curriculum/Bonus/git_unit';
+import AppFunctionsUnit from './curriculum/Bonus/appfunctions_unit';
+import AppFunctionsSlides from './curriculum/Bonus/appfunctions_slides';
+import AppFunctionsIosSlides from './curriculum/Bonus/appfunctions_ios_slides';
 
 import Week6Unit from './curriculum/Week 6/week6_unit';
 import Week6S1 from './curriculum/Week 6/week6_session1_slides';
@@ -106,5 +109,10 @@ export const bonusRegistry: Record<string, Record<string, React.ElementType>> = 
   "Git": {
     "Unit": GitUnit,
     "Slides": GitForTeams
+  },
+  "AppFunctions": {
+    "Unit": AppFunctionsUnit,
+    "Android": AppFunctionsSlides,
+    "iOS": AppFunctionsIosSlides
   }
 };

@@ -92,8 +92,8 @@ export default function App() {
             className="sidebar-section-header"
             onClick={() => setIsBonusOpen(o => !o)}
           >
+            <span className="sidebar-section-chevron">{isBonusOpen ? "▼" : "▶"}</span>
             <span>Bonus</span>
-            <span className="sidebar-section-chevron">{isBonusOpen ? "▲" : "▼"}</span>
           </button>
 
           {isBonusOpen && (
