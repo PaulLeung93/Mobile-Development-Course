@@ -21,6 +21,7 @@ import Week5Unit from './curriculum/Week 5/week5_unit_v2';
 import Week5S1 from './curriculum/Week 5/week5_session1_slides';
 import Week5S2 from './curriculum/Week 5/week5_session2_slides';
 import GitForTeams from './curriculum/Week 5/git_for_teams_slides';
+import GitUnit from './curriculum/Bonus/git_unit';
 
 import Week6Unit from './curriculum/Week 6/week6_unit';
 import Week6S1 from './curriculum/Week 6/week6_session1_slides';
@@ -72,8 +73,7 @@ export const navigationRegistry: Record<string, Record<string, React.ElementType
   "Week 5": {
     "Unit": Week5Unit,
     "Session 1": Week5S1,
-    "Session 2": Week5S2,
-    "Git For Teams": GitForTeams
+    "Session 2": Week5S2
   },
   "Week 6": {
     "Unit": Week6Unit,
@@ -99,5 +99,12 @@ export const navigationRegistry: Record<string, Record<string, React.ElementType
     "Unit": Week10Unit,
     "Session 1": Week10S1,
     "Session 2": Week10S2
+  }
+};
+
+export const bonusRegistry: Record<string, Record<string, React.ElementType>> = {
+  "Git": {
+    "Unit": GitUnit,
+    "Slides": GitForTeams
   }
 };

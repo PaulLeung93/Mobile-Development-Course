@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { navigationRegistry } from './registry';
+import { navigationRegistry, bonusRegistry } from './registry';
 import { Menu, BookOpen, Layers, MonitorPlay, Moon, Sun } from 'lucide-react';
 import './index.css';
 
@@ -43,6 +43,7 @@ export default function App() {
   const [selectedTab, setSelectedTab] = useState("Unit");
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [isDark, setIsDark] = useState(() => localStorage.getItem('theme') === 'dark');
+  const [isBonusOpen, setIsBonusOpen] = useState(false);
 
   useEffect(() => {
     document.documentElement.classList.toggle('dark', isDark);
@@ -50,16 +51,18 @@ export default function App() {
   }, [isDark]);
 
   // If a week changes, reset tab to 'Unit' or whatever is available
+  const allRegistry = { ...navigationRegistry, ...bonusRegistry };
+
   const handleWeekSelect = (week: string) => {
     setSelectedWeek(week);
-    const availableTabs = Object.keys(navigationRegistry[week]);
+    const availableTabs = Object.keys(allRegistry[week]);
     if (!availableTabs.includes(selectedTab)) {
       setSelectedTab(availableTabs[0]);
     }
     if (window.innerWidth < 768) setIsSidebarOpen(false);
   };
 
-  const currentTabs = navigationRegistry[selectedWeek] || {};
+  const currentTabs = allRegistry[selectedWeek] || {};
   const ActiveComponent = currentTabs[selectedTab];
 
   const weeks = Object.keys(navigationRegistry);
@@ -82,6 +85,31 @@ export default function App() {
               <span>{week}</span>
             </button>
           ))}
+
+          <div className="sidebar-section-divider" />
+
+          <button
+            className="sidebar-section-header"
+            onClick={() => setIsBonusOpen(o => !o)}
+          >
+            <span>Bonus</span>
+            <span className="sidebar-section-chevron">{isBonusOpen ? "▲" : "▼"}</span>
+          </button>
+
+          {isBonusOpen && (
+            <div className="sidebar-section-items">
+              {Object.keys(bonusRegistry).map(item => (
+                <button
+                  key={item}
+                  className={`sidebar-link sidebar-link--indented ${selectedWeek === item ? 'active' : ''}`}
+                  onClick={() => handleWeekSelect(item)}
+                >
+                  <Layers size={16} />
+                  <span>{item}</span>
+                </button>
+              ))}
+            </div>
+          )}
         </nav>
       </div>
 
