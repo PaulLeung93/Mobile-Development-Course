@@ -518,7 +518,7 @@ class ChatViewModel: ObservableObject {
           <p>Add the <IC>sendMessage</IC> function. It should: (1) append the user's message to the messages list, (2) set loading to true, (3) build a POST request to <IC>https://api.anthropic.com/v1/messages</IC> with three required headers — <IC>x-api-key</IC> (your key), <IC>anthropic-version: 2023-06-01</IC>, and <IC>content-type: application/json</IC>. The JSON body needs <IC>model</IC>, <IC>max_tokens</IC>, and a <IC>messages</IC> array built from your entire conversation history so far. {isAndroid ? "Wrap the network call in <IC>viewModelScope.launch(Dispatchers.IO)</IC>. Android forbids network calls on the main thread — if you try, it throws a <IC>NetworkOnMainThreadException</IC> and crashes the app immediately. <IC>Dispatchers.IO</IC> moves the work to a background thread." : "Wrap everything in a <IC>Task {}</IC> block — Swift's async/await suspends the current task while waiting for the network, keeping the main thread free to update the UI."}</p>
           <Section title="💡 Show me the message array format">
             <CodeB title="Required JSON shape" accent={isAndroid ? BL : GR}>{`{
-  "model": "claude-sonnet-4-20250514",
+  "model": "claude-sonnet-4-5",
   "max_tokens": 1024,
   "messages": [
     { "role": "user", "content": "Hello!" },
@@ -546,7 +546,7 @@ class ChatViewModel: ObservableObject {
                 val messagesJson = _messages.value.joinToString(",") { msg ->
                     """{"role":"${'$'}{msg.role}","content":"${'$'}{msg.content}"}"""
                 }
-                val body = """{"model":"claude-sonnet-4-20250514","max_tokens":1024,"messages":[${'$'}messagesJson]}"""
+                val body = """{"model":"claude-sonnet-4-5","max_tokens":1024,"messages":[${'$'}messagesJson]}"""
                     .toRequestBody("application/json".toMediaType())
 
                 val request = Request.Builder()
@@ -593,7 +593,7 @@ class ChatViewModel: ObservableObject {
                 request.setValue("application/json", forHTTPHeaderField: "content-type")
 
                 let body: [String: Any] = [
-                    "model": "claude-sonnet-4-20250514",
+                    "model": "claude-sonnet-4-5",
                     "max_tokens": 1024,
                     "messages": messages.map { ["role": $0.role, "content": $0.content] }
                 ]
@@ -617,7 +617,7 @@ class ChatViewModel: ObservableObject {
           <Section title="💡 Show me the response JSON shape">
             <CodeB title="Claude API response" accent={isAndroid ? BL : GR}>{`{
   "content": [{ "type": "text", "text": "Claude's reply here" }],
-  "model": "claude-sonnet-4-20250514",
+  "model": "claude-sonnet-4-5",
   "usage": { "input_tokens": 12, "output_tokens": 34 }
 }`}</CodeB>
           </Section>
@@ -639,7 +639,7 @@ class ChatViewModel: ObservableObject {
                 val messagesJson = _messages.value.joinToString(",") { msg ->
                     """{"role":"${'$'}{msg.role}","content":"${'$'}{msg.content}"}"""
                 }
-                val body = """{"model":"claude-sonnet-4-20250514","max_tokens":1024,"messages":[${'$'}messagesJson]}"""
+                val body = """{"model":"claude-sonnet-4-5","max_tokens":1024,"messages":[${'$'}messagesJson]}"""
                     .toRequestBody("application/json".toMediaType())
 
                 val request = Request.Builder()
@@ -691,7 +691,7 @@ class ChatViewModel: ObservableObject {
                 request.setValue("application/json", forHTTPHeaderField: "content-type")
 
                 let body: [String: Any] = [
-                    "model": "claude-sonnet-4-20250514",
+                    "model": "claude-sonnet-4-5",
                     "max_tokens": 1024,
                     "messages": messages.map { ["role": $0.role, "content": $0.content] }
                 ]
@@ -733,7 +733,7 @@ class ChatViewModel: ObservableObject {
             val messagesJson = _messages.value.joinToString(",") { msg ->
                 """{"role":"${'$'}{msg.role}","content":"${'$'}{msg.content}"}"""
             }
-            val body = """{"model":"claude-sonnet-4-20250514","max_tokens":1024,"stream":true,"messages":[${'$'}messagesJson]}"""
+            val body = """{"model":"claude-sonnet-4-5","max_tokens":1024,"stream":true,"messages":[${'$'}messagesJson]}"""
                 .toRequestBody("application/json".toMediaType())
 
             val request = Request.Builder()
@@ -774,7 +774,7 @@ class ChatViewModel: ObservableObject {
             request.setValue("application/json", forHTTPHeaderField: "content-type")
 
             let body: [String: Any] = [
-                "model": "claude-sonnet-4-20250514",
+                "model": "claude-sonnet-4-5",
                 "max_tokens": 1024,
                 "stream": true,
                 "messages": messages.map { ["role": $0.role, "content": $0.content] }
@@ -837,7 +837,7 @@ data: [DONE]`}</CodeB>
                 val messagesJson = _messages.value.joinToString(",") { msg ->
                     """{"role":"${'$'}{msg.role}","content":"${'$'}{msg.content}"}"""
                 }
-                val body = """{"model":"claude-sonnet-4-20250514","max_tokens":1024,"stream":true,"messages":[${'$'}messagesJson]}"""
+                val body = """{"model":"claude-sonnet-4-5","max_tokens":1024,"stream":true,"messages":[${'$'}messagesJson]}"""
                     .toRequestBody("application/json".toMediaType())
 
                 val request = Request.Builder()
@@ -902,7 +902,7 @@ class ChatViewModel: ObservableObject {
                 request.setValue("application/json", forHTTPHeaderField: "content-type")
 
                 let body: [String: Any] = [
-                    "model": "claude-sonnet-4-20250514",
+                    "model": "claude-sonnet-4-5",
                     "max_tokens": 1024,
                     "stream": true,
                     "messages": messages.map { ["role": $0.role, "content": $0.content] }
@@ -1309,7 +1309,7 @@ struct PhotoScreen: View {
           <p>Add the <IC>describeImage</IC> function to your ViewModel. Start by encoding the image to base64 (using the helper from Step 3), then build the request body. The key difference is the <IC>messages</IC> array: instead of <IC>{`{ role, content: "text" }`}</IC>, you pass <IC>{`{ role: "user", content: [ imageBlock, textBlock ] }`}</IC>. The image block has <IC>type: "image"</IC> and a <IC>source</IC> object with <IC>type: "base64"</IC>, <IC>media_type: "image/jpeg"</IC>, and <IC>data: b64String</IC>. The text block has <IC>type: "text"</IC> and <IC>text: "Describe this image in detail."</IC></p>
           <Section title="💡 Show me the full multimodal body shape">
             <CodeB title="Multimodal request body (JSON)" accent={isAndroid ? BL : GR}>{`{
-  "model": "claude-sonnet-4-20250514",
+  "model": "claude-sonnet-4-5",
   "max_tokens": 1024,
   "messages": [{
     "role": "user",
@@ -1357,7 +1357,7 @@ struct PhotoScreen: View {
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 val b64 = bitmapToBase64(bitmap)
-                val bodyJson = """{"model":"claude-sonnet-4-20250514","max_tokens":1024,"messages":[{"role":"user","content":[{"type":"image","source":{"type":"base64","media_type":"image/jpeg","data":"${'$'}b64"}},{"type":"text","text":"Describe this image in detail."}]}]}"""
+                val bodyJson = """{"model":"claude-sonnet-4-5","max_tokens":1024,"messages":[{"role":"user","content":[{"type":"image","source":{"type":"base64","media_type":"image/jpeg","data":"${'$'}b64"}},{"type":"text","text":"Describe this image in detail."}]}]}"""
                 val body = bodyJson.toRequestBody("application/json".toMediaType())
 
                 val request = Request.Builder()
@@ -1420,7 +1420,7 @@ class PhotoViewModel: ObservableObject {
             request.setValue("application/json", forHTTPHeaderField: "content-type")
 
             let body: [String: Any] = [
-                "model": "claude-sonnet-4-20250514",
+                "model": "claude-sonnet-4-5",
                 "max_tokens": 1024,
                 "messages": [["role": "user", "content": [
                     ["type": "image", "source": [
@@ -1472,7 +1472,7 @@ class PhotoViewModel: ObservableObject {
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 val b64 = bitmapToBase64(bitmap)
-                val bodyJson = """{"model":"claude-sonnet-4-20250514","max_tokens":1024,"messages":[{"role":"user","content":[{"type":"image","source":{"type":"base64","media_type":"image/jpeg","data":"${'$'}b64"}},{"type":"text","text":"Describe this image in detail."}]}]}"""
+                val bodyJson = """{"model":"claude-sonnet-4-5","max_tokens":1024,"messages":[{"role":"user","content":[{"type":"image","source":{"type":"base64","media_type":"image/jpeg","data":"${'$'}b64"}},{"type":"text","text":"Describe this image in detail."}]}]}"""
                 val body = bodyJson.toRequestBody("application/json".toMediaType())
 
                 val request = Request.Builder()
@@ -1540,7 +1540,7 @@ class PhotoViewModel: ObservableObject {
             request.setValue("application/json", forHTTPHeaderField: "content-type")
 
             let body: [String: Any] = [
-                "model": "claude-sonnet-4-20250514",
+                "model": "claude-sonnet-4-5",
                 "max_tokens": 1024,
                 "messages": [["role": "user", "content": [
                     ["type": "image", "source": [

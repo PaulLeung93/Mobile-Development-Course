@@ -80,6 +80,54 @@ const Shell = ({ tag, tagColor = "teal", timer, title, subtitle, children, notes
   </div>
 );
 
+const OSToggle = ({ android, ios }: { [k: string]: any }) => {
+  const [platform, setPlatform] = useState<'android' | 'ios'>('android');
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+      <div style={{ display: "flex", borderRadius: 8, overflow: "hidden", border: "1px solid #e5e7eb", width: "fit-content" }}>
+        <button onClick={() => setPlatform('android')} style={{ padding: "5px 16px", fontSize: 11, fontWeight: 700, letterSpacing: ".04em", background: platform === 'android' ? PURPLE : "#fff", color: platform === 'android' ? "#fff" : MUTED, border: "none", borderRight: "1px solid #e5e7eb", cursor: "pointer" }}>
+          Android · Kotlin
+        </button>
+        <button onClick={() => setPlatform('ios')} style={{ padding: "5px 16px", fontSize: 11, fontWeight: 700, letterSpacing: ".04em", background: platform === 'ios' ? TEAL : "#fff", color: platform === 'ios' ? "#fff" : MUTED, border: "none", cursor: "pointer" }}>
+          iOS · Swift
+        </button>
+      </div>
+      {platform === 'android' ? android : ios}
+    </div>
+  );
+};
+
+const Step = ({ n, title, children, accent = PURPLE }: { [k: string]: any }) => (
+  <div style={{ marginBottom: 10, paddingLeft: 24, borderLeft: `2px solid #e5e7eb`, position: "relative" }}>
+    <div style={{ position: "absolute", left: -14, top: 0, width: 26, height: 26, borderRadius: "50%", background: "#fff", border: `2px solid ${accent}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 800, color: accent }}>
+      {n}
+    </div>
+    <p style={{ fontSize: 12, fontWeight: 700, color: TEXT, margin: "2px 0 6px" }}>{title}</p>
+    <div>{children}</div>
+  </div>
+);
+
+const ViewToggle = ({ steps, full }: { [k: string]: any }) => {
+  const [view, setView] = useState<'steps' | 'full'>('steps');
+  return (
+    <div>
+      <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 6 }}>
+        <div style={{ display: "flex", borderRadius: 20, overflow: "hidden", border: "1px solid #e5e7eb", width: "fit-content" }}>
+          <button onClick={() => setView('steps')} style={{ padding: "3px 12px", fontSize: 10, fontWeight: 700, letterSpacing: ".04em", background: view === 'steps' ? PURPLE : "#fff", color: view === 'steps' ? "#fff" : MUTED, border: "none", borderRight: "1px solid #e5e7eb", cursor: "pointer" }}>
+            Step by step
+          </button>
+          <button onClick={() => setView('full')} style={{ padding: "3px 12px", fontSize: 10, fontWeight: 700, letterSpacing: ".04em", background: view === 'full' ? PURPLE : "#fff", color: view === 'full' ? "#fff" : MUTED, border: "none", cursor: "pointer" }}>
+            Full code
+          </button>
+        </div>
+      </div>
+      {view === 'steps' ? steps : full}
+    </div>
+  );
+};
+
+const preStyle = { margin: 0, background: "#1e1e2e", color: "#cdd6f4", fontSize: 10, padding: "8px 12px", borderRadius: 6, lineHeight: 1.6, fontFamily: "monospace", whiteSpace: "pre-wrap" as any };
+
 const slides = [
   // 1: Title
   () => (
@@ -119,14 +167,14 @@ const slides = [
 
   // 2: Agenda
   () => (
-    <Shell tag="Agenda" title="Today's session — 2 hours" notes="This is the week students have been waiting for since Week 1. Set the tone: today they are not learning a new UI pattern or a new data layer — they are adding a brain to their app. The concept section (slides 4–8) is genuinely new knowledge for most students. Do not rush it: students who understand how LLMs work will find the code obvious; students who skip to the code will cargo-cult it and struggle to debug.">
+    <Shell tag="Agenda" title="Today's session — 2 hours" notes="This is the week students have been waiting for since Week 1. Set the tone: today they are not learning a new UI pattern or a new data layer — they are adding a brain to their app. The concept section (slides 4–10) is genuinely new knowledge for most students. Do not rush it: students who understand how LLMs work will find the code obvious; students who skip to the code will cargo-cult it and struggle to debug.">
       {[
-        { time: "0:00–0:05",  label: "Hook",                   desc: "The magic moment — why streaming changes everything", section: null },
-        { time: "0:05–0:15",  label: "LLM APIs vs REST",       desc: "Three fundamental differences: tokens, statelessness, open connections", section: null },
-        { time: "0:15–0:22",  label: "Tokens deep dive",       desc: "What a token is, cost/context implications, tokenisation examples", section: null },
-        { time: "0:22–0:32",  label: "The Messages API",       desc: "Request anatomy: model, max_tokens, stream, system, messages, roles", section: null },
-        { time: "0:32–0:42",  label: "SSE and streaming",      desc: "Wire format, parsing rules, pseudocode, thread safety", section: null },
-        { time: "0:42–0:47",  label: "History + security",     desc: "You are the model's memory. API key storage.", section: null },
+        { time: "0:00–0:05",  label: "The Magic Moment",       desc: "Streaming vs Non-streaming UX", section: null },
+        { time: "0:05–0:12",  label: "LLM APIs vs REST",       desc: "Three fundamental differences: tokens, statelessness, open connections", section: null },
+        { time: "0:12–0:20",  label: "Tokens Deep Dive",       desc: "What a token is, cost/context implications, max limits", section: null },
+        { time: "0:20–0:32",  label: "The Messages API",       desc: "Request anatomy & Strict Role Alternation", section: null },
+        { time: "0:32–0:40",  label: "SSE and Streaming",      desc: "Wire format, parsing rules, pseudocode, thread safety", section: null },
+        { time: "0:40–0:47",  label: "History & Security",     desc: "You are the model's memory. API key storage.", section: null },
         { time: "0:47–1:05",  label: "Android implementation", desc: "OkHttp streaming, Flow, ViewModel, Compose chat UI", section: "android" },
         { time: "1:05–1:22",  label: "iOS implementation",     desc: "URLSession AsyncBytes, AsyncThrowingStream, SwiftUI chat UI", section: "ios" },
         { time: "1:22–1:27",  label: "Platform comparison",   desc: "Android vs iOS side-by-side — same architecture, different tools", section: null },
@@ -156,61 +204,74 @@ const slides = [
       </div>
     </Shell>
   ),
-
-  // 3: Hook
+  // 3: Hook - The Magic Moment
   () => (
-    <Shell tag="Hook" timer="5" title="The magic moment — and why it matters" subtitle="There is a specific feeling. You are going to create it today." notes="Open a phone and show ChatGPT or Claude.ai loading a response in real time. Then ask: would this feel as good if it showed a spinner for 8 seconds and then dumped all the text at once? No. Today they build the mechanism behind that feeling. Emphasise the time-to-first-token (TTFT) metric — it is a real production KPI, not just aesthetics.">
+    <Shell tag="Hook" timer="3" title="The magic moment" subtitle="There is a specific feeling. You are going to create it today." notes="Open a phone and show ChatGPT or Claude.ai loading a response in real time. Then ask: would this feel as good if it showed a spinner for 8 seconds and then dumped all the text at once? No. Today they build the mechanism behind that feeling.">
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
-        <div>
-          <p style={{ fontSize: 13, fontWeight: 600, color: TEXT, margin: "0 0 10px" }}>Two ways to wait for an LLM</p>
-          <div style={{ background: "#FCEBEB", borderRadius: 10, padding: "14px", marginBottom: 10 }}>
-            <p style={{ fontSize: 12, fontWeight: 600, color: "#A32D2D", margin: "0 0 8px" }}>Non-streaming</p>
-            {[
-              { e: "⌛", t: "0–8s",    d: "Spinner. Nothing visible. User wonders if the app crashed." },
-              { e: "💬", t: "8.3s",   d: "400 tokens appear in a single update. No sense of thought." },
-              { e: "😐", t: "Result", d: "It works, but feels mechanical. The experience says: 'a machine processed your request.'" },
-            ].map(s => (
-              <div key={s.t} style={{ display: "flex", gap: 8, margin: "6px 0" }}>
-                <span style={{ fontSize: 14, flexShrink: 0 }}>{s.e}</span>
-                <div><p style={{ fontSize: 10, fontWeight: 600, color: "#A32D2D", margin: 0 }}>{s.t}</p><p style={{ fontSize: 11, color: "#A32D2D", margin: 0, lineHeight: 1.4 }}>{s.d}</p></div>
-              </div>
-            ))}
-          </div>
-          <div style={{ background: TEAL_LIGHT, borderRadius: 10, padding: "14px" }}>
-            <p style={{ fontSize: 12, fontWeight: 600, color: TEAL_DARK, margin: "0 0 8px" }}>Streaming — what you build today</p>
-            {[
-              { e: "⚡", t: "~300ms",   d: "First token arrives. App is alive. User is reading." },
-              { e: "✍️", t: "300ms–8s", d: "Words appear one by one. Model visibly constructing an answer." },
-              { e: "✅", t: "8s done",  d: "Complete. User has been reading and evaluating since second one." },
-            ].map(s => (
-              <div key={s.t} style={{ display: "flex", gap: 8, margin: "6px 0" }}>
-                <span style={{ fontSize: 14, flexShrink: 0 }}>{s.e}</span>
-                <div><p style={{ fontSize: 10, fontWeight: 600, color: TEAL_DARK, margin: 0 }}>{s.t}</p><p style={{ fontSize: 11, color: TEAL_DARK, margin: 0, lineHeight: 1.4 }}>{s.d}</p></div>
-              </div>
-            ))}
-          </div>
+        <div style={{ background: "#FCEBEB", borderRadius: 10, padding: "20px" }}>
+          <p style={{ fontSize: 14, fontWeight: 600, color: "#A32D2D", margin: "0 0 12px" }}>Non-streaming</p>
+          {[
+            { e: "⌛", t: "0–8s",    d: "Spinner. Nothing visible. User wonders if the app crashed." },
+            { e: "💬", t: "8.3s",   d: "400 tokens appear in a single update. No sense of thought." },
+            { e: "😐", t: "Result", d: "It works, but feels mechanical. The experience says: 'a machine processed your request.'" },
+          ].map(s => (
+            <div key={s.t} style={{ display: "flex", gap: 12, margin: "10px 0" }}>
+              <span style={{ fontSize: 20, flexShrink: 0 }}>{s.e}</span>
+              <div><p style={{ fontSize: 12, fontWeight: 600, color: "#A32D2D", margin: 0 }}>{s.t}</p><p style={{ fontSize: 13, color: "#A32D2D", margin: 0, lineHeight: 1.4 }}>{s.d}</p></div>
+            </div>
+          ))}
         </div>
-        <div style={{ display: "flex", flexDirection: "column", gap: 9 }}>
-          <p style={{ fontSize: 12, fontWeight: 600, color: TEXT, margin: 0 }}>Why this matters on mobile</p>
+        <div style={{ background: TEAL_LIGHT, borderRadius: 10, padding: "20px" }}>
+          <p style={{ fontSize: 14, fontWeight: 600, color: TEAL_DARK, margin: "0 0 12px" }}>Streaming — what you build today</p>
+          {[
+            { e: "⚡", t: "~300ms",   d: "First token arrives. App is alive. User is reading." },
+            { e: "✍️", t: "300ms–8s", d: "Words appear one by one. Model visibly constructing an answer." },
+            { e: "✅", t: "8s done",  d: "Complete. User has been reading and evaluating since second one." },
+          ].map(s => (
+            <div key={s.t} style={{ display: "flex", gap: 12, margin: "10px 0" }}>
+              <span style={{ fontSize: 20, flexShrink: 0 }}>{s.e}</span>
+              <div><p style={{ fontSize: 12, fontWeight: 600, color: TEAL_DARK, margin: 0 }}>{s.t}</p><p style={{ fontSize: 13, color: TEAL_DARK, margin: 0, lineHeight: 1.4 }}>{s.d}</p></div>
+            </div>
+          ))}
+        </div>
+      </div>
+      <div style={{ marginTop: 20 }}>
+        <Discussion>{"Open ChatGPT or Claude on your phone. Notice the first word appears almost immediately. How would you feel if it showed a 8-second spinner instead? Has this expectation changed how you perceive slow AI apps?"}</Discussion>
+      </div>
+    </Shell>
+  ),
+
+  // 4: Why streaming matters on mobile
+  () => (
+    <Shell tag="Concept" timer="3" title="Why this matters on mobile" subtitle="Time-to-first-token is a production KPI, not just aesthetics." notes="Emphasise the time-to-first-token (TTFT) metric. Mobile networks drop, users abandon. Getting something on screen immediately changes the perceived performance completely.">
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
           {[
             { title: "TTFT is a production KPI", detail: "Time-to-first-token is measured the same way web teams measure LCP. Production AI teams at Notion, Figma, and Linear target sub-500ms TTFT as a hard SLA." },
             { title: "Mobile users abandon after 2.5s of silence", detail: "Without visible progress feedback within ~2.5s a meaningful fraction of mobile users assume the app has crashed and leave. Streaming provides feedback in under 300ms." },
-            { title: "Perceived intelligence", detail: "Text arriving word-by-word mirrors how humans compose thoughts — it implies the model is reasoning in real time. Which it is. Full-dump delivery feels algorithmic by comparison." },
-            { title: "Cancellation becomes possible", detail: "You cannot cancel a non-streaming response once sent. With streaming, a Stop button is a 10-line addition. Users often know within the first sentence if the response is going wrong." },
-            { title: "Progressive disclosure", detail: "Users can start reading the beginning of a long response while the rest is still generating — and redirect the conversation earlier if needed." },
           ].map(obs => (
-            <div key={obs.title} style={{ background: PURPLE_LIGHT, borderRadius: 8, padding: "9px 12px" }}>
-              <p style={{ fontSize: 11, fontWeight: 600, color: PURPLE_DARK, margin: "0 0 2px" }}>{obs.title}</p>
-              <p style={{ fontSize: 11, color: PURPLE_DARK, margin: 0, lineHeight: 1.5, opacity: 0.85 }}>{obs.detail}</p>
+            <div key={obs.title} style={{ background: PURPLE_LIGHT, borderRadius: 8, padding: "16px" }}>
+              <p style={{ fontSize: 13, fontWeight: 600, color: PURPLE_DARK, margin: "0 0 6px" }}>{obs.title}</p>
+              <p style={{ fontSize: 12, color: PURPLE_DARK, margin: 0, lineHeight: 1.5, opacity: 0.85 }}>{obs.detail}</p>
             </div>
           ))}
-          <Discussion>{"Open ChatGPT or Claude on your phone. Notice the first word appears almost immediately. How would you feel if it showed a 8-second spinner instead? Has this expectation changed how you perceive slow AI apps?"}</Discussion>
+        </div>
+        <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+          {[
+            { title: "Perceived intelligence", detail: "Text arriving word-by-word mirrors how humans compose thoughts — it implies the model is reasoning in real time. Which it is. Full-dump delivery feels algorithmic by comparison." },
+            { title: "Cancellation & Progressive Disclosure", detail: "You cannot cancel a non-streaming response once sent. With streaming, users can read the beginning of a long response while the rest generates — and cancel/redirect the conversation early if it's going wrong." },
+          ].map(obs => (
+            <div key={obs.title} style={{ background: BLUE_LIGHT, borderRadius: 8, padding: "16px" }}>
+              <p style={{ fontSize: 13, fontWeight: 600, color: BLUE, margin: "0 0 6px" }}>{obs.title}</p>
+              <p style={{ fontSize: 12, color: BLUE, margin: 0, lineHeight: 1.5, opacity: 0.85 }}>{obs.detail}</p>
+            </div>
+          ))}
         </div>
       </div>
     </Shell>
   ),
 
-  // 4: LLM APIs vs REST
+  // 5: LLM APIs vs REST
   () => (
     <Shell tag="Concept" timer="8" title="LLM APIs vs REST APIs — three fundamental differences" subtitle="You already know how to call an API. This is different in three specific ways." notes="Anchor in what students already know — Week 4 networking. They know JSON, async, error handling. Highlight only the three deltas. The statelessness point often surprises students who assumed the API maintains a session. The open-connection point is the most important for understanding streaming — draw a literal diagram of the TCP connection staying alive if it helps.">
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 12 }}>
@@ -264,94 +325,105 @@ const slides = [
     </Shell>
   ),
 
-  // 5: Tokens deep dive
+  // 6: What is a token?
   () => (
-    <Shell tag="Concept" timer="7" title="Tokens — what they are and why they matter" subtitle="Every LLM interaction is denominated in tokens. You need to understand them." notes="Tokenisation is unintuitive until students see concrete examples. Do the OpenAI tokeniser demo live if possible — paste a sentence and show the coloured token boundaries. The practical points are cost and context window limits. A student who understands tokens will naturally write more efficient prompts and understand why very long conversations eventually fail.">
+    <Shell tag="Concept" timer="3" title="Tokens — what they are" subtitle="Every LLM interaction is denominated in tokens." notes="Tokenisation is unintuitive until students see concrete examples. Do the OpenAI tokeniser demo live if possible — paste a sentence and show the coloured token boundaries.">
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
         <div>
-          <p style={{ fontSize: 12, fontWeight: 600, color: TEXT, margin: "0 0 8px" }}>What is a token?</p>
-          <div style={{ background: GRAY, borderRadius: 8, padding: "12px 14px", marginBottom: 10 }}>
-            <p style={{ fontSize: 11, color: MUTED, margin: "0 0 10px", lineHeight: 1.5 }}>A token is roughly 3–4 characters of text. Tokenisation splits text into sub-word fragments — not by words or characters but by a learned vocabulary. The same word may be 1 token or several depending on frequency.</p>
-            <div style={{ marginBottom: 8 }}>
-              <p style={{ fontSize: 10, fontWeight: 600, color: MUTED, margin: "0 0 5px", textTransform: "uppercase" }}>Example: "Hello, world!" = 4 tokens</p>
-              <div style={{ display: "flex", gap: 4, flexWrap: "wrap" }}>
+          <div style={{ background: GRAY, borderRadius: 8, padding: "16px", marginBottom: 10 }}>
+            <p style={{ fontSize: 13, color: MUTED, margin: "0 0 10px", lineHeight: 1.5 }}>A token is roughly 3–4 characters of text. Tokenisation splits text into sub-word fragments — not by words or characters but by a learned vocabulary. The same word may be 1 token or several depending on frequency.</p>
+            <div style={{ marginBottom: 12 }}>
+              <p style={{ fontSize: 12, fontWeight: 600, color: MUTED, margin: "0 0 8px", textTransform: "uppercase" }}>Example: "Hello, world!" = 4 tokens</p>
+              <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
                 {[
                   { text: "Hello", color: PURPLE_LIGHT, fg: PURPLE_DARK },
                   { text: ",", color: BLUE_LIGHT, fg: BLUE },
                   { text: " world", color: GREEN_LIGHT, fg: GREEN },
                   { text: "!", color: AMBER_LIGHT, fg: "#633806" },
                 ].map(t => (
-                  <span key={t.text} style={{ background: t.color, color: t.fg, fontSize: 13, fontWeight: 500, padding: "3px 8px", borderRadius: 5, fontFamily: "monospace", border: `1px solid ${t.fg}30` }}>{t.text}</span>
+                  <span key={t.text} style={{ background: t.color, color: t.fg, fontSize: 15, fontWeight: 500, padding: "4px 10px", borderRadius: 5, fontFamily: "monospace", border: `1px solid ${t.fg}30` }}>{t.text}</span>
                 ))}
               </div>
             </div>
             <div>
-              <p style={{ fontSize: 10, fontWeight: 600, color: MUTED, margin: "0 0 5px", textTransform: "uppercase" }}>Example: "extraordinary" = 3 tokens</p>
-              <div style={{ display: "flex", gap: 4, flexWrap: "wrap" }}>
+              <p style={{ fontSize: 12, fontWeight: 600, color: MUTED, margin: "0 0 8px", textTransform: "uppercase" }}>Example: "extraordinary" = 3 tokens</p>
+              <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
                 {[
                   { text: "extra", color: PURPLE_LIGHT, fg: PURPLE_DARK },
                   { text: "ordin", color: BLUE_LIGHT, fg: BLUE },
                   { text: "ary", color: GREEN_LIGHT, fg: GREEN },
                 ].map(t => (
-                  <span key={t.text} style={{ background: t.color, color: t.fg, fontSize: 13, fontWeight: 500, padding: "3px 8px", borderRadius: 5, fontFamily: "monospace", border: `1px solid ${t.fg}30` }}>{t.text}</span>
+                  <span key={t.text} style={{ background: t.color, color: t.fg, fontSize: 15, fontWeight: 500, padding: "4px 10px", borderRadius: 5, fontFamily: "monospace", border: `1px solid ${t.fg}30` }}>{t.text}</span>
                 ))}
               </div>
             </div>
           </div>
-          <p style={{ fontSize: 11, fontWeight: 600, color: TEXT, margin: "0 0 6px" }}>Token counts for common text</p>
-          {[
-            { label: '"What is the capital of France?"',  tokens: "~8 tokens" },
-            { label: "A typical chat message (20 words)", tokens: "~25–30 tokens" },
-            { label: "A 500-word essay",                  tokens: "~650 tokens" },
-            { label: "10 rounds of conversation",         tokens: "~300–600 tokens" },
-            { label: "A full ViewModel file",             tokens: "~400–800 tokens" },
-            { label: "Claude claude-opus-4-5 context window",     tokens: "200,000 tokens max" },
-          ].map(r => (
-            <div key={r.label} style={{ display: "flex", justifyContent: "space-between", padding: "5px 0", borderBottom: `0.5px solid ${GRAY}`, alignItems: "center" }}>
-              <span style={{ fontSize: 11, color: TEXT, fontFamily: "monospace", opacity: 0.9 }}>{r.label}</span>
-              <span style={{ fontSize: 11, fontWeight: 600, color: PURPLE, background: PURPLE_LIGHT, padding: "1px 8px", borderRadius: 10, flexShrink: 0, marginLeft: 8 }}>{r.tokens}</span>
-            </div>
-          ))}
         </div>
-        <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-          <p style={{ fontSize: 12, fontWeight: 600, color: TEXT, margin: 0 }}>Why tokens matter for your code</p>
-          {[
-            { title: "max_tokens caps the response", detail: "The max_tokens field is a hard ceiling. If the model hits it mid-sentence, it stops there — no error, just truncation. 1024 tokens ≈ ~750 words. Size this for your use case.", color: BLUE_LIGHT, fg: BLUE },
-            { title: "Cost is per token — input and output", detail: "Anthropic charges per million tokens — both prompt tokens (input) and completion tokens (output). A long conversation history means higher per-request cost because you resend all previous turns.", color: AMBER_LIGHT, fg: "#633806" },
-            { title: "Context window is a hard limit", detail: "The context window is the maximum tokens (input + output combined) in one request. Claude claude-opus-4-5: 200k. Very long conversations will eventually hit this. Handle the 400 'context overflow' error gracefully.", color: TEAL_LIGHT, fg: TEAL_DARK },
-            { title: "Tokens arrive mid-word in the stream", detail: "The SSE stream sends sub-word tokens. 'omelette' might arrive as 'omel' + 'ette' across two separate deltas. Always append to accumulated — never replace — when building the response string.", color: GREEN_LIGHT, fg: GREEN },
-          ].map(k => (
-            <div key={k.title} style={{ background: k.color, borderRadius: 8, padding: "10px 12px" }}>
-              <p style={{ fontSize: 11, fontWeight: 600, color: k.fg, margin: "0 0 3px" }}>{k.title}</p>
-              <p style={{ fontSize: 11, color: k.fg, margin: 0, lineHeight: 1.5, opacity: 0.9 }}>{k.detail}</p>
-            </div>
-          ))}
-          <div style={{ background: PURPLE_LIGHT, borderRadius: 8, padding: "10px 12px" }}>
-            <p style={{ fontSize: 11, fontWeight: 700, color: PURPLE_DARK, margin: "0 0 6px" }}>💡 Prompt engineering implications</p>
+        <div>
+          <p style={{ fontSize: 13, fontWeight: 600, color: TEXT, margin: "0 0 10px" }}>Token counts for common text</p>
+          <div style={{ background: "#fff", border: `1px solid ${GRAY}`, borderRadius: 8, padding: "0 14px" }}>
             {[
-              { tip: "System prompts are repeated every request", detail: "A 200-token system prompt adds 200 input tokens to every single API call. Keep them concise — every word has a real cost at scale." },
-              { tip: "Fewer, longer turns beats many short ones", detail: "10 messages of 50 tokens costs the same as 1 message of 500 tokens in output, but the 10-turn conversation accumulates 500 tokens of history overhead you resend each time." },
-              { tip: "Common words = fewer tokens", detail: "Simple language tokenises more efficiently than jargon. 'Use plain English' is both a UX guideline and a cost optimisation — technical terms fragment into more tokens." },
-            ].map(t => (
-              <div key={t.tip} style={{ marginBottom: 6 }}>
-                <p style={{ fontSize: 11, fontWeight: 600, color: PURPLE_DARK, margin: "0 0 1px" }}>{t.tip}</p>
-                <p style={{ fontSize: 10.5, color: PURPLE_DARK, margin: 0, lineHeight: 1.4, opacity: 0.85 }}>{t.detail}</p>
+              { label: '"What is the capital of France?"',  tokens: "~8 tokens" },
+              { label: "A typical chat message (20 words)", tokens: "~25–30 tokens" },
+              { label: "A 500-word essay",                  tokens: "~650 tokens" },
+              { label: "10 rounds of conversation",         tokens: "~300–600 tokens" },
+              { label: "A full ViewModel file",             tokens: "~400–800 tokens" },
+              { label: "claude-sonnet-4-5 context window",     tokens: "200,000 tokens max" },
+            ].map((r, i) => (
+              <div key={r.label} style={{ display: "flex", justifyContent: "space-between", padding: "12px 0", borderBottom: i === 5 ? "none" : `0.5px solid ${GRAY}`, alignItems: "center" }}>
+                <span style={{ fontSize: 12, color: TEXT, fontFamily: "monospace", opacity: 0.9 }}>{r.label}</span>
+                <span style={{ fontSize: 12, fontWeight: 600, color: PURPLE, background: PURPLE_LIGHT, padding: "2px 10px", borderRadius: 10, flexShrink: 0, marginLeft: 8 }}>{r.tokens}</span>
               </div>
             ))}
           </div>
-          <Discussion>{"Paste a sentence you might use in your capstone's system prompt into platform.openai.com/tokenizer. How many tokens is it? What does that tell you about the cost of each API call?"}</Discussion>
+        </div>
+      </div>
+      <div style={{ marginTop: 20 }}>
+        <Discussion>{"Paste a sentence you might use in your capstone's system prompt into platform.openai.com/tokenizer. How many tokens is it? What does that tell you about the cost of each API call?"}</Discussion>
+      </div>
+    </Shell>
+  ),
+
+  // 7: Why tokens matter
+  () => (
+    <Shell tag="Concept" timer="4" title="Why tokens matter for your code" subtitle="A student who understands tokens will naturally write more efficient prompts and prevent bugs." notes="The practical points are cost and context window limits. Make sure they understand that max_tokens truncates the response, it doesn't cause an error.">
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+          {[
+            { title: "max_tokens caps the response", detail: "The max_tokens field is a hard ceiling. If the model hits it mid-sentence, it stops there — no error, just truncation. 1024 tokens ≈ ~750 words. Size this for your use case.", color: BLUE_LIGHT, fg: BLUE },
+            { title: "Cost is per token — input and output", detail: "Anthropic charges per million tokens — both prompt tokens (input) and completion tokens (output). A long conversation history means higher per-request cost because you resend all previous turns.", color: AMBER_LIGHT, fg: "#633806" },
+            { title: "Context window is a hard limit", detail: "The context window is the maximum tokens (input + output combined) in one request. Claude: 200k. Very long conversations will eventually hit this. Handle the 400 'context overflow' error gracefully.", color: TEAL_LIGHT, fg: TEAL_DARK },
+            { title: "Tokens arrive mid-word in the stream", detail: "The SSE stream sends sub-word tokens. 'omelette' might arrive as 'omel' + 'ette' across two separate deltas. Always append to accumulated — never replace — when building the response string.", color: GREEN_LIGHT, fg: GREEN },
+          ].map(k => (
+            <div key={k.title} style={{ background: k.color, borderRadius: 8, padding: "14px" }}>
+              <p style={{ fontSize: 13, fontWeight: 600, color: k.fg, margin: "0 0 6px" }}>{k.title}</p>
+              <p style={{ fontSize: 12, color: k.fg, margin: 0, lineHeight: 1.5, opacity: 0.9 }}>{k.detail}</p>
+            </div>
+          ))}
+        </div>
+        <div style={{ background: PURPLE_LIGHT, borderRadius: 8, padding: "20px" }}>
+          <p style={{ fontSize: 14, fontWeight: 700, color: PURPLE_DARK, margin: "0 0 12px" }}>💡 Prompt engineering implications</p>
+          {[
+            { tip: "System prompts are repeated every request", detail: "A 200-token system prompt adds 200 input tokens to every single API call. Keep them concise — every word has a real cost at scale." },
+            { tip: "Fewer, longer turns beats many short ones", detail: "10 messages of 50 tokens costs the same as 1 message of 500 tokens in output, but the 10-turn conversation accumulates 500 tokens of history overhead you resend each time." },
+            { tip: "Common words = fewer tokens", detail: "Simple language tokenises more efficiently than jargon. 'Use plain English' is both a UX guideline and a cost optimisation — technical terms fragment into more tokens." },
+          ].map(t => (
+            <div key={t.tip} style={{ marginBottom: 14 }}>
+              <p style={{ fontSize: 13, fontWeight: 600, color: PURPLE_DARK, margin: "0 0 4px" }}>{t.tip}</p>
+              <p style={{ fontSize: 12, color: PURPLE_DARK, margin: 0, lineHeight: 1.4, opacity: 0.85 }}>{t.detail}</p>
+            </div>
+          ))}
         </div>
       </div>
     </Shell>
   ),
 
-  // 6: The Messages API
+  // 8: The Messages API
   () => (
-    <Shell tag="Concept" timer="10" title="The Claude Messages API — anatomy of a request" subtitle="One endpoint. Every interaction you will ever build goes through it." notes="Walk field by field — do not just show the slide. Students cargo-cult API calls without understanding each field. The system prompt distinction is most important: it is not in the messages array, it never alternates, and it persists for the whole conversation. The role alternation rule is the most common source of 400 errors in lab — warn students explicitly before the lab.">
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
+    <Shell tag="Concept" timer="7" title="The Claude Messages API — anatomy of a request" subtitle="One endpoint. Every interaction you will ever build goes through it." notes="Walk field by field — do not just show the slide. Students cargo-cult API calls without understanding each field.">
+      <div style={{ display: "grid", gridTemplateColumns: "1.2fr 1fr", gap: 16 }}>
         <div>
-          <p style={{ fontSize: 12, fontWeight: 600, color: TEXT, margin: "0 0 8px" }}>The full request</p>
-          <pre style={{ background: "#1e1e2e", color: "#cdd6f4", fontSize: 11, padding: "14px", borderRadius: 8, lineHeight: 1.8, overflowX: "auto", whiteSpace: "pre-wrap", fontFamily: "monospace", margin: 0 }}>{`POST https://api.anthropic.com/v1/messages
+          <pre style={{ background: "#1e1e2e", color: "#cdd6f4", fontSize: 12, padding: "16px", borderRadius: 8, lineHeight: 1.8, overflowX: "auto", whiteSpace: "pre-wrap", fontFamily: "monospace", margin: 0 }}>{`POST https://api.anthropic.com/v1/messages
 
 Headers:
   x-api-key:          YOUR_KEY
@@ -360,11 +432,42 @@ Headers:
 
 Body:
 {
-  "model":      "claude-opus-4-5",
+  "model":      "claude-sonnet-4-5",
   "max_tokens": 1024,
   "stream":     true,
   "system":     "You are a helpful cooking assistant...",
   "messages": [
+    {
+      "role":    "user",
+      "content": "What can I make with eggs and spinach?"
+    },
+    ...
+  ]
+}`}</pre>
+        </div>
+        <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+          {[
+            { field: "model", color: PURPLE_LIGHT, fg: PURPLE_DARK, detail: '"claude-sonnet-4-5" is the recommended model — balances intelligence, speed, and cost. Use Claude Haiku for faster/cheaper production use cases.' },
+            { field: "max_tokens", color: BLUE_LIGHT, fg: BLUE, detail: "Hard ceiling on response length. 1024 ≈ 750 words. If the model hits this mid-sentence it stops — no error, just truncation." },
+            { field: "stream", color: AMBER_LIGHT, fg: "#633806", detail: "Set to true to receive Server-Sent Events. The HTTP connection stays open and tokens stream as generated." },
+            { field: "system", color: GREEN_LIGHT, fg: GREEN, detail: "A persistent instruction that shapes the model's persona for the whole conversation. Not part of messages." },
+          ].map(f => (
+            <div key={f.field} style={{ background: f.color, borderRadius: 8, padding: "12px 14px" }}>
+              <p style={{ fontSize: 13, fontWeight: 700, color: f.fg, margin: "0 0 4px", fontFamily: "monospace" }}>{f.field}</p>
+              <p style={{ fontSize: 12, color: f.fg, margin: 0, lineHeight: 1.5, opacity: 0.9 }}>{f.detail}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </Shell>
+  ),
+
+  // 9: History and Strict Role Alternation
+  () => (
+    <Shell tag="Concept" timer="5" title="The Messages Array & Role Alternation" subtitle="The most common source of 400 errors in lab — warn students explicitly before the lab." notes="The system prompt distinction is most important: it is not in the messages array, it never alternates, and it persists for the whole conversation.">
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+        <div>
+          <pre style={{ background: "#1e1e2e", color: "#cdd6f4", fontSize: 12, padding: "16px", borderRadius: 8, lineHeight: 1.8, overflowX: "auto", whiteSpace: "pre-wrap", fontFamily: "monospace", margin: 0 }}>{`  "messages": [
     {
       "role":    "user",
       "content": "What can I make with eggs and spinach?"
@@ -377,38 +480,29 @@ Body:
       "role":    "user",
       "content": "How long does it take?"
     }
-  ]
-}`}</pre>
+  ]`}</pre>
         </div>
-        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-          <p style={{ fontSize: 12, fontWeight: 600, color: TEXT, margin: 0 }}>Field by field</p>
-          {[
-            { field: "model", color: PURPLE_LIGHT, fg: PURPLE_DARK, detail: '"claude-opus-4-5" is the current high-intelligence model. Use this for your labs. Haiku is faster/cheaper for production use cases that don\'t need maximum quality.' },
-            { field: "max_tokens", color: BLUE_LIGHT, fg: BLUE, detail: "Hard ceiling on response length. 1024 ≈ 750 words. If the model hits this mid-sentence it stops — no error, just truncation. Size it for your use case." },
-            { field: "stream", color: AMBER_LIGHT, fg: "#633806", detail: "Set to true to receive Server-Sent Events. The HTTP connection stays open and tokens stream as generated. Omit to receive a single buffered response." },
-            { field: "system", color: GREEN_LIGHT, fg: GREEN, detail: "A persistent instruction that shapes the model's persona for the whole conversation. Not part of messages. Never alternates. Think: the brief you give a contractor before the job starts." },
-            { field: "messages", color: TEAL_LIGHT, fg: TEAL_DARK, detail: "Full conversation history. Roles must strictly alternate: user → assistant → user → assistant. Last message must always be 'user'. Send the entire history every request." },
-          ].map(f => (
-            <div key={f.field} style={{ background: f.color, borderRadius: 8, padding: "9px 12px" }}>
-              <p style={{ fontSize: 11, fontWeight: 700, color: f.fg, margin: "0 0 2px", fontFamily: "monospace" }}>{f.field}</p>
-              <p style={{ fontSize: 11, color: f.fg, margin: 0, lineHeight: 1.5, opacity: 0.9 }}>{f.detail}</p>
-            </div>
-          ))}
-          <div style={{ background: "#FCEBEB", borderRadius: 8, padding: "9px 12px" }}>
-            <p style={{ fontSize: 11, fontWeight: 700, color: "#A32D2D", margin: "0 0 2px" }}>⚠️ Role alternation is strict</p>
-            <p style={{ fontSize: 11, color: "#A32D2D", margin: 0, lineHeight: 1.5 }}>Two consecutive "user" messages → HTTP 400. Always append the assistant response before accepting the next user input. This is the most common bug in lab code every week.</p>
+        <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+          <div style={{ background: TEAL_LIGHT, borderRadius: 8, padding: "14px" }}>
+            <p style={{ fontSize: 13, fontWeight: 700, color: TEAL_DARK, margin: "0 0 6px" }}>The "messages" field</p>
+            <p style={{ fontSize: 12, color: TEAL_DARK, margin: 0, lineHeight: 1.5 }}>Full conversation history. Send the entire history every request. It acts as the "memory" of the stateless API.</p>
+          </div>
+          <div style={{ background: "#FCEBEB", borderRadius: 8, padding: "16px" }}>
+            <p style={{ fontSize: 14, fontWeight: 700, color: "#A32D2D", margin: "0 0 8px" }}>⚠️ Role alternation is strict</p>
+            <p style={{ fontSize: 13, color: "#A32D2D", margin: "0 0 10px", lineHeight: 1.5 }}>Roles must strictly alternate: <strong>user → assistant → user → assistant</strong>. The last message must always be 'user'.</p>
+            <p style={{ fontSize: 13, color: "#A32D2D", margin: 0, lineHeight: 1.5 }}>Two consecutive "user" messages → HTTP 400. Always append the assistant response before accepting the next user input. This is the most common bug in lab code every week.</p>
           </div>
         </div>
       </div>
     </Shell>
   ),
 
-  // 7: SSE parsing
+  // 10: SSE parsing
   () => (
-    <Shell tag="Concept" timer="8" title="Server-Sent Events — reading the wire format" subtitle="What actually arrives over the HTTP connection before any parsing library" notes="Show the raw SSE bytes first, before any code. Students who see the raw format understand what they are parsing; students who see only the abstraction will be helpless when debugging. The two rules (strip 'data: ', stop at [DONE]) are genuinely all they need. Walk through the pseudocode line by line, narrating what accumulated contains after each step.">
+    <Shell tag="Concept" timer="8" title="Server-Sent Events — reading the wire format" subtitle="What actually arrives over the HTTP connection before any parsing library" notes="Show the raw SSE bytes first, before any code. Students who see the raw format understand what they are parsing; students who see only the abstraction will be helpless when debugging. The two rules (strip 'data: ', stop at message_stop) are genuinely all they need. Walk through the pseudocode line by line, narrating what accumulated contains after each step.">
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
         <div>
-          <p style={{ fontSize: 12, fontWeight: 600, color: TEXT, margin: "0 0 8px" }}>Raw bytes on the wire</p>
+          <p style={{ fontSize: 13, fontWeight: 600, color: TEXT, margin: "0 0 8px" }}>Raw bytes on the wire</p>
           <pre style={{ background: "#1e1e2e", color: "#cdd6f4", fontSize: 10.5, padding: "14px", borderRadius: 8, lineHeight: 1.9, margin: 0, fontFamily: "monospace", whiteSpace: "pre-wrap" }}>{`event: message_start
 data: {"type":"message_start","message":{"id":"msg_01..."}}
 
@@ -432,54 +526,54 @@ data: {"type":"content_block_delta","index":0,
        "delta":{"type":"text_delta","text":"ette"}}
 
 event: message_stop
-data: {"type":"message_stop"}
-
-data: [DONE]`}</pre>
-          <Callout color={GREEN_LIGHT} fg={GREEN} label="Note on token fragmentation">
-            Notice "omelette" arrived as two separate deltas: "omel" + "ette". Always append to your accumulator — never replace. The complete word assembles across multiple events.
-          </Callout>
+data: {"type":"message_stop"}`}</pre>
+          <div style={{ marginTop: 10 }}>
+            <Callout color={GREEN_LIGHT} fg={GREEN} label="Note on token fragmentation">
+              Notice "omelette" arrived as two separate deltas: "omel" + "ette". Always append to your accumulator — never replace. The complete word assembles across multiple events.
+            </Callout>
+          </div>
         </div>
         <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-          <p style={{ fontSize: 12, fontWeight: 600, color: TEXT, margin: 0 }}>How to parse it</p>
-          <div style={{ background: TEAL_LIGHT, borderRadius: 8, padding: "10px 12px" }}>
-            <p style={{ fontSize: 11, fontWeight: 700, color: TEAL_DARK, margin: "0 0 5px" }}>The two rules</p>
-            <p style={{ fontSize: 11, color: TEAL_DARK, margin: "0 0 4px", lineHeight: 1.5 }}><strong>1.</strong> Every content line starts with <code style={{ background: "rgba(0,0,0,0.1)", borderRadius: 3, padding: "1px 5px", fontFamily: "monospace" }}>data: </code> — strip those 6 characters to get the raw JSON. Lines starting with <code style={{ background: "rgba(0,0,0,0.1)", borderRadius: 3, padding: "1px 5px", fontFamily: "monospace" }}>event:</code> or blank lines: skip entirely.</p>
-            <p style={{ fontSize: 11, color: TEAL_DARK, margin: 0, lineHeight: 1.5 }}><strong>2.</strong> Parse the JSON. If <code style={{ fontFamily: "monospace", fontSize: 10 }}>type == "content_block_delta"</code>, extract <code style={{ fontFamily: "monospace", fontSize: 10 }}>delta.text</code> and append to your accumulator. When payload is <code style={{ fontFamily: "monospace", fontSize: 10 }}>[DONE]</code>, stop.</p>
+          <p style={{ fontSize: 13, fontWeight: 600, color: TEXT, margin: 0 }}>How to parse it</p>
+          <div style={{ background: TEAL_LIGHT, borderRadius: 8, padding: "12px 14px" }}>
+            <p style={{ fontSize: 12, fontWeight: 700, color: TEAL_DARK, margin: "0 0 5px" }}>The two rules</p>
+            <p style={{ fontSize: 12, color: TEAL_DARK, margin: "0 0 4px", lineHeight: 1.5 }}><strong>1.</strong> Every content line starts with <code style={{ background: "rgba(0,0,0,0.1)", borderRadius: 3, padding: "1px 5px", fontFamily: "monospace" }}>data: </code> — strip those 6 characters to get the raw JSON. Lines starting with <code style={{ background: "rgba(0,0,0,0.1)", borderRadius: 3, padding: "1px 5px", fontFamily: "monospace" }}>event:</code> or blank lines: skip entirely.</p>
+            <p style={{ fontSize: 12, color: TEAL_DARK, margin: 0, lineHeight: 1.5 }}><strong>2.</strong> Parse the JSON. If <code style={{ fontFamily: "monospace", fontSize: 11 }}>type == "content_block_delta"</code>, extract <code style={{ fontFamily: "monospace", fontSize: 11 }}>delta.text</code> and append to your accumulator. When <code style={{ fontFamily: "monospace", fontSize: 11 }}>type == "message_stop"</code>, stop. Anthropic uses typed events — not <code style={{ fontFamily: "monospace", fontSize: 11 }}>[DONE]</code>.</p>
           </div>
-          <div style={{ background: BLUE_LIGHT, borderRadius: 8, padding: "10px 12px" }}>
-            <p style={{ fontSize: 11, fontWeight: 700, color: BLUE, margin: "0 0 6px" }}>Pseudocode</p>
-            <pre style={{ fontSize: 10, color: BLUE, margin: 0, fontFamily: "monospace", lineHeight: 1.85, background: "rgba(0,0,0,0.06)", padding: "8px 10px", borderRadius: 4, whiteSpace: "pre-wrap" }}>{`accumulated = ""
+          <div style={{ background: BLUE_LIGHT, borderRadius: 8, padding: "12px 14px" }}>
+            <p style={{ fontSize: 12, fontWeight: 700, color: BLUE, margin: "0 0 6px" }}>Pseudocode</p>
+            <pre style={{ fontSize: 11, color: BLUE, margin: 0, fontFamily: "monospace", lineHeight: 1.85, background: "rgba(0,0,0,0.06)", padding: "8px 10px", borderRadius: 4, whiteSpace: "pre-wrap" }}>{`accumulated = ""
 
 for each line in stream:
   if line starts with "data: ":
     payload = line.drop("data: ")
-    if payload == "[DONE]": break
     json = JSON.parse(payload)
+    if json.type == "message_stop": break
     if json.type == "content_block_delta":
       accumulated += json.delta.text
       updateUI(accumulated)  // ← main thread!`}</pre>
           </div>
-          <div style={{ background: AMBER_LIGHT, borderRadius: 8, padding: "10px 12px" }}>
-            <p style={{ fontSize: 11, fontWeight: 700, color: "#633806", margin: "0 0 3px" }}>⚠️ Thread safety — always</p>
-            <p style={{ fontSize: 11, color: "#633806", margin: 0, lineHeight: 1.5 }}>The stream arrives on a background thread. Every UI update must be dispatched to the main thread. On Android: <code style={{ fontFamily: "monospace", fontSize: 10 }}>Dispatchers.Main</code> via StateFlow. On iOS: <code style={{ fontFamily: "monospace", fontSize: 10 }}>@MainActor</code> on the ViewModel. Forget this → crashes or silent UI freezes.</p>
+          <div style={{ background: AMBER_LIGHT, borderRadius: 8, padding: "12px 14px" }}>
+            <p style={{ fontSize: 12, fontWeight: 700, color: "#633806", margin: "0 0 3px" }}>⚠️ Thread safety — always</p>
+            <p style={{ fontSize: 12, color: "#633806", margin: 0, lineHeight: 1.5 }}>The stream arrives on a background thread. Every UI update must be dispatched to the main thread. On Android: <code style={{ fontFamily: "monospace", fontSize: 11 }}>Dispatchers.Main</code> via StateFlow. On iOS: <code style={{ fontFamily: "monospace", fontSize: 11 }}>@MainActor</code> on the ViewModel. Forget this → crashes or silent UI freezes.</p>
           </div>
-          <div style={{ background: PURPLE_LIGHT, borderRadius: 8, padding: "10px 12px" }}>
-            <p style={{ fontSize: 11, fontWeight: 700, color: PURPLE_DARK, margin: "0 0 3px" }}>What about the other event types?</p>
-            <p style={{ fontSize: 11, color: PURPLE_DARK, margin: 0, lineHeight: 1.5 }}><code style={{ fontFamily: "monospace", fontSize: 10 }}>message_start</code> gives you the message ID and metadata. <code style={{ fontFamily: "monospace", fontSize: 10 }}>message_delta</code> gives you the final token count and stop reason. Both are useful for advanced use cases but not required for basic chat. Ignore them safely.</p>
+          <div style={{ background: PURPLE_LIGHT, borderRadius: 8, padding: "12px 14px" }}>
+            <p style={{ fontSize: 12, fontWeight: 700, color: PURPLE_DARK, margin: "0 0 3px" }}>What about the other event types?</p>
+            <p style={{ fontSize: 12, color: PURPLE_DARK, margin: 0, lineHeight: 1.5 }}><code style={{ fontFamily: "monospace", fontSize: 11 }}>message_start</code> gives you the message ID and metadata. <code style={{ fontFamily: "monospace", fontSize: 11 }}>message_delta</code> gives you the final token count and stop reason. Both are useful for advanced use cases but not required for basic chat. Ignore them safely.</p>
           </div>
         </div>
       </div>
     </Shell>
   ),
 
-  // 8: History + security
+  // 11: History + security
   () => (
-    <Shell tag="Concept" timer="5" title="Conversation history and API key security" subtitle="Two rules — get them right from the start" notes="History management reinforces slide 6 with concrete code. The API key section must be non-negotiable — tell the story of GitHub bots scanning for leaked keys in real time. Students who commit their key to a public repo will have it used within minutes. This has happened to CodePath students in previous cohorts.">
+    <Shell tag="Concept" timer="5" title="Conversation history and API key security" subtitle="Two rules — get them right from the start" notes="History management reinforces slides 5 and 9 with concrete code. The API key section must be non-negotiable — tell the story of GitHub bots scanning for leaked keys in real time. Students who commit their key to a public repo will have it used within minutes. This has happened to CodePath students in previous cohorts.">
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
         <div>
-          <p style={{ fontSize: 12, fontWeight: 600, color: TEXT, margin: "0 0 8px" }}>Managing conversation history</p>
-          <p style={{ fontSize: 11, color: MUTED, margin: "0 0 8px", lineHeight: 1.5 }}>The model is stateless. You maintain history in the ViewModel and send it with every request. Three rules:</p>
-          <pre style={{ background: "#1e1e2e", color: "#cdd6f4", fontSize: 11, padding: "12px 14px", borderRadius: 8, lineHeight: 1.8, margin: "0 0 10px", fontFamily: "monospace", whiteSpace: "pre-wrap" }}>{`// 1. Append user message BEFORE calling API
+          <p style={{ fontSize: 13, fontWeight: 600, color: TEXT, margin: "0 0 8px" }}>Managing conversation history</p>
+          <p style={{ fontSize: 12, color: MUTED, margin: "0 0 8px", lineHeight: 1.5 }}>The model is stateless. You maintain history in the ViewModel and send it with every request. Three rules:</p>
+          <pre style={{ background: "#1e1e2e", color: "#cdd6f4", fontSize: 12, padding: "12px 14px", borderRadius: 8, lineHeight: 1.8, margin: "0 0 10px", fontFamily: "monospace", whiteSpace: "pre-wrap" }}>{`// 1. Append user message BEFORE calling API
 history.add(Message("user", userText))
 
 // 2. Call API with full history
@@ -492,35 +586,35 @@ history.add(Message("assistant", accumulated))`}</pre>
             { warn: "Don't append assistant message until stream is done", why: "Appending a partial response creates malformed conversation state." },
             { warn: "Lock the input while streaming is in progress", why: "Two concurrent streams into the same history cause race conditions." },
           ].map(w => (
-            <div key={w.warn} style={{ background: "#FCEBEB", borderRadius: 6, padding: "7px 10px", marginBottom: 5 }}>
-              <p style={{ fontSize: 11, fontWeight: 600, color: "#A32D2D", margin: "0 0 1px" }}>❌ {w.warn}</p>
-              <p style={{ fontSize: 10, color: "#A32D2D", margin: 0, lineHeight: 1.4 }}>Why: {w.why}</p>
+            <div key={w.warn} style={{ background: "#FCEBEB", borderRadius: 8, padding: "10px 12px", marginBottom: 8 }}>
+              <p style={{ fontSize: 12, fontWeight: 600, color: "#A32D2D", margin: "0 0 2px" }}>❌ {w.warn}</p>
+              <p style={{ fontSize: 11, color: "#A32D2D", margin: 0, lineHeight: 1.4 }}>Why: {w.why}</p>
             </div>
           ))}
         </div>
         <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-          <p style={{ fontSize: 12, fontWeight: 600, color: TEXT, margin: 0 }}>Secure API key storage</p>
-          <div style={{ background: "#FCEBEB", borderRadius: 8, padding: "10px 12px" }}>
-            <p style={{ fontSize: 11, fontWeight: 700, color: "#A32D2D", margin: "0 0 4px" }}>❌ Never hardcode your key</p>
-            <pre style={{ fontSize: 10.5, color: "#ff6b6b", margin: 0, fontFamily: "monospace", background: "#1e1e2e", padding: "8px 10px", borderRadius: 4 }}>{`val apiKey = "sk-ant-api03-REAL_KEY_HERE"
+          <p style={{ fontSize: 13, fontWeight: 600, color: TEXT, margin: 0 }}>Secure API key storage</p>
+          <div style={{ background: "#FCEBEB", borderRadius: 8, padding: "12px 14px" }}>
+            <p style={{ fontSize: 12, fontWeight: 700, color: "#A32D2D", margin: "0 0 4px" }}>❌ Never hardcode your key</p>
+            <pre style={{ fontSize: 11.5, color: "#ff6b6b", margin: 0, fontFamily: "monospace", background: "#1e1e2e", padding: "10px 12px", borderRadius: 4 }}>{`val apiKey = "sk-ant-api03-REAL_KEY_HERE"
 // GitHub bots scan public repos in real time.
 // Your key will be used within minutes.`}</pre>
           </div>
-          <div style={{ background: BLUE_LIGHT, borderRadius: 8, padding: "10px 12px" }}>
-            <p style={{ fontSize: 11, fontWeight: 700, color: BLUE, margin: "0 0 4px" }}>✅ Android: local.properties</p>
-            <pre style={{ fontSize: 10, color: BLUE, margin: 0, fontFamily: "monospace", lineHeight: 1.7, background: "rgba(0,0,0,0.06)", padding: "8px 10px", borderRadius: 4, whiteSpace: "pre-wrap" }}>{`# local.properties  ← in .gitignore
+          <div style={{ background: BLUE_LIGHT, borderRadius: 8, padding: "12px 14px" }}>
+            <p style={{ fontSize: 12, fontWeight: 700, color: BLUE, margin: "0 0 4px" }}>✅ Android: local.properties</p>
+            <pre style={{ fontSize: 11, color: BLUE, margin: 0, fontFamily: "monospace", lineHeight: 1.7, background: "rgba(0,0,0,0.06)", padding: "10px 12px", borderRadius: 4, whiteSpace: "pre-wrap" }}>{`# local.properties  ← in .gitignore
 CLAUDE_API_KEY=sk-ant-api03-...
 
 # build.gradle.kts
 buildConfigField("String", "CLAUDE_API_KEY",
-    "\"\${properties["CLAUDE_API_KEY"]}\"")
+    "\"${properties["CLAUDE_API_KEY"]}\"")
 
 # Usage
 BuildConfig.CLAUDE_API_KEY`}</pre>
           </div>
-          <div style={{ background: GREEN_LIGHT, borderRadius: 8, padding: "10px 12px" }}>
-            <p style={{ fontSize: 11, fontWeight: 700, color: GREEN, margin: "0 0 4px" }}>✅ iOS: Secrets.plist</p>
-            <pre style={{ fontSize: 10, color: GREEN, margin: 0, fontFamily: "monospace", lineHeight: 1.7, background: "rgba(0,0,0,0.06)", padding: "8px 10px", borderRadius: 4, whiteSpace: "pre-wrap" }}>{`<!-- Secrets.plist  ← in .gitignore -->
+          <div style={{ background: GREEN_LIGHT, borderRadius: 8, padding: "12px 14px" }}>
+            <p style={{ fontSize: 12, fontWeight: 700, color: GREEN, margin: "0 0 4px" }}>✅ iOS: Secrets.plist</p>
+            <pre style={{ fontSize: 11, color: GREEN, margin: 0, fontFamily: "monospace", lineHeight: 1.7, background: "rgba(0,0,0,0.06)", padding: "10px 12px", borderRadius: 4, whiteSpace: "pre-wrap" }}>{`<!-- Secrets.plist  ← in .gitignore -->
 <key>CLAUDE_API_KEY</key>
 <string>sk-ant-api03-...</string>
 
@@ -529,18 +623,215 @@ let dict = NSDictionary(contentsOfFile:
     Bundle.main.path(forResource:"Secrets", ofType:"plist")!)!
 let apiKey = dict["CLAUDE_API_KEY"] as! String`}</pre>
           </div>
-          <Info>{"Each team member generates their own key at console.anthropic.com and stores it in their local file. The key is never in version control — on any branch, ever."}</Info>
+          <div style={{ marginTop: 5 }}>
+            <Info>{"Each team member generates their own key at console.anthropic.com and stores it in their local file. The key is never in version control — on any branch, ever."}</Info>
+          </div>
         </div>
       </div>
     </Shell>
   ),
-
-  // 9: Android implementation
+  // 12: Concept – Bridging HTTP to ViewModel
   () => (
-    <Shell tag="Android" tagColor="blue" timer="18" title="Android: OkHttp + coroutines for streaming" subtitle="Four files — data model, repository, ViewModel, Compose UI" notes="Walk each file in order. The key insight on the repository: OkHttp's synchronous execute() + source.readUtf8Line() inside flowOn(IO) is simpler and more predictable than EventSource callbacks. The Flow<String> is the bridge between the blocking stream read and the coroutine world. Emphasise the guard at the top of sendMessage() — without it, rapid sends cause concurrent stream chaos.">
-      <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-        <div style={{ display: "flex", gap: 10 }}>
-          <CodePane title="Message.kt — data model" accent={BLUE}>{`data class Message(val role: String, val content: String)
+    <Shell tag="Concept" timer="5" title="Connecting the streams to your UI" subtitle="How we bridge raw HTTP bytes to the ViewModel" notes="The conceptual difference is critical. Compare the one-shot wait to the streaming sequence.">
+      <OSToggle
+        android={
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
+            <div>
+              <p style={{ fontSize: 12, fontWeight: 600, color: TEXT, margin: "0 0 8px" }}>The standard way (One-shot)</p>
+              <div style={{ background: "#FCEBEB", borderRadius: 8, padding: "10px 12px" }}>
+                <p style={{ fontSize: 11, color: "#A32D2D", margin: 0, lineHeight: 1.5 }}>Normally with Retrofit or OkHttp, you make a request and get a single JSON string back. The entire string is buffered in memory before you can read it.</p>
+              </div>
+            </div>
+            <div>
+              <p style={{ fontSize: 12, fontWeight: 600, color: TEXT, margin: "0 0 8px" }}>The streaming way (Flow)</p>
+              <div style={{ background: BLUE_LIGHT, borderRadius: 8, padding: "10px 12px" }}>
+                <p style={{ fontSize: 11, color: BLUE, margin: 0, lineHeight: 1.5 }}>We use OkHttp's synchronous <code style={{fontFamily:"monospace"}}>execute()</code> inside a coroutine. As bytes arrive, we read them line-by-line and <code style={{fontFamily:"monospace"}}>emit()</code> them into a Kotlin <code style={{fontFamily:"monospace"}}>Flow&lt;String&gt;</code>. The ViewModel collects this flow and updates the UI instantly.</p>
+              </div>
+            </div>
+          </div>
+        }
+        ios={
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
+            <div>
+              <p style={{ fontSize: 12, fontWeight: 600, color: TEXT, margin: "0 0 8px" }}>The standard way (One-shot)</p>
+              <div style={{ background: "#FCEBEB", borderRadius: 8, padding: "10px 12px" }}>
+                <p style={{ fontSize: 11, color: "#A32D2D", margin: 0, lineHeight: 1.5 }}>Normally with URLSession, you use <code style={{fontFamily:"monospace"}}>data(for: request)</code> to wait until the entire response is downloaded into a single Data object.</p>
+              </div>
+            </div>
+            <div>
+              <p style={{ fontSize: 12, fontWeight: 600, color: TEXT, margin: "0 0 8px" }}>The streaming way (AsyncSequence)</p>
+              <div style={{ background: GREEN_LIGHT, borderRadius: 8, padding: "10px 12px" }}>
+                <p style={{ fontSize: 11, color: GREEN, margin: 0, lineHeight: 1.5 }}>We use <code style={{fontFamily:"monospace"}}>URLSession.shared.bytes(for:)</code>. This returns an <code style={{fontFamily:"monospace"}}>AsyncBytes</code> sequence. We can loop over it using <code style={{fontFamily:"monospace"}}>for try await line in bytes.lines</code>. Each line is yielded into an <code style={{fontFamily:"monospace"}}>AsyncThrowingStream</code> for the ViewModel to consume.</p>
+              </div>
+            </div>
+          </div>
+        }
+      />
+    </Shell>
+  ),
+
+  // 13: Code-along – Implementation
+  () => (
+    <Shell tag="Code-along" timer="18" title="Implementation — building the streaming chat" subtitle="Four files — data model, repository, ViewModel, UI" notes="Walk each file in order. Remind them about thread safety and the UI lifecycle.">
+      <ViewToggle
+        steps={
+          <OSToggle
+            android={
+              <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                <Step n={1} title="Message.kt — data model" accent={BLUE}>
+                  <pre style={preStyle}>{`data class Message(val role: String, val content: String)
+
+sealed class ChatUiState {
+    object Idle    : ChatUiState()
+    object Sending : ChatUiState()
+    data class Streaming(val partial: String) : ChatUiState()
+    data class Done(val fullText: String)     : ChatUiState()
+    data class Error(val message: String, val retryable: Boolean = true) : ChatUiState()
+}`}</pre>
+                </Step>
+                <Step n={2} title="ClaudeRepository.kt — OkHttp Flow" accent={BLUE}>
+                  <pre style={preStyle}>{`fun streamMessage(history: List<Message>, systemPrompt: String): Flow<String> = flow {
+    val request = Request.Builder().url("https://api.anthropic.com/v1/messages")
+        // ... headers and body ...
+        .build()
+
+    client.newCall(request).execute().use { response ->
+        val source = response.body!!.source()
+        while (!source.exhausted()) {
+            val line = source.readUtf8Line() ?: break
+            if (!line.startsWith("data: ")) continue
+            val payload = line.removePrefix("data: ")
+            if (payload.contains("\"message_stop\"")) break
+            extractToken(payload)?.let { emit(it) }
+        }
+    }
+}.flowOn(Dispatchers.IO)`}</pre>
+                </Step>
+                <Step n={3} title="ChatViewModel.kt — Flow Collector" accent={BLUE}>
+                  <pre style={preStyle}>{`fun sendMessage(userText: String) {
+    if (_uiState.value !is ChatUiState.Idle) return 
+    _history.add(Message("user", userText))
+    viewModelScope.launch {
+        var accumulated = ""
+        _uiState.value = ChatUiState.Sending
+        repo.streamMessage(_history).catch { e ->
+            // error handling
+        }.collect { token ->
+            accumulated += token
+            _uiState.value = ChatUiState.Streaming(accumulated)
+        }
+        if (_uiState.value is ChatUiState.Streaming) {
+            _history.add(Message("assistant", accumulated))
+            _uiState.value = ChatUiState.Idle
+        }
+    }
+}`}</pre>
+                </Step>
+                <Step n={4} title="ChatScreen.kt — Compose UI" accent={BLUE}>
+                  <pre style={preStyle}>{`@Composable
+fun ChatScreen(vm: ChatViewModel = viewModel()) {
+    val uiState by vm.uiState.collectAsStateWithLifecycle()
+    // ... LazyColumn with MessageBubbles
+    item {
+        when (uiState) {
+            is ChatUiState.Sending   -> TypingIndicator()
+            is ChatUiState.Streaming -> MessageBubble(Message("assistant", (uiState as ChatUiState.Streaming).partial), isStreaming = true)
+            is ChatUiState.Error     -> ErrorBanner((uiState as ChatUiState.Error).message)
+            else -> {}
+        }
+    }
+}`}</pre>
+                </Step>
+              </div>
+            }
+            ios={
+              <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                <Step n={1} title="Message.swift — data model" accent={GREEN}>
+                  <pre style={preStyle}>{`struct Message: Identifiable {
+    let id = UUID()
+    let role: String     // "user" or "assistant"
+    var content: String
+}
+
+enum ChatState: Equatable {
+    case idle, sending, streaming(partial: String), done, error(message: String)
+}`}</pre>
+                </Step>
+                <Step n={2} title="ClaudeRepository.swift — AsyncSequence" accent={GREEN}>
+                  <pre style={preStyle}>{`func streamMessage(history: [Message], systemPrompt: String) -> AsyncThrowingStream<String, Error> {
+    AsyncThrowingStream { continuation in
+        Task {
+            do {
+                // ... URLRequest setup ...
+                let (bytes, _) = try await URLSession.shared.bytes(for: req)
+
+                for try await line in bytes.lines {
+                    guard line.hasPrefix("data: ") else { continue }
+                    let payload = String(line.dropFirst(6))
+                    if payload.contains("\"message_stop\"") { break }
+                    if let token = extractToken(from: payload) {
+                        continuation.yield(token)
+                    }
+                }
+                continuation.finish()
+            } catch { continuation.finish(throwing: error) }
+        }
+    }
+}`}</pre>
+                </Step>
+                <Step n={3} title="ChatViewModel.swift — MainActor" accent={GREEN}>
+                  <pre style={preStyle}>{`@MainActor 
+class ChatViewModel: ObservableObject {
+    func sendMessage(_ text: String) {
+        guard chatState.isIdle else { return }
+        history.append(Message(role: "user", content: text))
+        Task {
+            var accumulated = ""
+            chatState = .sending
+            do {
+                for try await token in repo.streamMessage(history: history) {
+                    accumulated += token
+                    chatState = .streaming(partial: accumulated)
+                }
+                history.append(Message(role: "assistant", content: accumulated))
+                chatState = .idle
+            } catch {
+                history.removeLast()
+                chatState = .error(message: error.localizedDescription)
+            }
+        }
+    }
+}`}</pre>
+                </Step>
+                <Step n={4} title="ChatView.swift — SwiftUI" accent={GREEN}>
+                  <pre style={preStyle}>{`struct ChatView: View {
+    @StateObject private var vm = ChatViewModel()
+    
+    var body: some View {
+        // ... ScrollView with LazyVStack
+        switch vm.chatState {
+        case .sending:
+            TypingIndicator()
+        case .streaming(let partial):
+            MessageBubble(message: Message(role:"assistant", content: partial), isStreaming: true)
+                .id("streaming")
+                .onChange(of: partial) { _ in proxy.scrollTo("streaming", anchor: .bottom) }
+        case .error(let msg):
+            ErrorBanner(message: msg) { vm.sendMessage(input) }
+        default: EmptyView()
+        }
+    }
+}`}</pre>
+                </Step>
+              </div>
+            }
+          />
+        }
+        full={
+          <OSToggle
+            android={
+              <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                <CodePane title="Message.kt — data model" accent={BLUE}>{`data class Message(val role: String, val content: String)
 
 sealed class ChatUiState {
     object Idle    : ChatUiState()
@@ -552,7 +843,7 @@ sealed class ChatUiState {
         val retryable: Boolean = true
     ) : ChatUiState()
 }`}</CodePane>
-          <CodePane title="ClaudeRepository.kt" accent={BLUE}>{`class ClaudeRepository {
+                <CodePane title="ClaudeRepository.kt" accent={BLUE}>{`class ClaudeRepository {
     private val client = OkHttpClient.Builder()
         .readTimeout(60, TimeUnit.SECONDS).build()
 
@@ -577,7 +868,7 @@ sealed class ChatUiState {
                 val line = source.readUtf8Line() ?: break
                 if (!line.startsWith("data: ")) continue
                 val payload = line.removePrefix("data: ")
-                if (payload == "[DONE]") break
+                if (payload.contains("\"message_stop\"")) break
                 extractToken(payload)?.let { emit(it) }
             }
         }
@@ -597,7 +888,7 @@ sealed class ChatUiState {
             }
         }
         return JSONObject().apply {
-            put("model", "claude-opus-4-5")
+            put("model", "claude-sonnet-4-5")
             put("max_tokens", 1024)
             put("stream", true)
             put("system", systemPrompt)
@@ -612,9 +903,7 @@ sealed class ChatUiState {
         else null
     } catch (e: Exception) { null }
 }`}</CodePane>
-        </div>
-        <div style={{ display: "flex", gap: 10 }}>
-          <CodePane title="ChatViewModel.kt" accent={BLUE}>{`class ChatViewModel(
+                <CodePane title="ChatViewModel.kt" accent={BLUE}>{`class ChatViewModel(
     private val repo: ClaudeRepository = ClaudeRepository()
 ) : ViewModel() {
     private val _history = mutableStateListOf<Message>()
@@ -645,7 +934,7 @@ sealed class ChatUiState {
         }
     }
 }`}</CodePane>
-          <CodePane title="ChatScreen.kt — Compose" accent={BLUE}>{`@Composable
+                <CodePane title="ChatScreen.kt — Compose" accent={BLUE}>{`@Composable
 fun ChatScreen(vm: ChatViewModel = viewModel()) {
     val uiState by vm.uiState.collectAsStateWithLifecycle()
     var input by remember { mutableStateOf("") }
@@ -684,17 +973,11 @@ fun ChatScreen(vm: ChatViewModel = viewModel()) {
         }
     }
 }`}</CodePane>
-        </div>
-      </div>
-    </Shell>
-  ),
-
-  // 10: iOS implementation
-  () => (
-    <Shell tag="iOS" tagColor="green" timer="17" title="iOS: URLSession AsyncBytes + AsyncSequence" subtitle="Native streaming — no third-party library needed" notes="iOS has a real advantage: URLSession.bytes returns AsyncBytes which plugs directly into Swift's for-await-in loop. Point out @MainActor on the ViewModel class — this is the iOS equivalent of Dispatchers.Main and prevents the 'Publishing changes from background threads' warning that trips up every student who forgets it. Also explain the AsyncThrowingStream wrapper — it's the bridge between a Task and a SwiftUI binding.">
-      <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-        <div style={{ display: "flex", gap: 10 }}>
-          <CodePane title="Message.swift" accent={GREEN}>{`struct Message: Identifiable {
+              </div>
+            }
+            ios={
+              <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                <CodePane title="Message.swift" accent={GREEN}>{`struct Message: Identifiable {
     let id = UUID()
     let role: String     // "user" or "assistant"
     var content: String
@@ -714,7 +997,7 @@ enum ChatState: Equatable {
         }
     }
 }`}</CodePane>
-          <CodePane title="ClaudeRepository.swift" accent={GREEN}>{`class ClaudeRepository {
+                <CodePane title="ClaudeRepository.swift" accent={GREEN}>{`class ClaudeRepository {
     private let apiKey: String
     init() {
         let path = Bundle.main.path(forResource:"Secrets", ofType:"plist")!
@@ -744,7 +1027,7 @@ enum ChatState: Equatable {
                     for try await line in bytes.lines {
                         guard line.hasPrefix("data: ") else { continue }
                         let payload = String(line.dropFirst(6))
-                        if payload == "[DONE]" { break }
+                        if payload.contains("\"message_stop\"") { break }
                         if let token = extractToken(from: payload) {
                             continuation.yield(token)
                         }
@@ -759,7 +1042,7 @@ enum ChatState: Equatable {
     private func buildBody(history: [Message], systemPrompt: String) throws -> Data {
         let messages = history.map { ["role": $0.role, "content": $0.content] }
         let body: [String: Any] = [
-            "model": "claude-opus-4-5",
+            "model": "claude-sonnet-4-5",
             "max_tokens": 1024,
             "stream": true,
             "system": systemPrompt,
@@ -777,9 +1060,7 @@ enum ChatState: Equatable {
         return delta["text"] as? String
     }
 }`}</CodePane>
-        </div>
-        <div style={{ display: "flex", gap: 10 }}>
-          <CodePane title="ChatViewModel.swift" accent={GREEN}>{`@MainActor  // ← ALL @Published mutations happen on main thread
+                <CodePane title="ChatViewModel.swift" accent={GREEN}>{`@MainActor  // ← ALL @Published mutations happen on main thread
 class ChatViewModel: ObservableObject {
     @Published var history: [Message] = []
     @Published var chatState: ChatState = .idle
@@ -806,7 +1087,7 @@ class ChatViewModel: ObservableObject {
         }
     }
 }`}</CodePane>
-          <CodePane title="ChatView.swift — SwiftUI" accent={GREEN}>{`struct ChatView: View {
+                <CodePane title="ChatView.swift — SwiftUI" accent={GREEN}>{`struct ChatView: View {
     @StateObject private var vm = ChatViewModel()
     @State private var input = ""
 
@@ -848,12 +1129,15 @@ class ChatViewModel: ObservableObject {
         }
     }
 }`}</CodePane>
-        </div>
-      </div>
+              </div>
+            }
+          />
+        }
+      />
     </Shell>
   ),
 
-  // 11: Platform comparison
+  // 14: Platform comparison
   () => (
     <Shell tag="Comparison" timer="5" title="Android vs iOS — the same architecture, different tools" subtitle="Repository → ViewModel → View on both platforms. Only the syntax changes." notes="This slide exists so students on each track understand what their counterparts are doing. The conceptual structure is identical — only the concurrency primitives differ. The most important parallel to drive home: Flow on Android and AsyncThrowingStream on iOS are both 'typed sequences of values over time' — same concept, different type system. Spend 2 minutes here and move on.">
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
@@ -876,7 +1160,7 @@ class ChatViewModel: ObservableObject {
                 ["State holder",   "@Published var chatState: ChatState"],
                 ["UI observes",    "@StateObject / @ObservedObject"],
                 ["Main thread",    "@MainActor on ViewModel class"],
-                ["Key file",       "Secrets.plist (excluded from .gitignore)"],
+                ["Key file",       "Secrets.plist (listed in .gitignore)"],
               ]},
             ].map(col => (
               <div key={col.p} style={{ background: col.bg, borderRadius: 10, padding: "12px 14px" }}>
@@ -925,7 +1209,7 @@ class ChatViewModel: ObservableObject {
     </Shell>
   ),
 
-  // 12: Common bugs
+  // 15: Common bugs
   () => (
     <Shell tag="Debugging" tagColor="amber" timer="5" title="Top 6 bugs — and how to diagnose each one" subtitle="Know these now. Save 20 minutes of frustrated debugging in the lab." notes="Walk through each bug at 1 minute each — symptom first, then cause, then fix. Bug #1 (manifest permission) bites every Android student every cohort without fail. Bug #3 (role alternation 400) is the most confusing because the error message gives no indication of what went wrong — emphasise logging the messages array. Bug #5 (@MainActor) starts as a warning and becomes a crash — teach students never to suppress it.">
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
@@ -946,7 +1230,7 @@ class ChatViewModel: ObservableObject {
             num: "03", platform: "Both", color: PURPLE_LIGHT, fg: PURPLE_DARK,
             symptom: "HTTP 400 response with no useful body — first or second message only",
             cause: "Role alternation violation in the messages array. Sending two consecutive 'user' messages (the new one before appending the previous assistant reply), or starting with an empty history and skipping the initial user message.",
-            fix: "Before every API call, log the full messages array. Count roles: must be user → assistant → user → ... Last entry must be role: 'user'. Check that history append order matches slide 8.",
+            fix: "Before every API call, log the full messages array. Count roles: must be user → assistant → user → ... Last entry must be role: 'user'. Check that history append order matches slide 11.",
           },
           {
             num: "04", platform: "Both", color: AMBER_LIGHT, fg: "#633806",
@@ -981,7 +1265,7 @@ class ChatViewModel: ObservableObject {
     </Shell>
   ),
 
-  // 12: Lab intro
+  // 16: Lab intro
   () => (
     <Shell tag="Lab intro" timer="5" title="Today's lab — build a streaming chat screen" subtitle="55 minutes in breakout rooms" notes="Walk through each step and checklist item before breakout rooms. Emphasise the order: API key setup first — students who start with the UI and work backwards get stuck. The stretch goal (system prompt persona) is achievable in 10 extra minutes and dramatically improves the demo quality.">
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
@@ -1046,7 +1330,7 @@ class ChatViewModel: ObservableObject {
     </Shell>
   ),
 
-  // 13: Wrap-up
+  // 17: Wrap-up
   () => (
     <div style={{ background: `linear-gradient(135deg, ${PURPLE_DARK} 0%, ${PURPLE} 100%)`, borderRadius: 12, padding: "44px 40px", minHeight: 360, display: "flex", flexDirection: "column", justifyContent: "space-between", boxSizing: "border-box" }}>
       <div>

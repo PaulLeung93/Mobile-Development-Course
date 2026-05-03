@@ -342,7 +342,7 @@ const slides = [
         <div style={{ flex: 1 }}>
           <p style={{ fontSize: 11, fontWeight: 700, color: BLUE, margin: "0 0 6px", textTransform: "uppercase", letterSpacing: ".05em" }}>Session 1 — text only</p>
           <CodePane title="Request body" accent={BLUE}>{`{
-  "model": "claude-sonnet-4-20250514",
+  "model": "claude-sonnet-4-5",
   "max_tokens": 1024,
   "messages": [
     {
@@ -356,7 +356,7 @@ const slides = [
         <div style={{ flex: 1 }}>
           <p style={{ fontSize: 11, fontWeight: 700, color: TEAL_DARK, margin: "0 0 6px", textTransform: "uppercase", letterSpacing: ".05em" }}>Session 2 — multimodal</p>
           <CodePane title="Request body" accent={TEAL_DARK}>{`{
-  "model": "claude-sonnet-4-20250514",
+  "model": "claude-sonnet-4-5",
   "max_tokens": 1024,
   "messages": [
     {
@@ -447,7 +447,7 @@ const slides = [
                 <span style={{ fontSize: 12, color: CORAL, fontWeight: 600 }}>{r.tokens}</span>
               </div>
             ))}
-            <p style={{ fontSize: 10, color: CORAL, margin: "6px 0 0", opacity: 0.8 }}>Pricing: $3 / M input tokens (claude-sonnet-4). Source: anthropic.com/pricing</p>
+            <p style={{ fontSize: 10, color: CORAL, margin: "6px 0 0", opacity: 0.8 }}>Pricing: $3 / M input tokens (claude-sonnet-4-5). Source: anthropic.com/pricing</p>
           </div>
         </div>
         <div>
@@ -765,7 +765,7 @@ guard let jpegData = resized.jpegData(compressionQuality: 0.8)
             step: "3", label: "Build the multimodal content array",
             why: "The content field switches from a String to an array of dictionaries. Order matters — image first, then the text prompt.",
             code: `let body: [String: Any] = [
-    "model": "claude-sonnet-4-20250514",
+    "model": "claude-sonnet-4-5",
     "max_tokens": 512,
     "messages": [[
         "role": "user",
