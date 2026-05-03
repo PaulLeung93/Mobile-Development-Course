@@ -216,207 +216,478 @@ const LabSession1 = ({ platform }) => (
       </ul>
     </div>
 
-    <Step num={0} title="Understand the problem">
-      <p>Open your Week 4 API app. Take a look at your main screen file{platform === "Android" ? " (likely your main Composable function or Activity)" : " (likely your main SwiftUI View)"}. You'll probably notice that it does <em>everything</em>:</p>
+    {/* ─── Step 0: Understand the problem ─── */}
+    <VStep num={0} title="Understand the problem">
+      <p>Before writing a single line of new code, take 5 minutes to audit your Week 4 app. Open your main screen file{platform === "Android" ? " — the Composable function that shows your list" : " — the SwiftUI View that shows your list"}. Count how many jobs it does:</p>
       <ul style={{ paddingLeft: 20, margin: "6px 0" }}>
-        <li>It defines the UI layout</li>
-        <li>It makes the API call</li>
-        <li>It stores the data</li>
-        <li>It handles loading and error states</li>
+        <li>Does it define the UI layout? (That's the View's job — fine.)</li>
+        <li>Does it make the API call? (Belongs in the ViewModel.)</li>
+        <li>Does it store data in <code>{platform === "Android" ? "remember { mutableStateOf(...) }" : "@State var items"}</code>? (ViewModel.)</li>
+        <li>Does it track loading and error state? (ViewModel.)</li>
       </ul>
-      <p>This is fine for a small app, but imagine this screen had 10 more features. The file would become unmanageable. MVVM solves this by splitting responsibilities into three layers:</p>
-
+      <p>This is the spaghetti problem from the lecture — one file doing everything. MVVM splits those responsibilities into three layers:</p>
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8, margin: "12px 0" }}>
         <div style={{ background: PL, padding: "10px 12px", borderRadius: 8, textAlign: "center" }}>
           <div style={{ fontWeight: 600, color: PD, fontSize: 12 }}>Model</div>
-          <div style={{ fontSize: 11, color: PD, marginTop: 4 }}>Your data classes{platform === "Android" ? " (Kotlin data classes)" : " (Swift structs)"}</div>
-        </div>
-        <div style={{ background: GL, padding: "10px 12px", borderRadius: 8, textAlign: "center" }}>
-          <div style={{ fontWeight: 600, color: G, fontSize: 12 }}>View</div>
-          <div style={{ fontSize: 11, color: G, marginTop: 4 }}>Your {platform === "Android" ? "Composable functions" : "SwiftUI Views"} — UI only</div>
+          <div style={{ fontSize: 11, color: PD, marginTop: 4 }}>Data classes/structs only. No UI, no networking.</div>
         </div>
         <div style={{ background: AML, padding: "10px 12px", borderRadius: 8, textAlign: "center" }}>
           <div style={{ fontWeight: 600, color: AM, fontSize: 12 }}>ViewModel</div>
-          <div style={{ fontSize: 11, color: AM, marginTop: 4 }}>Holds state, calls APIs, exposes data to the View</div>
+          <div style={{ fontSize: 11, color: AM, marginTop: 4 }}>Holds state, fetches data. No UI imports.</div>
+        </div>
+        <div style={{ background: GL, padding: "10px 12px", borderRadius: 8, textAlign: "center" }}>
+          <div style={{ fontWeight: 600, color: G, fontSize: 12 }}>View</div>
+          <div style={{ fontSize: 11, color: G, marginTop: 4 }}>Displays state. Never fetches data directly.</div>
         </div>
       </div>
+      <Checkpoint num={0}>Before writing any code, identify in your Week 4 app: where is data fetched? Where is it stored? Where is it displayed? Write down which lines of code belong to which layer.</Checkpoint>
+    </VStep>
 
-      <Checkpoint num={0}>Before writing any code, identify in your Week 4 app: where is the data fetched? Where is it stored? Where is it displayed? Write down which lines of code belong to which layer (Model, View, ViewModel).</Checkpoint>
-    </Step>
+    {/* ─── Step 1: Data model ─── */}
+    <VStep num={1} title="Create your data model">
+      <p>The Model layer is the simplest — it's just data. Before building the ViewModel, make sure your data class lives in its own file and add a <strong>UiState type</strong> that describes every possible state the screen can be in. You'll build this in two sub-steps.</p>
 
-    <Step num={1} title="Create your data model">
-      <p>If you don't already have a separate file for your data model, create one now. This is your <strong>Model</strong> layer.</p>
-      {platform === "Android" ? (
-        <Code title="Kotlin — e.g. Album.kt" accent={BL}>{`data class Album(
-    val name: String,
-    val artist: String,
-    val imageUrl: String
+      <VStep num="a" title="Find and isolate your existing data class">
+        <p>Open your Week 4 project and find the {platform === "Android" ? "data class" : "struct"} that represents one item in your list (e.g., <code>{platform === "Android" ? "data class Movie(...)" : "struct Movie: Decodable"}</code>). Check these three things:</p>
+        <ul style={{ paddingLeft: 20, margin: "6px 0" }}>
+          <li><strong>Is it in its own file?</strong> If it's nested inside your screen file, create a new file now (e.g., <code>{platform === "Android" ? "Movie.kt" : "Movie.swift"}</code>) and move the class/struct there.</li>
+          <li><strong>Does it have UI imports?</strong> {platform === "Android" ? "There should be no Compose imports in this file." : "There should be no SwiftUI import in this file."} A model file has no business knowing about the UI.</li>
+          <li><strong>Is JSON decoding configured?</strong> {platform === "Android" ? "Make sure field names match your API response (use @SerializedName if they differ)." : "Make sure the struct conforms to Decodable and uses CodingKeys if your API uses snake_case."}</li>
+        </ul>
+        <Section title="✅ Check your work — what the model file should look like at this point">
+          <p style={{ fontSize: 12, color: "var(--color-text-tertiary)", margin: "0 0 8px" }}>Your data type and field names will differ — use this as a reference for the expected structure:</p>
+          {platform === "Android" ? (
+            <Code title="Kotlin — Movie.kt (data class only, no UI state yet)" accent={BL}>{`// No UI imports — just the data
+data class Movie(
+    val id: Int,
+    val title: String,
+    val overview: String,
+    val posterPath: String
 )
 
-// A sealed interface to represent all possible UI states
-sealed interface AlbumUiState {
-    object Loading : AlbumUiState
-    data class Success(val albums: List<Album>) : AlbumUiState
-    data class Error(val message: String) : AlbumUiState
-}`}</Code>
-      ) : (
-        <Code title="Swift — e.g. Album.swift" accent={GR}>{`struct Album: Identifiable {
-    let id = UUID()
-    let name: String
-    let artist: String
-    let imageUrl: String
+// UiState goes here in Step 1b`}</Code>
+          ) : (
+            <Code title="Swift — Movie.swift (struct only, no UI state yet)" accent={GR}>{`// No SwiftUI import — just Foundation (or nothing)
+struct Movie: Identifiable, Decodable {
+    let id: Int
+    let title: String
+    let overview: String
+    let posterPath: String
+
+    enum CodingKeys: String, CodingKey {
+        case id, title, overview
+        case posterPath = "poster_path"
+    }
 }
 
-// An enum to represent all possible UI states
-enum AlbumUiState {
+// UiState goes here in Step 1b`}</Code>
+          )}
+        </Section>
+      </VStep>
+
+      <VStep num="b" title="Add the UiState type" last>
+        <p>Add a type right below your data class that describes every state the screen can be in. There are exactly three cases: the data is loading, it loaded successfully, or something went wrong.</p>
+        <p><strong>Why a sealed class/enum instead of separate <code>isLoading</code> and <code>errorMessage</code> flags?</strong> Boolean flags can contradict each other — <code>isLoading = true</code> and <code>errorMessage = "oops"</code> can coexist, which makes no sense. A sealed class/enum forces you to be in <em>exactly one</em> state at a time, and the compiler will warn you if you forget to handle a case in your <code>when</code>/<code>switch</code>.</p>
+        {platform === "Android" ? (
+          <Section title="💡 Show me the sealed interface skeleton">
+            <Code title="Kotlin — fill in your type name and data type">{`sealed interface _____UiState {
+    object Loading : _____UiState
+    data class Success(val items: List<_____>) : _____UiState
+    data class Error(val message: String) : _____UiState
+}`}</Code>
+          </Section>
+        ) : (
+          <Section title="💡 Show me the enum skeleton">
+            <Code title="Swift — fill in your type name and data type">{`enum _____UiState {
     case loading
-    case success([Album])
+    case success([_____])
     case error(String)
 }`}</Code>
-      )}
-      <Tip>The <code>{platform === "Android" ? "sealed interface" : "enum"}</code> for UI state is a powerful pattern. It forces you to handle every possible state — no more forgetting to show an error screen!</Tip>
-      <Checkpoint num={1}>You should now have a separate file containing your data model and UI state types. The file should have <strong>no UI code</strong> and <strong>no networking code</strong> in it.</Checkpoint>
-    </Step>
+          </Section>
+        )}
+        <Section title="✅ Check your work — show me the complete model file">
+          <p style={{ fontSize: 12, color: "var(--color-text-tertiary)", margin: "0 0 8px" }}>Your type names should match your app's domain — this shows the expected shape:</p>
+          {platform === "Android" ? (
+            <Code title="Kotlin — Movie.kt (complete)" accent={BL}>{`data class Movie(
+    val id: Int,
+    val title: String,
+    val overview: String,
+    val posterPath: String
+)
 
-    <Step num={2} title="Create your ViewModel">
-      <p>This is the heart of the refactor. Create a new file for your ViewModel. It will hold the current UI state and contain the logic to fetch data.</p>
-      {platform === "Android" ? (
-        <Code title="Kotlin — e.g. AlbumViewModel.kt" accent={BL}>{`import androidx.lifecycle.ViewModel
+sealed interface MovieUiState {
+    object Loading : MovieUiState
+    data class Success(val movies: List<Movie>) : MovieUiState
+    data class Error(val message: String) : MovieUiState
+}`}</Code>
+          ) : (
+            <Code title="Swift — Movie.swift (complete)" accent={GR}>{`struct Movie: Identifiable, Decodable {
+    let id: Int
+    let title: String
+    let overview: String
+    let posterPath: String
+
+    enum CodingKeys: String, CodingKey {
+        case id, title, overview
+        case posterPath = "poster_path"
+    }
+}
+
+enum MovieUiState {
+    case loading
+    case success([Movie])
+    case error(String)
+}`}</Code>
+          )}
+        </Section>
+      </VStep>
+
+      <Checkpoint num={1}>You now have a model file with your data class and UiState type. The file has <strong>no UI imports</strong> and <strong>no networking code</strong> in it.</Checkpoint>
+    </VStep>
+
+    {/* ─── Step 2: ViewModel ─── */}
+    <VStep num={2} title="Create your ViewModel">
+      <p>The ViewModel is the heart of the refactor — it replaces all the state variables and networking code that were previously inside your View. Create a new file (e.g., <code>{platform === "Android" ? "MovieViewModel.kt" : "MovieViewModel.swift"}</code>) and build it up in three sub-steps.</p>
+
+      <VStep num="a" title="Scaffold the ViewModel class">
+        <p>Write the class declaration and add the required imports. The key thing here is what your class <em>extends</em> or <em>conforms to</em>:</p>
+        <ul style={{ paddingLeft: 20, margin: "6px 0" }}>
+          {platform === "Android" ? (
+            <>
+              <li><strong>Extend <code>ViewModel()</code>.</strong> This is a Jetpack lifecycle class. The framework keeps your ViewModel instance alive across screen rotations — when the user rotates their phone, the Composable is recreated but the ViewModel is not. Your data survives.</li>
+              <li>Add these imports: <code>androidx.lifecycle.ViewModel</code>, <code>androidx.lifecycle.viewModelScope</code>, <code>kotlinx.coroutines.flow.MutableStateFlow</code>, <code>kotlinx.coroutines.flow.StateFlow</code>, <code>kotlinx.coroutines.launch</code></li>
+              <li><strong>Do not import Compose.</strong> No <code>androidx.compose</code> imports in this file.</li>
+            </>
+          ) : (
+            <>
+              <li><strong>Conform to <code>ObservableObject</code>.</strong> This protocol lets SwiftUI Views subscribe to changes in this class — whenever a <code>@Published</code> property changes, every observing View re-renders.</li>
+              <li><strong>Add <code>@MainActor</code> to the class.</strong> UI state updates must happen on the main thread. Marking the whole class <code>@MainActor</code> ensures this automatically, so you don't need to think about it per-function.</li>
+              <li>Import <code>Foundation</code>. <strong>Do not import SwiftUI.</strong></li>
+            </>
+          )}
+        </ul>
+        <Section title="✅ Check your work — ViewModel with class declaration only">
+          {platform === "Android" ? (
+            <Code title="Kotlin — MovieViewModel.kt (class shell)" accent={BL}>{`import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
-class AlbumViewModel : ViewModel() {
+class MovieViewModel : ViewModel() {
+    // state and fetch function go here
+}`}</Code>
+          ) : (
+            <Code title="Swift — MovieViewModel.swift (class shell)" accent={GR}>{`import Foundation
 
-    // Private mutable state — only the ViewModel can change this
-    private val _uiState = MutableStateFlow<AlbumUiState>(AlbumUiState.Loading)
+@MainActor
+class MovieViewModel: ObservableObject {
+    // state and fetch function go here
+}`}</Code>
+          )}
+        </Section>
+      </VStep>
 
-    // Public read-only state — the View observes this
-    val uiState: StateFlow<AlbumUiState> = _uiState
+      <VStep num="b" title="Add the UI state properties">
+        <p>Inside your class, add the properties that hold the current UI state. The rule is <strong>private write, public read</strong>: only the ViewModel can change state, but any View can observe it.</p>
+        {platform === "Android" ? (
+          <>
+            <p>You need two properties:</p>
+            <ul style={{ paddingLeft: 20, margin: "6px 0" }}>
+              <li>A <code>private val _uiState</code> using <code>MutableStateFlow</code> — the internal one you'll update. Start it at <code>Loading</code>.</li>
+              <li>A <code>val uiState: StateFlow</code> that exposes the internal one as read-only using <code>= _uiState</code>. The View will collect this one.</li>
+            </ul>
+            <p>The underscore prefix on <code>_uiState</code> is a Kotlin convention for "the private backing property." The public <code>uiState</code> is what consumers use.</p>
+          </>
+        ) : (
+          <>
+            <p>Add one <code>@Published</code> property that holds the current state, initialized to <code>.loading</code>:</p>
+            <ul style={{ paddingLeft: 20, margin: "6px 0" }}>
+              <li><code>@Published</code> is the magic: whenever this property changes, SwiftUI automatically re-renders any View that's watching this ViewModel.</li>
+              <li>Add <code>private(set)</code> between the property wrapper and <code>var</code> so the View can only read, never write.</li>
+            </ul>
+          </>
+        )}
+        <Section title="✅ Check your work — ViewModel with state properties">
+          {platform === "Android" ? (
+            <Code title="Kotlin — MovieViewModel.kt (with state)" accent={BL}>{`import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
+
+class MovieViewModel : ViewModel() {
+
+    private val _uiState = MutableStateFlow<MovieUiState>(MovieUiState.Loading)
+    val uiState: StateFlow<MovieUiState> = _uiState
+
+    // fetch function goes here (Step 2c)
+}`}</Code>
+          ) : (
+            <Code title="Swift — MovieViewModel.swift (with state)" accent={GR}>{`import Foundation
+
+@MainActor
+class MovieViewModel: ObservableObject {
+
+    @Published private(set) var uiState: MovieUiState = .loading
+
+    // fetch function goes here (Step 2c)
+}`}</Code>
+          )}
+        </Section>
+      </VStep>
+
+      <VStep num="c" title="Move your API call into the ViewModel" last>
+        <p>Now the big move: <strong>cut</strong> your networking code out of the View and <strong>paste</strong> it into a fetch function here. In your Week 4 app, the API call was probably inside <code>{platform === "Android" ? "LaunchedEffect(Unit) { ... }" : ".onAppear { ... } or .task { ... }"}</code>. Structure the new function like this:</p>
+        <ol style={{ paddingLeft: 20, margin: "6px 0" }}>
+          <li>Set state to <code>{platform === "Android" ? "MovieUiState.Loading" : ".loading"}</code> at the start</li>
+          <li>Try the API call{platform === "Android" ? " inside viewModelScope.launch { } with a try/catch" : " inside a do/catch in an async function"}</li>
+          <li>On success → set state to <code>{platform === "Android" ? "MovieUiState.Success(result)" : ".success(result)"}</code></li>
+          <li>On failure → set state to <code>{platform === "Android" ? "MovieUiState.Error(e.message ?: \"Something went wrong\")" : ".error(error.localizedDescription)"}</code></li>
+          <li>Call the function from <code>init {'{}'}</code> so loading starts automatically when the ViewModel is created</li>
+        </ol>
+
+        <AiOpp>
+          <em>Use AI as a refactoring partner →</em> Paste your existing Week 4 networking code into Claude and ask: <strong>"I'm refactoring this into a ViewModel. Can you move the networking logic into a fetch function, wrap it in a try/catch, and set a sealed UiState based on the result? Don't change the actual API call — just move it and add the state transitions."</strong> Read what it gives you carefully before pasting it in.
+        </AiOpp>
+
+        <Warn>The ViewModel should <strong>never</strong> import any UI framework. No {platform === "Android" ? <><code>import androidx.compose.*</code></> : <><code>import SwiftUI</code></>} in this file. If you find yourself needing Compose or SwiftUI here, that code belongs in the View layer instead.</Warn>
+
+        <Section title="✅ Check your work — show me the complete ViewModel">
+          <p style={{ fontSize: 12, color: "var(--color-text-tertiary)", margin: "0 0 8px" }}>Replace the placeholder comment with your actual Week 4 networking code — your class name and data types will differ:</p>
+          {platform === "Android" ? (
+            <Code title="Kotlin — MovieViewModel.kt (complete)" accent={BL}>{`import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
+
+class MovieViewModel : ViewModel() {
+
+    private val _uiState = MutableStateFlow<MovieUiState>(MovieUiState.Loading)
+    val uiState: StateFlow<MovieUiState> = _uiState
 
     init {
-        fetchAlbums()
+        fetchMovies()
     }
 
-    fun fetchAlbums() {
-        _uiState.value = AlbumUiState.Loading
+    fun fetchMovies() {
+        _uiState.value = MovieUiState.Loading
         viewModelScope.launch {
             try {
-                // Move your existing API call logic here
-                val albums = // ... your networking code ...
-                _uiState.value = AlbumUiState.Success(albums)
+                // Your Week 4 API call goes here — e.g.:
+                val response = MovieApi.service.getMovies()
+                _uiState.value = MovieUiState.Success(response.results)
             } catch (e: Exception) {
-                _uiState.value = AlbumUiState.Error(
+                _uiState.value = MovieUiState.Error(
                     e.message ?: "Something went wrong"
                 )
             }
         }
     }
 }`}</Code>
-      ) : (
-        <Code title="Swift — e.g. AlbumViewModel.swift" accent={GR}>{`import Foundation
+          ) : (
+            <Code title="Swift — MovieViewModel.swift (complete)" accent={GR}>{`import Foundation
 
 @MainActor
-class AlbumViewModel: ObservableObject {
+class MovieViewModel: ObservableObject {
 
-    // @Published automatically notifies the View when this changes
-    @Published var uiState: AlbumUiState = .loading
+    @Published private(set) var uiState: MovieUiState = .loading
 
     init() {
-        Task { await fetchAlbums() }
+        Task { await fetchMovies() }
     }
 
-    func fetchAlbums() async {
+    func fetchMovies() async {
         uiState = .loading
         do {
-            // Move your existing API call logic here
-            let albums: [Album] = // ... your networking code ...
-            uiState = .success(albums)
+            // Your Week 4 API call goes here — e.g.:
+            let response = try await MovieService.shared.fetchMovies()
+            uiState = .success(response.results)
         } catch {
             uiState = .error(error.localizedDescription)
         }
     }
 }`}</Code>
-      )}
+          )}
+        </Section>
+      </VStep>
 
-      <AiOpp>
-        <em>Use AI as a refactoring partner →</em> Paste your existing Week 4 networking code into Claude and ask: <strong>"I'm refactoring this into a ViewModel. Can you help me move the networking logic out of my View and into this ViewModel class? Don't change the API call itself — just move it."</strong> Review what it gives you carefully before pasting.
-      </AiOpp>
+      <Checkpoint num={2}>Your ViewModel file compiles with no errors. It exposes a <code>uiState</code> property, contains your networking logic, and has <strong>zero UI imports</strong>.</Checkpoint>
+    </VStep>
 
-      <Warn>The ViewModel should <strong>never</strong> import any UI framework. No {platform === "Android" ? <><code>import androidx.compose.*</code></> : <><code>import SwiftUI</code></>} in this file! If you need SwiftUI or Compose, the code belongs in the View layer instead.</Warn>
+    {/* ─── Step 3: Connect View to ViewModel ─── */}
+    <VStep num={3} title="Connect your View to the ViewModel">
+      <p>Now that the ViewModel holds all state and logic, your View's job becomes simple: observe the state and render it. This step has three parts — strip out the old state, wire in the ViewModel, and replace the rendering logic with a state-driven switch.</p>
 
-      <Checkpoint num={2}>Your ViewModel file should compile with no errors. It should contain your networking logic and expose a <code>uiState</code> property. It should have <strong>zero UI imports</strong>.</Checkpoint>
-    </Step>
+      <VStep num="a" title="Clean up your View's state">
+        <p>Open your main screen file. Near the top, you'll see state variables that were holding your data, loading flag, and error message — something like:</p>
+        {platform === "Android" ? (
+          <Code title="Kotlin — what to look for and DELETE">{`// These are going away — the ViewModel owns all of this now
+var movies by remember { mutableStateOf<List<Movie>>(emptyList()) }
+var isLoading by remember { mutableStateOf(true) }
+var errorMessage by remember { mutableStateOf<String?>(null) }`}</Code>
+        ) : (
+          <Code title="Swift — what to look for and DELETE">{`// These are going away — the ViewModel owns all of this now
+@State private var movies: [Movie] = []
+@State private var isLoading = true
+@State private var errorMessage: String? = nil`}</Code>
+        )}
+        <p>Delete all of these. Also remove the networking trigger that fired on load{platform === "Android" ? " (the LaunchedEffect block)" : " (the .onAppear or .task block)"}.</p>
+        <Warn>Only remove state that tracks <em>data, loading, and errors</em>. Leave any <code>{platform === "Android" ? "remember" : "@State"}</code> variables that control purely visual things — like whether a search bar is expanded, which tab is selected, or whether a sheet is showing.</Warn>
+        <Section title="✅ Check your work — View file after cleanup">
+          <p style={{ fontSize: 12, color: "var(--color-text-tertiary)", margin: "0 0 8px" }}>Your View should be <em>shorter</em> than before. If it got longer, you haven't removed enough.</p>
+          {platform === "Android" ? (
+            <Code title="Kotlin — MovieScreen.kt (state removed, not yet wired)" accent={BL}>{`@Composable
+fun MovieScreen() {
+    // state variables — gone
+    // LaunchedEffect — gone
+    // Only the layout skeleton remains; you'll wire the ViewModel next
 
-    <Step num={3} title="Connect your View to the ViewModel">
-      <p>Now update your main screen to <em>observe</em> the ViewModel's state instead of managing its own.</p>
-      {platform === "Android" ? (
-        <Code title="Kotlin — in your Composable" accent={BL}>{`@Composable
-fun AlbumScreen(
-    viewModel: AlbumViewModel = viewModel()
+    Column(modifier = Modifier.fillMaxSize()) {
+        // your existing UI structure (now temporarily broken — that's fine)
+    }
+}`}</Code>
+          ) : (
+            <Code title="Swift — MovieView.swift (state removed, not yet wired)" accent={GR}>{`struct MovieView: View {
+    // @State vars — gone
+    // .onAppear / .task — gone
+    // Only the layout structure remains; you'll wire the ViewModel next
+
+    var body: some View {
+        // your existing UI structure (now temporarily broken — that's fine)
+    }
+}`}</Code>
+          )}
+        </Section>
+      </VStep>
+
+      <VStep num="b" title="Add the ViewModel to your View">
+        <p>Add the ViewModel as a property at the top of your View. {platform === "Android" ? "Pass it as a Composable parameter with a default value:" : "Declare it as a @StateObject property:"}</p>
+        {platform === "Android" ? (
+          <>
+            <p>Write <code>viewModel: MovieViewModel = viewModel()</code> as a parameter. The <code>viewModel()</code> call (from <code>lifecycle-viewmodel-compose</code>) gives you the framework-managed instance — the same one survives rotation. The default value means you can also pass a different ViewModel in previews or tests.</p>
+            <p>Then collect the StateFlow as Compose state with one line inside the function body:</p>
+            <Code title="Kotlin — collecting StateFlow">{`val uiState by viewModel.uiState.collectAsState()`}</Code>
+          </>
+        ) : (
+          <p><code>@StateObject</code> means this View <em>owns</em> the ViewModel — SwiftUI creates it once when the View appears and keeps the same instance for the View's entire lifetime. If you ever receive a ViewModel <em>passed in</em> from a parent, you'd use <code>@ObservedObject</code> instead — but for now, <code>@StateObject</code> is what you want.</p>
+        )}
+        <Section title="✅ Check your work — View file with ViewModel wired in">
+          {platform === "Android" ? (
+            <Code title="Kotlin — MovieScreen.kt (ViewModel connected)" accent={BL}>{`@Composable
+fun MovieScreen(
+    viewModel: MovieViewModel = viewModel()
 ) {
-    // Collect the StateFlow as Compose state
+    val uiState by viewModel.uiState.collectAsState()
+
+    // uiState is now available — replace rendering logic in Step 3c
+    Column(modifier = Modifier.fillMaxSize()) {
+        // content goes here
+    }
+}`}</Code>
+          ) : (
+            <Code title="Swift — MovieView.swift (ViewModel connected)" accent={GR}>{`struct MovieView: View {
+    @StateObject private var viewModel = MovieViewModel()
+
+    var body: some View {
+        // viewModel.uiState is now available — replace rendering logic in Step 3c
+        Group {
+            // content goes here
+        }
+    }
+}`}</Code>
+          )}
+        </Section>
+      </VStep>
+
+      <VStep num="c" title="Render based on UiState" last>
+        <p>Replace your old conditional rendering (the <code>if isLoading ... else if errorMessage != nil ...</code> pattern) with a single <code>{platform === "Android" ? "when (uiState)" : "switch viewModel.uiState"}</code> that handles all three cases. This is the payoff: the View makes no decisions anymore — it just reacts to whatever state the ViewModel publishes.</p>
+        <ul style={{ paddingLeft: 20, margin: "6px 0" }}>
+          <li><strong>Loading</strong> → show a spinner or shimmer. No data to display yet.</li>
+          <li><strong>Success</strong> → render your list using the items from the success case.</li>
+          <li><strong>Error</strong> → show the error message and a Retry button that calls <code>{platform === "Android" ? "viewModel.fetchMovies()" : "Task { await viewModel.fetchMovies() }"}</code>.</li>
+        </ul>
+        <Tip>Notice how clean the View is now. It only decides <em>what to show</em> based on the current state. The logic for <em>what the state should be</em> lives entirely in the ViewModel.</Tip>
+        <Section title="✅ Check your work — show me the complete View file">
+          {platform === "Android" ? (
+            <Code title="Kotlin — MovieScreen.kt (complete)" accent={BL}>{`@Composable
+fun MovieScreen(
+    viewModel: MovieViewModel = viewModel()
+) {
     val uiState by viewModel.uiState.collectAsState()
 
     when (uiState) {
-        is AlbumUiState.Loading -> {
-            // Your loading UI (shimmer, spinner, etc.)
+        is MovieUiState.Loading -> {
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                CircularProgressIndicator()
+            }
         }
-        is AlbumUiState.Success -> {
-            val albums = (uiState as AlbumUiState.Success).albums
-            // Your list UI — LazyColumn, etc.
+        is MovieUiState.Success -> {
+            val movies = (uiState as MovieUiState.Success).movies
+            LazyColumn(modifier = Modifier.fillMaxSize()) {
+                items(movies) { movie ->
+                    // Your existing movie row composable
+                }
+            }
         }
-        is AlbumUiState.Error -> {
-            val message = (uiState as AlbumUiState.Error).message
-            // Your error UI with a retry button
-            Button(onClick = { viewModel.fetchAlbums() }) {
-                Text("Retry")
+        is MovieUiState.Error -> {
+            val message = (uiState as MovieUiState.Error).message
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(text = message, color = MaterialTheme.colorScheme.error)
+                Spacer(modifier = Modifier.height(8.dp))
+                Button(onClick = { viewModel.fetchMovies() }) {
+                    Text("Retry")
+                }
             }
         }
     }
 }`}</Code>
-      ) : (
-        <Code title="Swift — in your SwiftUI View" accent={GR}>{`struct AlbumScreen: View {
-    // @StateObject creates and owns the ViewModel
-    @StateObject private var viewModel = AlbumViewModel()
+          ) : (
+            <Code title="Swift — MovieView.swift (complete)" accent={GR}>{`struct MovieView: View {
+    @StateObject private var viewModel = MovieViewModel()
 
     var body: some View {
         Group {
             switch viewModel.uiState {
             case .loading:
-                // Your loading UI (ProgressView, etc.)
                 ProgressView()
-            case .success(let albums):
-                // Your list UI — List, ForEach, etc.
-                List(albums) { album in
-                    // album row
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+            case .success(let movies):
+                List(movies) { movie in
+                    // Your existing movie row view
                 }
             case .error(let message):
-                // Your error UI with a retry button
-                VStack {
+                VStack(spacing: 12) {
                     Text(message)
+                        .foregroundColor(.red)
                     Button("Retry") {
-                        Task { await viewModel.fetchAlbums() }
+                        Task { await viewModel.fetchMovies() }
                     }
                 }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
         }
     }
 }`}</Code>
-      )}
-
-      <Tip>Notice how clean the View is now — it only decides <em>what to show</em> based on the current state. All the logic for <em>what the state should be</em> lives in the ViewModel.</Tip>
+          )}
+        </Section>
+      </VStep>
 
       <Checkpoint num={3}>Run your app. It should behave <strong>exactly the same as before</strong> — loading state, data displayed, error handling all work. The difference is entirely in how the code is organized.</Checkpoint>
-    </Step>
+    </VStep>
 
-    <Step num={4} title="Verify the separation">
-      <p>Let's make sure the refactor is truly clean. Check these three things:</p>
+    {/* ─── Step 4: Verify separation ─── */}
+    <VStep num={4} title="Verify the separation" last>
+      <p>Let's confirm the refactor is truly clean. Go through each file and check these three rules:</p>
       <ol style={{ paddingLeft: 20, margin: "6px 0" }}>
-        <li><strong>Model file</strong> — contains only data classes/structs and the UI state type. No imports from UI or networking libraries.</li>
-        <li><strong>ViewModel file</strong> — contains networking logic, state management. Imports {platform === "Android" ? "lifecycle and coroutines" : "Foundation"} but <strong>not</strong> {platform === "Android" ? "Compose" : "SwiftUI"}.</li>
-        <li><strong>View file</strong> — contains only UI code. It reads from the ViewModel but never calls an API directly.</li>
+        <li><strong>Model file</strong> — contains only data classes/structs and the UiState type. No imports from UI or networking libraries.</li>
+        <li><strong>ViewModel file</strong> — contains networking logic and state management. Imports {platform === "Android" ? "lifecycle and coroutines" : "Foundation"} but <strong>not</strong> {platform === "Android" ? "Compose" : "SwiftUI"}.</li>
+        <li><strong>View file</strong> — contains only UI code. Reads from the ViewModel but never calls an API directly.</li>
       </ol>
 
       <AiOpp>
@@ -424,23 +695,23 @@ fun AlbumScreen(
       </AiOpp>
 
       <Checkpoint num={4}>Your refactored app has at least 3 files — Model, ViewModel, and View — with clean separation between them. The app works identically to before.</Checkpoint>
-    </Step>
+    </VStep>
 
     <Section title="💡 Hints">
       <div style={{ fontSize: 13, lineHeight: 1.8 }}>
         {platform === "Android" ? (
           <>
             <p><strong>My app crashes when I add the ViewModel</strong></p>
-            <p style={{ marginLeft: 16 }}>Make sure you have the <code>lifecycle-viewmodel-compose</code> dependency in your <code>build.gradle</code>. Also ensure you're using <code>viewModel()</code> from <code>androidx.lifecycle.viewmodel.compose</code>, not creating the ViewModel with the constructor directly.</p>
+            <p style={{ marginLeft: 16 }}>Make sure you have the <code>lifecycle-viewmodel-compose</code> dependency in your <code>build.gradle</code>. Also ensure you're using <code>viewModel()</code> from <code>androidx.lifecycle.viewmodel.compose</code>, not instantiating the ViewModel with its constructor directly.</p>
             <p><strong>What's the difference between StateFlow and MutableStateFlow?</strong></p>
-            <p style={{ marginLeft: 16 }}><code>MutableStateFlow</code> lets you change the value. <code>StateFlow</code> is read-only. The pattern is: the ViewModel uses <code>MutableStateFlow</code> internally, but exposes it as <code>StateFlow</code> so the View can only read, never write.</p>
+            <p style={{ marginLeft: 16 }}><code>MutableStateFlow</code> lets you change the value. <code>StateFlow</code> is read-only. The pattern: the ViewModel uses <code>MutableStateFlow</code> internally, but exposes it as <code>StateFlow</code> so the View can only read, never write.</p>
             <p><strong>Do I need Hilt or dependency injection?</strong></p>
-            <p style={{ marginLeft: 16 }}>Not yet. For now, using the default <code>viewModel()</code> function is enough. We'll explore dependency injection later if needed for your capstone.</p>
+            <p style={{ marginLeft: 16 }}>Not yet. Using the default <code>viewModel()</code> function is enough for now. We'll look at dependency injection later if your capstone needs it.</p>
           </>
         ) : (
           <>
             <p><strong>What's the difference between @StateObject and @ObservedObject?</strong></p>
-            <p style={{ marginLeft: 16 }}><code>@StateObject</code> creates and <em>owns</em> the ViewModel — use this in the parent view that creates it. <code>@ObservedObject</code> observes a ViewModel passed in from a parent. For now, use <code>@StateObject</code>.</p>
+            <p style={{ marginLeft: 16 }}><code>@StateObject</code> creates and <em>owns</em> the ViewModel — use this in the parent View that creates it. <code>@ObservedObject</code> observes a ViewModel passed in from a parent. For now, use <code>@StateObject</code>.</p>
             <p><strong>Why @MainActor on the ViewModel?</strong></p>
             <p style={{ marginLeft: 16 }}>UI updates must happen on the main thread. <code>@MainActor</code> ensures all the ViewModel's <code>@Published</code> property changes happen on the main thread automatically.</p>
             <p><strong>My list doesn't update when data loads</strong></p>
@@ -452,9 +723,9 @@ fun AlbumScreen(
 
     <Section title="🚀 Stretch Features">
       <ul style={{ paddingLeft: 20, fontSize: 13, lineHeight: 1.8 }}>
-        <li>Add a <strong>Repository layer</strong> between the ViewModel and the network call. The ViewModel calls <code>repository.getAlbums()</code> and doesn't know whether the data comes from the network or a local cache.</li>
+        <li>Add a <strong>Repository layer</strong> between the ViewModel and the network call. The ViewModel calls <code>repository.getMovies()</code> and doesn't know whether the data comes from the network or a local cache.</li>
         <li>Extract your networking code into a separate <strong>API Service</strong> file so the ViewModel doesn't contain raw HTTP logic.</li>
-        <li>Add a <strong>pull-to-refresh</strong> gesture that calls <code>{platform === "Android" ? "viewModel.fetchAlbums()" : "viewModel.fetchAlbums()"}</code> to reload data.</li>
+        <li>Add a <strong>pull-to-refresh</strong> gesture that calls <code>{platform === "Android" ? "viewModel.fetchMovies()" : "Task { await viewModel.fetchMovies() }"}</code> to reload data.</li>
       </ul>
     </Section>
   </div>
