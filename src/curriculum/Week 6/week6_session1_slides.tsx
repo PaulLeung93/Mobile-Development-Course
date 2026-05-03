@@ -71,7 +71,6 @@ const Shell = ({ tag, tagColor = "teal", timer, title, subtitle, children, notes
   </div>
 );
 
-// Reusable layer box for diagrams
 const LayerBox = ({ label, sublabel, color, fg, width = "100%", height = 52, center = true }) => (
   <div style={{ background: color, borderRadius: 8, width, height, display: "flex", flexDirection: "column", alignItems: center ? "center" : "flex-start", justifyContent: "center", padding: center ? "0" : "0 12px", boxSizing: "border-box" }}>
     <p style={{ fontSize: 12, fontWeight: 600, color: fg, margin: 0 }}>{label}</p>
@@ -86,6 +85,70 @@ const Arrow = ({ label, color = MUTED }) => (
     {label && <p style={{ fontSize: 10, color, margin: "2px 0 0", opacity: 0.7 }}>{label}</p>}
   </div>
 );
+
+const preStyle = { margin: 0, background: "#1e1e2e", color: "#cdd6f4", fontSize: 10, padding: "8px 12px", borderRadius: 6, lineHeight: 1.6, fontFamily: "monospace", whiteSpace: "pre-wrap" as const };
+
+const OSToggle = ({ android, ios }: { [k: string]: any }) => {
+  const [platform, setPlatform] = useState<'android' | 'ios'>('android');
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+      <div style={{ display: "flex", borderRadius: 8, overflow: "hidden", border: "1px solid #e5e7eb", width: "fit-content" }}>
+        <button onClick={() => setPlatform('android')} style={{ padding: "5px 16px", fontSize: 11, fontWeight: 700, letterSpacing: ".04em", background: platform === 'android' ? PURPLE : "#fff", color: platform === 'android' ? "#fff" : MUTED, border: "none", borderRight: "1px solid #e5e7eb", cursor: "pointer" }}>
+          Android · Kotlin
+        </button>
+        <button onClick={() => setPlatform('ios')} style={{ padding: "5px 16px", fontSize: 11, fontWeight: 700, letterSpacing: ".04em", background: platform === 'ios' ? TEAL : "#fff", color: platform === 'ios' ? "#fff" : MUTED, border: "none", cursor: "pointer" }}>
+          iOS · Swift
+        </button>
+      </div>
+      {platform === 'android' ? android : ios}
+    </div>
+  );
+};
+
+const Step = ({ n, title, children, accent = PURPLE }: { [k: string]: any }) => (
+  <div style={{ marginBottom: 10, paddingLeft: 24, borderLeft: `2px solid #e5e7eb`, position: "relative" }}>
+    <div style={{ position: "absolute", left: -14, top: 0, width: 26, height: 26, borderRadius: "50%", background: "#fff", border: `2px solid ${accent}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 800, color: accent }}>
+      {n}
+    </div>
+    <p style={{ fontSize: 12, fontWeight: 700, color: TEXT, margin: "2px 0 6px" }}>{title}</p>
+    <div>{children}</div>
+  </div>
+);
+
+const ViewToggle = ({ steps, full }: { [k: string]: any }) => {
+  const [view, setView] = useState<'steps' | 'full'>('steps');
+  return (
+    <div>
+      <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 6 }}>
+        <div style={{ display: "flex", borderRadius: 20, overflow: "hidden", border: "1px solid #e5e7eb", width: "fit-content" }}>
+          <button onClick={() => setView('steps')} style={{ padding: "3px 12px", fontSize: 10, fontWeight: 700, letterSpacing: ".04em", background: view === 'steps' ? PURPLE : "#fff", color: view === 'steps' ? "#fff" : MUTED, border: "none", borderRight: "1px solid #e5e7eb", cursor: "pointer" }}>
+            Step by step
+          </button>
+          <button onClick={() => setView('full')} style={{ padding: "3px 12px", fontSize: 10, fontWeight: 700, letterSpacing: ".04em", background: view === 'full' ? PURPLE : "#fff", color: view === 'full' ? "#fff" : MUTED, border: "none", cursor: "pointer" }}>
+            Full code
+          </button>
+        </div>
+      </div>
+      {view === 'steps' ? steps : full}
+    </div>
+  );
+};
+
+const FlowBar = ({ active }: { [k: string]: any }) => {
+  const steps = ["View", "ViewModel", "Model", "ViewModel", "View"];
+  const bgs   = [PURPLE_LIGHT, TEAL_LIGHT, AMBER_LIGHT, TEAL_LIGHT, PURPLE_LIGHT];
+  const fgs   = [PURPLE_DARK, TEAL_DARK, "#633806", TEAL_DARK, PURPLE_DARK];
+  return (
+    <div style={{ display: "flex", alignItems: "center", gap: 2, marginBottom: 10, background: GRAY, borderRadius: 20, padding: "4px 10px", width: "fit-content" }}>
+      {steps.map((s, i) => (
+        <div key={i} style={{ display: "flex", alignItems: "center", gap: 2 }}>
+          {i > 0 && <span style={{ fontSize: 10, color: MUTED, margin: "0 2px" }}>→</span>}
+          <span style={{ fontSize: 10, fontWeight: i === active ? 700 : 400, color: i === active ? fgs[i] : MUTED, background: i === active ? bgs[i] : "transparent", padding: "2px 8px", borderRadius: 10 }}>{s}</span>
+        </div>
+      ))}
+    </div>
+  );
+};
 
 const slides = [
   // 1: Title
@@ -104,9 +167,9 @@ const slides = [
             "Why architecture matters — and why now",
             "The spaghetti problem — what goes wrong without it",
             "The three layers and what each one is allowed to do",
+            "Deep dives — View, ViewModel, and Model in detail",
             "Visualising the data flow through the layers",
-            "Tracing a user action end to end",
-            "The benefits — testability, resilience, teamwork",
+            "Tracing a user action — step by step through every layer",
             "Android: ViewModel + StateFlow",
             "iOS: ObservableObject + @StateObject",
           ].map((t, i) => (
@@ -159,18 +222,18 @@ const slides = [
 
   // 3: Agenda
   () => (
-    <Shell tag="Agenda" title="Today's session — 2 hours" notes="Today is heavier on concept than any previous session. Budget the full 30 minutes for the conceptual section before touching any platform-specific code. Students who understand why MVVM exists will find the implementation obvious; students who skip to the code will cargo-cult it.">
+    <Shell tag="Agenda" title="Today's session — 2 hours" notes="Today is heavier on concept than any previous session. Budget the full 35 minutes for the conceptual section — three layers overview, deep dives, and data flow — before touching any platform-specific code. Students who understand why MVVM exists will find the implementation obvious; students who skip to the code will cargo-cult it.">
       {[
-        { time: "0:00–0:05",  label: "Phase 2 framing",         desc: "What changes now that tracks split", section: null },
-        { time: "0:05–0:10",  label: "Hook",                    desc: "The spaghetti problem — what goes wrong without architecture", section: null },
-        { time: "0:10–0:20",  label: "The three layers",        desc: "What each layer is, what it is allowed to do, what it is forbidden to know", section: null },
-        { time: "0:20–0:28",  label: "Data flow visualised",    desc: "The layer diagram and tracing a user action end to end", section: null },
-        { time: "0:28–0:35",  label: "Why it matters",          desc: "Testability, resilience, team parallelism — the real benefits", section: null },
-        { time: "0:35–0:50",  label: "Android implementation",  desc: "ViewModel, StateFlow, sealed UiState, connecting to Compose", section: "android" },
-        { time: "0:50–1:05",  label: "iOS implementation",      desc: "ObservableObject, @Published, @StateObject vs @ObservedObject", section: "ios" },
-        { time: "1:05–1:10",  label: "Lab intro",               desc: "Refactoring a previous assignment to MVVM", section: null },
-        { time: "1:10–2:05",  label: "Lab — breakout rooms",    desc: "Refactor your Week 4 app to proper MVVM", section: "lab" },
-        { time: "2:05–2:10",  label: "Wrap-up",                 desc: "Capstone M1 expectations + Session 2 preview", section: "wrapup" },
+        { time: "0:00–0:05",  label: "Phase 2 framing",            desc: "What changes now that tracks split", section: null },
+        { time: "0:05–0:10",  label: "Hook",                       desc: "The spaghetti problem — what breaks without architecture", section: null },
+        { time: "0:10–0:30",  label: "The three layers",           desc: "Overview + deep dive into View, ViewModel, and Model individually", section: null },
+        { time: "0:30–0:45",  label: "Data flow",                  desc: "Layer diagram + tracing a user action step by step through every layer", section: null },
+        { time: "0:45–0:55",  label: "The benefits",               desc: "Before/after comparison, testability, rotation safety, team parallelism", section: null },
+        { time: "0:55–1:10",  label: "Implementation concepts",    desc: "UiState modelling + ViewModel ownership rules", section: null },
+        { time: "1:10–1:25",  label: "Code-along",                 desc: "Full MVVM implementation on both platforms with step-by-step view", section: "android" },
+        { time: "1:25–1:30",  label: "Lab intro",                  desc: "Refactoring a previous assignment to MVVM", section: null },
+        { time: "1:30–2:25",  label: "Lab — breakout rooms",       desc: "Refactor your Week 4 app to proper MVVM", section: "lab" },
+        { time: "2:25–2:30",  label: "Wrap-up",                    desc: "Capstone M1 expectations + Session 2 preview", section: "wrapup" },
       ].map(r => (
         <div key={r.time} style={{
           display: "flex", gap: 12, padding: "8px 0",
@@ -178,13 +241,13 @@ const slides = [
           background: r.section === "android" ? BLUE_LIGHT : r.section === "ios" ? GREEN_LIGHT : r.section === "lab" ? TEAL_LIGHT : r.section === "wrapup" ? AMBER_LIGHT : "transparent",
           borderRadius: r.section ? 6 : 0, paddingLeft: r.section ? 8 : 0, marginLeft: r.section ? -8 : 0
         }}>
-          <span style={{ fontSize: 12, minWidth: 90, flexShrink: 0, fontWeight: r.section ? 600 : 400, color: r.section === "android" ? BLUE : r.section === "ios" ? GREEN : r.section === "lab" ? TEAL_DARK : r.section === "wrapup" ? "#633806" : MUTED }}>{r.time}</span>
-          <span style={{ fontSize: 12, fontWeight: 600, minWidth: 160, flexShrink: 0, color: r.section === "android" ? BLUE : r.section === "ios" ? GREEN : r.section === "lab" ? TEAL_DARK : r.section === "wrapup" ? "#633806" : PURPLE }}>{r.label}</span>
-          <span style={{ fontSize: 12, color: r.section === "android" ? BLUE : r.section === "ios" ? GREEN : r.section === "lab" ? TEAL_DARK : r.section === "wrapup" ? "#633806" : TEXT }}>{r.desc}</span>
+          <span style={{ fontSize: 12, minWidth: 90, flexShrink: 0, fontWeight: r.section ? 600 : 400, color: r.section === "android" ? BLUE : r.section === "lab" ? TEAL_DARK : r.section === "wrapup" ? "#633806" : MUTED }}>{r.time}</span>
+          <span style={{ fontSize: 12, fontWeight: 600, minWidth: 180, flexShrink: 0, color: r.section === "android" ? BLUE : r.section === "lab" ? TEAL_DARK : r.section === "wrapup" ? "#633806" : PURPLE }}>{r.label}</span>
+          <span style={{ fontSize: 12, color: r.section === "android" ? BLUE : r.section === "lab" ? TEAL_DARK : r.section === "wrapup" ? "#633806" : TEXT }}>{r.desc}</span>
         </div>
       ))}
       <div style={{ display: "flex", gap: 14, marginTop: 10, flexWrap: "wrap" }}>
-        {[{ color: BLUE, label: "Android" }, { color: GREEN, label: "iOS" }, { color: TEAL, label: "Lab" }, { color: AMBER, label: "Wrap-up" }].map(l => (
+        {[{ color: BLUE, label: "Code-along" }, { color: TEAL, label: "Lab" }, { color: AMBER, label: "Wrap-up" }].map(l => (
           <div key={l.label} style={{ display: "flex", alignItems: "center", gap: 6 }}>
             <div style={{ width: 10, height: 10, borderRadius: 2, background: l.color }} />
             <span style={{ fontSize: 11, color: MUTED }}>{l.label}</span>
@@ -233,7 +296,7 @@ const slides = [
     </Shell>
   ),
 
-  // 5: The three layers — what they are
+  // 5: The three layers — overview
   () => (
     <Shell tag="Concept" timer="6" title="The solution — three layers with one job each" subtitle="Model · View · ViewModel" notes="Introduce each layer as a single sentence before expanding. The View renders. The ViewModel thinks. The Model stores and fetches. Students who can say this clearly already understand 80% of MVVM. The key constraint is what each layer is FORBIDDEN to know — this is more memorable than describing what it is allowed to do.">
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 10 }}>
@@ -278,7 +341,281 @@ const slides = [
     </Shell>
   ),
 
-  // 6: The layer diagram — visualised
+  // 6: View layer — deep dive
+  () => (
+    <Shell tag="View layer" tagColor="purple" timer="4" title="The View layer — render state, forward actions" subtitle="A dumb display board that reacts to what it's given" notes="The key insight here is passivity. The View is purely reactive — it receives state, it displays state, it forwards events. It never initiates work. Students often want to put logic in the View because it feels natural. The question to ask: 'If I replaced this Composable / SwiftUI View with a completely different UI, would the app still work?' If yes, the View is doing its job. If no, logic has leaked in.">
+      <div style={{ display: "grid", gridTemplateColumns: "3fr 2fr", gap: 12 }}>
+        <div>
+          <p style={{ fontSize: 12, fontWeight: 600, color: TEXT, margin: "0 0 8px" }}>What a View looks like in practice</p>
+          <OSToggle
+            android={<pre style={preStyle}>{`@Composable
+fun MovieScreen(viewModel: MovieViewModel = viewModel()) {
+
+    // 1. Observe — subscribe to the ViewModel's state stream
+    val state by viewModel.uiState.collectAsStateWithLifecycle()
+
+    // 2. Render — display whatever state dictates
+    when (state) {
+        is Loading -> CircularProgressIndicator()
+        is Success -> MovieList(
+            movies = (state as Success).movies,
+            // 3. Forward — pass ViewModel callbacks down
+            onFavourite = viewModel::onFavouriteTapped
+        )
+        is Error -> ErrorMessage(message = (state as Error).message)
+    }
+}
+
+// Child View — receives data and callbacks, nothing else
+@Composable
+fun MovieList(movies: List<Movie>, onFavourite: (Movie) -> Unit) {
+    LazyColumn {
+        items(movies) { movie ->
+            Row {
+                Text(movie.title)
+                // Tap forwards to parent callback — no logic here
+                IconButton(onClick = { onFavourite(movie) }) {
+                    Icon(Icons.Default.Favorite, null)
+                }
+            }
+        }
+    }
+}`}</pre>}
+            ios={<pre style={preStyle}>{`struct MovieScreen: View {
+
+    // 1. Observe — @StateObject keeps the ViewModel alive
+    //    and re-renders body whenever @Published changes
+    @StateObject private var viewModel = MovieViewModel()
+
+    var body: some View {
+        // 2. Render — display whatever state dictates
+        switch viewModel.uiState {
+        case .loading:
+            ProgressView()
+        case .success(let movies):
+            // 3. Forward — pass ViewModel callbacks down
+            MovieList(movies: movies,
+                onFavourite: viewModel.onFavouriteTapped)
+        case .error(let msg):
+            ErrorMessage(message: msg)
+        }
+    }
+}
+
+// Child View — receives data and callbacks, nothing else
+struct MovieList: View {
+    let movies: [Movie]
+    let onFavourite: (Movie) -> Void
+
+    var body: some View {
+        List(movies) { movie in
+            HStack {
+                Text(movie.title)
+                Spacer()
+                // Tap forwards to parent callback — no logic here
+                Button(action: { onFavourite(movie) }) {
+                    Image(systemName: "heart")
+                }
+            }
+        }
+    }
+}`}</pre>}
+          />
+        </div>
+        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+          <p style={{ fontSize: 12, fontWeight: 600, color: TEXT, margin: 0 }}>The three things a View does</p>
+          {[
+            { n: "1", label: "Observe", detail: "Subscribe to the ViewModel's state. One line of code — the framework handles the rest.", color: PURPLE_LIGHT, fg: PURPLE_DARK },
+            { n: "2", label: "Render", detail: "Display whatever the state says. Use when/switch to handle every case. No calculations, no transformations.", color: TEAL_LIGHT, fg: TEAL_DARK },
+            { n: "3", label: "Forward", detail: "When the user acts, call a ViewModel function. Never handle the result directly — that's the ViewModel's job.", color: AMBER_LIGHT, fg: "#633806" },
+          ].map(item => (
+            <div key={item.n} style={{ background: item.color, borderRadius: 8, padding: "8px 12px", display: "flex", gap: 10 }}>
+              <span style={{ fontSize: 16, fontWeight: 800, color: item.fg, flexShrink: 0 }}>{item.n}</span>
+              <div>
+                <p style={{ fontSize: 12, fontWeight: 600, color: item.fg, margin: "0 0 2px" }}>{item.label}</p>
+                <p style={{ fontSize: 11, color: item.fg, margin: 0, lineHeight: 1.4, opacity: 0.85 }}>{item.detail}</p>
+              </div>
+            </div>
+          ))}
+          <div style={{ background: "#FCEBEB", borderRadius: 8, padding: "8px 12px" }}>
+            <p style={{ fontSize: 11, fontWeight: 600, color: "#A32D2D", margin: "0 0 4px" }}>Anti-patterns to watch for</p>
+            {["if (movies.size > 10) showPagination = true  ← logic in View", "val filtered = movies.filter { it.rating > 4 }  ← transform in View", "api.getMovies()  ← network call in View"].map(t => (
+              <div key={t} style={{ fontSize: 10, fontFamily: "monospace", color: "#A32D2D", margin: "2px 0", opacity: 0.9 }}>{t}</div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </Shell>
+  ),
+
+  // 7: ViewModel layer — deep dive
+  () => (
+    <Shell tag="ViewModel layer" tagColor="teal" timer="4" title="The ViewModel layer — coordinate, transform, and expose" subtitle="The brain of the screen — it thinks so the View doesn't have to" notes="The ViewModel is doing three things: holding state, handling actions, and talking to the repository. The 'private write, public read' pattern for StateFlow / @Published is the most important technical detail — emphasise that the View can observe but never mutate state directly. The viewModelScope / @MainActor pattern is also critical: it ensures async work is tied to the ViewModel's lifecycle, not the screen's.">
+      <div style={{ display: "grid", gridTemplateColumns: "3fr 2fr", gap: 12 }}>
+        <div>
+          <p style={{ fontSize: 12, fontWeight: 600, color: TEXT, margin: "0 0 8px" }}>What a ViewModel looks like in practice</p>
+          <OSToggle
+            android={<pre style={preStyle}>{`class MovieViewModel(
+    private val repository: MovieRepository
+) : ViewModel() {
+
+    // Private write — only this class can change state
+    private val _uiState = MutableStateFlow<MovieUiState>(Loading)
+    // Public read — the View gets a read-only window
+    val uiState: StateFlow<MovieUiState> = _uiState.asStateFlow()
+
+    init { loadMovies() }
+
+    // Handles a user action — coordinates the work
+    fun onFavouriteTapped(movie: Movie) {
+        viewModelScope.launch {          // ← lifecycle-aware coroutine
+            _uiState.value = Loading     // ← show feedback immediately
+            try {
+                repository.toggleFavourite(movie)  // ← delegate to Model
+                _uiState.value = Success(repository.getMovies())
+            } catch (e: Exception) {
+                // Transform raw error → user-readable message
+                _uiState.value = Error("Could not update favourite")
+            }
+        }
+    }
+}`}</pre>}
+            ios={<pre style={preStyle}>{`class MovieViewModel: ObservableObject {
+
+    // @Published — any assignment notifies all SwiftUI observers
+    // No separate "private mutable" needed: the class itself
+    // owns the property; callers get read-only access via the VM.
+    @Published private(set) var uiState: MovieUiState = .loading
+
+    private let repository: MovieRepository
+
+    init(repository: MovieRepository = MovieRepository()) {
+        self.repository = repository
+        Task { await loadMovies() }
+    }
+
+    // Handles a user action — coordinates the work
+    func onFavouriteTapped(_ movie: Movie) {
+        uiState = .loading             // ← show feedback immediately
+        Task { @MainActor in           // ← ensures UI updates on main thread
+            do {
+                try await repository.toggleFavourite(movie) // ← delegate to Model
+                let movies = try await repository.getMovies()
+                uiState = .success(movies)
+            } catch {
+                // Transform raw error → user-readable message
+                uiState = .error("Could not update favourite")
+            }
+        }
+    }
+}`}</pre>}
+          />
+        </div>
+        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+          <p style={{ fontSize: 12, fontWeight: 600, color: TEXT, margin: 0 }}>Key ViewModel properties</p>
+          {[
+            { label: "Single source of truth", detail: "One uiState property describes everything about the screen. No separate isLoading, hasError, and data variables that can contradict each other.", color: TEAL_LIGHT, fg: TEAL_DARK },
+            { label: "Private write, public read", detail: "MutableStateFlow / @Published(set:private) means only the ViewModel can change state. The View can observe but never mutate.", color: PURPLE_LIGHT, fg: PURPLE_DARK },
+            { label: "Survives configuration changes", detail: "Android: the framework keeps the ViewModel alive across screen rotations. iOS: @StateObject ensures the same instance persists.", color: BLUE_LIGHT, fg: BLUE },
+            { label: "No UI imports", detail: "A ViewModel that imports Compose, UIKit, or SwiftUI is broken. It must be testable without a screen.", color: AMBER_LIGHT, fg: "#633806" },
+          ].map(item => (
+            <div key={item.label} style={{ background: item.color, borderRadius: 8, padding: "8px 12px" }}>
+              <p style={{ fontSize: 11, fontWeight: 600, color: item.fg, margin: "0 0 2px" }}>{item.label}</p>
+              <p style={{ fontSize: 11, color: item.fg, margin: 0, lineHeight: 1.4, opacity: 0.85 }}>{item.detail}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </Shell>
+  ),
+
+  // 8: Model layer — deep dive
+  () => (
+    <Shell tag="Model layer" tagColor="amber" timer="4" title="The Model layer — own the data, expose it cleanly" subtitle="The repository is the single door into your data" notes="Students already built repositories and DAOs in Week 5 — this is their entire Model layer. The new concept here is the Repository pattern as a facade: it hides whether data came from the network or the local cache. The ViewModel doesn't know and shouldn't care. The 'network-first, cache-fallback' pattern in the Android example is a good concrete illustration of why this abstraction is valuable.">
+      <div style={{ display: "grid", gridTemplateColumns: "3fr 2fr", gap: 12 }}>
+        <div>
+          <p style={{ fontSize: 12, fontWeight: 600, color: TEXT, margin: "0 0 8px" }}>What the Model layer looks like in practice</p>
+          <OSToggle
+            android={<pre style={preStyle}>{`// The Repository is the only door into your data.
+// The ViewModel calls it — and doesn't know or care
+// whether data came from the network or the local cache.
+class MovieRepository(
+    private val apiService: MovieApiService,
+    private val dao: MovieDao
+) {
+    suspend fun getMovies(): List<Movie> {
+        return try {
+            // Try network first
+            val movies = apiService.fetchMovies()
+            dao.insertAll(movies)   // update local cache
+            movies
+        } catch (e: Exception) {
+            // Fall back to cache — ViewModel sees the same type either way
+            dao.getAllMovies()
+        }
+    }
+
+    suspend fun toggleFavourite(movie: Movie) {
+        dao.update(movie.copy(isFavourite = !movie.isFavourite))
+    }
+}
+
+// The Model also includes:
+// interface MovieApiService { suspend fun fetchMovies(): List<Movie> }
+// interface MovieDao { suspend fun getAllMovies(): List<Movie> ... }`}</pre>}
+            ios={<pre style={preStyle}>{`// The Repository is the only door into your data.
+// The ViewModel calls it — and doesn't know or care
+// whether data came from the network or the local store.
+class MovieRepository {
+    private let apiService: MovieApiService
+    private let store: MovieStore  // SwiftData / UserDefaults wrapper
+
+    func getMovies() async throws -> [Movie] {
+        do {
+            // Try network first
+            let movies = try await apiService.fetchMovies()
+            try await store.save(movies)   // update local cache
+            return movies
+        } catch {
+            // Fall back to cache — ViewModel sees the same type either way
+            return try await store.load()
+        }
+    }
+
+    func toggleFavourite(_ movie: Movie) async throws {
+        var updated = movie
+        updated.isFavourite.toggle()
+        try await store.update(updated)
+    }
+}
+
+// The Model also includes:
+// protocol MovieApiService { func fetchMovies() async throws -> [Movie] }
+// class MovieStore { func load() async throws -> [Movie] ... }`}</pre>}
+          />
+        </div>
+        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+          <p style={{ fontSize: 12, fontWeight: 600, color: TEXT, margin: 0 }}>What lives in the Model layer</p>
+          {[
+            { label: "Repository", detail: "The facade. One class per domain area (MovieRepository, UserRepository). The ViewModel talks to this — nothing else.", color: AMBER_LIGHT, fg: "#633806" },
+            { label: "API Service", detail: "Retrofit interface (Android) or URLSession wrapper (iOS). Fetches raw data from the network.", color: BLUE_LIGHT, fg: BLUE },
+            { label: "Local storage", detail: "Room + DAO (Android) or SwiftData / UserDefaults (iOS). Persists data across app launches.", color: GREEN_LIGHT, fg: GREEN },
+          ].map(item => (
+            <div key={item.label} style={{ background: item.color, borderRadius: 8, padding: "8px 12px" }}>
+              <p style={{ fontSize: 11, fontWeight: 600, color: item.fg, margin: "0 0 2px" }}>{item.label}</p>
+              <p style={{ fontSize: 11, color: item.fg, margin: 0, lineHeight: 1.4, opacity: 0.85 }}>{item.detail}</p>
+            </div>
+          ))}
+          <div style={{ background: TEAL_LIGHT, borderRadius: 8, padding: "8px 12px" }}>
+            <p style={{ fontSize: 11, fontWeight: 600, color: TEAL_DARK, margin: "0 0 3px" }}>You already built this</p>
+            <p style={{ fontSize: 11, color: TEAL_DARK, margin: 0, lineHeight: 1.4 }}>Your Week 4 API service and Week 5 repository + DAO are the complete Model layer. The ViewModel is the only genuinely new thing today.</p>
+          </div>
+        </div>
+      </div>
+    </Shell>
+  ),
+
+  // 9: The layer diagram — visualised
   () => (
     <Shell tag="Concept" timer="6" title="The layer diagram" subtitle="One-way dependency — the rule that makes it work" notes="Draw this on a whiteboard as you talk through it. The key insight is the arrow direction: View knows about ViewModel, ViewModel knows about Model, but nothing flows back the other way. The ViewModel has no idea which View is observing it. The Model has no idea what kind of UI will display its data. This one-way dependency is what allows each layer to be developed, tested, and changed independently.">
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
@@ -320,18 +657,18 @@ const slides = [
     </Shell>
   ),
 
-  // 7: Tracing a user action end to end
+  // 10: Tracing a user action — overview
   () => (
-    <Shell tag="Concept" timer="8" title="Tracing a user action end to end" subtitle="What actually happens when a user taps a heart" notes="Walk through this step by step, slowly. This is the most important slide for building genuine understanding. Students who can trace this flow in both directions — down when the user acts, up when data returns — truly understand MVVM. Ask students to predict the next step at each stage before revealing it. The revelation that the View never calls the API directly is the key 'aha' moment.">
+    <Shell tag="Concept" timer="3" title="Tracing a user action end to end" subtitle="What actually happens when a user taps a heart — overview" notes="Use this slide to preview the five-step trace before diving into each step individually. Students should be able to predict each next step as you walk forward through the slides. The key revelation — that the View never calls the API directly — is the 'aha' moment. Let students guess before revealing.">
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
         <div>
-          <p style={{ fontSize: 12, fontWeight: 600, color: TEXT, margin: "0 0 10px" }}>User taps the heart on a movie</p>
+          <p style={{ fontSize: 12, fontWeight: 600, color: TEXT, margin: "0 0 10px" }}>User taps the heart on a movie — 5 steps</p>
           {[
             { layer: "View", dir: "↓ down", color: PURPLE_LIGHT, fg: PURPLE_DARK, action: "Button tap detected", detail: "The View calls viewModel.onFavouriteTapped(movie). That's it. The View's job is done — it has no idea what happens next." },
-            { layer: "ViewModel", dir: "↓ down", color: TEAL_LIGHT, fg: TEAL_DARK, action: "Action received, repository called", detail: "The ViewModel calls repository.toggleFavourite(movie) in a coroutine / async Task. It also sets uiState = Loading to show a spinner." },
-            { layer: "Model", dir: "↑ up", color: AMBER_LIGHT, fg: "#633806", action: "Data saved, result returned", detail: "The repository inserts or deletes the favourite in Room / SwiftData, then returns the updated list. It has no idea the result will go to a movie screen." },
-            { layer: "ViewModel", dir: "↑ up", color: TEAL_LIGHT, fg: TEAL_DARK, action: "State updated", detail: "The ViewModel receives the updated list and emits a new Success state via StateFlow / @Published. Any observer will receive this automatically." },
-            { layer: "View", dir: "✓ done", color: PURPLE_LIGHT, fg: PURPLE_DARK, action: "UI re-renders", detail: "The View, which is observing the StateFlow / @Published property, automatically re-renders. The heart icon updates. No manual refresh triggered — it just happens." },
+            { layer: "ViewModel", dir: "↓ down", color: TEAL_LIGHT, fg: TEAL_DARK, action: "Action received, repository called", detail: "The ViewModel sets state to Loading, then calls repository.toggleFavourite(movie) in a coroutine / async Task." },
+            { layer: "Model", dir: "↑ up", color: AMBER_LIGHT, fg: "#633806", action: "Data saved, result returned", detail: "The repository writes to the database, then returns the updated list. It has no idea the result will go to a movie screen." },
+            { layer: "ViewModel", dir: "↑ up", color: TEAL_LIGHT, fg: TEAL_DARK, action: "State updated", detail: "The ViewModel emits a new Success state via StateFlow / @Published. Any observer will receive this automatically." },
+            { layer: "View", dir: "✓ done", color: PURPLE_LIGHT, fg: PURPLE_DARK, action: "UI re-renders", detail: "The View, observing the state stream, automatically re-renders. The heart icon updates — no manual refresh triggered." },
           ].map((step, i) => (
             <div key={i} style={{ display: "flex", gap: 10, marginBottom: 8 }}>
               <div style={{ display: "flex", flexDirection: "column", alignItems: "center", flexShrink: 0 }}>
@@ -350,27 +687,425 @@ const slides = [
           ))}
         </div>
         <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-          <p style={{ fontSize: 12, fontWeight: 600, color: TEXT, margin: 0 }}>The key observations</p>
+          <p style={{ fontSize: 12, fontWeight: 600, color: TEXT, margin: 0 }}>The pattern is always the same</p>
+          <Info>{"User action → View → ViewModel → Model → ViewModel → View. Every feature you build in your capstone follows this exact path. The next five slides walk through each step with real code."}</Info>
           {[
-            { title: "The View never calls the API", detail: "Every network or database operation goes through the ViewModel → repository chain. The View only ever calls ViewModel functions." },
-            { title: "The UI update is automatic", detail: "The View didn't need to be told to refresh. It was observing the state stream — when the stream emitted, the UI updated. No manual invalidation." },
-            { title: "Each layer did exactly one thing", detail: "The View forwarded a tap. The ViewModel coordinated the work. The repository saved the data. None of them needed to know how the others worked internally." },
-            { title: "The flow is always the same", detail: "User action → View → ViewModel → Model → ViewModel → View. Every feature in your capstone will follow this exact path." },
+            { title: "The View never calls the API", detail: "Every network or database operation goes through ViewModel → repository. The View only ever calls ViewModel functions." },
+            { title: "The UI update is automatic", detail: "The View didn't need to be told to refresh. It was observing the state stream — when the stream emitted, the UI updated." },
+            { title: "Each layer did exactly one thing", detail: "View forwarded a tap. ViewModel coordinated. Repository saved data. None needed to know how the others worked internally." },
           ].map(obs => (
             <div key={obs.title} style={{ background: PURPLE_LIGHT, borderRadius: 8, padding: "10px 12px" }}>
               <p style={{ fontSize: 12, fontWeight: 600, color: PURPLE_DARK, margin: "0 0 3px" }}>{obs.title}</p>
               <p style={{ fontSize: 11, color: PURPLE_DARK, margin: 0, lineHeight: 1.5, opacity: 0.85 }}>{obs.detail}</p>
             </div>
           ))}
-          <Info>{"User action → View → ViewModel → Model → ViewModel → View. Every feature you build in your capstone follows this exact path."}</Info>
         </div>
       </div>
     </Shell>
   ),
 
-  // 8: What it looks like before vs after — diagram
+  // 11: Trace step 1 — View forwards the action
   () => (
-    <Shell tag="Concept" timer="5" title="Before and after — the structural shift" subtitle="From tangled to layered" notes="This is a visual comparison, not code yet. The left diagram shows the chaotic state — state, network, UI, and business logic all pointing at each other with no clear ownership. The right shows the clean layered version. Ask students: in the left diagram, if the API response format changes, how many things do you need to touch? In the right diagram? The answer (everything vs just the repository) makes the case for MVVM better than any explanation.">
+    <Shell tag="Trace · Step 1" tagColor="purple" timer="2" title="Step 1 — View detects the tap and forwards it" subtitle="The View's entire job fits in one line">
+      <FlowBar active={0} />
+      <div style={{ display: "grid", gridTemplateColumns: "3fr 2fr", gap: 12 }}>
+        <OSToggle
+          android={<pre style={preStyle}>{`@Composable
+fun MovieRow(
+    movie: Movie,
+    onFavourite: (Movie) -> Unit   // callback from ViewModel
+) {
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        Text(movie.title, modifier = Modifier.weight(1f))
+
+        IconButton(
+            // ← THIS is the View's entire responsibility:
+            //   forward the tap to whoever provided the callback.
+            //   The View does not know what happens next.
+            onClick = { onFavourite(movie) }
+        ) {
+            Icon(
+                imageVector = if (movie.isFavourite)
+                    Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
+                contentDescription = "Toggle favourite"
+            )
+        }
+    }
+}
+
+// In MovieScreen, the callback comes from the ViewModel:
+// onFavourite = viewModel::onFavouriteTapped`}</pre>}
+          ios={<pre style={preStyle}>{`struct MovieRow: View {
+    let movie: Movie
+    let onFavourite: (Movie) -> Void   // callback from ViewModel
+
+    var body: some View {
+        HStack {
+            Text(movie.title)
+            Spacer()
+            Button(
+                // ← THIS is the View's entire responsibility:
+                //   forward the tap to whoever provided the callback.
+                //   The View does not know what happens next.
+                action: { onFavourite(movie) }
+            ) {
+                Image(systemName: movie.isFavourite
+                    ? "heart.fill" : "heart")
+                    .foregroundColor(movie.isFavourite ? .red : .gray)
+            }
+        }
+    }
+}
+
+// In MovieScreen, the callback comes from the ViewModel:
+// onFavourite: viewModel.onFavouriteTapped`}</pre>}
+        />
+        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+          <div style={{ background: PURPLE_LIGHT, borderRadius: 8, padding: "10px 12px" }}>
+            <p style={{ fontSize: 12, fontWeight: 600, color: PURPLE_DARK, margin: "0 0 4px" }}>What just happened</p>
+            <p style={{ fontSize: 11, color: PURPLE_DARK, margin: 0, lineHeight: 1.5 }}>The user tapped. The View detected it. The View called the callback. The View's job is complete — it has no knowledge of what the callback will do.</p>
+          </div>
+          <div style={{ background: TEAL_LIGHT, borderRadius: 8, padding: "10px 12px" }}>
+            <p style={{ fontSize: 12, fontWeight: 600, color: TEAL_DARK, margin: "0 0 4px" }}>Why pass a callback instead of the ViewModel?</p>
+            <p style={{ fontSize: 11, color: TEAL_DARK, margin: 0, lineHeight: 1.5 }}>MovieRow doesn't need to know about MovieViewModel. By accepting a plain callback, MovieRow is reusable in any context — a watchlist, a favourites tab, a search result. No ViewModel dependency needed.</p>
+          </div>
+          <div style={{ background: GRAY, borderRadius: 8, padding: "10px 12px" }}>
+            <p style={{ fontSize: 11, fontWeight: 600, color: MUTED, margin: "0 0 3px" }}>Handed off to →</p>
+            <p style={{ fontSize: 11, color: TEXT, margin: 0 }}>The ViewModel's <code style={{ fontFamily: "monospace", fontSize: 10 }}>onFavouriteTapped(movie)</code> function.</p>
+          </div>
+        </div>
+      </div>
+    </Shell>
+  ),
+
+  // 12: Trace step 2 — ViewModel coordinates
+  () => (
+    <Shell tag="Trace · Step 2" tagColor="teal" timer="2" title="Step 2 — ViewModel receives the action and coordinates" subtitle="Sets loading state, then delegates to the repository">
+      <FlowBar active={1} />
+      <div style={{ display: "grid", gridTemplateColumns: "3fr 2fr", gap: 12 }}>
+        <OSToggle
+          android={<pre style={preStyle}>{`class MovieViewModel(
+    private val repository: MovieRepository
+) : ViewModel() {
+
+    private val _uiState = MutableStateFlow<MovieUiState>(Loading)
+    val uiState: StateFlow<MovieUiState> = _uiState.asStateFlow()
+
+    fun onFavouriteTapped(movie: Movie) {
+        viewModelScope.launch {
+            // 2a. Signal to the UI that work is in progress
+            _uiState.value = Loading
+
+            try {
+                // 2b. Delegate to the Model — ViewModel never
+                //     touches the database or network directly
+                repository.toggleFavourite(movie)
+
+                // 2c. Fetch the refreshed list
+                val updated = repository.getMovies()
+                _uiState.value = Success(updated)
+
+            } catch (e: Exception) {
+                // 2d. Transform the raw error into a user message
+                _uiState.value = Error("Could not update favourite")
+            }
+        }
+        // viewModelScope ties the coroutine to this ViewModel's
+        // lifecycle — auto-cancelled if the ViewModel is cleared
+    }
+}`}</pre>}
+          ios={<pre style={preStyle}>{`class MovieViewModel: ObservableObject {
+
+    @Published private(set) var uiState: MovieUiState = .loading
+    private let repository: MovieRepository
+
+    func onFavouriteTapped(_ movie: Movie) {
+        // 2a. Signal to the UI that work is in progress
+        uiState = .loading
+
+        Task { @MainActor in
+            do {
+                // 2b. Delegate to the Model — ViewModel never
+                //     touches the database or network directly
+                try await repository.toggleFavourite(movie)
+
+                // 2c. Fetch the refreshed list
+                let updated = try await repository.getMovies()
+                uiState = .success(updated)
+
+            } catch {
+                // 2d. Transform the raw error into a user message
+                uiState = .error("Could not update favourite")
+            }
+        }
+        // @MainActor ensures all uiState assignments happen
+        // on the main thread, which SwiftUI requires
+    }
+}`}</pre>}
+        />
+        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+          <div style={{ background: TEAL_LIGHT, borderRadius: 8, padding: "10px 12px" }}>
+            <p style={{ fontSize: 12, fontWeight: 600, color: TEAL_DARK, margin: "0 0 4px" }}>What just happened</p>
+            <p style={{ fontSize: 11, color: TEAL_DARK, margin: 0, lineHeight: 1.5 }}>The ViewModel received the action, immediately gave the UI feedback (Loading state), then handed off the actual data work to the repository — which lives in the Model layer.</p>
+          </div>
+          <div style={{ background: PURPLE_LIGHT, borderRadius: 8, padding: "10px 12px" }}>
+            <p style={{ fontSize: 12, fontWeight: 600, color: PURPLE_DARK, margin: "0 0 4px" }}>Why set Loading first?</p>
+            <p style={{ fontSize: 11, color: PURPLE_DARK, margin: 0, lineHeight: 1.5 }}>The async operation may take 200ms or 2 seconds. Setting Loading immediately shows a spinner without waiting. The user gets instant feedback that their tap was registered.</p>
+          </div>
+          <div style={{ background: GRAY, borderRadius: 8, padding: "10px 12px" }}>
+            <p style={{ fontSize: 11, fontWeight: 600, color: MUTED, margin: "0 0 3px" }}>Handed off to →</p>
+            <p style={{ fontSize: 11, color: TEXT, margin: 0 }}>The repository's <code style={{ fontFamily: "monospace", fontSize: 10 }}>toggleFavourite(movie)</code> and <code style={{ fontFamily: "monospace", fontSize: 10 }}>getMovies()</code> functions in the Model layer.</p>
+          </div>
+        </div>
+      </div>
+    </Shell>
+  ),
+
+  // 13: Trace step 3 — Model executes
+  () => (
+    <Shell tag="Trace · Step 3" tagColor="amber" timer="2" title="Step 3 — Model executes the data operation" subtitle="The repository writes and returns — knowing nothing about the UI">
+      <FlowBar active={2} />
+      <div style={{ display: "grid", gridTemplateColumns: "3fr 2fr", gap: 12 }}>
+        <OSToggle
+          android={<pre style={preStyle}>{`class MovieRepository(
+    private val apiService: MovieApiService,
+    private val dao: MovieDao
+) {
+    // The repository has NO idea:
+    // — which screen called this
+    // — what the result will be shown in
+    // — whether there's even a UI running at all
+
+    suspend fun toggleFavourite(movie: Movie) {
+        // Write the change to the local database
+        val updated = movie.copy(isFavourite = !movie.isFavourite)
+        dao.update(updated)
+
+        // Optionally sync with the server in the background
+        // apiService.syncFavourites(listOf(updated))
+    }
+
+    suspend fun getMovies(): List<Movie> {
+        return try {
+            val movies = apiService.fetchMovies()
+            dao.insertAll(movies)
+            movies
+        } catch (e: Exception) {
+            // Network failed — return cached data
+            dao.getAllMovies()
+        }
+    }
+}`}</pre>}
+          ios={<pre style={preStyle}>{`class MovieRepository {
+    private let apiService: MovieApiService
+    private let store: MovieStore
+
+    // The repository has NO idea:
+    // — which ViewModel called this
+    // — what the result will be shown in
+    // — whether there's even a UI running at all
+
+    func toggleFavourite(_ movie: Movie) async throws {
+        // Write the change to local storage
+        var updated = movie
+        updated.isFavourite.toggle()
+        try await store.update(updated)
+
+        // Optionally sync with the server in the background
+        // try? await apiService.syncFavourites([updated])
+    }
+
+    func getMovies() async throws -> [Movie] {
+        do {
+            let movies = try await apiService.fetchMovies()
+            try await store.save(movies)
+            return movies
+        } catch {
+            // Network failed — return cached data
+            return try await store.load()
+        }
+    }
+}`}</pre>}
+        />
+        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+          <div style={{ background: AMBER_LIGHT, borderRadius: 8, padding: "10px 12px" }}>
+            <p style={{ fontSize: 12, fontWeight: 600, color: "#633806", margin: "0 0 4px" }}>What just happened</p>
+            <p style={{ fontSize: 11, color: "#633806", margin: 0, lineHeight: 1.5 }}>The repository updated the local database and fetched the refreshed list. It returned plain data — a List{`<Movie>`} / [Movie]. No UI types, no state wrappers.</p>
+          </div>
+          <div style={{ background: TEAL_LIGHT, borderRadius: 8, padding: "10px 12px" }}>
+            <p style={{ fontSize: 12, fontWeight: 600, color: TEAL_DARK, margin: "0 0 4px" }}>Why the network-first / cache-fallback pattern?</p>
+            <p style={{ fontSize: 11, color: TEAL_DARK, margin: 0, lineHeight: 1.5 }}>This logic is hidden inside the repository. The ViewModel calls getMovies() and always gets data — it doesn't need to know whether the network succeeded. Swapping the strategy later is a one-file change.</p>
+          </div>
+          <div style={{ background: GRAY, borderRadius: 8, padding: "10px 12px" }}>
+            <p style={{ fontSize: 11, fontWeight: 600, color: MUTED, margin: "0 0 3px" }}>Returned to →</p>
+            <p style={{ fontSize: 11, color: TEXT, margin: 0 }}>The ViewModel, which is awaiting the result inside its coroutine / Task.</p>
+          </div>
+        </div>
+      </div>
+    </Shell>
+  ),
+
+  // 14: Trace step 4 — ViewModel emits new state
+  () => (
+    <Shell tag="Trace · Step 4" tagColor="teal" timer="2" title="Step 4 — ViewModel receives the result and emits new state" subtitle="One assignment triggers every observer automatically">
+      <FlowBar active={3} />
+      <div style={{ display: "grid", gridTemplateColumns: "3fr 2fr", gap: 12 }}>
+        <OSToggle
+          android={<pre style={preStyle}>{`fun onFavouriteTapped(movie: Movie) {
+    viewModelScope.launch {
+        _uiState.value = Loading
+
+        try {
+            repository.toggleFavourite(movie)
+            val updated = repository.getMovies()
+
+            // ← THIS is the state emission.
+            // Assigning to _uiState.value pushes a new value
+            // into the StateFlow. Every collector — regardless
+            // of how many screens are observing — receives this
+            // automatically. The ViewModel doesn't know who's
+            // listening or how many observers there are.
+            _uiState.value = Success(updated)
+
+        } catch (e: Exception) {
+            // Same mechanism for errors — one assignment,
+            // all observers update.
+            _uiState.value = Error("Could not update favourite")
+        }
+    }
+}
+
+// Note: _uiState is private — only the ViewModel can emit.
+// Callers receive uiState: StateFlow<...> which is read-only.`}</pre>}
+          ios={<pre style={preStyle}>{`func onFavouriteTapped(_ movie: Movie) {
+    uiState = .loading
+
+    Task { @MainActor in
+        do {
+            try await repository.toggleFavourite(movie)
+            let updated = try await repository.getMovies()
+
+            // ← THIS is the state emission.
+            // Assigning to @Published var uiState triggers
+            // Combine's objectWillChange publisher, which tells
+            // every @StateObject and @ObservedObject observing
+            // this ViewModel to re-render their body.
+            // The ViewModel doesn't know which views those are.
+            uiState = .success(updated)
+
+        } catch {
+            // Same mechanism for errors.
+            uiState = .error("Could not update favourite")
+        }
+    }
+}
+
+// @MainActor ensures these assignments happen on the main
+// thread — required for UI updates in SwiftUI.`}</pre>}
+        />
+        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+          <div style={{ background: TEAL_LIGHT, borderRadius: 8, padding: "10px 12px" }}>
+            <p style={{ fontSize: 12, fontWeight: 600, color: TEAL_DARK, margin: "0 0 4px" }}>What just happened</p>
+            <p style={{ fontSize: 11, color: TEAL_DARK, margin: 0, lineHeight: 1.5 }}>The ViewModel assigned a new Success state. This single assignment is the entire notification mechanism — StateFlow / @Published automatically fans out to all observers.</p>
+          </div>
+          <div style={{ background: PURPLE_LIGHT, borderRadius: 8, padding: "10px 12px" }}>
+            <p style={{ fontSize: 12, fontWeight: 600, color: PURPLE_DARK, margin: "0 0 4px" }}>The ViewModel still doesn't know about the View</p>
+            <p style={{ fontSize: 11, color: PURPLE_DARK, margin: 0, lineHeight: 1.5 }}>The ViewModel emitted. It doesn't know whether 1 or 10 screens are observing, or whether the device is in landscape mode or portrait. It just emitted — the observers handle the rest.</p>
+          </div>
+          <div style={{ background: GRAY, borderRadius: 8, padding: "10px 12px" }}>
+            <p style={{ fontSize: 11, fontWeight: 600, color: MUTED, margin: "0 0 3px" }}>Flowing up to →</p>
+            <p style={{ fontSize: 11, color: TEXT, margin: 0 }}>Every View that is collecting / observing the ViewModel's state property.</p>
+          </div>
+        </div>
+      </div>
+    </Shell>
+  ),
+
+  // 15: Trace step 5 — View auto-renders
+  () => (
+    <Shell tag="Trace · Step 5" tagColor="purple" timer="2" title="Step 5 — View receives the new state and re-renders" subtitle="No manual refresh. No explicit notification. It just happens.">
+      <FlowBar active={4} />
+      <div style={{ display: "grid", gridTemplateColumns: "3fr 2fr", gap: 12 }}>
+        <OSToggle
+          android={<pre style={preStyle}>{`@Composable
+fun MovieScreen(viewModel: MovieViewModel = viewModel()) {
+
+    // collectAsStateWithLifecycle() subscribes to the StateFlow.
+    // Whenever the ViewModel emits a new value, Compose
+    // automatically schedules a recomposition of this function.
+    // No callbacks. No manual invalidation. No notifyDataSetChanged().
+    val state by viewModel.uiState.collectAsStateWithLifecycle()
+
+    when (state) {
+        is Loading -> CircularProgressIndicator()
+
+        is Success -> {
+            // This branch re-runs with the new movie list.
+            // The movie whose isFavourite changed is now in the list
+            // with the updated value — the heart icon flips.
+            val movies = (state as Success).movies
+            LazyColumn {
+                items(movies) { movie ->
+                    MovieRow(movie = movie,
+                        onFavourite = viewModel::onFavouriteTapped)
+                }
+            }
+        }
+        is Error -> ErrorBanner((state as Error).message)
+    }
+}`}</pre>}
+          ios={<pre style={preStyle}>{`struct MovieScreen: View {
+    // @StateObject subscribes to all @Published changes.
+    // When the ViewModel assigns uiState, SwiftUI automatically
+    // calls body again on the main thread.
+    // No callbacks. No explicit refresh. No reloadData().
+    @StateObject private var viewModel = MovieViewModel()
+
+    var body: some View {
+        switch viewModel.uiState {
+        case .loading:
+            ProgressView()
+
+        case .success(let movies):
+            // body re-runs with the new movie array.
+            // The movie whose isFavourite changed is now
+            // in the array with the updated value — heart flips.
+            List(movies) { movie in
+                MovieRow(movie: movie,
+                    onFavourite: viewModel.onFavouriteTapped)
+            }
+
+        case .error(let msg):
+            ErrorBanner(message: msg)
+        }
+    }
+}`}</pre>}
+        />
+        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+          <div style={{ background: PURPLE_LIGHT, borderRadius: 8, padding: "10px 12px" }}>
+            <p style={{ fontSize: 12, fontWeight: 600, color: PURPLE_DARK, margin: "0 0 4px" }}>What just happened</p>
+            <p style={{ fontSize: 11, color: PURPLE_DARK, margin: 0, lineHeight: 1.5 }}>The state stream emitted. The framework re-ran the View. The heart icon now reflects the updated value — driven entirely by the new state, not by any imperative command from the ViewModel.</p>
+          </div>
+          <div style={{ background: TEAL_LIGHT, borderRadius: 8, padding: "10px 12px" }}>
+            <p style={{ fontSize: 12, fontWeight: 600, color: TEAL_DARK, margin: "0 0 4px" }}>The complete loop</p>
+            <div style={{ fontSize: 11, color: TEAL_DARK, lineHeight: 1.7 }}>
+              {["View forwards tap →", "ViewModel sets Loading →", "Repository saves + returns →", "ViewModel emits Success →", "View re-renders ✓"].map((s, i) => (
+                <div key={i} style={{ display: "flex", gap: 6 }}>
+                  <span style={{ fontWeight: 700, minWidth: 16 }}>{i + 1}.</span>
+                  <span>{s}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+          <Info>{"Every feature in your capstone follows this exact five-step loop. Once you can trace any action through all five steps, you understand MVVM."}</Info>
+        </div>
+      </div>
+    </Shell>
+  ),
+
+  // 16: What it looks like before vs after — diagram
+  () => (
+    <Shell tag="Concept" timer="5" title="Before and after — the structural shift" subtitle="From tangled to layered" notes="This is a visual comparison, not code yet. Ask students: in the left diagram, if the API response format changes, how many things do you need to touch? In the right diagram? The answer (everything vs just the repository) makes the case for MVVM better than any explanation.">
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
         <div>
           <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
@@ -431,7 +1166,7 @@ const slides = [
     </Shell>
   ),
 
-  // 9: Why it matters — the real benefits
+  // 17: Why it matters — the real benefits
   () => (
     <Shell tag="Concept" timer="5" title="Why the separation is worth the extra files" subtitle="The payoff becomes obvious at capstone scale" notes="Students sometimes resist MVVM because it feels like more files for a small app. Acknowledge that — then make the case that a capstone built by 3 people over 4 weeks is not a small app. The team parallelism point is particularly compelling: two people can work on the ViewModel and repository while the third builds the UI, with no merge conflicts.">
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 10 }}>
@@ -452,7 +1187,7 @@ const slides = [
     </Shell>
   ),
 
-  // 10: Connecting to what students already built
+  // 18: Connecting to what students already built
   () => (
     <Shell tag="Connection" timer="3" title="You already built the Model layer" subtitle="Week 5 gave you everything below the ViewModel" notes="This slide reduces anxiety before the implementation slides. Students have already built repositories, DAOs, and DataStore wrappers — that is the entire Model layer. The ViewModel is the only genuinely new thing today. Keep this slide to 3 minutes — it is a reassurance beat, not a teaching beat.">
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 10 }}>
@@ -477,12 +1212,274 @@ const slides = [
     </Shell>
   ),
 
-  // 11: Android — ViewModel + StateFlow
+  // 19: UiState — modelling every possible screen state
   () => (
-    <Shell tag="Android · ViewModel" tagColor="blue" timer="8" title="Android — ViewModel + StateFlow" subtitle="The canonical implementation" notes="Walk through in three beats: the UiState sealed class, the ViewModel itself, then how it connects to Compose. The sealed class is the key pattern — it makes all possible screen states explicit and compiler-enforced. Students who understand the sealed class pattern will find the ViewModel code almost self-explanatory.">
-      <div style={{ display: "flex", gap: 12 }}>
-        <CodePane title="Kotlin — MovieViewModel.kt" accent={BLUE}>{`// Sealed class — all possible screen states, explicitly modelled
-sealed class MovieUiState {
+    <Shell tag="Concept" timer="5" title="UiState — modelling every possible screen state" subtitle="Why three separate booleans always break down" notes="This slide is the conceptual key to the sealed class / enum pattern. The boolean trap is something students will immediately recognise from their own code. The compiler enforcement point — that the when/switch statement forces you to handle every case — is the most important thing to convey.">
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 10 }}>
+        <div style={{ background: "#FCEBEB", borderRadius: 8, padding: "12px 14px" }}>
+          <p style={{ fontSize: 12, fontWeight: 600, color: "#A32D2D", margin: "0 0 8px" }}>The boolean trap</p>
+          <pre style={{ ...preStyle, background: "rgba(162,45,45,0.08)", color: "#791F1F" }}>{`// Which combination is valid?
+var isLoading = false
+var hasError  = false
+var movies    = emptyList()
+
+// isLoading=true AND hasError=true? Possible.
+// isLoading=false, hasError=false, movies=[]? Also possible.
+// There are 8 combinations — only 3 are meaningful.
+// You end up writing guards for states that should never exist.`}</pre>
+          <p style={{ fontSize: 11, color: "#A32D2D", margin: "8px 0 0", lineHeight: 1.5 }}>Multiple booleans allow impossible states. You write extra guards for combinations that should never exist — and sometimes forget one.</p>
+        </div>
+        <div style={{ background: TEAL_LIGHT, borderRadius: 8, padding: "12px 14px" }}>
+          <p style={{ fontSize: 12, fontWeight: 600, color: TEAL_DARK, margin: "0 0 8px" }}>The sealed class / enum fix</p>
+          <OSToggle
+            android={<pre style={preStyle}>{`sealed class MovieUiState {
+    object Loading : MovieUiState()
+    data class Success(
+        val movies: List<Movie>
+    ) : MovieUiState()
+    data class Error(
+        val message: String
+    ) : MovieUiState()
+}
+
+// The compiler forces you to handle every case:
+when (state) {
+    is Loading -> CircularProgressIndicator()
+    is Success -> MovieList(state.movies)
+    is Error   -> ErrorBanner(state.message)
+    // Miss a branch? Compile error. Not a runtime crash.
+}`}</pre>}
+            ios={<pre style={preStyle}>{`enum MovieUiState {
+    case loading
+    case success([Movie])
+    case error(String)
+}
+
+// The compiler forces you to handle every case:
+switch viewModel.uiState {
+case .loading:
+    ProgressView()
+case .success(let movies):
+    MovieList(movies: movies)
+case .error(let msg):
+    ErrorBanner(message: msg)
+// Miss a branch? Compiler warning. Not a runtime crash.
+}`}</pre>}
+          />
+          <p style={{ fontSize: 11, color: TEAL_DARK, margin: "8px 0 0", lineHeight: 1.5 }}>Exactly three states. Only one can be active at a time. The compiler enforces exhaustive handling.</p>
+        </div>
+      </div>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8 }}>
+        {[
+          { label: "Loading", detail: "Show a spinner. No data available yet.", color: PURPLE_LIGHT, fg: PURPLE_DARK },
+          { label: "Success", detail: "Carries the data payload. Render the list.", color: TEAL_LIGHT, fg: TEAL_DARK },
+          { label: "Error", detail: "Carries the message string. Show a banner.", color: AMBER_LIGHT, fg: "#633806" },
+        ].map(s => (
+          <div key={s.label} style={{ background: s.color, borderRadius: 8, padding: "8px 12px" }}>
+            <p style={{ fontSize: 12, fontWeight: 600, color: s.fg, margin: "0 0 2px" }}>{s.label}</p>
+            <p style={{ fontSize: 11, color: s.fg, margin: 0, opacity: 0.85 }}>{s.detail}</p>
+          </div>
+        ))}
+      </div>
+    </Shell>
+  ),
+
+  // 20: ViewModel ownership — who creates it?
+  () => (
+    <Shell tag="Concept" timer="5" title="ViewModel ownership — who creates it?" subtitle="The most common source of mysterious state resets" notes="This is a short but important slide. The mistake of calling MovieViewModel() directly (Android) or using @ObservedObject where @StateObject is needed (iOS) causes state to be wiped on every recomposition / re-render. Students who hit this bug spend hours confused. A five-minute explanation now saves them that pain.">
+      <OSToggle
+        android={
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+            <div style={{ background: BLUE_LIGHT, borderRadius: 8, padding: "12px 14px" }}>
+              <p style={{ fontSize: 12, fontWeight: 600, color: BLUE, margin: "0 0 6px" }}>viewModel() — let the framework own it</p>
+              <pre style={preStyle}>{`@Composable
+fun MovieScreen(
+    // viewModel() finds or creates the ViewModel
+    // scoped to this screen's lifecycle.
+    // Survives recompositions AND rotation.
+    viewModel: MovieViewModel = viewModel()
+) {
+    val state by viewModel.uiState
+        .collectAsStateWithLifecycle()
+    // ...
+}
+
+// ✗ NEVER do this — creates a new instance
+//   on every recomposition, wiping all state:
+// val vm = MovieViewModel(repository)`}</pre>
+              <p style={{ fontSize: 11, color: BLUE, margin: "8px 0 0", lineHeight: 1.5 }}>Never write <code style={{ fontFamily: "monospace", fontSize: 10 }}>MovieViewModel()</code> inside a Composable directly — it resets on every recomposition.</p>
+            </div>
+            <div style={{ background: PURPLE_LIGHT, borderRadius: 8, padding: "12px 14px" }}>
+              <p style={{ fontSize: 12, fontWeight: 600, color: PURPLE_DARK, margin: "0 0 6px" }}>Pass data down, not the ViewModel</p>
+              <pre style={preStyle}>{`// Root screen — creates and owns the ViewModel
+@Composable
+fun MovieScreen() {
+    val vm: MovieViewModel = viewModel()
+    MovieList(
+        movies = (vm.uiState.value as? Success)?.movies ?: emptyList(),
+        onFavourite = vm::onFavouriteTapped
+    )
+}
+
+// Child — never calls viewModel() itself
+@Composable
+fun MovieList(
+    movies: List<Movie>,
+    onFavourite: (Movie) -> Unit
+) { /* renders only */ }`}</pre>
+              <p style={{ fontSize: 11, color: PURPLE_DARK, margin: "8px 0 0", lineHeight: 1.5 }}>Pass state and callbacks to children — not the ViewModel itself. Keeps child Composables reusable and testable in isolation.</p>
+            </div>
+          </div>
+        }
+        ios={
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+            <div style={{ background: GREEN_LIGHT, borderRadius: 8, padding: "12px 14px" }}>
+              <p style={{ fontSize: 12, fontWeight: 600, color: GREEN, margin: "0 0 6px" }}>@StateObject — creates and owns</p>
+              <pre style={preStyle}>{`struct MovieScreen: View {
+    // @StateObject creates the ViewModel once
+    // and keeps it alive for this view's lifetime.
+    // SwiftUI will NOT recreate it on re-renders.
+    @StateObject private var viewModel
+        = MovieViewModel()
+
+    var body: some View { ... }
+}
+
+// ✗ NEVER use @ObservedObject to create:
+// @ObservedObject var viewModel = MovieViewModel()
+// — recreated on every re-render, state wiped`}</pre>
+              <p style={{ fontSize: 11, color: GREEN, margin: "8px 0 0", lineHeight: 1.5 }}>Use @StateObject at the root of a screen hierarchy. It creates the ViewModel once and owns it.</p>
+            </div>
+            <div style={{ background: TEAL_LIGHT, borderRadius: 8, padding: "12px 14px" }}>
+              <p style={{ fontSize: 12, fontWeight: 600, color: TEAL_DARK, margin: "0 0 6px" }}>@ObservedObject — receives from parent</p>
+              <pre style={preStyle}>{`struct MovieListView: View {
+    // @ObservedObject observes a ViewModel
+    // that was created and owned by a parent view.
+    @ObservedObject var viewModel: MovieViewModel
+
+    var body: some View { ... }
+}
+
+// In the parent:
+MovieListView(viewModel: viewModel)
+
+// Rule of thumb:
+// @StateObject  → "I create this"
+// @ObservedObject → "I receive this"`}</pre>
+              <p style={{ fontSize: 11, color: TEAL_DARK, margin: "8px 0 0", lineHeight: 1.5 }}>Use @ObservedObject only when passing a ViewModel down from a parent. Never create a new instance with @ObservedObject.</p>
+            </div>
+          </div>
+        }
+      />
+      <div style={{ background: "#FCEBEB", borderRadius: 8, padding: "8px 12px", marginTop: 8 }}>
+        <p style={{ fontSize: 11, color: "#791F1F", margin: 0 }}><strong>Rule:</strong> Android — use <code style={{ fontFamily: "monospace", fontSize: 10 }}>viewModel()</code>, never <code style={{ fontFamily: "monospace", fontSize: 10 }}>MovieViewModel()</code> directly. &nbsp; iOS — @StateObject at the screen root, @ObservedObject when passing down.</p>
+      </div>
+    </Shell>
+  ),
+
+  // 21: Code-along — implementing MVVM (merged Android + iOS)
+  () => (
+    <Shell tag="Code-along" timer="15" title="Implementing MVVM — the full pattern" subtitle="ViewModel + UiState on both platforms" notes="Walk through Step view platform by platform — Android first, then iOS, calling out the parallels at each step. Then flip to Full code so students can see the complete file before the lab. Key callouts: sealed class vs enum (same purpose, different syntax); private MutableStateFlow vs @Published private(set) (same private-write pattern); viewModelScope.launch vs Task @MainActor; collectAsStateWithLifecycle vs @StateObject.">
+      <div style={{ marginTop: 8 }}>
+        <ViewToggle
+          steps={
+            <OSToggle
+              android={
+                <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                  <Step n={1} title="Sealed class — model every screen state explicitly">
+                    <pre style={preStyle}>{`sealed class MovieUiState {
+    object Loading : MovieUiState()
+    data class Success(val movies: List<Movie>) : MovieUiState()
+    data class Error(val message: String) : MovieUiState()
+}`}</pre>
+                  </Step>
+                  <Step n={2} title="ViewModel class — private write, public read">
+                    <pre style={preStyle}>{`class MovieViewModel(
+    private val repository: MovieRepository
+) : ViewModel() {
+    private val _uiState = MutableStateFlow<MovieUiState>(Loading)
+    val uiState: StateFlow<MovieUiState> = _uiState.asStateFlow()
+    init { loadMovies() }
+}`}</pre>
+                  </Step>
+                  <Step n={3} title="Load data — viewModelScope keeps work off the main thread">
+                    <pre style={preStyle}>{`fun loadMovies() {
+    viewModelScope.launch {
+        _uiState.value = Loading
+        try {
+            val movies = repository.getMovies()
+            _uiState.value = Success(movies)
+        } catch (e: Exception) {
+            _uiState.value = Error(e.message ?: "Something went wrong")
+        }
+    }
+}`}</pre>
+                  </Step>
+                  <Step n={4} title="Observe in Compose — collectAsStateWithLifecycle()">
+                    <pre style={preStyle}>{`@Composable
+fun MovieScreen(viewModel: MovieViewModel = viewModel()) {
+    val state by viewModel.uiState.collectAsStateWithLifecycle()
+    when (state) {
+        is Loading -> CircularProgressIndicator()
+        is Success -> LazyColumn { items((state as Success).movies) { MovieRow(it, viewModel::onFavouriteTapped) } }
+        is Error   -> ErrorBanner((state as Error).message)
+    }
+}`}</pre>
+                  </Step>
+                </div>
+              }
+              ios={
+                <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                  <Step n={1} title="UiState enum — mirrors the Kotlin sealed class" accent={TEAL}>
+                    <pre style={preStyle}>{`enum MovieUiState {
+    case loading
+    case success([Movie])
+    case error(String)
+}`}</pre>
+                  </Step>
+                  <Step n={2} title="ObservableObject class — @Published drives SwiftUI updates" accent={TEAL}>
+                    <pre style={preStyle}>{`class MovieViewModel: ObservableObject {
+    @Published private(set) var uiState: MovieUiState = .loading
+    private let repository: MovieRepository
+
+    init(repository: MovieRepository = MovieRepository()) {
+        self.repository = repository
+        Task { await loadMovies() }
+    }
+}`}</pre>
+                  </Step>
+                  <Step n={3} title="Load data — @MainActor ensures UI updates on the main thread" accent={TEAL}>
+                    <pre style={preStyle}>{`@MainActor
+func loadMovies() async {
+    uiState = .loading
+    do {
+        let movies = try await repository.getMovies()
+        uiState = .success(movies)
+    } catch {
+        uiState = .error(error.localizedDescription)
+    }
+}`}</pre>
+                  </Step>
+                  <Step n={4} title="Observe in SwiftUI — @StateObject at the screen root" accent={TEAL}>
+                    <pre style={preStyle}>{`struct MovieScreen: View {
+    @StateObject private var viewModel = MovieViewModel()
+
+    var body: some View {
+        switch viewModel.uiState {
+        case .loading:             ProgressView()
+        case .success(let movies): List(movies) { MovieRow($0, viewModel.onFavouriteTapped) }
+        case .error(let msg):      ErrorBanner(message: msg)
+        }
+    }
+}`}</pre>
+                  </Step>
+                </div>
+              }
+            />
+          }
+          full={
+            <OSToggle
+              android={<CodePane title="Kotlin — MovieViewModel.kt + MovieScreen.kt" accent={BLUE}>{`sealed class MovieUiState {
     object Loading : MovieUiState()
     data class Success(val movies: List<Movie>) : MovieUiState()
     data class Error(val message: String) : MovieUiState()
@@ -491,16 +1488,13 @@ sealed class MovieUiState {
 class MovieViewModel(
     private val repository: MovieRepository
 ) : ViewModel() {
-
-    // Private mutable — only ViewModel can change state
     private val _uiState = MutableStateFlow<MovieUiState>(Loading)
-    // Public read-only — View observes this
     val uiState: StateFlow<MovieUiState> = _uiState.asStateFlow()
 
     init { loadMovies() }
 
     fun loadMovies() {
-        viewModelScope.launch {           // off the main thread
+        viewModelScope.launch {
             _uiState.value = Loading
             try {
                 val movies = repository.getMovies()
@@ -514,50 +1508,25 @@ class MovieViewModel(
     fun onFavouriteTapped(movie: Movie) {
         viewModelScope.launch { repository.toggleFavourite(movie) }
     }
-}`}</CodePane>
-        <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: 8 }}>
-          <div style={{ background: BLUE_LIGHT, borderRadius: 8, padding: "10px 12px" }}>
-            <p style={{ fontSize: 11, fontWeight: 600, color: BLUE, margin: "0 0 3px" }}>extends ViewModel</p>
-            <p style={{ fontSize: 11, color: BLUE, margin: 0, lineHeight: 1.5 }}>The Android framework keeps this alive across rotations. The screen can be destroyed and recreated — the ViewModel and its state survive.</p>
-          </div>
-          <div style={{ background: PURPLE_LIGHT, borderRadius: 8, padding: "10px 12px" }}>
-            <p style={{ fontSize: 11, fontWeight: 600, color: PURPLE_DARK, margin: "0 0 3px" }}>Private write, public read</p>
-            <p style={{ fontSize: 11, color: PURPLE_DARK, margin: 0, lineHeight: 1.5 }}>MutableStateFlow is private — only the ViewModel can emit. The View gets a read-only StateFlow — it can observe but never mutate directly.</p>
-          </div>
-          <div style={{ background: TEAL_LIGHT, borderRadius: 8, padding: "10px 12px" }}>
-            <p style={{ fontSize: 11, fontWeight: 600, color: TEAL_DARK, margin: "0 0 3px" }}>Connecting to Compose</p>
-            <pre style={{ margin: 0, fontSize: 10, color: TEAL_DARK, fontFamily: "monospace", lineHeight: 1.6 }}>{`val state by viewModel.uiState
-    .collectAsStateWithLifecycle()
+}
 
-when (state) {
-    is Loading -> CircularProgressIndicator()
-    is Success -> LazyColumn { ... }
-    is Error   -> ErrorBanner(state.message)
-}`}</pre>
-          </div>
-        </div>
-      </div>
-    </Shell>
-  ),
-
-  // 12: iOS — ObservableObject
-  () => (
-    <Shell tag="iOS · ObservableObject" tagColor="green" timer="8" title="iOS — ObservableObject + @StateObject" subtitle="The SwiftUI equivalent — same pattern, different syntax" notes="Draw the parallel explicitly: ObservableObject = ViewModel, @Published = MutableStateFlow, @StateObject = viewModel(). The enum UiState mirrors the Kotlin sealed class. Walk through @StateObject vs @ObservedObject — this is the most common source of iOS MVVM bugs. The rule is simple: create with @StateObject, pass down with @ObservedObject.">
-      <div style={{ display: "flex", gap: 12 }}>
-        <CodePane title="Swift — MovieViewModel.swift + MovieScreen.swift" accent={GREEN}>{`// Enum — mirrors Kotlin's sealed class exactly
-enum MovieUiState {
+@Composable
+fun MovieScreen(viewModel: MovieViewModel = viewModel()) {
+    val state by viewModel.uiState.collectAsStateWithLifecycle()
+    when (state) {
+        is Loading -> CircularProgressIndicator()
+        is Success -> LazyColumn { items((state as Success).movies) { MovieRow(it, viewModel::onFavouriteTapped) } }
+        is Error   -> ErrorBanner((state as Error).message)
+    }
+}`}</CodePane>}
+              ios={<CodePane title="Swift — MovieViewModel.swift + MovieScreen.swift" accent={GREEN}>{`enum MovieUiState {
     case loading
     case success([Movie])
     case error(String)
 }
 
-// ObservableObject — the iOS equivalent of Android's ViewModel
 class MovieViewModel: ObservableObject {
-
-    // @Published — equivalent of MutableStateFlow
-    // Any change automatically updates observing Views
-    @Published var uiState: MovieUiState = .loading
-
+    @Published private(set) var uiState: MovieUiState = .loading
     private let repository: MovieRepository
 
     init(repository: MovieRepository = MovieRepository()) {
@@ -575,46 +1544,35 @@ class MovieViewModel: ObservableObject {
             uiState = .error(error.localizedDescription)
         }
     }
+
+    func onFavouriteTapped(_ movie: Movie) {
+        Task { @MainActor in
+            try? await repository.toggleFavourite(movie)
+            await loadMovies()
+        }
+    }
 }
 
-// In the View:
 struct MovieScreen: View {
-    // @StateObject — creates AND owns the ViewModel
-    // Use this at the root of the screen hierarchy
     @StateObject private var viewModel = MovieViewModel()
 
     var body: some View {
         switch viewModel.uiState {
-        case .loading:   ProgressView()
-        case .success(let movies): List(movies) { MovieRow($0) }
+        case .loading:             ProgressView()
+        case .success(let movies): List(movies) { MovieRow($0, viewModel.onFavouriteTapped) }
         case .error(let msg):      ErrorBanner(message: msg)
         }
     }
-}`}</CodePane>
-        <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: 8 }}>
-          <div style={{ background: GREEN_LIGHT, borderRadius: 8, padding: "10px 12px" }}>
-            <p style={{ fontSize: 11, fontWeight: 600, color: GREEN, margin: "0 0 3px" }}>@StateObject vs @ObservedObject</p>
-            <p style={{ fontSize: 11, color: GREEN, margin: 0, lineHeight: 1.5 }}>@StateObject creates and owns the ViewModel — use at the root screen. @ObservedObject observes a ViewModel passed from a parent — use in child views. Getting this wrong causes mysterious state resets.</p>
-          </div>
-          <div style={{ background: TEAL_LIGHT, borderRadius: 8, padding: "10px 12px" }}>
-            <p style={{ fontSize: 11, fontWeight: 600, color: TEAL_DARK, margin: "0 0 3px" }}>@MainActor</p>
-            <p style={{ fontSize: 11, color: TEAL_DARK, margin: 0, lineHeight: 1.5 }}>Ensures UI updates happen on the main thread. Equivalent to the implicit main-thread dispatch StateFlow provides in Compose.</p>
-          </div>
-          <div style={{ background: PURPLE_LIGHT, borderRadius: 8, padding: "10px 12px" }}>
-            <p style={{ fontSize: 11, fontWeight: 600, color: PURPLE_DARK, margin: "0 0 3px" }}>The parallel is exact</p>
-            <div style={{ fontSize: 10, fontFamily: "monospace", color: PURPLE_DARK, lineHeight: 1.8 }}>
-              <div>ObservableObject ↔ ViewModel</div>
-              <div>@Published var ↔ MutableStateFlow</div>
-              <div>@StateObject ↔ viewModel()</div>
-              <div>switch uiState ↔ when (state)</div>
-            </div>
-          </div>
-        </div>
+}`}</CodePane>}
+            />
+          }
+        />
       </div>
+      <Info>{"The ViewModel never imports SwiftUI, UIKit, or Compose. The View never calls the repository directly. This boundary is the entire discipline of MVVM."}</Info>
     </Shell>
   ),
 
-  // 13: Lab intro
+  // 22: Lab intro
   () => (
     <Shell tag="Lab intro" timer="5" title="Today's lab — refactor to MVVM" subtitle="60 minutes in breakout rooms" notes="Students should already have a working Week 4 API app. The goal is not to add features — it's to reorganise existing code into the right layers. Walk through the checklist before sending them to breakout rooms. Students who finish early should start scaffolding their capstone using MVVM from the beginning.">
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
@@ -648,7 +1606,7 @@ struct MovieScreen: View {
           </div>
           <div style={{ background: GREEN_LIGHT, borderRadius: 8, padding: "12px 14px" }}>
             <p style={{ fontSize: 11, fontWeight: 600, color: GREEN, margin: "0 0 6px" }}>iOS checklist</p>
-            {["class XxxViewModel : ObservableObject", "@Published var uiState", "Task { await loadData() } in init", "@StateObject var viewModel = XxxViewModel()", "switch viewModel.uiState in body"].map(t => (
+            {["class XxxViewModel : ObservableObject", "@Published private(set) var uiState", "Task { await loadData() } in init", "@StateObject var viewModel = XxxViewModel()", "switch viewModel.uiState in body"].map(t => (
               <div key={t} style={{ display: "flex", gap: 6, margin: "3px 0" }}>
                 <span style={{ color: GREEN, fontSize: 11, flexShrink: 0 }}>□</span>
                 <span style={{ fontSize: 11, color: GREEN, fontFamily: "monospace" }}>{t}</span>
@@ -660,7 +1618,7 @@ struct MovieScreen: View {
     </Shell>
   ),
 
-  // 14: Closing
+  // 23: Closing
   () => (
     <div style={{ background: `linear-gradient(135deg, ${PURPLE_DARK} 0%, ${PURPLE} 100%)`, borderRadius: 12, padding: "44px 40px", minHeight: 360, display: "flex", flexDirection: "column", justifyContent: "space-between", boxSizing: "border-box" }}>
       <div>
@@ -669,7 +1627,7 @@ struct MovieScreen: View {
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
           <div style={{ background: "rgba(255,255,255,0.1)", borderRadius: 8, padding: "12px 16px" }}>
             <p style={{ fontSize: 11, fontWeight: 600, color: "rgba(255,255,255,0.6)", margin: "0 0 8px", textTransform: "uppercase", letterSpacing: ".06em" }}>What you learned</p>
-            {["Why spaghetti code breaks down at scale", "The three MVVM layers and what each is forbidden to know", "How data flows through the layers — in both directions", "The one-way dependency rule that makes it all work", "The benefits: testability, rotation safety, team parallelism", "Android: ViewModel, StateFlow, sealed UiState", "iOS: ObservableObject, @Published, @StateObject"].map(t => (
+            {["Why spaghetti code breaks down at scale", "The three MVVM layers — overview + deep dives per layer", "What each layer is forbidden to know", "The one-way dependency rule", "Tracing a user action through all five steps", "The benefits: testability, rotation safety, team parallelism", "UiState: sealed class / enum over boolean flags", "ViewModel ownership: viewModel() vs @StateObject", "Android: ViewModel, StateFlow, sealed UiState", "iOS: ObservableObject, @Published, @StateObject"].map(t => (
               <div key={t} style={{ display: "flex", gap: 6, margin: "4px 0" }}>
                 <span style={{ color: AMBER, flexShrink: 0 }}>▸</span>
                 <span style={{ fontSize: 12, color: "rgba(255,255,255,0.8)" }}>{t}</span>
