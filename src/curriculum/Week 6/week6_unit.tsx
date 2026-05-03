@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-const TABS = ["Overview", "Lab", "Project", "Capstone", "Resources"];
+const TABS = ["Overview", "Lab", "Capstone", "Resources"];
 const PLATFORMS = ["Android", "iOS"];
 
 /* ── colors ── */
@@ -68,6 +68,19 @@ const Step = ({ num, title, children }) => (
   <div style={{ margin: "18px 0" }}>
     <h4 style={{ fontSize: 15, fontWeight: 600, color: "var(--platform-accent, var(--color-text-primary))", margin: "0 0 8px" }}>Step {num}: {title}</h4>
     <div style={{ fontSize: 13, lineHeight: 1.7 }}>{children}</div>
+  </div>
+);
+
+const VStep = ({ num, title, children, last = false }) => (
+  <div style={{ display: "flex", gap: 12 }}>
+    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", flexShrink: 0 }}>
+      <div style={{ width: 26, height: 26, borderRadius: "50%", background: "var(--platform-accent, #534AB7)", color: "#fff", fontSize: 12, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center" }}>{num}</div>
+      {!last && <div style={{ width: 2, flex: 1, minHeight: 20, background: "var(--color-border-tertiary)", margin: "3px 0" }} />}
+    </div>
+    <div style={{ paddingBottom: last ? 8 : 24, flex: 1, minWidth: 0 }}>
+      <h4 style={{ fontSize: 13, fontWeight: 600, margin: "3px 0 8px", color: "var(--color-text-primary)" }}>{title}</h4>
+      <div style={{ fontSize: 13, lineHeight: 1.7 }}>{children}</div>
+    </div>
   </div>
 );
 
@@ -449,249 +462,268 @@ fun AlbumScreen(
 
 const LabSession2 = ({ platform }) => (
   <div style={{ '--platform-accent': platform === "Android" ? BL : GR } as React.CSSProperties}>
-    <h2 style={{ fontSize: 18, fontWeight: 600, margin: "0 0 4px" }}>Unit 6 Lab: AI-Assisted Development</h2>
+    <h2 style={{ fontSize: 18, fontWeight: 600, margin: "0 0 4px" }}>Unit 6 Lab: Capstone Planning & Google Stitch</h2>
     <p style={{ fontSize: 13, color: "var(--color-text-secondary)", margin: "0 0 12px" }}>
-      In this lab, you'll learn how to use AI coding tools effectively as a mobile developer. The principles apply to any AI assistant — Claude, Copilot, Cursor, ChatGPT — but we'll use <strong>Claude</strong> as our primary example.
+      In this lab, you'll meet with your capstone group to solidify your project idea and set up your planning documents. Then, you'll use the <strong>Google Stitch MCP</strong> you learned about today to generate initial wireframes and UI code for your core screens.
     </p>
 
     <div style={{ fontSize: 13, lineHeight: 1.7 }}>
       <strong>🎯 Goals</strong>
       <ul style={{ paddingLeft: 20, margin: "6px 0 12px" }}>
-        <li>Learn how to write effective prompts for mobile development tasks</li>
-        <li>Practice scaffolding a project with AI assistance</li>
-        <li>Understand when AI helps vs. when it gets in the way</li>
-        <li>Scaffold your capstone project's architecture using AI</li>
+        <li>Brainstorm and decide on a capstone idea with your team</li>
+        <li>Draft your capstone proposal</li>
+        <li>Set up your shared GitHub repository</li>
+        <li>Connect the Google Stitch MCP to Claude</li>
+        <li>Generate design systems and wireframes for your core screens</li>
       </ul>
     </div>
 
-    <Step num={0} title="The prompting mindset">
-      <p>AI coding assistants are powerful, but they need <strong>context</strong> to be useful. A vague prompt gives vague results. Here are the three principles of effective AI prompting for mobile development:</p>
-      <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: 8, margin: "12px 0" }}>
-        <div style={{ background: PL, padding: "10px 14px", borderRadius: 8 }}>
-          <strong style={{ color: PD }}>1. Specify your platform and stack</strong>
-          <p style={{ margin: "4px 0 0", fontSize: 12, color: PD }}>❌ "Build me a login screen" → ✅ "Build me a login screen in {platform === "Android" ? "Jetpack Compose using Material 3" : "SwiftUI targeting iOS 17"} with email and password fields and form validation"</p>
-        </div>
-        <div style={{ background: GL, padding: "10px 14px", borderRadius: 8 }}>
-          <strong style={{ color: G }}>2. Give it your existing code as context</strong>
-          <p style={{ margin: "4px 0 0", fontSize: 12, color: G }}>❌ "Add a settings screen" → ✅ "Here's my current ViewModel and navigation setup. Add a settings screen that follows the same MVVM pattern and integrates with my existing nav graph."</p>
-        </div>
-        <div style={{ background: AML, padding: "10px 14px", borderRadius: 8 }}>
-          <strong style={{ color: AM }}>3. Ask it to explain, not just generate</strong>
-          <p style={{ margin: "4px 0 0", fontSize: 12, color: AM }}>❌ Copy-paste the output blindly → ✅ "Explain each section of this code and why you chose this approach over alternatives."</p>
-        </div>
-      </div>
-      <Checkpoint num={0}>No code yet — just make sure you have access to Claude (claude.ai) or another AI assistant open in a browser tab alongside your IDE.</Checkpoint>
-    </Step>
-
-    <Step num={1} title="Scaffold your capstone project">
-      <p>Now let's put these principles to work. You'll use AI to create the initial project structure for your team's capstone app.</p>
-      <p>Open Claude and try this prompt template (customize it for your capstone idea):</p>
-
-      <Code title="Example prompt">{`I'm building a ${platform === "Android" ? "Jetpack Compose (Kotlin)" : "SwiftUI (Swift)"} app called [YOUR APP NAME].
-
-The app does: [2-3 sentence description of your capstone idea]
-
-The main screens are:
-1. [Screen 1 name] — [what it shows]
-2. [Screen 2 name] — [what it shows]  
-3. [Screen 3 name] — [what it shows]
-
-I want to use the MVVM architecture pattern (like we learned in Session 1 today).
-
-Can you help me create:
-1. The project folder structure
-2. A data model file for the main entities
-3. A ViewModel for the first screen with placeholder/mock data
-4. The navigation setup to move between screens
-
-Please explain your decisions as you go. Use ${platform === "Android" ? "Navigation Compose for navigation and StateFlow for state management" : "NavigationStack for navigation and @StateObject for state management"}.`}</Code>
-
-      <Warn>Do <strong>not</strong> blindly copy-paste the output into your project. Read every line. You'll be graded on understanding your code — not on how fast you generated it.</Warn>
-
-      <Checkpoint num={1}>You should have a response from Claude with a project structure, data models, and at least one ViewModel. Read through the entire response before moving to the next step.</Checkpoint>
-    </Step>
-
-    <Step num={2} title="Review, adapt, and implement">
-      <p>Now comes the important part — <strong>critically reviewing</strong> the AI output and adapting it to your actual project.</p>
+    {/* ─── Step 0: Brainstorm ─── */}
+    <VStep num={0} title="Brainstorm and decide on your app idea">
+      <p>Sit with your group and begin by brainstorming app ideas together. Before jumping to solutions, discuss these questions as a team:</p>
       <ol style={{ paddingLeft: 20, margin: "6px 0" }}>
-        <li><strong>Read every line.</strong> If there's a line you don't understand, ask Claude: "Can you explain what this line does and why it's needed?"</li>
-        <li><strong>Compare with Session 1.</strong> Does the ViewModel follow the same pattern we used in the MVVM lab? If not, adapt it.</li>
-        <li><strong>Create the files in your IDE.</strong> Don't paste giant files — create each file one at a time, typing some parts yourself.</li>
-        <li><strong>Run after each file.</strong> Don't wait until everything is pasted. Run after each addition to catch errors early.</li>
+        <li><strong>What problem do you want to solve?</strong> Think about your daily life — what's annoying, inefficient, or missing an app?</li>
+        <li><strong>Who is the user?</strong> Students? Pet owners? Gym-goers? Having a clear audience helps you scope features.</li>
+        <li><strong>What data will you need?</strong> Will you use a public API, or store data locally? Check that a free API actually exists for your idea.</li>
       </ol>
 
       <AiOpp>
-        <em>Use AI for iterative refinement →</em> After pasting the first ViewModel, ask Claude: <strong>"I just created this ViewModel but I'm getting [specific error]. Here's the error message: [paste error]. What's wrong?"</strong> This is exactly how professional developers use AI tools day-to-day.
+        <em>Use AI for brainstorming →</em> Ask Claude: <strong>"My team has 4 weeks to build a {platform === "Android" ? "native Android (Kotlin + Jetpack Compose)" : "native iOS (Swift + SwiftUI)"} app. We are interested in [topic]. Can you give us 5 app ideas that are technically feasible for beginners but still impressive? For each idea, include: a one-sentence pitch, 3 core features, and a suggested free public API."</strong>
       </AiOpp>
 
-      <Checkpoint num={2}>Your capstone project should now compile and run in your IDE with at least one screen showing mock/placeholder data, using the MVVM architecture from Session 1.</Checkpoint>
-    </Step>
-
-    <Step num={3} title="The 'vibe check' — catch AI mistakes">
-      <p>AI tools are confidently wrong sometimes. Let's practice catching common mistakes. Here are things to look out for in AI-generated {platform === "Android" ? "Android" : "iOS"} code:</p>
-      <ul style={{ paddingLeft: 20, margin: "6px 0" }}>
-        {platform === "Android" ? (
-          <>
-            <li>Using deprecated APIs like <code>LiveData</code> when we asked for <code>StateFlow</code></li>
-            <li>Missing <code>@Composable</code> annotations on composable functions</li>
-            <li>Importing libraries you don't have in <code>build.gradle</code></li>
-            <li>Creating the ViewModel with a constructor instead of <code>viewModel()</code></li>
-            <li>Not handling the error state in the UI</li>
-          </>
-        ) : (
-          <>
-            <li>Using <code>@ObservedObject</code> where <code>@StateObject</code> is correct</li>
-            <li>Missing <code>@MainActor</code> on ViewModels that update <code>@Published</code> properties</li>
-            <li>Using UIKit patterns instead of SwiftUI</li>
-            <li>Forgetting <code>Identifiable</code> conformance on data models used in <code>List</code></li>
-            <li>Not handling all cases of an enum in a <code>switch</code> statement</li>
-          </>
-        )}
-      </ul>
-      <p>Look through your AI-generated capstone code and see if any of these issues exist. Fix them.</p>
-
-      <Checkpoint num={3}>You've reviewed all AI-generated code, fixed any issues, and your capstone project runs cleanly with no warnings related to the items above.</Checkpoint>
-    </Step>
-
-    <Section title="💡 Tips for effective AI prompting">
-      <div style={{ fontSize: 13, lineHeight: 1.8 }}>
-        <p><strong>Start a conversation, not a one-shot prompt.</strong> The first response is a starting point. Follow up with "Now change X" or "What if I also need Y?"</p>
-        <p><strong>Give it your error messages.</strong> AI assistants are excellent debuggers when you paste the exact error and the relevant code.</p>
-        <p><strong>Ask "why" before "how."</strong> Before asking it to generate code, ask it to explain the approach. You'll learn more and catch mistakes earlier.</p>
-        <p><strong>Don't fight the tool.</strong> If AI-generated code is hard to understand after explanation, write it yourself. The goal is to learn, not to ship fast.</p>
-      </div>
-    </Section>
-
-    <Section title="🚀 Stretch Features">
-      <ul style={{ paddingLeft: 20, fontSize: 13, lineHeight: 1.8 }}>
-        <li>Use AI to generate <strong>mock data</strong> for all your capstone screens — realistic names, descriptions, image URLs, etc.</li>
-        <li>Ask Claude to help you set up a <strong>navigation graph</strong> connecting all your planned screens with proper back-stack behavior.</li>
-        <li>Try using Claude to write <strong>unit tests</strong> for your ViewModel — paste the ViewModel and ask it to generate tests for each state transition.</li>
-      </ul>
-    </Section>
-  </div>
-);
-
-/* ══════════════════════════════════════ PROJECT ══════════════════════════════════════ */
-const Project = ({ platform, setPlatform }) => (
-  <div>
-    <div className="callout-checkpoint" style={{ background: "#E8FCE8", padding: "10px 14px", borderRadius: 8, fontSize: 13, marginBottom: 14 }}>
-      📬 Submit this project by the next session using the <strong>Submit</strong> button 👉 <span style={{ float: "right", background: P, color: "#fff", padding: "4px 14px", borderRadius: 6, fontSize: 12, fontWeight: 500, cursor: "pointer" }}>Submit</span>
-    </div>
-
-    <h2 style={{ fontSize: 18, fontWeight: 600, margin: "0 0 4px" }}>Unit 6: Project — MVVM Refactor</h2>
-    <PlatformToggle platform={platform} setPlatform={setPlatform} />
-
-    <div style={{ fontSize: 13, lineHeight: 1.7 }}>
-      <p>In this project, you'll complete the MVVM refactor of your Week 4 API app that we started in the lab session. By the end, your app should have clean separation between the Model, View, and ViewModel layers.</p>
-
-      <div style={{ background: "#F8F5FF", padding: "12px", borderRadius: 8, margin: "12px 0", fontSize: 13 }}>
-        This is your first independent project on your chosen platform ({platform}). Take your time understanding every piece of code — the architecture patterns you practice here will be the foundation of your capstone project.
-      </div>
-
-      <strong>🎯 Goals</strong>
-      <ul style={{ paddingLeft: 20, margin: "6px 0 14px" }}>
-        <li>Solidify your understanding of the MVVM architecture pattern</li>
-        <li>Practice refactoring existing code without changing functionality</li>
-        {platform === "Android"
-          ? <li>Gain familiarity with <code>ViewModel</code>, <code>StateFlow</code>, and <code>collectAsState()</code></li>
-          : <li>Gain familiarity with <code>ObservableObject</code>, <code>@Published</code>, and <code>@StateObject</code></li>
-        }
-        <li>Experience the real-world workflow of improving code quality</li>
-      </ul>
-    </div>
-
-    <Section title="✅ Required Features" defaultOpen={true}>
-      <ul style={{ paddingLeft: 20, fontSize: 13, lineHeight: 2 }}>
-        <li>☐ App has a <strong>separate data model file</strong> containing your data class/struct and a UI state type ({platform === "Android" ? "sealed interface" : "enum"})</li>
-        <li>☐ App has a <strong>ViewModel</strong> that holds the UI state and contains the networking logic</li>
-        <li>☐ The ViewModel exposes state via {platform === "Android" ? <code>StateFlow</code> : <code>@Published</code>} — the View never calls the API directly</li>
-        <li>☐ The <strong>View</strong> observes the ViewModel and renders different UI for Loading, Success, and Error states</li>
-        <li>☐ The ViewModel file has <strong>no UI framework imports</strong> ({platform === "Android" ? "no Compose imports" : "no SwiftUI import"})</li>
-        <li>☐ The app <strong>functions identically</strong> to the Week 4 version — same features, same screens, same user experience</li>
-        <li>☐ Error state includes a working <strong>Retry button</strong> that re-fetches data</li>
-      </ul>
-    </Section>
-
-    <Section title="🚀 Stretch Features">
-      <ul style={{ paddingLeft: 20, fontSize: 13, lineHeight: 2 }}>
-        <li>☐ Add a <strong>Repository layer</strong> between the ViewModel and the network — the ViewModel calls <code>repository.getAlbums()</code></li>
-        <li>☐ Extract networking into a separate <strong>API Service</strong> file</li>
-        <li>☐ Add <strong>pull-to-refresh</strong> functionality</li>
-        <li>☐ Add a <strong>search/filter</strong> feature managed through the ViewModel (not in the View)</li>
-        <li>☐ Write at least one <strong>unit test</strong> for your ViewModel</li>
-      </ul>
-    </Section>
-
-    <Section title="📘 Resources">
-      <ul style={{ paddingLeft: 20, fontSize: 13, lineHeight: 2 }}>
-        {platform === "Android" ? (
-          <>
-            <li><Link>Android ViewModel Overview</Link> — official guide</li>
-            <li><Link>StateFlow and SharedFlow</Link> — Kotlin coroutines docs</li>
-            <li><Link>Guide to App Architecture</Link> — Google's recommended architecture</li>
-            <li>This unit's <strong>Resources tab</strong></li>
-          </>
-        ) : (
-          <>
-            <li><Link>Managing Model Data in Your App</Link> — Apple developer docs</li>
-            <li><Link>ObservableObject protocol</Link> — Swift documentation</li>
-            <li><Link>MVVM in SwiftUI</Link> — community guide</li>
-            <li>This unit's <strong>Resources tab</strong></li>
-          </>
-        )}
-      </ul>
-    </Section>
-
-    <Section title="💡 Hints">
-      <div style={{ fontSize: 13, lineHeight: 1.8 }}>
-        <p><strong>Getting Started</strong></p>
-        <ul style={{ paddingLeft: 20 }}>
-          <li>Start by copying your entire Week 4 project into a new folder/repo. Don't modify the original — you want to be able to compare.</li>
-          <li>Follow the lab steps in order: Model first, then ViewModel, then update the View.</li>
-          <li>Run the app after <em>every change</em>. Small incremental refactors are much easier to debug than one big change.</li>
+      <div style={{ background: "var(--color-background-secondary)", borderRadius: 8, padding: "10px 14px", margin: "12px 0" }}>
+        <p style={{ fontWeight: 600, margin: "0 0 6px" }}>🤔 How to pick from your shortlist</p>
+        <ul style={{ paddingLeft: 18, margin: 0 }}>
+          <li><strong>Scope it down ruthlessly.</strong> A polished app with 3 great screens beats a half-finished app with 10. You can always add screens later.</li>
+          <li><strong>Make sure the API works.</strong> Before committing, have one person open the API docs and verify you can actually get data back (try it in a browser or Postman).</li>
+          <li><strong>Play to your team's strengths.</strong> If someone has experience with maps, lean into a location-based idea. If someone loves design, pick something visual.</li>
+          <li><strong>Avoid ideas that require a custom backend.</strong> Stick to public APIs + local storage (Room/Core Data) for now. Firebase is fine if your team is comfortable with it.</li>
         </ul>
-        {platform === "Android" ? (
-          <>
-            <p><strong>Dependencies</strong></p>
-            <ul style={{ paddingLeft: 20 }}>
-              <li>You need <code>lifecycle-viewmodel-compose</code> in your <code>build.gradle</code>. Check the Resources tab for the exact dependency line.</li>
-              <li>You also need <code>lifecycle-runtime-compose</code> for <code>collectAsState()</code>.</li>
-            </ul>
-          </>
-        ) : (
-          <>
-            <p><strong>Common Swift issues</strong></p>
-            <ul style={{ paddingLeft: 20 }}>
-              <li>If your view doesn't update when data loads, make sure the property is <code>@Published</code> and the ViewModel is referenced with <code>@StateObject</code>.</li>
-              <li>Remember that <code>@MainActor</code> on the ViewModel class ensures thread safety for UI updates.</li>
-            </ul>
-          </>
-        )}
+      </div>
 
+      <p style={{ marginTop: 12 }}>Once your team has agreed on an idea, fill out the <strong>capstone proposal template</strong> (found in the Capstone tab). Work through it together — don't let one person do it alone.</p>
+      <ul style={{ paddingLeft: 20, margin: "6px 0" }}>
+        <li>Define your <strong>core features</strong> (must-haves for the demo) vs. stretch goals</li>
+        <li>Identify your <strong>primary data models</strong> (e.g., "a Recipe has a title, image URL, ingredients list, and cook time")</li>
+        <li>Sketch out the <strong>3 most important screens</strong> — even a rough drawing on paper works</li>
+      </ul>
+      <Checkpoint num={0}>Your team has agreed on an app idea, verified your API exists, and completed the capstone proposal template.</Checkpoint>
+    </VStep>
+
+    {/* ─── Step 1: Shared repo ─── */}
+    <VStep num={1} title="Set up your shared GitHub repository">
+      <p>Now that you know what you're building, you need a shared home for your code. <strong>One person drives</strong> — everyone else watches and follows along.</p>
+      
+      <Tip>If you've already completed the <strong>GitHub Organization Bonus Lab</strong>, you can skip the org/repo creation steps below and jump straight to cloning. If not, follow along — this is the abbreviated version.</Tip>
+
+      <VStep num="a" title="Create a GitHub Organization">
+        <p>A GitHub Organization keeps your project under a shared team account instead of one person's personal account.</p>
+        <ol style={{ paddingLeft: 20, margin: "6px 0" }}>
+          <li>Go to <code>github.com/organizations/new</code></li>
+          <li>Select the <strong>Free</strong> plan</li>
+          <li>Name your organization — use your app name or team name (e.g., <code>pantrypal-team</code>)</li>
+          <li>Set the contact email to your own email, select "personal account," and click <strong>Next</strong></li>
+          <li>Skip the "invite members" screen for now — you'll do that next</li>
+        </ol>
+        <Warn>Organization names are <strong>globally unique</strong> on GitHub and hard to change later. Choose carefully — your repo URLs will include this name.</Warn>
+      </VStep>
+
+      <VStep num="b" title="Create the repository inside the org">
+        <p>From your new org's dashboard, create the capstone repository:</p>
+        <ol style={{ paddingLeft: 20, margin: "6px 0" }}>
+          <li>Click the green <strong>Create a new repository</strong> button</li>
+          <li>Make sure the <strong>Owner</strong> dropdown shows your <em>org name</em>, not your personal username</li>
+          <li>Name the repo (e.g., <code>pantrypal-android</code> or <code>travelbuddy-ios</code>)</li>
+          <li>Set visibility to <strong>Private</strong> (you can make it public before the demo)</li>
+          <li>Check <strong>Add a README file</strong></li>
+          <li>Under <strong>Add .gitignore</strong>, select <code>{platform === "Android" ? "Android" : "Swift"}</code> from the template dropdown</li>
+          <li>Choose <strong>MIT License</strong></li>
+          <li>Click <strong>Create repository</strong></li>
+        </ol>
+      </VStep>
+
+      <VStep num="c" title="Invite your teammates">
+        <ol style={{ paddingLeft: 20, margin: "6px 0" }}>
+          <li>From your org page, go to <strong>Settings → Members</strong> (under "Access" in the sidebar)</li>
+          <li>Click <strong>Invite member</strong></li>
+          <li>Search for each teammate's GitHub username or email and send invitations</li>
+          <li>Each teammate must <strong>accept the invitation</strong> (check email or GitHub notifications)</li>
+        </ol>
+        <Tip>Have everyone accept their invitations right now before moving on. You can see pending invitations under the "Pending invitations" tab on the same Members page.</Tip>
+      </VStep>
+
+      <VStep num="d" title="Everyone clones the repo" last>
+        <p>Once all invitations are accepted, <strong>every team member</strong> should clone the repo to their machine:</p>
+        <Code title="Terminal">{`git clone https://github.com/[org-name]/[repo-name].git
+cd [repo-name]`}</Code>
+        {platform === "Android" ? (
+          <p>Open <strong>Android Studio → New Project</strong> and create a new Empty Compose Activity project <em>inside</em> the cloned folder. Make sure the project files land in the repo directory, not a subdirectory inside it.</p>
+        ) : (
+          <p>Open <strong>Xcode → Create New Project</strong> and create a new SwiftUI App <em>inside</em> the cloned folder. When Xcode asks where to save, navigate to your cloned repo directory.</p>
+        )}
+        <p>Then commit and push the initial project scaffold:</p>
+        <Code title="Terminal">{`git add .
+git commit -m "Initial ${platform === "Android" ? "Compose" : "SwiftUI"} project scaffold"
+git push origin main`}</Code>
+      </VStep>
+
+      <Checkpoint num={1}>Every team member has the project cloned, the app compiles and runs (even if it's just the default template screen), and the initial commit is visible on GitHub.</Checkpoint>
+    </VStep>
+
+    {/* ─── Step 2: Google Stitch ─── */}
+    <VStep num={2} title="Set up and use Google Stitch MCP">
+      <p>With your core screens identified and your repo ready, it's time to use the <strong>Google Stitch MCP</strong> to generate initial UI designs and code. This is the tool your instructor demoed in the lecture.</p>
+
+      <VStep num="a" title="Connect the Stitch MCP to Claude">
+        <p>Before you can use Google Stitch, you need to add it as an MCP server in Claude Desktop. Follow these steps:</p>
+        <ol style={{ paddingLeft: 20, margin: "6px 0" }}>
+          <li>Open <strong>Claude Desktop</strong> (not the web version — MCP only works in the desktop app)</li>
+          <li>Go to <strong>Settings</strong> (click the gear icon or <code>Cmd/Ctrl + ,</code>)</li>
+          <li>Click <strong>Developer</strong> in the left sidebar, then click <strong>Edit Config</strong></li>
+          <li>This opens a JSON file. Add the Stitch MCP server configuration:</li>
+        </ol>
+        <Code title="claude_desktop_config.json">{`{
+  "mcpServers": {
+    "stitch": {
+      "command": "npx",
+      "args": ["-y", "@anthropic-ai/stitch-mcp"]
+    }
+  }
+}`}</Code>
+        <Warn>If you already have other MCP servers configured, add the <code>"stitch"</code> entry inside the existing <code>"mcpServers"</code> object — don't replace the whole file. Make sure your JSON is valid (watch for missing commas).</Warn>
+        <ol start={5} style={{ paddingLeft: 20, margin: "6px 0" }}>
+          <li><strong>Restart Claude Desktop</strong> completely (quit and reopen, don't just close the window)</li>
+          <li>Look for the <strong>🔌 MCP icon</strong> (or a hammer icon) at the bottom of the chat input — it should show "stitch" as a connected server</li>
+          <li>If you don't see it, check the JSON for typos and restart again</li>
+        </ol>
+        <Section title="✅ Check your work">
+          Click the MCP icon in Claude Desktop. You should see "stitch" listed as a connected server with available tools like <code>create_design_system</code> and <code>generate_screen_from_text</code>.
+        </Section>
+      </VStep>
+
+      <VStep num="b" title="Create a design system for your app">
+        <p>A design system defines the visual identity of your app — colors, fonts, and shape. Ask Claude to create one via Stitch:</p>
+        <Code title="Example prompt">{`I am building a ${platform === "Android" ? "native Android (Jetpack Compose)" : "native iOS (SwiftUI)"} capstone app called [YOUR APP NAME].
+
+It is a [one-sentence description — e.g., "a recipe discovery app that helps college students find quick meals based on ingredients they have"].
+
+The vibe is [describe the feel — e.g., "warm and friendly, with earthy tones" or "sleek and modern, dark mode preferred"].
+
+Please create a Google Stitch design system for this app with appropriate colors, typography, and corner roundness.`}</Code>
+        <p>Claude will call the Stitch MCP and create a design system. You'll see a confirmation with the design system details (colors, fonts, etc.).</p>
+        <Tip>Be specific about the "vibe." Saying "modern and clean" gives very different results than "playful and colorful." The more descriptive you are, the better the output.</Tip>
+      </VStep>
+
+      <VStep num="c" title="Generate wireframes for your 3 core screens">
+        <p>Now use Stitch to generate <strong>visual designs</strong> for your core screens. This is the same two-step process your instructor demoed in the lecture: first, Stitch creates the design — then Claude writes the code. Right now, you're just doing the <em>design</em> part.</p>
+        <Tip>You don't need to leave Claude to do this. When you ask Claude to generate screens "using Google Stitch," Claude communicates with Stitch through the MCP you just set up — all behind the scenes. After the designs are generated, Claude will provide a link where you can view the wireframes visually.</Tip>
+        <p><strong>Be detailed</strong> in your descriptions — the more specific you are about what elements should be on each screen, the better the wireframe will be. Think about layout, components, and content.</p>
+        <Code title="Example prompt">{`Using the design system we just created, please generate the following screen designs for my app using Google Stitch:
+
+Screen 1 — Home/List Screen:
+- A top app bar with the app name and a search icon
+- A vertical scrolling list of cards
+- Each card shows: an image on the left, a title and subtitle on the right, and a small heart/favorite icon
+- A floating action button in the bottom-right corner
+
+Screen 2 — Detail Screen:
+- A large hero image at the top (full width)
+- Below the image: title, rating (stars), and a description paragraph
+- A row of action buttons: "Save", "Share", "Directions"
+- A scrollable section below with additional details
+
+Screen 3 — Profile/Settings Screen:
+- A circular avatar at the top with the user's name below it
+- A list of settings options with icons (Notifications, Theme, About, Log Out)
+- Each option is a tappable row with a chevron on the right`}</Code>
+        <p>Stitch will generate <strong>visual wireframes</strong> — mockups of what each screen looks like, using the colors, fonts, and shapes from your design system. These are designs, not code yet.</p>
         <AiOpp>
-          <em>Use AI as a debugging partner →</em> If you're stuck, paste your ViewModel and View code into Claude and ask: <strong>"My app compiles but the list doesn't show any data. Here's my ViewModel and my View. What might be wrong?"</strong>
+          <em>Iterate on the wireframes →</em> The first result won't be perfect — and that's expected! This is where prompting specificity (from the lecture) matters. Try follow-up prompts like:
+          <ul style={{ paddingLeft: 18, margin: "6px 0 0" }}>
+            <li><strong>"Make the cards taller with the image on top instead of the left"</strong></li>
+            <li><strong>"Generate a variant of Screen 2 with a dark background"</strong></li>
+            <li><strong>"Can you edit Screen 3 to add a header section with usage stats?"</strong></li>
+          </ul>
         </AiOpp>
+        <Tip>Spend time here! These wireframes become the blueprint for your entire app. It's much easier to rearrange a layout in Stitch than to rewrite {platform === "Android" ? "Compose" : "SwiftUI"} code later. Don't move on until your team is happy with all 3 screens.</Tip>
+        <Section title="✅ Check your work">
+          You should have 3 generated screen designs in Stitch that your team is happy with. Each one should visually match your app's concept and use your design system's colors and typography. <strong>Don't close this chat</strong> — you'll use these designs in the next step.
+        </Section>
+      </VStep>
+
+      <VStep num="d" title="Generate code from your wireframes">
+        <p>Now comes the second phase of the workflow you saw in the demo: <strong>Claude translates the Stitch wireframes into actual {platform === "Android" ? "Jetpack Compose" : "SwiftUI"} code</strong>. Stitch created the visual design — Claude writes the code that implements it.</p>
+        <p>This is an important distinction: <strong>Stitch is a design tool</strong> (it decides how things look), and <strong>Claude is a code tool</strong> (it writes the implementation). They work together through MCP.</p>
+        <Code title="Example prompt">{`Now please generate the ${platform === "Android" ? "Jetpack Compose (Kotlin)" : "SwiftUI (Swift)"} code for each of the 3 screens we just designed in Stitch. 
+
+For each screen, create a separate ${platform === "Android" ? "@Composable function" : "View struct"} with placeholder/mock data. Use the design system's colors and typography. Name them:
+${platform === "Android" ? "- HomeScreen\n- DetailScreen\n- ProfileScreen" : "- HomeView\n- DetailView\n- ProfileView"}`}</Code>
+        <p>Claude will look at the Stitch-generated wireframes and produce {platform === "Android" ? "Kotlin" : "Swift"} code that matches the visual design.</p>
+        <Section title="✅ Check your work">
+          You should have {platform === "Android" ? "Compose" : "SwiftUI"} code for each of your 3 screens. The code should visually match the wireframes you approved in the previous step.
+        </Section>
+      </VStep>
+
+      <VStep num="e" title="Review and save the generated code" last>
+        <p>Before integrating anything, <strong>read through the generated code as a team</strong>. This is a learning opportunity — understanding AI-generated code is a skill you'll use constantly as a developer. Look for:</p>
+        <ul style={{ paddingLeft: 20, margin: "6px 0" }}>
+          <li>Does the code's layout match the wireframes you approved? If not, ask Claude to adjust.</li>
+          <li>Are there hardcoded strings or data? (That's expected — you'll replace them with ViewModel data later.)</li>
+          {platform === "Android" ? (
+            <li>Does it use <code>@Composable</code> functions and Material 3 components? That's what we want.</li>
+          ) : (
+            <li>Does it use SwiftUI <code>View</code> structs? That's what we want.</li>
+          )}
+          <li>Can you identify where each visual element from the wireframe maps to a line of code?</li>
+        </ul>
+        <p>Copy each screen's code and save it into your project's View files. A good naming convention:</p>
+        {platform === "Android" ? (
+          <Code title="Suggested file structure">{`app/src/main/.../ui/screens/
+├── HomeScreen.kt
+├── DetailScreen.kt
+└── ProfileScreen.kt`}</Code>
+        ) : (
+          <Code title="Suggested file structure">{`YourApp/Views/
+├── HomeView.swift
+├── DetailView.swift
+└── ProfileView.swift`}</Code>
+        )}
+      </VStep>
+
+      <Checkpoint num={2}>Your team has a design system, 3 approved wireframes, and the generated {platform === "Android" ? "Compose" : "SwiftUI"} code saved into your project's View files.</Checkpoint>
+    </VStep>
+
+    {/* ─── Step 3: Integrate ─── */}
+    <VStep num={3} title="Integrate and run the generated screens" last>
+      <p>Now wire up the generated screens so your app actually displays them. This is a quick integration — the goal is to see your wireframes running on a device or emulator, not to add business logic yet.</p>
+      <ol style={{ paddingLeft: 20, margin: "6px 0" }}>
+        <li><strong>Paste each screen</strong> into its own file in your project's View layer (see the file structure above).</li>
+        <li><strong>Fix any import errors.</strong> The generated code may reference libraries you haven't added yet. {platform === "Android" ? "Check your `build.gradle` for missing dependencies (Material 3, Coil for images, etc.)." : "Check that you have any required packages added to your project."}</li>
+        <li><strong>Update your main entry point</strong> to display one of the screens. {platform === "Android" ? "In your `MainActivity.kt`, replace the default content with your `HomeScreen()` composable." : "In your `ContentView.swift` or `App.swift`, replace the default view with your `HomeView()`."}</li>
+        <li><strong>Build and run.</strong> You should see your generated screen on the emulator/simulator.</li>
+      </ol>
+
+      <Warn>The generated code uses <strong>hardcoded mock data</strong> (placeholder text, dummy image URLs). This is intentional — your job in the coming weeks is to replace this with real data flowing from your ViewModel and API. Don't try to wire up the ViewModel today.</Warn>
+
+      <p>Once the app runs, <strong>commit and push</strong> your work:</p>
+      <Code title="Terminal">{`git add .
+git commit -m "Add initial Stitch-generated UI screens"
+git push origin main`}</Code>
+
+      <Checkpoint num={3}>Your capstone app runs on a device/emulator displaying the initial wireframes generated by Stitch. The code is pushed to your shared GitHub repo.</Checkpoint>
+    </VStep>
+
+    <Section title="💡 Team collaboration tips">
+      <div style={{ fontSize: 13, lineHeight: 1.8 }}>
+        <p><strong>Divide and conquer during Stitch:</strong> Have one person drive the Claude + Stitch session while others draft the detailed screen descriptions on paper or in a shared doc. Switch the driver for each screen.</p>
+        <p><strong>Review code together:</strong> Before pushing the generated UI code, sit together and read through each file. Make sure everyone understands how the layout is built — you'll all need to modify these screens later.</p>
+        <p><strong>Don't skip the README:</strong> Update your repo's README with your app name, a one-sentence description, and your team members' names. This is the first thing anyone (including your instructor) sees.</p>
       </div>
     </Section>
-
-    <div style={{ marginTop: 20, borderTop: "1px solid var(--color-border-tertiary)", paddingTop: 16 }}>
-      <h3 style={{ fontSize: 16, fontWeight: 600, margin: "0 0 10px" }}>📬 Submitting Your Project</h3>
-      <div style={{ fontSize: 13, lineHeight: 1.8 }}>
-        <p>Once you've completed all required features:</p>
-        <ol style={{ paddingLeft: 20 }}>
-          <li>Create a GitHub repo (or use your existing Week 4 repo on a new branch)</li>
-          <li>Push your refactored project code</li>
-          <li>Create a README using the <Link>Unit 6 Project — README Template</Link></li>
-          <li>In the README, mark off all features you implemented by changing <code>{"- [ ]"}</code> to <code>{"- [x]"}</code></li>
-          <li>Record a Video/GIF walkthrough showing the app working with the same functionality as Week 4</li>
-          <li>Add the Video/GIF to your repo and link it in the README</li>
-          <li>Make the repo private and add <code>codepathreview</code> as a collaborator</li>
-        </ol>
-      </div>
-    </div>
   </div>
 );
+
+
 
 /* ══════════════════════════════════════ CAPSTONE ══════════════════════════════════════ */
 const Capstone = ({ platform, setPlatform }) => (
@@ -708,19 +740,26 @@ const Capstone = ({ platform, setPlatform }) => (
 
       <h4 style={{ fontSize: 14, fontWeight: 600, marginTop: 16 }}>📋 What's Due This Week</h4>
       <ul style={{ paddingLeft: 20, lineHeight: 2 }}>
-        <li>☐ <strong>1-page capstone proposal</strong> (see template below)</li>
+        <li>☐ <strong>1-page capstone proposal</strong> (Saved as a file in your repository)</li>
+        <li>☐ <strong>GitHub Organization & Repository</strong> created for your team</li>
+        <li>☐ <strong>Project README</strong> initialized in your repo using the template below</li>
+        <li>☐ <strong>Generated Wireframes</strong> (from the Stitch lab) embedded as images in your README</li>
       </ul>
 
       <h4 style={{ fontSize: 14, fontWeight: 600, marginTop: 16 }}>📄 Proposal Template</h4>
-      <p>Your proposal should include the following. One submission per team — keep it to roughly one page.</p>
+      <p>Use the following template to create a <code>PROPOSAL.md</code> (or PDF) file in your repository. One submission per team — keep it to roughly one page.</p>
 
       <div style={{ background: "var(--color-background-secondary)", padding: "14px", borderRadius: 10, margin: "12px 0" }}>
         <div style={{ fontSize: 13, lineHeight: 1.9 }}>
           <p style={{ margin: "0 0 6px" }}><strong>App Name:</strong> [Your app's name]</p>
           <p style={{ margin: "0 0 6px" }}><strong>Platform:</strong> [Android / iOS]</p>
           <p style={{ margin: "0 0 6px" }}><strong>Team Members:</strong> [Name 1, Name 2, Name 3]</p>
-          <p style={{ margin: "0 0 6px" }}><strong>App Description:</strong> [2–3 sentences. What does it do? Who is it for?]</p>
-          <p style={{ margin: "0 0 6px" }}><strong>Core Features</strong> (must-haves for demo day):</p>
+          
+          <p style={{ margin: "0 0 6px" }}><strong>The Problem:</strong> [1-2 sentences. What specific problem does this app solve?]</p>
+          <p style={{ margin: "0 0 6px" }}><strong>Target Audience:</strong> [Who is the primary user of this app? Be specific (e.g., 'college students on a budget', not 'everyone').]</p>
+          <p style={{ margin: "0 0 6px" }}><strong>The Solution:</strong> [2-3 sentences. How does your app solve the problem for your target audience?]</p>
+
+          <p style={{ margin: "0 0 6px", marginTop: 12 }}><strong>Core Features</strong> (must-haves for demo day):</p>
           <ul style={{ paddingLeft: 20, margin: "0 0 6px" }}>
             <li>Feature 1 — [brief description]</li>
             <li>Feature 2 — [brief description]</li>
@@ -731,10 +770,63 @@ const Capstone = ({ platform, setPlatform }) => (
             <li>Stretch 1 — [brief description]</li>
             <li>Stretch 2 — [brief description]</li>
           </ul>
-          <p style={{ margin: "0 0 6px" }}><strong>Team Roles:</strong> [Who is responsible for which features/screens?]</p>
+          <p style={{ margin: "0 0 6px", marginTop: 12 }}><strong>Team Roles:</strong> [Who is responsible for which features/screens?]</p>
           <p style={{ margin: 0 }}><strong>APIs / Data Sources:</strong> [Any APIs you plan to use? Will the app need an LLM? On-device AI? Local storage?]</p>
         </div>
       </div>
+
+      <Section title="📄 README.md Template">
+        <p>Copy this markdown into your repository's <code>README.md</code> file. Be sure to replace the placeholder text and embed your wireframe screenshots!</p>
+        <Code title="README.md">{`# [Your App Name]
+
+*A brief, 1-2 sentence description of what your app does and who it is for.*
+
+## Table of Contents
+1. [Overview](#overview)
+2. [Features](#features)
+3. [Wireframes](#wireframes)
+4. [Tech Stack](#tech-stack)
+5. [Installation & Setup](#installation--setup)
+
+---
+
+## Overview
+**The Problem:** [What specific problem does this app solve?]
+
+**The Solution:** [How does your app solve the problem for your target audience?]
+
+## Features
+**Core Features**
+- [ ] Feature 1 (e.g., User Authentication)
+- [ ] Feature 2 (e.g., View List of Items)
+- [ ] Feature 3 (e.g., Add/Edit Item)
+
+**Stretch Features**
+- [ ] Stretch 1 (e.g., Offline Caching)
+- [ ] Stretch 2 (e.g., Push Notifications)
+
+## Wireframes
+[Replace the links below with the actual paths/URLs to your wireframe screenshots]
+
+<div style="display: flex; gap: 10px;">
+  <img src="link-to-image-1" width="200" alt="Home Screen"/>
+  <img src="link-to-image-2" width="200" alt="Detail Screen"/>
+  <img src="link-to-image-3" width="200" alt="Profile Screen"/>
+</div>
+
+## Tech Stack
+- **Platform:** [Android / iOS]
+- **Language:** [Kotlin / Swift]
+- **Architecture:** MVVM
+- **APIs & Data Sources:** [List APIs, Firebase, or local databases you plan to use]
+
+## Installation & Setup
+1. Clone the repository: \`git clone [your-repo-url]\`
+2. Open the project in [Android Studio / Xcode]
+3. [Add any specific setup steps here, e.g., "Add API key to local.properties"]
+4. Build and run the app on a simulator or device.
+`}</Code>
+      </Section>
 
       <AiOpp>
         <em>Use AI to refine your proposal →</em> Paste your draft proposal into Claude and ask: <strong>"We're a team of 3 with 4 weeks to build this. Is our scope realistic? What should we cut if we run out of time? What are we missing?"</strong> This is a great way to stress-test your idea before committing.
@@ -762,7 +854,7 @@ const Capstone = ({ platform, setPlatform }) => (
 
       <div style={{ marginTop: 16, padding: "12px 14px", background: "var(--color-background-secondary)", borderRadius: 8 }}>
         <strong>📬 Submission</strong>
-        <p style={{ margin: "6px 0 0" }}>One team member submits the proposal via the form linked in Slack. Your instructor will review proposals and may suggest scope adjustments before Week 7. <strong>Deadline: end of this week's Session 2.</strong></p>
+        <p style={{ margin: "6px 0 0" }}>One team member submits the <strong>link to your team's GitHub repository</strong> via the course portal. Your repository should contain both your <code>PROPOSAL.md</code> document and your <code>README.md</code> (which must include your Stitch wireframes). Your instructor will review these and may suggest scope adjustments before Week 7. <strong>Deadline: end of this week's Session 2.</strong></p>
       </div>
 
       <Tip>The Session 2 lab this week (AI-assisted scaffolding) is the perfect time to start prototyping your capstone idea. Use the prompt template from the lab, plug in your proposal details, and see what Claude generates. You don't need to keep the code — it's about validating that your idea is buildable.</Tip>
@@ -873,7 +965,7 @@ export default function Week6Unit() {
       {/* Tab content */}
       {tab === "Overview" && <Overview platform={platform} setPlatform={setPlatform} />}
       {tab === "Lab" && <Lab platform={platform} setPlatform={setPlatform} />}
-      {tab === "Project" && <Project platform={platform} setPlatform={setPlatform} />}
+
       {tab === "Capstone" && <Capstone platform={platform} setPlatform={setPlatform} />}
       {tab === "Resources" && <Resources platform={platform} setPlatform={setPlatform} />}
     </div>

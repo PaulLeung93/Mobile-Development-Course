@@ -186,4 +186,41 @@ fun HomeScreen(onStartClicked: () -> Unit) {
 
 ---
 
+### Beginner-level detail
+
+These students are beginners. **Never assume they know how to do something just because it seems basic to you.** If a step involves a tool, platform, or workflow the student hasn't used before in this course, provide granular, click-by-click guidance.
+
+**Examples of what "detailed enough" looks like:**
+
+- ❌ *"Create a GitHub repo and invite your teammates."*
+- ✅ *"Go to `github.com/organizations/new`. Select the Free plan. Name the org after your app or team. Then from the org dashboard, click 'Create a new repository'. Make sure the Owner dropdown shows the org name, not your personal username. Check 'Add a README' and select the Android/Swift .gitignore template..."*
+
+- ❌ *"Connect the Stitch MCP to Claude."*
+- ✅ *"Open Claude Desktop (not the web version — MCP only works in the desktop app). Go to Settings → Developer → Edit Config. This opens a JSON file. Add the following entry inside the `mcpServers` object: ... Restart Claude Desktop completely. Look for the MCP icon at the bottom of the chat input..."*
+
+**The rule:** if a student would need to Google "how to do X" to complete a step, the instructions aren't detailed enough. Provide the specific UI labels, menu paths, terminal commands, and config snippets they need.
+
+---
+
+### Labs are learning opportunities, not task lists
+
+Every step in a lab should teach something — not just tell the student what to do. The difference between a task list and a learning experience is **context and reasoning**.
+
+**How to apply this:**
+
+1. **Explain the "why" before the "how."** Before a procedural step, add a sentence or two about *why* this matters. For example: *"A GitHub Organization keeps the repo under a shared team account instead of one person's personal account — this means the project belongs to the whole team, not just whoever created it."*
+
+2. **Connect steps to concepts from the lecture.** If the lab practices something taught in the slides (e.g., prompting specificity, MVVM separation, MCP), call it out explicitly. Students often don't make the connection on their own.
+
+3. **Frame decisions, not just actions.** When there's a choice to make (repo name, design system colors, screen layout), explain the tradeoffs or conventions. *"Use a lowercase, hyphenated name — this is the standard convention for GitHub repos and will appear in your clone URLs."*
+
+4. **Use `<AiOpp>` and `<Tip>` to deepen understanding.** These aren't just decoration — they're where you insert the "aha" moments. An `<AiOpp>` should show students *how professionals actually use the tool*, not just that it exists.
+
+5. **Warn about common misconceptions.** If a step involves something students frequently misunderstand (e.g., "Stitch generates UI code, not business logic"), surface that explicitly with a `<Warn>` rather than hoping they'll figure it out.
+
+**The test:** after completing each step, could a student explain to a classmate *why* they did what they did — not just *what* they did? If not, the step needs more pedagogical framing.
+
+---
+
 Paste the TSX for the step(s) you want reworked below this line, and tell me which steps to apply this treatment to.
+
