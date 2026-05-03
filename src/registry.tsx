@@ -26,6 +26,7 @@ import AppFunctionsUnit from './curriculum/Bonus/appfunctions_unit';
 import AppFunctionsSlides from './curriculum/Bonus/appfunctions_slides';
 import AppFunctionsIosSlides from './curriculum/Bonus/appfunctions_ios_slides';
 import FirebaseUnit from './curriculum/Bonus/firebase_unit';
+import LlmToolUseUnit from './curriculum/Bonus/llm_tool_use_unit';
 
 import Week6Unit from './curriculum/Week 6/week6_unit';
 import Week6S1 from './curriculum/Week 6/week6_session1_slides';
@@ -118,5 +119,8 @@ export const bonusRegistry: Record<string, Record<string, React.ElementType>> = 
   },
   "Firebase": {
     "Unit": FirebaseUnit
+  },
+  "LLM Tool Use": {
+    "Unit": LlmToolUseUnit
   }
 };
