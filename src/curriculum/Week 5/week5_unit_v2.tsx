@@ -76,7 +76,12 @@ const VStep = ({ num, title, children, last = false }) => (
   </div>
 );
 
-const Link = ({ children }) => <span style={{ color: P_C, textDecoration: "underline", cursor: "pointer" }}>{children}</span>;
+const Link = ({ children, href }: { children: React.ReactNode; href?: string }) =>
+  href ? (
+    <a href={href} target="_blank" rel="noreferrer" style={{ color: P_C, textDecoration: "underline", cursor: "pointer" }}>{children}</a>
+  ) : (
+    <span style={{ color: P_C, textDecoration: "underline", cursor: "pointer" }}>{children}</span>
+  );
 const IC = ({ children }) => <code style={{ background: "var(--color-background-secondary)", border: "0.5px solid var(--color-border-tertiary)", borderRadius: 4, padding: "1px 5px", fontSize: 12 }}>{children}</code>;
 
 const PlatformToggle = ({ platform, setPlatform }) => (
@@ -777,7 +782,7 @@ const ProjectTab = ({ platform, setPlatform }) => (
         </p>
         <div style={{ background: "var(--color-background-secondary)", border: "0.5px solid var(--color-border-tertiary)", borderRadius: 8, padding: "10px 14px", margin: "10px 0" }}>
           <p style={{ fontSize: 12, fontWeight: 600, color: "var(--color-text-secondary)", margin: "0 0 4px", textTransform: "uppercase", letterSpacing: ".04em" }}>Starter code</p>
-          <p style={{ fontSize: 13, margin: 0 }}>{"🔗"} <Link>Download PantryDB starter project</Link> — open in Android Studio and sync Gradle before you start.</p>
+          <p style={{ fontSize: 13, margin: 0 }}>{"🔗"} <Link href="https://github.com/PaulLeung93/PantryDB-Starter">Download PantryDB starter project</Link> — open in Android Studio and sync Gradle before you start.</p>
         </div>
         <strong>{"🎯"} Goals</strong>
         <ul style={{ paddingLeft: 20, margin: "6px 0 14px" }}>
