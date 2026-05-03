@@ -607,7 +607,7 @@ CLAUDE_API_KEY=sk-ant-api03-...
 
 # build.gradle.kts
 buildConfigField("String", "CLAUDE_API_KEY",
-    "\"${properties["CLAUDE_API_KEY"]}\"")
+    "\\"${"$"}{properties["CLAUDE_API_KEY"]}\\"")
 
 # Usage
 BuildConfig.CLAUDE_API_KEY`}</pre>
