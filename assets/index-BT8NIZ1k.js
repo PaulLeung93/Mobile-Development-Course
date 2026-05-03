@@ -10511,7 +10511,7 @@ CLAUDE_API_KEY=sk-ant-api03-...
 
 # build.gradle.kts
 buildConfigField("String", "CLAUDE_API_KEY",
-    "\"${properties.CLAUDE_API_KEY}\"")
+    "\\"\${properties["CLAUDE_API_KEY"]}\\"")
 
 # Usage
 BuildConfig.CLAUDE_API_KEY`})]}),(0,y.jsxs)(`div`,{style:{background:Bf,borderRadius:8,padding:`12px 14px`},children:[(0,y.jsx)(`p`,{style:{fontSize:12,fontWeight:700,color:zf,margin:`0 0 4px`},children:`✅ iOS: Secrets.plist`}),(0,y.jsx)(`pre`,{style:{fontSize:11,color:zf,margin:0,fontFamily:`monospace`,lineHeight:1.7,background:`rgba(0,0,0,0.06)`,padding:`10px 12px`,borderRadius:4,whiteSpace:`pre-wrap`},children:`<!-- Secrets.plist  ← in .gitignore -->
