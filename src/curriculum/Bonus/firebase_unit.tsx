@@ -243,6 +243,11 @@ const AndroidLab = () => (
       </ul>
     </div>
 
+    <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 20, padding: "10px 14px", background: "var(--color-background-secondary)", borderRadius: 8, fontSize: 13, lineHeight: 1.6 }}>
+      <span style={{ fontSize: 20 }}>📦</span>
+      <span><strong>Starter repo:</strong> <Link href="https://github.com/PaulLeung93/TriviaLive-Android-Starter">github.com/PaulLeung93/TriviaLive-Android-Starter</Link> — clone this before starting Part 1.</span>
+    </div>
+
     {/* Part 1 */}
     <Section title="Part 1 — Firebase Project Setup" defaultOpen={true}>
       <p style={{ marginBottom: 14, color: "var(--color-text-secondary)" }}>
@@ -629,6 +634,11 @@ const IosLab = () => (
         <li>Players joining in real time and appearing in the lobby</li>
         <li>A full game loop — questions advancing, scores updating, leaderboard rendering</li>
       </ul>
+    </div>
+
+    <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 20, padding: "10px 14px", background: "var(--color-background-secondary)", borderRadius: 8, fontSize: 13, lineHeight: 1.6 }}>
+      <span style={{ fontSize: 20 }}>📦</span>
+      <span><strong>Starter repo:</strong> <Link href="https://github.com/PaulLeung93/TriviaLive-iOS-Starter">github.com/PaulLeung93/TriviaLive-iOS-Starter</Link> — clone this before starting Part 1.</span>
     </div>
 
     {/* Part 1 */}
