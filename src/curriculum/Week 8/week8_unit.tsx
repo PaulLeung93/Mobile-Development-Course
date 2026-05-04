@@ -73,6 +73,21 @@ function Step({ num, title, children }) {
   );
 }
 
+function VStep({ num, title, children, last }) {
+  return (
+    <div style={{ display: "flex", gap: 12, marginBottom: 4 }}>
+      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", flexShrink: 0 }}>
+        <div style={{ width: 26, height: 26, borderRadius: "50%", background: "var(--platform-accent, #534AB7)", color: "#fff", fontSize: 12, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center" }}>{num}</div>
+        {!last && <div style={{ width: 2, flex: 1, minHeight: 20, background: "var(--color-border-tertiary)", margin: "3px 0" }} />}
+      </div>
+      <div style={{ paddingBottom: last ? 8 : 24, flex: 1, minWidth: 0 }}>
+        <h4 style={{ fontSize: 13, fontWeight: 600, margin: "3px 0 8px", color: "var(--color-text-primary)" }}>{title}</h4>
+        <div style={{ fontSize: 13, lineHeight: 1.7 }}>{children}</div>
+      </div>
+    </div>
+  );
+}
+
 function Link({ children }) {
   return <span style={{ color: P_C, textDecoration: "underline", cursor: "pointer" }}>{children}</span>;
 }
@@ -239,9 +254,11 @@ function LabSession1({ platform }) {
       </div>
 
       <Step num={0} title={"Create a new project \u2014 MLScanner (~3 min)"}>
-        <p>Create a new {platform} project called <strong>MLScanner</strong>.</p>
+        <p>Create a new {isAndroid ? "Empty Activity" : "App"} project in {isAndroid ? "Android Studio" : "Xcode"}. Name it <strong>MLScanner</strong>.{isAndroid ? " Set Minimum SDK to API 24 and confirm Kotlin + Compose are selected." : ""}</p>
         {isAndroid ? (
-          <CodeB title="build.gradle.kts \u2014 add CameraX + ML Kit" accent={BL}>{`// CameraX
+          <div>
+            <p style={{ fontSize: 13, margin: "8px 0 4px" }}>Open <strong>build.gradle.kts (Module: app)</strong> \u2014 the one inside the <IC>app</IC> folder, not the top-level project file. Add these lines inside the <IC>dependencies</IC> block:</p>
+            <CodeB title="build.gradle.kts (Module: app) \u2014 add CameraX + ML Kit" accent={BL}>{`// CameraX
 implementation("androidx.camera:camera-core:1.3.0")
 implementation("androidx.camera:camera-camera2:1.3.0")
 implementation("androidx.camera:camera-lifecycle:1.3.0")
@@ -253,45 +270,48 @@ implementation("com.google.mlkit:text-recognition:16.0.0")
 
 // Permission helper for Compose
 implementation("com.google.accompanist:accompanist-permissions:0.32.0")`}</CodeB>
+            <p style={{ fontSize: 13, margin: "8px 0 4px" }}>Click <strong>Sync Now</strong> in the yellow banner at the top of the editor (or go to <strong>File \u2192 Sync Project with Gradle Files</strong>). Wait for the sync to finish \u2014 you won\u2019t be able to import these libraries until it completes.</p>
+          </div>
         ) : (
           <div>
-            <p style={{ fontSize: 13, margin: "6px 0" }}>No additional dependencies needed \u2014 Vision and AVFoundation are built into the SDK.</p>
-            <CodeB title="Info.plist \u2014 add camera permission" accent={GR}>{`<key>NSCameraUsageDescription</key>
-<string>Used to scan and label objects in real time.</string>`}</CodeB>
-            <Tip>{"Add NSCameraUsageDescription before writing any camera code. The app will crash silently on a real device without it."}</Tip>
+            <p style={{ fontSize: 13, margin: "8px 0 4px" }}>Vision and AVFoundation are built into the iOS SDK \u2014 no package dependencies needed. The one required step before writing any camera code is declaring the camera permission string.</p>
+            <p style={{ fontSize: 13, margin: "8px 0 4px" }}>In Xcode: select the <strong>MLScanner</strong> project in the Navigator \u2192 select the <strong>MLScanner target</strong> \u2192 open the <strong>Info</strong> tab \u2192 hover over any row and click <strong>+</strong> \u2192 type <IC>NSCameraUsageDescription</IC> \u2192 set the value to a user-facing description.</p>
+            <CodeB title="Info.plist entry to add" accent={GR}>{`Key:   NSCameraUsageDescription
+Type:  String
+Value: Used to scan and label objects in real time.`}</CodeB>
+            <Warn>{"If NSCameraUsageDescription is missing, the app crashes silently the moment it requests camera access \u2014 no error message, no log. Add it first."}</Warn>
           </div>
         )}
-        <Checkpoint num={0}>New project created. Dependencies added and synced. Project compiles.</Checkpoint>
+        <Checkpoint num={0}>{isAndroid ? "Gradle synced with no errors. Project builds clean." : "NSCameraUsageDescription is in Info.plist. Project builds clean."}</Checkpoint>
       </Step>
 
       <Step num={1} title={"Request camera permission (~5 min)"}>
-        <p>{"Camera access requires runtime permission on both platforms. Handle all three states: granted, denied, not-yet-asked."}</p>
-        {isAndroid ? (
-          <CodeB title="Kotlin \u2014 permission wrapper with Accompanist" accent={BL}>{`@Composable
+        <p>{"Camera access is a \"dangerous\" permission on both platforms \u2014 the OS won't grant it automatically. You must ask at runtime and handle three distinct outcomes. Build this before touching the camera so you never silently crash on a real device."}</p>
+
+        <VStep num="a" title={isAndroid ? "Create CameraPermissionWrapper.kt" : "Create CameraPermissionManager.swift"}>
+          {isAndroid ? (
+            <div>
+              <p>Create a new Kotlin file called <IC>CameraPermissionWrapper.kt</IC>. Add a <IC>@Composable</IC> function <IC>CameraPermissionWrapper</IC> with no parameters. Use Accompanist's <IC>rememberPermissionState</IC>, passing <IC>android.Manifest.permission.CAMERA</IC>, to get an object that tracks the current permission status.</p>
+              <Section title="\u2705 Check your work \u2014 CameraPermissionWrapper.kt so far" defaultOpen={false}>
+                <CodeB title="Kotlin \u2014 CameraPermissionWrapper.kt (skeleton)" accent={BL}>{`import androidx.compose.runtime.Composable
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.rememberPermissionState
+
+@OptIn(ExperimentalPermissionsApi::class)
+@Composable
 fun CameraPermissionWrapper() {
-    val permission = rememberPermissionState(Manifest.permission.CAMERA)
-    when {
-        permission.status.isGranted ->
-            CameraScreen()
-        permission.status.shouldShowRationale ->
-            Column(
-                modifier = Modifier.fillMaxSize().padding(32.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
-            ) {
-                Text("Camera access is needed to scan and label objects.")
-                Spacer(Modifier.height(12.dp))
-                Button(onClick = { permission.launchPermissionRequest() }) {
-                    Text("Grant Camera Permission")
-                }
-            }
-        else ->
-            LaunchedEffect(Unit) { permission.launchPermissionRequest() }
-    }
+    val permission = rememberPermissionState(
+        android.Manifest.permission.CAMERA
+    )
+    // when block goes in the next sub-step
 }`}</CodeB>
-        ) : (
-          <CodeB title="Swift \u2014 camera permission flow" accent={GR}>{`import AVFoundation
-import SwiftUI
+              </Section>
+            </div>
+          ) : (
+            <div>
+              <p>Create a new Swift file called <IC>CameraPermissionManager.swift</IC>. Add a class <IC>CameraPermissionManager: ObservableObject</IC>. Give it a <IC>@Published var status: AVAuthorizationStatus</IC> initialized with <IC>AVCaptureDevice.authorizationStatus(for: .video)</IC>. Add a <IC>requestPermission()</IC> method that calls <IC>AVCaptureDevice.requestAccess(for: .video)</IC> and updates <IC>status</IC> on the main thread.</p>
+              <Section title="\u2705 Check your work \u2014 CameraPermissionManager.swift" defaultOpen={false}>
+                <CodeB title="Swift \u2014 CameraPermissionManager.swift" accent={GR}>{`import AVFoundation
 
 class CameraPermissionManager: ObservableObject {
     @Published var status: AVAuthorizationStatus =
@@ -304,10 +324,83 @@ class CameraPermissionManager: ObservableObject {
             }
         }
     }
-}
+}`}</CodeB>
+              </Section>
+            </div>
+          )}
+        </VStep>
+
+        <VStep num="b" title="Handle all three permission states">
+          {isAndroid ? (
+            <div>
+              <p>Inside <IC>CameraPermissionWrapper</IC>, add a <IC>when</IC> block on <IC>permission.status</IC>:</p>
+              <ul style={{ paddingLeft: 20, margin: "6px 0" }}>
+                <li><IC>isGranted</IC> \u2014 call <IC>CameraScreen()</IC> (you'll create this in Step 2)</li>
+                <li><IC>shouldShowRationale</IC> \u2014 the user denied once; show a <IC>Column</IC> centered on screen with an explanation and a <IC>Button</IC> that calls <IC>permission.launchPermissionRequest()</IC></li>
+                <li><IC>else</IC> \u2014 first launch or permanently denied; use <IC>LaunchedEffect(Unit)</IC> to auto-request</li>
+              </ul>
+              <Tip>{"shouldShowRationale is Android's signal that the user denied once but can be asked again. If they deny twice, Android permanently blocks the permission \u2014 that also falls into the else branch, which is why the LaunchedEffect becomes a no-op. You'd need to send them to Settings instead."}</Tip>
+              <Section title="\u2705 Check your work \u2014 complete CameraPermissionWrapper.kt" defaultOpen={false}>
+                <CodeB title="Kotlin \u2014 CameraPermissionWrapper.kt" accent={BL}>{`import androidx.compose.foundation.layout.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.Text
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.isGranted
+import com.google.accompanist.permissions.rememberPermissionState
+import com.google.accompanist.permissions.shouldShowRationale
+
+@OptIn(ExperimentalPermissionsApi::class)
+@Composable
+fun CameraPermissionWrapper() {
+    val permission = rememberPermissionState(
+        android.Manifest.permission.CAMERA
+    )
+    when {
+        permission.status.isGranted ->
+            CameraScreen()
+
+        permission.status.shouldShowRationale ->
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(32.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                Text("Camera access is needed to scan and label objects.")
+                Spacer(Modifier.height(12.dp))
+                Button(onClick = { permission.launchPermissionRequest() }) {
+                    Text("Grant Camera Permission")
+                }
+            }
+
+        else ->
+            LaunchedEffect(Unit) {
+                permission.launchPermissionRequest()
+            }
+    }
+}`}</CodeB>
+              </Section>
+            </div>
+          ) : (
+            <div>
+              <p>Open <IC>ContentView.swift</IC> (the default one Xcode created). Replace its body with a <IC>switch perm.status</IC> block using a <IC>@StateObject private var perm = CameraPermissionManager()</IC>:</p>
+              <ul style={{ paddingLeft: 20, margin: "6px 0" }}>
+                <li><IC>.authorized</IC> \u2014 show <IC>CameraView()</IC> (you'll create this in Step 2)</li>
+                <li><IC>.denied</IC> \u2014 show a <IC>VStack</IC> with a message and an "Open Settings" <IC>Button</IC></li>
+                <li><IC>default</IC> \u2014 show <IC>Color.clear</IC> with <IC>.onAppear {"{ perm.requestPermission() }"}</IC></li>
+              </ul>
+              <Section title="\u2705 Check your work \u2014 ContentView.swift" defaultOpen={false}>
+                <CodeB title="Swift \u2014 ContentView.swift" accent={GR}>{`import SwiftUI
+import AVFoundation
 
 struct ContentView: View {
     @StateObject private var perm = CameraPermissionManager()
+
     var body: some View {
         switch perm.status {
         case .authorized:
@@ -315,57 +408,105 @@ struct ContentView: View {
         case .denied:
             VStack(spacing: 16) {
                 Text("Camera access is required.")
+                    .multilineTextAlignment(.center)
                 Button("Open Settings") {
                     UIApplication.shared.open(
                         URL(string: UIApplication.openSettingsURLString)!)
                 }
-            }
+            }.padding()
         default:
-            Button("Allow Camera Access") { perm.requestPermission() }
-                .onAppear { perm.requestPermission() }
+            Color.clear.onAppear {
+                perm.requestPermission()
+            }
         }
     }
 }`}</CodeB>
-        )}
-        <Checkpoint num={1}>App requests camera permission on launch. Granted leads to the camera screen. Denied shows a clear recovery path.</Checkpoint>
+              </Section>
+            </div>
+          )}
+        </VStep>
+
+        <VStep num="c" title={isAndroid ? "Wire CameraPermissionWrapper into MainActivity" : "Confirm ContentView is the app entry point"} last>
+          {isAndroid ? (
+            <div>
+              <p>Open <IC>MainActivity.kt</IC>. Inside <IC>setContent {"{ }"}</IC>, replace the default content with <IC>CameraPermissionWrapper()</IC>. The <IC>CameraScreen()</IC> reference will show a compile error until Step 2 \u2014 that's expected.</p>
+              <Section title="\u2705 Check your work \u2014 MainActivity.kt" defaultOpen={false}>
+                <CodeB title="Kotlin \u2014 MainActivity.kt" accent={BL}>{`import android.os.Bundle
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.compose.material3.MaterialTheme
+
+class MainActivity : ComponentActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContent {
+            MaterialTheme {
+                CameraPermissionWrapper()
+            }
+        }
+    }
+}`}</CodeB>
+              </Section>
+            </div>
+          ) : (
+            <div>
+              <p>Open your <IC>MLScannerApp.swift</IC> (the <IC>@main</IC> struct). Confirm <IC>ContentView()</IC> is already set as the <IC>WindowGroup</IC> body \u2014 Xcode puts it there by default, so no change is needed.</p>
+              <Section title="\u2705 Check your work \u2014 MLScannerApp.swift" defaultOpen={false}>
+                <CodeB title="Swift \u2014 MLScannerApp.swift" accent={GR}>{`import SwiftUI
+
+@main
+struct MLScannerApp: App {
+    var body: some Scene {
+        WindowGroup {
+            ContentView()
+        }
+    }
+}`}</CodeB>
+              </Section>
+            </div>
+          )}
+        </VStep>
+
+        <Checkpoint num={1}>{"Run on a real device. On first launch it requests camera permission. Granting it navigates to CameraScreen/CameraView (shows a build error until Step 2 \u2014 that's fine). Denying shows a recovery path."}</Checkpoint>
       </Step>
 
       <Step num={2} title={"Build the live camera preview (~10 min)"}>
-        <p>{"Get the viewfinder on screen before adding any ML. Confirm the feed is live before proceeding."}</p>
-        {isAndroid ? (
-          <CodeB title="Kotlin \u2014 CameraPreview composable with ImageAnalysis" accent={BL}>{`@Composable
+        <p>{"Get the viewfinder on screen and confirm the live feed works before adding any ML. Build this first \u2014 if the camera isn't showing, nothing else will work."}</p>
+        {isAndroid && <Tip>{"CameraX organizes camera work into use cases bound to the activity lifecycle: Preview (viewfinder), ImageCapture (single photo \u2014 from Week 7), and ImageAnalysis (called for every frame \u2014 new this week). You'll bind Preview + ImageAnalysis together."}</Tip>}
+
+        <VStep num="a" title={isAndroid ? "Create CameraPreview.kt with the composable skeleton" : "Create CameraManager.swift"}>
+          {isAndroid ? (
+            <div>
+              <p>Create a new file <IC>CameraPreview.kt</IC>. Add a <IC>@Composable</IC> function <IC>CameraPreview</IC> that takes one parameter: <IC>onFrameAnalyzed: (ImageProxy) -{">"} Unit</IC>. Inside, use <IC>remember {"{ PreviewView(context) }"}</IC> to create the native view, and wrap it in an <IC>AndroidView</IC> that fills the max size. Leave the camera binding for the next sub-step.</p>
+              <Section title="\u2705 Check your work \u2014 CameraPreview.kt (skeleton)" defaultOpen={false}>
+                <CodeB title="Kotlin \u2014 CameraPreview.kt (skeleton)" accent={BL}>{`import androidx.camera.view.PreviewView
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.viewinterop.AndroidView
+
+@Composable
 fun CameraPreview(onFrameAnalyzed: (ImageProxy) -> Unit) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
     val previewView = remember { PreviewView(context) }
 
-    LaunchedEffect(Unit) {
-        val cameraProvider =
-            ProcessCameraProvider.getInstance(context).await()
+    // camera binding goes in the next sub-step
 
-        val preview = Preview.Builder().build().also {
-            it.setSurfaceProvider(previewView.surfaceProvider)
-        }
-        val imageAnalysis = ImageAnalysis.Builder()
-            .setBackpressureStrategy(STRATEGY_KEEP_ONLY_LATEST)
-            .build().also { analysis ->
-                analysis.setAnalyzer(
-                    Executors.newSingleThreadExecutor()
-                ) { imageProxy -> onFrameAnalyzed(imageProxy) }
-            }
-        cameraProvider.bindToLifecycle(
-            lifecycleOwner,
-            CameraSelector.DEFAULT_BACK_CAMERA,
-            preview, imageAnalysis
-        )
-    }
     AndroidView(
         factory = { previewView },
         modifier = Modifier.fillMaxSize()
     )
 }`}</CodeB>
-        ) : (
-          <CodeB title="Swift \u2014 CameraManager + UIViewRepresentable preview" accent={GR}>{`import AVFoundation, SwiftUI
+              </Section>
+            </div>
+          ) : (
+            <div>
+              <p>Create a new Swift file <IC>CameraManager.swift</IC>. Add a class <IC>CameraManager: NSObject, ObservableObject, AVCaptureVideoDataOutputSampleBufferDelegate</IC>. Give it a <IC>let session = AVCaptureSession()</IC> property and a <IC>var onFrame: ((CMSampleBuffer) -{">"} Void)?</IC> callback. In <IC>init()</IC>: set <IC>session.sessionPreset = .high</IC>, add the back camera as input, add an <IC>AVCaptureVideoDataOutput</IC> with <IC>self</IC> as delegate on a serial queue. Add a <IC>start()</IC> method that calls <IC>session.startRunning()</IC> on a background thread. Implement the delegate's <IC>captureOutput</IC> to call <IC>onFrame?(buffer)</IC>.</p>
+              <Section title="\u2705 Check your work \u2014 CameraManager.swift" defaultOpen={false}>
+                <CodeB title="Swift \u2014 CameraManager.swift" accent={GR}>{`import AVFoundation
 
 class CameraManager: NSObject, ObservableObject,
     AVCaptureVideoDataOutputSampleBufferDelegate {
@@ -396,11 +537,81 @@ class CameraManager: NSObject, ObservableObject,
 
     func captureOutput(_ output: AVCaptureOutput,
         didOutput buffer: CMSampleBuffer,
-        from connection: AVCaptureConnection) { onFrame?(buffer) }
-}
+        from connection: AVCaptureConnection) {
+        onFrame?(buffer)
+    }
+}`}</CodeB>
+              </Section>
+            </div>
+          )}
+        </VStep>
+
+        <VStep num="b" title={isAndroid ? "Bind the Preview + ImageAnalysis use cases" : "Create CameraPreviewView.swift (UIViewRepresentable)"}>
+          {isAndroid ? (
+            <div>
+              <p>Inside <IC>CameraPreview</IC>, add a <IC>LaunchedEffect(Unit)</IC> block. Inside it:</p>
+              <ol style={{ paddingLeft: 20, margin: "6px 0" }}>
+                <li>Get the camera provider: <IC>ProcessCameraProvider.getInstance(context).await()</IC></li>
+                <li>Build a <IC>Preview</IC> use case and set its <IC>surfaceProvider</IC> to <IC>previewView.surfaceProvider</IC></li>
+                <li>Build an <IC>ImageAnalysis</IC> use case with <IC>STRATEGY_KEEP_ONLY_LATEST</IC> and attach an analyzer on a single-thread executor that calls <IC>onFrameAnalyzed(imageProxy)</IC></li>
+                <li>Call <IC>bindToLifecycle</IC> with both use cases</li>
+              </ol>
+              <Section title="\u2705 Check your work \u2014 complete CameraPreview.kt" defaultOpen={false}>
+                <CodeB title="Kotlin \u2014 CameraPreview.kt (complete)" accent={BL}>{`import androidx.camera.core.*
+import androidx.camera.lifecycle.ProcessCameraProvider
+import androidx.camera.view.PreviewView
+import androidx.compose.runtime.*
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.viewinterop.AndroidView
+import kotlinx.coroutines.guava.await
+import java.util.concurrent.Executors
+
+@Composable
+fun CameraPreview(onFrameAnalyzed: (ImageProxy) -> Unit) {
+    val context = LocalContext.current
+    val lifecycleOwner = LocalLifecycleOwner.current
+    val previewView = remember { PreviewView(context) }
+
+    LaunchedEffect(Unit) {
+        val cameraProvider =
+            ProcessCameraProvider.getInstance(context).await()
+
+        val preview = Preview.Builder().build().also {
+            it.setSurfaceProvider(previewView.surfaceProvider)
+        }
+        val imageAnalysis = ImageAnalysis.Builder()
+            .setBackpressureStrategy(
+                ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
+            .build().also { analysis ->
+                analysis.setAnalyzer(
+                    Executors.newSingleThreadExecutor()
+                ) { imageProxy -> onFrameAnalyzed(imageProxy) }
+            }
+        cameraProvider.bindToLifecycle(
+            lifecycleOwner,
+            CameraSelector.DEFAULT_BACK_CAMERA,
+            preview, imageAnalysis
+        )
+    }
+    AndroidView(
+        factory = { previewView },
+        modifier = Modifier.fillMaxSize()
+    )
+}`}</CodeB>
+              </Section>
+            </div>
+          ) : (
+            <div>
+              <p>Create a new file <IC>CameraPreviewView.swift</IC>. Add a struct <IC>CameraPreviewView: UIViewRepresentable</IC> with a <IC>let session: AVCaptureSession</IC> property. SwiftUI can't display an <IC>AVCaptureSession</IC> directly \u2014 this wrapper bridges it to a UIKit view with a preview layer. In <IC>makeUIView</IC>: create a <IC>UIView</IC>, create an <IC>AVCaptureVideoPreviewLayer</IC> with the session, set <IC>videoGravity = .resizeAspectFill</IC>, set <IC>layer.frame = view.bounds</IC>, add it as a sublayer, return the view. Leave <IC>updateUIView</IC> empty.</p>
+              <Section title="\u2705 Check your work \u2014 CameraPreviewView.swift" defaultOpen={false}>
+                <CodeB title="Swift \u2014 CameraPreviewView.swift" accent={GR}>{`import AVFoundation
+import SwiftUI
 
 struct CameraPreviewView: UIViewRepresentable {
     let session: AVCaptureSession
+
     func makeUIView(context: Context) -> UIView {
         let view = UIView(frame: UIScreen.main.bounds)
         let layer = AVCaptureVideoPreviewLayer(session: session)
@@ -409,65 +620,167 @@ struct CameraPreviewView: UIViewRepresentable {
         view.layer.addSublayer(layer)
         return view
     }
+
     func updateUIView(_ uiView: UIView, context: Context) {}
 }`}</CodeB>
-        )}
-        <Checkpoint num={2}>The live camera feed is visible and filling the screen. No ML yet \u2014 just confirm the viewfinder works.</Checkpoint>
+              </Section>
+            </div>
+          )}
+        </VStep>
+
+        <VStep num="c" title={isAndroid ? "Create CameraScreen.kt to host the preview" : "Create CameraView.swift to host the preview"} last>
+          {isAndroid ? (
+            <div>
+              <p>Create a new file <IC>CameraScreen.kt</IC>. Add a <IC>@Composable</IC> fun <IC>CameraScreen</IC>. For now: a <IC>Box(Modifier.fillMaxSize())</IC> containing <IC>CameraPreview(onFrameAnalyzed = {"{ it.close() }"})</IC>. Calling <IC>close()</IC> immediately (without analysis) keeps the pipeline running so you can verify the feed before adding ML.</p>
+              <Section title="\u2705 Check your work \u2014 CameraScreen.kt (so far)" defaultOpen={false}>
+                <CodeB title="Kotlin \u2014 CameraScreen.kt" accent={BL}>{`import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+
+@Composable
+fun CameraScreen() {
+    Box(modifier = Modifier.fillMaxSize()) {
+        CameraPreview(onFrameAnalyzed = { it.close() })
+        // ML overlay goes here in Step 3
+    }
+}`}</CodeB>
+              </Section>
+            </div>
+          ) : (
+            <div>
+              <p>Create a new file <IC>CameraView.swift</IC>. Add a <IC>struct CameraView: View</IC> with a <IC>@StateObject private var cameraManager = CameraManager()</IC>. In the body: wrap <IC>CameraPreviewView(session: cameraManager.session)</IC> in a <IC>ZStack</IC> that ignores safe areas. Call <IC>cameraManager.start()</IC> in <IC>.onAppear</IC>.</p>
+              <Section title="\u2705 Check your work \u2014 CameraView.swift (so far)" defaultOpen={false}>
+                <CodeB title="Swift \u2014 CameraView.swift" accent={GR}>{`import SwiftUI
+
+struct CameraView: View {
+    @StateObject private var cameraManager = CameraManager()
+
+    var body: some View {
+        ZStack {
+            CameraPreviewView(session: cameraManager.session)
+                .ignoresSafeArea()
+            // ML overlay goes here in Step 3
+        }
+        .onAppear { cameraManager.start() }
+    }
+}`}</CodeB>
+              </Section>
+            </div>
+          )}
+        </VStep>
+
+        <Checkpoint num={2}>{"Run on a real device. The live camera feed fills the screen. No labels yet \u2014 just confirm the viewfinder works before plugging in ML."}</Checkpoint>
       </Step>
 
       <Step num={3} title={"Add real-time image labeling (~15 min)"}>
-        <p>{"Attach ML to the camera feed. For every frame (or every N frames to save battery), run the labeler and overlay the top results on the preview."}</p>
-        {isAndroid ? (
-          <CodeB title="Kotlin \u2014 ML Kit image labeling on each frame" accent={BL}>{`// In ViewModel:
-private val labeler =
-    ImageLabeling.getClient(ImageLabelerOptions.DEFAULT_OPTIONS)
-private val _labels = MutableStateFlow<List<String>>(emptyList())
-val labels: StateFlow<List<String>> = _labels
+        <p>{"Now that the camera feed is running, plug in the ML library. The ViewModel will own the ML client and expose a list of label strings that the UI observes. Each camera frame flows through the ViewModel, which runs inference and posts the results."}</p>
 
-fun analyzeFrame(imageProxy: ImageProxy) {
-    val mediaImage = imageProxy.image
-        ?: run { imageProxy.close(); return }
-    val image = InputImage.fromMediaImage(
-        mediaImage, imageProxy.imageInfo.rotationDegrees)
+        <VStep num="a" title={isAndroid ? "Create MLScannerViewModel.kt" : "Create MLScannerViewModel.swift"}>
+          {isAndroid ? (
+            <div>
+              <p>Create a new Kotlin file <IC>MLScannerViewModel.kt</IC>. Add a class <IC>MLScannerViewModel : ViewModel()</IC>. Inside, instantiate the ML Kit image labeler with <IC>ImageLabeling.getClient(ImageLabelerOptions.DEFAULT_OPTIONS)</IC>. Then declare a private <IC>{"MutableStateFlow<List<String>>"}</IC> initialized to an empty list, and expose it publicly as <IC>{"StateFlow<List<String>>"}</IC>. You will add the analysis method in the next sub-step.</p>
+              <Section title="✅ Check your work — MLScannerViewModel.kt so far" defaultOpen={false}>
+                <CodeB title="Kotlin — MLScannerViewModel.kt (skeleton)" accent={BL}>{`import androidx.lifecycle.ViewModel
+import com.google.mlkit.vision.label.ImageLabeling
+import com.google.mlkit.vision.label.defaults.ImageLabelerOptions
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 
-    labeler.process(image)
-        .addOnSuccessListener { results ->
-            _labels.value = results.take(3).map { label ->
-                "\${label.text}  \${(label.confidence * 100).toInt()}%"
+class MLScannerViewModel : ViewModel() {
+    private val labeler =
+        ImageLabeling.getClient(ImageLabelerOptions.DEFAULT_OPTIONS)
+
+    private val _labels = MutableStateFlow<List<String>>(emptyList())
+    val labels: StateFlow<List<String>> = _labels
+
+    // analyzeFrame goes in the next sub-step
+}`}</CodeB>
+              </Section>
+            </div>
+          ) : (
+            <div>
+              <p>Create a new Swift file <IC>MLScannerViewModel.swift</IC>. Add a class <IC>MLScannerViewModel: ObservableObject</IC>. Declare <IC>@Published var detectedLabels: [String] = []</IC>. Add a private <IC>var lastProcessed: TimeInterval = 0</IC> — you will use this in the next sub-step to throttle frame processing rate.</p>
+              <Section title="✅ Check your work — MLScannerViewModel.swift so far" defaultOpen={false}>
+                <CodeB title="Swift — MLScannerViewModel.swift (skeleton)" accent={GR}>{`import Foundation
+import Vision
+
+class MLScannerViewModel: ObservableObject {
+    @Published var detectedLabels: [String] = []
+    private var lastProcessed: TimeInterval = 0
+
+    // processFrame goes in the next sub-step
+}`}</CodeB>
+              </Section>
+            </div>
+          )}
+        </VStep>
+
+        <VStep num="b" title={isAndroid ? "Implement analyzeFrame" : "Implement processFrame"}>
+          {isAndroid ? (
+            <div>
+              <p>Add <IC>fun analyzeFrame(imageProxy: ImageProxy)</IC> to <IC>MLScannerViewModel</IC>. Inside:</p>
+              <ol style={{ paddingLeft: 20, margin: "6px 0" }}>
+                <li>Convert <IC>imageProxy.image</IC> to an <IC>InputImage</IC> via <IC>InputImage.fromMediaImage</IC>, passing the image and rotation degrees. If the image is null, close the proxy and return early.</li>
+                <li>Call <IC>labeler.process(image)</IC>. In <IC>addOnSuccessListener</IC>, take the top 3 results and map each to a string with the label text and confidence percentage. Store in <IC>_labels.value</IC>.</li>
+                <li>Add a separate <IC>addOnCompleteListener</IC> that calls <IC>imageProxy.close()</IC>.</li>
+              </ol>
+              <Warn>{"addOnCompleteListener fires whether the ML call succeeds OR fails. If you put imageProxy.close() inside addOnSuccessListener instead, a failed frame never closes — CameraX interprets the analyzer as still busy and stops delivering new frames. The camera freezes with no error message."}</Warn>
+              <Section title="✅ Check your work — complete MLScannerViewModel.kt" defaultOpen={false}>
+                <CodeB title="Kotlin — MLScannerViewModel.kt" accent={BL}>{`import androidx.camera.core.ImageProxy
+import androidx.lifecycle.ViewModel
+import com.google.mlkit.vision.common.InputImage
+import com.google.mlkit.vision.label.ImageLabeling
+import com.google.mlkit.vision.label.defaults.ImageLabelerOptions
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+
+class MLScannerViewModel : ViewModel() {
+    private val labeler =
+        ImageLabeling.getClient(ImageLabelerOptions.DEFAULT_OPTIONS)
+
+    private val _labels = MutableStateFlow<List<String>>(emptyList())
+    val labels: StateFlow<List<String>> = _labels
+
+    fun analyzeFrame(imageProxy: ImageProxy) {
+        val mediaImage = imageProxy.image
+            ?: run { imageProxy.close(); return }
+        val image = InputImage.fromMediaImage(
+            mediaImage, imageProxy.imageInfo.rotationDegrees)
+
+        labeler.process(image)
+            .addOnSuccessListener { results ->
+                _labels.value = results.take(3).map { label ->
+                    "\${label.text}  \${(label.confidence * 100).toInt()}%"
+                }
             }
-        }
-        .addOnCompleteListener {
-            imageProxy.close() // Always close — camera stalls otherwise
-        }
-}
-
-// In CameraScreen composable:
-val labels by viewModel.labels.collectAsState()
-Box(modifier = Modifier.fillMaxSize()) {
-    CameraPreview(onFrameAnalyzed = { viewModel.analyzeFrame(it) })
-    // Overlay
-    Column(
-        modifier = Modifier
-            .align(Alignment.BottomCenter)
-            .fillMaxWidth()
-            .background(Color.Black.copy(alpha = 0.55f))
-            .padding(16.dp)
-    ) {
-        labels.forEach { label ->
-            Text(label, color = Color.White, fontSize = 16.sp,
-                 fontWeight = FontWeight.Medium)
-        }
+            .addOnCompleteListener {
+                imageProxy.close() // Must be here, not in addOnSuccessListener
+            }
     }
 }`}</CodeB>
-        ) : (
-          <CodeB title="Swift \u2014 VNClassifyImageRequest on live frames" accent={GR}>{`import Vision
+              </Section>
+            </div>
+          ) : (
+            <div>
+              <p>Add <IC>func processFrame(_ buffer: CMSampleBuffer)</IC> to <IC>MLScannerViewModel</IC>. Inside:</p>
+              <ol style={{ paddingLeft: 20, margin: "6px 0" }}>
+                <li>Throttle to ~4 fps: compare <IC>Date().timeIntervalSince1970</IC> to <IC>lastProcessed</IC>. Return early if less than 0.25 s have passed; otherwise update <IC>lastProcessed</IC>.</li>
+                <li>Get the pixel buffer from <IC>CMSampleBufferGetImageBuffer(buffer)</IC>. Return if nil.</li>
+                <li>Create a <IC>VNClassifyImageRequest</IC>. In its completion handler, filter above 0.08 confidence, take the top 3, map to label strings, and update <IC>detectedLabels</IC> on the main thread.</li>
+                <li>Create a <IC>VNImageRequestHandler</IC> and call <IC>perform</IC>.</li>
+              </ol>
+              <Tip>{"Vision's perform call is synchronous on the calling thread. CameraManager calls processFrame from a serial background queue, so no extra DispatchQueue wrapper is needed around perform. But you do need DispatchQueue.main.async before updating detectedLabels — @Published must be set on the main thread."}</Tip>
+              <Section title="✅ Check your work — complete MLScannerViewModel.swift" defaultOpen={false}>
+                <CodeB title="Swift — MLScannerViewModel.swift" accent={GR}>{`import Foundation
+import Vision
+import AVFoundation
 
 class MLScannerViewModel: ObservableObject {
     @Published var detectedLabels: [String] = []
     private var lastProcessed: TimeInterval = 0
 
     func processFrame(_ buffer: CMSampleBuffer) {
-        // Throttle to ~4 fps to prevent overheating
         let now = Date().timeIntervalSince1970
         guard now - lastProcessed > 0.25 else { return }
         lastProcessed = now
@@ -490,117 +803,521 @@ class MLScannerViewModel: ObservableObject {
             cvPixelBuffer: pixelBuffer, orientation: .up)
         try? handler.perform([request])
     }
-}
+}`}</CodeB>
+              </Section>
+            </div>
+          )}
+        </VStep>
 
-// Overlay in SwiftUI:
-ZStack(alignment: .bottom) {
-    CameraPreviewView(session: cameraManager.session)
-    VStack(alignment: .leading, spacing: 6) {
-        ForEach(viewModel.detectedLabels, id: \.self) { label in
-            Text(label)
-                .foregroundColor(.white)
-                .font(.title3).fontWeight(.medium)
+        <VStep num="c" title={isAndroid ? "Add the label overlay to CameraScreen" : "Wire the ViewModel into CameraView"} last>
+          {isAndroid ? (
+            <div>
+              <p>Open <IC>CameraScreen.kt</IC>. Add a <IC>viewModel: MLScannerViewModel = viewModel()</IC> parameter. Collect <IC>viewModel.labels</IC> with <IC>collectAsState()</IC>. Replace the temporary <IC>{"onFrameAnalyzed = { it.close() }"}</IC> with <IC>{"{ viewModel.analyzeFrame(it) }"}</IC>. Then add a <IC>Column</IC> inside the <IC>Box</IC> aligned to <IC>Alignment.BottomCenter</IC> with a semi-transparent black background (alpha 0.55) and 16 dp padding. Iterate over <IC>labels</IC> and show each as white <IC>Text</IC>.</p>
+              <Section title="✅ Check your work — complete CameraScreen.kt" defaultOpen={false}>
+                <CodeB title="Kotlin — CameraScreen.kt" accent={BL}>{`import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.Text
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+
+@Composable
+fun CameraScreen(viewModel: MLScannerViewModel = viewModel()) {
+    val labels by viewModel.labels.collectAsState()
+
+    Box(modifier = Modifier.fillMaxSize()) {
+        CameraPreview(onFrameAnalyzed = { viewModel.analyzeFrame(it) })
+        Column(
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .fillMaxWidth()
+                .background(Color.Black.copy(alpha = 0.55f))
+                .padding(16.dp)
+        ) {
+            labels.forEach { label ->
+                Text(label, color = Color.White, fontSize = 16.sp,
+                     fontWeight = FontWeight.Medium)
+            }
         }
     }
-    .frame(maxWidth: .infinity, alignment: .leading)
-    .padding()
-    .background(.black.opacity(0.55))
 }`}</CodeB>
-        )}
-        <Warn>{"Always close ImageProxy after processing (Android) or the camera pipeline stalls. On iOS, throttle to every 4th frame or less to prevent thermal throttling."}</Warn>
+              </Section>
+            </div>
+          ) : (
+            <div>
+              <p>Open <IC>CameraView.swift</IC>. Add <IC>@StateObject private var viewModel = MLScannerViewModel()</IC>. In <IC>.onAppear</IC>, set <IC>{"cameraManager.onFrame = { viewModel.processFrame($0) }"}</IC> before calling <IC>cameraManager.start()</IC>. Add an overlay inside the <IC>ZStack</IC>: a <IC>VStack</IC> with leading alignment and 6-pt spacing, padded, anchored to the bottom with a semi-transparent black background. Use <IC>ForEach</IC> over <IC>viewModel.detectedLabels</IC> to show each label in white title3 font.</p>
+              <Section title="✅ Check your work — complete CameraView.swift" defaultOpen={false}>
+                <CodeB title="Swift — CameraView.swift" accent={GR}>{`import SwiftUI
+
+struct CameraView: View {
+    @StateObject private var cameraManager = CameraManager()
+    @StateObject private var viewModel = MLScannerViewModel()
+
+    var body: some View {
+        ZStack(alignment: .bottom) {
+            CameraPreviewView(session: cameraManager.session)
+                .ignoresSafeArea()
+            VStack(alignment: .leading, spacing: 6) {
+                ForEach(viewModel.detectedLabels, id: \.self) { label in
+                    Text(label)
+                        .foregroundColor(.white)
+                        .font(.title3).fontWeight(.medium)
+                }
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding()
+            .background(.black.opacity(0.55))
+        }
+        .onAppear {
+            cameraManager.onFrame = { viewModel.processFrame($0) }
+            cameraManager.start()
+        }
+    }
+}`}</CodeB>
+              </Section>
+            </div>
+          )}
+        </VStep>
+
         <Checkpoint num={3}>{"Point the camera at objects around you. Labels appear at the bottom in real time with confidence percentages. The camera feed keeps running smoothly."}</Checkpoint>
       </Step>
 
       <Step num={4} title={"Add text recognition mode (~10 min)"}>
-        <p>{"Add a toggle so users can switch between object labeling and OCR. Text recognition reads printed text in real time \u2014 perfect for scanning signs, receipts, or books."}</p>
-        {isAndroid ? (
-          <CodeB title="Kotlin \u2014 ScanMode enum + TextRecognition" accent={BL}>{`enum class ScanMode { LABEL, TEXT }
+        <p>{"Add a toggle so users can switch between object labeling and OCR. Text recognition reads printed text in real time — perfect for scanning signs, receipts, or books. You will extend the ViewModel to support both modes and add a segmented control to the UI."}</p>
 
-private val textRecognizer =
-    TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
+        <VStep num="a" title={"Add ScanMode and the text recognizer to the ViewModel"}>
+          {isAndroid ? (
+            <div>
+              <p>At the top of <IC>MLScannerViewModel.kt</IC> (outside the class), add an enum: <IC>{"enum class ScanMode { LABEL, TEXT }"}</IC>. Then inside the class, add a second ML client: <IC>private val textRecognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)</IC>. You will use it in the next sub-step.</p>
+              <Section title="✅ Check your work — MLScannerViewModel.kt so far" defaultOpen={false}>
+                <CodeB title="Kotlin — MLScannerViewModel.kt (with ScanMode)" accent={BL}>{`import androidx.camera.core.ImageProxy
+import androidx.lifecycle.ViewModel
+import com.google.mlkit.vision.common.InputImage
+import com.google.mlkit.vision.label.ImageLabeling
+import com.google.mlkit.vision.label.defaults.ImageLabelerOptions
+import com.google.mlkit.vision.text.TextRecognition
+import com.google.mlkit.vision.text.latin.TextRecognizerOptions
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 
-fun analyzeFrame(imageProxy: ImageProxy, mode: ScanMode) {
-    val image = InputImage.fromMediaImage(
-        imageProxy.image!!, imageProxy.imageInfo.rotationDegrees)
-    when (mode) {
-        ScanMode.LABEL -> labeler.process(image)
-            .addOnSuccessListener { results ->
-                _labels.value = results.take(3).map {
-                    "\${it.text}  \${(it.confidence * 100).toInt()}%"
+enum class ScanMode { LABEL, TEXT }
+
+class MLScannerViewModel : ViewModel() {
+    private val labeler =
+        ImageLabeling.getClient(ImageLabelerOptions.DEFAULT_OPTIONS)
+    private val textRecognizer =
+        TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
+
+    private val _labels = MutableStateFlow<List<String>>(emptyList())
+    val labels: StateFlow<List<String>> = _labels
+
+    // analyzeFrame updated in next sub-step
+}`}</CodeB>
+              </Section>
+            </div>
+          ) : (
+            <div>
+              <p>At the top of <IC>MLScannerViewModel.swift</IC> (outside the class), add: <IC>{"enum ScanMode { case label, text }"}</IC>. Inside the class, add a published mode property: <IC>@Published var currentMode: ScanMode = .label</IC>. The UI will bind a <IC>Picker</IC> to this property in sub-step c, and <IC>processFrame</IC> will read it in sub-step b.</p>
+              <Section title="✅ Check your work — MLScannerViewModel.swift so far" defaultOpen={false}>
+                <CodeB title="Swift — MLScannerViewModel.swift (with ScanMode)" accent={GR}>{`import Foundation
+import Vision
+import AVFoundation
+
+enum ScanMode { case label, text }
+
+class MLScannerViewModel: ObservableObject {
+    @Published var detectedLabels: [String] = []
+    @Published var currentMode: ScanMode = .label
+    private var lastProcessed: TimeInterval = 0
+
+    // processFrame updated in next sub-step
+}`}</CodeB>
+              </Section>
+            </div>
+          )}
+        </VStep>
+
+        <VStep num="b" title={"Update the frame analysis method to branch on mode"}>
+          {isAndroid ? (
+            <div>
+              <p>Change <IC>analyzeFrame</IC> to accept a second parameter: <IC>mode: ScanMode</IC>. Replace the method body with a <IC>when (mode)</IC> block:</p>
+              <ul style={{ paddingLeft: 20, margin: "6px 0" }}>
+                <li><IC>ScanMode.LABEL</IC> — same logic as before: run <IC>labeler.process(image)</IC>, take top 3 results, format as label + confidence string.</li>
+                <li><IC>ScanMode.TEXT</IC> — run <IC>textRecognizer.process(image)</IC>, take the first 240 characters of the full text block, store as a single-item list. If blank, store <IC>listOf("No text detected")</IC>.</li>
+              </ul>
+              <p>Both branches must call <IC>imageProxy.close()</IC> inside their own <IC>addOnCompleteListener</IC>.</p>
+              <Section title="✅ Check your work — complete MLScannerViewModel.kt" defaultOpen={false}>
+                <CodeB title="Kotlin — MLScannerViewModel.kt" accent={BL}>{`import androidx.camera.core.ImageProxy
+import androidx.lifecycle.ViewModel
+import com.google.mlkit.vision.common.InputImage
+import com.google.mlkit.vision.label.ImageLabeling
+import com.google.mlkit.vision.label.defaults.ImageLabelerOptions
+import com.google.mlkit.vision.text.TextRecognition
+import com.google.mlkit.vision.text.latin.TextRecognizerOptions
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+
+enum class ScanMode { LABEL, TEXT }
+
+class MLScannerViewModel : ViewModel() {
+    private val labeler =
+        ImageLabeling.getClient(ImageLabelerOptions.DEFAULT_OPTIONS)
+    private val textRecognizer =
+        TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
+
+    private val _labels = MutableStateFlow<List<String>>(emptyList())
+    val labels: StateFlow<List<String>> = _labels
+
+    fun analyzeFrame(imageProxy: ImageProxy, mode: ScanMode) {
+        val mediaImage = imageProxy.image
+            ?: run { imageProxy.close(); return }
+        val image = InputImage.fromMediaImage(
+            mediaImage, imageProxy.imageInfo.rotationDegrees)
+
+        when (mode) {
+            ScanMode.LABEL -> labeler.process(image)
+                .addOnSuccessListener { results ->
+                    _labels.value = results.take(3).map {
+                        "\${it.text}  \${(it.confidence * 100).toInt()}%"
+                    }
                 }
-            }.addOnCompleteListener { imageProxy.close() }
+                .addOnCompleteListener { imageProxy.close() }
 
-        ScanMode.TEXT -> textRecognizer.process(image)
-            .addOnSuccessListener { visionText ->
-                val text = visionText.text.take(240)
-                _labels.value = if (text.isBlank())
-                    listOf("No text detected") else listOf(text)
-            }.addOnCompleteListener { imageProxy.close() }
-    }
-}
-
-// In your UI: add a SegmentedButton or Row of buttons to toggle mode`}</CodeB>
-        ) : (
-          <CodeB title="Swift \u2014 toggle between classify and OCR" accent={GR}>{`enum ScanMode { case label, text }
-
-func processFrame(_ buffer: CMSampleBuffer, mode: ScanMode) {
-    let now = Date().timeIntervalSince1970
-    guard now - lastProcessed > 0.25 else { return }
-    lastProcessed = now
-
-    guard let pixelBuffer = CMSampleBufferGetImageBuffer(buffer)
-    else { return }
-
-    let request: VNRequest
-    switch mode {
-    case .label:
-        let r = VNClassifyImageRequest { [weak self] req, _ in
-            let top = (req.results as? [VNClassificationObservation])?
-                .prefix(3).filter { $0.confidence > 0.08 }
-                .map { "\($0.identifier)  \(Int($0.confidence*100))%" } ?? []
-            DispatchQueue.main.async { self?.detectedLabels = top }
+            ScanMode.TEXT -> textRecognizer.process(image)
+                .addOnSuccessListener { visionText ->
+                    val text = visionText.text.take(240)
+                    _labels.value = if (text.isBlank())
+                        listOf("No text detected") else listOf(text)
+                }
+                .addOnCompleteListener { imageProxy.close() }
         }
-        request = r
+    }
+}`}</CodeB>
+              </Section>
+            </div>
+          ) : (
+            <div>
+              <p>Update <IC>processFrame</IC> to read <IC>self.currentMode</IC> and branch on it with a <IC>switch</IC>. For <IC>.label</IC>, use the same <IC>VNClassifyImageRequest</IC> logic as before. For <IC>.text</IC>, use a <IC>VNRecognizeTextRequest</IC>: compactMap the top candidate strings from each observation, join them with a space, and store as a single-item array (or <IC>["No text detected"]</IC> if empty). Set <IC>recognitionLevel = .accurate</IC> on the request before running it.</p>
+              <Section title="✅ Check your work — complete MLScannerViewModel.swift" defaultOpen={false}>
+                <CodeB title="Swift — MLScannerViewModel.swift" accent={GR}>{`import Foundation
+import Vision
+import AVFoundation
 
-    case .text:
-        let r = VNRecognizeTextRequest { [weak self] req, _ in
-            let text = (req.results as? [VNRecognizedTextObservation])?
-                .compactMap { $0.topCandidates(1).first?.string }
-                .joined(separator: " ") ?? ""
-            DispatchQueue.main.async {
-                self?.detectedLabels = text.isEmpty
-                    ? ["No text detected"] : [text]
+enum ScanMode { case label, text }
+
+class MLScannerViewModel: ObservableObject {
+    @Published var detectedLabels: [String] = []
+    @Published var currentMode: ScanMode = .label
+    private var lastProcessed: TimeInterval = 0
+
+    func processFrame(_ buffer: CMSampleBuffer) {
+        let now = Date().timeIntervalSince1970
+        guard now - lastProcessed > 0.25 else { return }
+        lastProcessed = now
+
+        guard let pixelBuffer = CMSampleBufferGetImageBuffer(buffer)
+        else { return }
+
+        let request: VNRequest
+        switch currentMode {
+        case .label:
+            let r = VNClassifyImageRequest { [weak self] req, _ in
+                let top = (req.results as? [VNClassificationObservation])?
+                    .prefix(3).filter { $0.confidence > 0.08 }
+                    .map { "\($0.identifier)  \(Int($0.confidence * 100))%" } ?? []
+                DispatchQueue.main.async { self?.detectedLabels = top }
+            }
+            request = r
+
+        case .text:
+            let r = VNRecognizeTextRequest { [weak self] req, _ in
+                let text = (req.results as? [VNRecognizedTextObservation])?
+                    .compactMap { $0.topCandidates(1).first?.string }
+                    .joined(separator: " ") ?? ""
+                DispatchQueue.main.async {
+                    self?.detectedLabels = text.isEmpty
+                        ? ["No text detected"] : [text]
+                }
+            }
+            r.recognitionLevel = .accurate
+            request = r
+        }
+
+        try? VNImageRequestHandler(
+            cvPixelBuffer: pixelBuffer, orientation: .up
+        ).perform([request])
+    }
+}`}</CodeB>
+              </Section>
+            </div>
+          )}
+        </VStep>
+
+        <VStep num="c" title={"Add the mode toggle to the UI"} last>
+          {isAndroid ? (
+            <div>
+              <p>Open <IC>CameraScreen.kt</IC>. Add <IC>{"var scanMode by remember { mutableStateOf(ScanMode.LABEL) }"}</IC> near the top of the composable. Update the <IC>CameraPreview</IC> call to pass the mode: <IC>{"onFrameAnalyzed = { viewModel.analyzeFrame(it, scanMode) }"}</IC>. Then add a <IC>Row</IC> of two <IC>FilterChip</IC> components inside the <IC>Box</IC>, anchored to <IC>Alignment.TopCenter</IC> with 16 dp top padding. One chip for "Label", one for "Text" — set <IC>selected</IC> based on the current mode and update <IC>scanMode</IC> in each chip's <IC>onClick</IC>.</p>
+              <Section title="✅ Check your work — complete CameraScreen.kt" defaultOpen={false}>
+                <CodeB title="Kotlin — CameraScreen.kt" accent={BL}>{`import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.Text
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+
+@Composable
+fun CameraScreen(viewModel: MLScannerViewModel = viewModel()) {
+    val labels by viewModel.labels.collectAsState()
+    var scanMode by remember { mutableStateOf(ScanMode.LABEL) }
+
+    Box(modifier = Modifier.fillMaxSize()) {
+        CameraPreview(onFrameAnalyzed = { viewModel.analyzeFrame(it, scanMode) })
+
+        Row(
+            modifier = Modifier
+                .align(Alignment.TopCenter)
+                .padding(top = 16.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            FilterChip(
+                selected = scanMode == ScanMode.LABEL,
+                onClick = { scanMode = ScanMode.LABEL },
+                label = { Text("Label") }
+            )
+            FilterChip(
+                selected = scanMode == ScanMode.TEXT,
+                onClick = { scanMode = ScanMode.TEXT },
+                label = { Text("Text") }
+            )
+        }
+
+        Column(
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .fillMaxWidth()
+                .background(Color.Black.copy(alpha = 0.55f))
+                .padding(16.dp)
+        ) {
+            labels.forEach { label ->
+                Text(label, color = Color.White, fontSize = 16.sp,
+                     fontWeight = FontWeight.Medium)
             }
         }
-        r.recognitionLevel = .accurate
-        request = r
     }
-
-    try? VNImageRequestHandler(
-        cvPixelBuffer: pixelBuffer, orientation: .up
-    ).perform([request])
 }`}</CodeB>
-        )}
-        <Checkpoint num={4}>{"Toggle to Text mode and hold the camera over printed text \u2014 a book, a poster, a keyboard label. Watch it read the text in real time."}</Checkpoint>
+              </Section>
+            </div>
+          ) : (
+            <div>
+              <p>Open <IC>CameraView.swift</IC>. Add a <IC>Picker</IC> bound to <IC>$viewModel.currentMode</IC> inside the <IC>ZStack</IC>, anchored to the top. Use <IC>.pickerStyle(.segmented)</IC>, padding, and a semi-transparent black background so it is visible over the camera feed. The <IC>cameraManager.onFrame</IC> callback does not need to change — <IC>processFrame</IC> now reads <IC>currentMode</IC> directly from the ViewModel.</p>
+              <Section title="✅ Check your work — complete CameraView.swift" defaultOpen={false}>
+                <CodeB title="Swift — CameraView.swift" accent={GR}>{`import SwiftUI
+
+struct CameraView: View {
+    @StateObject private var cameraManager = CameraManager()
+    @StateObject private var viewModel = MLScannerViewModel()
+
+    var body: some View {
+        ZStack(alignment: .bottom) {
+            CameraPreviewView(session: cameraManager.session)
+                .ignoresSafeArea()
+
+            VStack {
+                Picker("Mode", selection: $viewModel.currentMode) {
+                    Text("Label").tag(ScanMode.label)
+                    Text("Text").tag(ScanMode.text)
+                }
+                .pickerStyle(.segmented)
+                .padding(.horizontal)
+                .padding(.top, 56)
+                .background(.black.opacity(0.4))
+                Spacer()
+            }
+
+            VStack(alignment: .leading, spacing: 6) {
+                ForEach(viewModel.detectedLabels, id: \.self) { label in
+                    Text(label)
+                        .foregroundColor(.white)
+                        .font(.title3).fontWeight(.medium)
+                }
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding()
+            .background(.black.opacity(0.55))
+        }
+        .onAppear {
+            cameraManager.onFrame = { viewModel.processFrame($0) }
+            cameraManager.start()
+        }
+    }
+}`}</CodeB>
+              </Section>
+            </div>
+          )}
+        </VStep>
+
+        <Checkpoint num={4}>{"Toggle between Label and Text modes using the chips at the top. In Label mode, point at objects — in Text mode, hold the camera over printed text. Both should update the overlay in real time."}</Checkpoint>
       </Step>
 
       <Step num={5} title={"Polish the overlay and prep for Session 2 (~8 min)"}>
-        <p>Make the scanner feel like a real product, and set up the bottom navigation you\u2019ll need in Session 2:</p>
-        <ul style={{ paddingLeft: 20, margin: "6px 0" }}>
-          <li>{"Add a segmented control / Picker at the top to switch Label \u2194 Text modes"}</li>
-          <li>{"Smooth label transitions \u2014 only update when the top result changes, not every frame"}</li>
-          <li>{isAndroid
-            ? "Add a BottomNavigation bar with two destinations: \u201CScanner\u201D (current screen) and \u201CGallery\u201D (placeholder for Session 2)"
-            : "Add a TabView with two tabs: \u201CScanner\u201D (current screen) and \u201CGallery\u201D (placeholder for Session 2)"
-          }</li>
-        </ul>
-        <Tip>{"The Gallery tab can show a placeholder Text(\u201CComing in Session 2\u201D) for now. The important thing is that navigation works so Session 2 has a clean place to build."}</Tip>
-        <CodeB title="Session 1 Reflection">{`// 1. How does ML Kit / Vision differ from the Claude API in Week 7?
+        <p>{"Two things to finish before Session 2: smooth out the label flicker, and wire up bottom navigation so Session 2 has a clean tab to build into."}</p>
+
+        <VStep num="a" title={"Reduce label flicker"}>
+          <p>Right now <IC>_labels</IC> / <IC>detectedLabels</IC> updates on every processed frame — even when the camera is pointing at the same thing. This causes the overlay text to flicker. Fix it by only updating when the top result actually changes.</p>
+          {isAndroid ? (
+            <div>
+              <p>In <IC>MLScannerViewModel</IC>, add a private <IC>var lastTop = ""</IC> field. In the <IC>ScanMode.LABEL</IC> success listener, compute <IC>{"val newTop = results.firstOrNull()?.text ?: \"\""}</IC>. Only update <IC>_labels.value</IC> (and set <IC>lastTop = newTop</IC>) when <IC>newTop != lastTop</IC>.</p>
+              <Section title="✅ Check your work — LABEL branch in analyzeFrame" defaultOpen={false}>
+                <CodeB title="Kotlin — updated LABEL branch" accent={BL}>{`// Add this field to MLScannerViewModel:
+private var lastTop = ""
+
+// Updated LABEL branch inside analyzeFrame:
+ScanMode.LABEL -> labeler.process(image)
+    .addOnSuccessListener { results ->
+        val newTop = results.firstOrNull()?.text ?: ""
+        if (newTop != lastTop) {
+            lastTop = newTop
+            _labels.value = results.take(3).map {
+                "\${it.text}  \${(it.confidence * 100).toInt()}%"
+            }
+        }
+    }
+    .addOnCompleteListener { imageProxy.close() }`}</CodeB>
+              </Section>
+            </div>
+          ) : (
+            <div>
+              <p>In <IC>MLScannerViewModel</IC>, add a private <IC>var lastTop = ""</IC> field. In the <IC>.label</IC> case completion handler, compute the top identifier from results. Only update <IC>detectedLabels</IC> (and set <IC>lastTop</IC>) when the top result differs from the previous one.</p>
+              <Section title="✅ Check your work — .label case in processFrame" defaultOpen={false}>
+                <CodeB title="Swift — updated .label case" accent={GR}>{`// Add this field to MLScannerViewModel:
+private var lastTop = ""
+
+// Updated .label case inside processFrame:
+case .label:
+    let r = VNClassifyImageRequest { [weak self] req, _ in
+        guard let self else { return }
+        let observations = req.results as? [VNClassificationObservation] ?? []
+        let newTop = observations.first?.identifier ?? ""
+        guard newTop != self.lastTop else { return }
+        self.lastTop = newTop
+        let top = observations.prefix(3)
+            .filter { $0.confidence > 0.08 }
+            .map { "\($0.identifier)  \(Int($0.confidence * 100))%" }
+        DispatchQueue.main.async { self.detectedLabels = top }
+    }
+    request = r`}</CodeB>
+              </Section>
+            </div>
+          )}
+        </VStep>
+
+        <VStep num="b" title={isAndroid ? "Add bottom navigation with a Gallery placeholder" : "Add a TabView with a Gallery placeholder"} last>
+          {isAndroid ? (
+            <div>
+              <p>Create a new file <IC>MainScreen.kt</IC>. Add a <IC>@Composable fun MainScreen()</IC> that uses a <IC>Scaffold</IC> with a <IC>NavigationBar</IC> at the bottom. The bar has two <IC>NavigationBarItem</IC> entries: "Scanner" (camera icon) and "Gallery" (photo library icon). Use a <IC>{"var selectedTab by remember { mutableStateOf(0) }"}</IC> to track the active tab. When <IC>selectedTab == 0</IC>, show <IC>CameraPermissionWrapper()</IC>. When <IC>selectedTab == 1</IC>, show a centered <IC>Text("Coming in Session 2")</IC>. Finally, open <IC>MainActivity.kt</IC> and replace <IC>CameraPermissionWrapper()</IC> with <IC>MainScreen()</IC>.</p>
+              <Section title="✅ Check your work — MainScreen.kt" defaultOpen={false}>
+                <CodeB title="Kotlin — MainScreen.kt" accent={BL}>{`import androidx.compose.foundation.layout.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CameraAlt
+import androidx.compose.material.icons.filled.PhotoLibrary
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+
+@Composable
+fun MainScreen() {
+    var selectedTab by remember { mutableStateOf(0) }
+
+    Scaffold(
+        bottomBar = {
+            NavigationBar {
+                NavigationBarItem(
+                    selected = selectedTab == 0,
+                    onClick = { selectedTab = 0 },
+                    icon = { Icon(Icons.Default.CameraAlt, "Scanner") },
+                    label = { Text("Scanner") }
+                )
+                NavigationBarItem(
+                    selected = selectedTab == 1,
+                    onClick = { selectedTab = 1 },
+                    icon = { Icon(Icons.Default.PhotoLibrary, "Gallery") },
+                    label = { Text("Gallery") }
+                )
+            }
+        }
+    ) { padding ->
+        Box(Modifier.padding(padding)) {
+            when (selectedTab) {
+                0 -> CameraPermissionWrapper()
+                1 -> Box(
+                    Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) { Text("Coming in Session 2") }
+            }
+        }
+    }
+}`}</CodeB>
+              </Section>
+            </div>
+          ) : (
+            <div>
+              <p>Open <IC>ContentView.swift</IC>. Wrap the existing permission switch in a <IC>TabView</IC>. The Scanner tab is the permission switch you already have. Add a second tab with <IC>Text("Coming in Session 2")</IC> as the placeholder. Use <IC>.tabItem</IC> with <IC>Label("Scanner", systemImage: "camera")</IC> and <IC>Label("Gallery", systemImage: "photo.on.rectangle")</IC>.</p>
+              <Section title="✅ Check your work — ContentView.swift" defaultOpen={false}>
+                <CodeB title="Swift — ContentView.swift" accent={GR}>{`import SwiftUI
+import AVFoundation
+
+struct ContentView: View {
+    @StateObject private var perm = CameraPermissionManager()
+
+    var body: some View {
+        TabView {
+            Group {
+                switch perm.status {
+                case .authorized:
+                    CameraView()
+                case .denied:
+                    VStack(spacing: 16) {
+                        Text("Camera access is required.")
+                            .multilineTextAlignment(.center)
+                        Button("Open Settings") {
+                            UIApplication.shared.open(
+                                URL(string: UIApplication.openSettingsURLString)!)
+                        }
+                    }.padding()
+                default:
+                    Color.clear.onAppear { perm.requestPermission() }
+                }
+            }
+            .tabItem { Label("Scanner", systemImage: "camera") }
+
+            Text("Coming in Session 2")
+                .tabItem { Label("Gallery", systemImage: "photo.on.rectangle") }
+        }
+    }
+}`}</CodeB>
+              </Section>
+            </div>
+          )}
+        </VStep>
+
+        <CodeB title="Session 1 Reflection" accent={P_C}>{`// 1. How does ML Kit / Vision differ from the Claude API in Week 7?
 // 2. What happens when the camera points at something the model
-//    doesn\u2019t recognize well? What do the confidence scores look like?
+//    doesn’t recognize well? What do the confidence scores look like?
 // 3. Name one app you use that probably uses on-device ML.
 //    Why do you think it runs on-device rather than in the cloud?`}</CodeB>
-        <Checkpoint num={5}>{"Scanner works in both Label and Text modes. A bottom nav / tab bar is in place with a Gallery placeholder. Show a TA before moving on."}</Checkpoint>
+        <Checkpoint num={5}>{"Scanner works in both Label and Text modes with smooth label transitions. A bottom nav / tab bar is in place with a Gallery placeholder. Show a TA before moving on."}</Checkpoint>
       </Step>
 
       <Section title={"\uD83D\uDCA1 Hints"}>
