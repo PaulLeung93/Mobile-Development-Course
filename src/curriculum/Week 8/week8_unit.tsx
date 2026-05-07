@@ -1370,7 +1370,7 @@ function LabSession2({ platform }) {
       <Warn>
         {isAndroid
           ? "Gemini Nano requires a Pixel 8 or newer. If your device isn\u2019t supported, follow the fallback note in Step 3 \u2014 you\u2019ll display ML Kit labels directly. The architecture lesson is identical."
-          : "Apple Intelligence requires iPhone 15 Pro / iPhone 16 running iOS 18+. If your device isn\u2019t supported, follow the Core ML fallback in Step 3. The architecture lesson is identical."
+          : "Foundation Models requires iPhone 15 Pro or newer running iOS 26+ with Apple Intelligence enabled. If your device isn\u2019t supported, follow the Vision-only fallback in Step 3 \u2014 the architecture lesson is identical."
         }
       </Warn>
 
@@ -1381,7 +1381,7 @@ function LabSession2({ platform }) {
           <li>{"Let users pick a photo from their gallery and see a preview"}</li>
           <li>{isAndroid
             ? "Run a two-stage on-device pipeline: ML Kit labels \u2192 Gemini Nano natural-language description"
-            : "Run a two-stage on-device pipeline: Vision classification \u2192 Apple Intelligence summary"
+            : "Run a two-stage on-device pipeline: Vision classification \u2192 Foundation Models description"
           }</li>
           <li>{"Verify the whole thing works in airplane mode"}</li>
           <li>{"Compare on-device output to the Week 7 cloud result on the same photo"}</li>
@@ -1424,7 +1424,7 @@ function LabSession2({ platform }) {
         {isAndroid ? (
           <CodeB title="build.gradle.kts \u2014 add AI Core (if not already present)" accent={BL}>{`implementation("com.google.ai.edge.aicore:aicore:0.0.1-exp01")`}</CodeB>
         ) : (
-          <Tip>{"No new dependencies. Vision and Apple Intelligence are both built into the iOS SDK."}</Tip>
+          <Tip>{"No third-party dependencies needed. Add import FoundationModels alongside import Vision in your ViewModel \u2014 both are built into the iOS SDK."}</Tip>
         )}
         <Checkpoint num={1}>You understand the on-device model\u2019s capabilities and limits compared to the cloud model from Week 7.</Checkpoint>
       </Step>
@@ -1535,6 +1535,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 @Composable
 fun GalleryScreen(viewModel: GalleryViewModel = viewModel()) {
     val bitmap by viewModel.selectedBitmap.collectAsState()
+    val result by viewModel.analysisResult.collectAsState()
+    val isLoading by viewModel.isLoading.collectAsState()
     val context = LocalContext.current
     
     val launcher = rememberLauncherForActivityResult(
@@ -1620,8 +1622,12 @@ struct GalleryView: View {
         <VStep num="c" title="Add the Analyze button, result card, and wire into the tab bar" last>
           {isAndroid ? (
             <div>
-              <p>In <IC>GalleryScreen</IC>, add an "Analyze On-Device" <IC>Button</IC> below the picker. Disable it if <IC>bitmap == null</IC> or <IC>isLoading</IC> is true. Call <IC>viewModel.analyzeOnDevice()</IC> when tapped (you'll implement this in the next step). Below the button, if <IC>result</IC> is not empty, display it inside a <IC>Card</IC>.</p>
-              <p style={{ marginTop: 8 }}>Finally, open <IC>MainScreen.kt</IC> and replace the <IC>Text("Coming in Session 2")</IC> placeholder with your new <IC>GalleryScreen()</IC>.</p>
+              <p>Back in <IC>GalleryScreen</IC>, add the remaining UI below the "Choose from Gallery" button:</p>
+              <ol style={{ paddingLeft: 20, margin: "6px 0" }}>
+                <li>An "Analyze On-Device" <IC>Button</IC>. Set <IC>{"enabled = bitmap != null && !isLoading"}</IC> so it's disabled before an image is picked or during analysis. On tap, call <IC>viewModel.analyzeOnDevice()</IC> (you'll implement this in Step 3).</li>
+                <li>A result <IC>Card</IC> that appears only when <IC>result.isNotEmpty()</IC>, displaying the analysis text.</li>
+                <li>Open <IC>MainScreen.kt</IC> and replace <IC>Text("Coming in Session 2")</IC> with <IC>GalleryScreen()</IC>.</li>
+              </ol>
               <Section title="✅ Check your work — complete GalleryScreen.kt" defaultOpen={false}>
                 <CodeB title="Kotlin — GalleryScreen.kt" accent={BL}>{`import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
@@ -1695,8 +1701,12 @@ fun GalleryScreen(viewModel: GalleryViewModel = viewModel()) {
             </div>
           ) : (
             <div>
-              <p>In <IC>GalleryView</IC>, add an "Analyze On-Device" <IC>Button</IC> below the picker. Wrap the action in a <IC>Task</IC> to await <IC>viewModel.analyzeOnDevice()</IC> (you'll implement this in the next step). Disable the button if <IC>viewModel.selectedImage == nil</IC> or <IC>viewModel.isLoading</IC> is true. Below the button, if <IC>analysisResult</IC> is not empty, display it in a styled <IC>Text</IC>.</p>
-              <p style={{ marginTop: 8 }}>Finally, open <IC>ContentView.swift</IC> and replace the <IC>Text("Coming in Session 2")</IC> placeholder with your new <IC>GalleryView()</IC>.</p>
+              <p>Back in <IC>GalleryView</IC>, add the remaining UI below the <IC>PhotosPicker</IC>:</p>
+              <ol style={{ paddingLeft: 20, margin: "6px 0" }}>
+                <li>An "Analyze On-Device" <IC>Button</IC> with <IC>.buttonStyle(.borderedProminent)</IC>. Wrap the action in a <IC>Task</IC> to await <IC>viewModel.analyzeOnDevice()</IC> (you'll implement this in Step 3). Disable it when <IC>selectedImage == nil</IC> or <IC>isLoading</IC> is true.</li>
+                <li>A <IC>Text</IC> view that appears only when <IC>analysisResult</IC> is not empty, styled with padding and a gray background.</li>
+                <li>Open <IC>ContentView.swift</IC> and replace <IC>Text("Coming in Session 2")</IC> with <IC>GalleryView()</IC>.</li>
+              </ol>
               <Section title="✅ Check your work — complete GalleryView.swift" defaultOpen={false}>
                 <CodeB title="Swift — GalleryView.swift" accent={GR}>{`import PhotosUI
 import SwiftUI
@@ -1760,7 +1770,10 @@ struct GalleryView: View {
           {isAndroid ? (
             <div>
               <p>In <IC>GalleryViewModel</IC>, add an <IC>ImageLabeler</IC> instance using the exact same code from Session 1. This handles our first stage. Then, start implementing <IC>analyzeOnDevice()</IC>. For now, just run the ML Kit labeler and display the raw results in <IC>_analysisResult</IC>.</p>
+              <Tip>{"This step uses the same ML Kit and coroutines dependencies from Session 1. If await() or ImageLabeling show red, confirm you have com.google.mlkit:image-labeling and org.jetbrains.kotlinx:kotlinx-coroutines-play-services in your build.gradle.kts."}</Tip>
+              <p style={{ marginTop: 6 }}>{"We use Dispatchers.IO because image classification is CPU-intensive work that would freeze your UI if run on the main thread."}</p>
               <Section title="✅ Check your work — Stage 1 only" defaultOpen={false}>
+                <p style={{ fontSize: 12, color: "var(--color-text-secondary)", margin: "0 0 8px" }}>{"Add this code to your GalleryViewModel below the existing properties and loadBitmap method from Step 2a. The complete file is in Step 3c."}</p>
                 <CodeB title="Kotlin — GalleryViewModel.kt" accent={BL}>{`    private val labeler = ImageLabeling.getClient(ImageLabelerOptions.DEFAULT_OPTIONS)
 
     fun analyzeOnDevice() {
@@ -1784,6 +1797,7 @@ struct GalleryView: View {
             <div>
               <p>In <IC>GalleryViewModel</IC>, start implementing <IC>analyzeOnDevice()</IC>. Use <IC>VNImageRequestHandler</IC> and <IC>VNClassifyImageRequest</IC> to get structured labels from the image. This is exactly what we did in Session 1, just applied to a static image instead of a camera feed.</p>
               <Section title="✅ Check your work — Stage 1 only" defaultOpen={false}>
+                <p style={{ fontSize: 12, color: "var(--color-text-secondary)", margin: "0 0 8px" }}>{"Add this method to your GalleryViewModel below the existing properties and loadPhoto method from Step 2a. The complete file is in Step 3c."}</p>
                 <CodeB title="Swift — GalleryViewModel.swift" accent={GR}>{`    func analyzeOnDevice() async {
         guard let image = selectedImage, let cgImage = image.cgImage else { return }
         isLoading = true
@@ -1809,8 +1823,10 @@ struct GalleryView: View {
         <VStep num="b" title="Add Stage 2 — the on-device generative model">
           {isAndroid ? (
             <div>
-              <p>Now we add the generative LLM. In Android, this is Gemini Nano. Add a <IC>GenerativeModel</IC> property and an <IC>init</IC> block to warm it up. We do this because loading the model into memory can take a moment.</p>
+              <p>Now we add the generative LLM. In Android, this is Gemini Nano. Add a <IC>GenerativeModel</IC> property and an <IC>init</IC> block to warm it up.</p>
+              <Tip>{"The warm-up call forces the model to load into memory during ViewModel init, so the first real analysis doesn\u2019t suffer a multi-second cold start. Without it, students will think the app is frozen on first tap."}</Tip>
               <Section title="✅ Check your work — Gemini Nano setup" defaultOpen={false}>
+                <p style={{ fontSize: 12, color: "var(--color-text-secondary)", margin: "0 0 8px" }}>{"Add these properties and methods above loadBitmap in your GalleryViewModel. The complete file is in Step 3c."}</p>
                 <CodeB title="Kotlin — GalleryViewModel.kt" accent={BL}>{`    private var nanoModel: GenerativeModel? = null
 
     init { viewModelScope.launch { initNano() } }
@@ -1845,6 +1861,7 @@ if case .available = model.availability {
           {isAndroid ? (
             <div>
               <p>Update <IC>analyzeOnDevice()</IC>. Instead of just showing the raw labels, feed them into a prompt for Gemini Nano. Add a fallback mechanism in case the device doesn't support Nano.</p>
+              <Tip>{"Notice the fallback: if the generative model isn\u2019t available, we still show the ML labels. Real-world apps must always have a graceful degradation path \u2014 never assume a specific device capability."}</Tip>
               <Section title="✅ Check your work — complete GalleryViewModel.kt" defaultOpen={false}>
                 <CodeB title="Kotlin — GalleryViewModel.kt" accent={BL}>{`import android.content.Context
 import android.graphics.Bitmap
@@ -1915,7 +1932,7 @@ class GalleryViewModel : ViewModel() {
                     """.trimIndent()
                     model.generateContent(prompt).text ?: "No response from on-device model."
                 } catch (e: Exception) {
-                    "Detected: $labelText\\n(Gemini Nano unavailable on this device)"
+                    "Detected: $labelText\n(Gemini Nano unavailable on this device)"
                 }
             } ?: "Detected: $labelText"
 
@@ -1928,6 +1945,7 @@ class GalleryViewModel : ViewModel() {
           ) : (
             <div>
               <p>Update <IC>analyzeOnDevice()</IC>. Instead of showing raw labels, check if the <IC>SystemLanguageModel</IC> is available. If it is, use a <IC>LanguageModelSession</IC> to generate a natural description from the labels. If not, fallback to a bulleted list.</p>
+              <Tip>{"Notice the fallback: if the Foundation Model isn\u2019t available, we still show the Vision labels. Real-world apps must always have a graceful degradation path \u2014 never assume a specific device capability."}</Tip>
               <Section title="✅ Check your work — complete GalleryViewModel.swift" defaultOpen={false}>
                 <CodeB title="Swift — GalleryViewModel.swift" accent={GR}>{`import SwiftUI
 import PhotosUI
@@ -1972,7 +1990,7 @@ class GalleryViewModel: ObservableObject {
                 On-device ML detected: \(labelText)
                 Write a natural 2-sentence description of what this photo probably shows.
                 """
-                analysisResult = try await session.respond(to: prompt)
+                analysisResult = try await session.respond(to: prompt).content
             } catch {
                 analysisResult = "Generation error: \(error.localizedDescription)"
             }
@@ -1980,7 +1998,7 @@ class GalleryViewModel: ObservableObject {
             // Fallback if Apple Intelligence is unavailable
             analysisResult = topLabels.isEmpty
                 ? "No objects detected."
-                : topLabels.map { "• \($0)" }.joined(separator: "\\n")
+                : topLabels.map { "• \($0)" }.joined(separator: "\n")
         }
         isLoading = false
     }
@@ -2040,10 +2058,10 @@ class GalleryViewModel: ObservableObject {
 
       <Section title={"\uD83D\uDCA1 Hints"}>
         <div style={{ fontSize: 13, lineHeight: 1.8 }}>
-          <p><strong>{isAndroid ? "Gemini Nano throws UnsupportedOperationException" : "Apple Intelligence APIs return nil or do nothing"}</strong></p>
-          <p style={{ marginLeft: 16 }}>{isAndroid ? "Your device doesn\u2019t support Gemini Nano. Display the ML Kit label results directly \u2014 the two-stage architecture is identical, you just skip Stage 2. The learning is the same." : "Your device doesn\u2019t support Apple Intelligence. Show the Vision classification labels formatted as a list. The architecture lesson is identical."}</p>
+          <p><strong>{isAndroid ? "Gemini Nano throws UnsupportedOperationException" : "Foundation Models returns unavailable"}</strong></p>
+          <p style={{ marginLeft: 16 }}>{isAndroid ? "Your device doesn\u2019t support Gemini Nano. Display the ML Kit label results directly \u2014 the two-stage architecture is identical, you just skip Stage 2. The learning is the same." : "Your device doesn\u2019t support Foundation Models. Show the Vision classification labels formatted as a list \u2014 the two-stage architecture is identical, you just skip Stage 2."}</p>
           <p><strong>{"Photo picker crashes or shows nothing"}</strong></p>
-          <p style={{ marginLeft: 16 }}>{isAndroid ? "Declare READ_MEDIA_IMAGES in the manifest and request it at runtime on Android 13+. The old READ_EXTERNAL_STORAGE no longer grants photo access." : "Confirm NSPhotoLibraryUsageDescription is in Info.plist. PhotosPicker handles permission automatically on iOS 16+."}</p>
+          <p style={{ marginLeft: 16 }}>{isAndroid ? "PickVisualMedia uses the system photo picker and does not require storage permissions. If the picker shows no photos, check that your emulator has images in its gallery \u2014 drag and drop a JPEG onto the running emulator to add one." : "Confirm NSPhotoLibraryUsageDescription is in Info.plist. PhotosPicker handles permission automatically on iOS 16+."}</p>
           <p><strong>{"Analysis is slow on first tap"}</strong></p>
           <p style={{ marginLeft: 16 }}>{"The model loads from storage into memory on first use. Subsequent calls will be much faster. Always run inference on a background thread."}</p>
         </div>
