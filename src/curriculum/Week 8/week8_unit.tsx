@@ -1402,13 +1402,13 @@ function LabSession2({ platform }) {
       <Step num={1} title={"Understand the on-device generative model (~5 min)"}>
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, margin: "8px 0 12px" }}>
           {[
-            { label: isAndroid ? "Gemini Nano" : "Apple Intelligence", items: isAndroid
+            { label: isAndroid ? "Gemini Nano" : "Foundation Models", items: isAndroid
                 ? ["Small LLM, runs on Pixel 8+", "Text in \u2192 text out", "Managed by the OS (not your APK)", "No API key, free, offline"]
-                : ["On-device AI on Apple Silicon", "Summarization, rewriting, extraction", "System API \u2014 not a queryable LLM", "Private, offline, no key needed"],
+                : ["On-device LLM on Apple Silicon (iOS 26+)", "Text in \u2192 text out via LanguageModelSession", "Managed by iOS, updates automatically", "Private, offline, no key needed"],
               color: TEAL_L, fg: TEAL_D },
             { label: "vs Claude (Week 7)", items: isAndroid
                 ? ["Smaller context window", "No vision / image input", "Less complex reasoning", "But: works with no internet"]
-                : ["Not a general LLM you can prompt freely", "Requires Apple Silicon device", "Limited language support", "But: private and zero latency"],
+                : ["Smaller context window", "Requires iOS 26+ and Apple Intelligence enabled", "Less complex reasoning", "But: works with no internet"],
               color: AML, fg: AM },
           ].map(function(col) {
             return (
@@ -1430,20 +1430,118 @@ function LabSession2({ platform }) {
       </Step>
 
       <Step num={2} title={"Build the Gallery tab UI (~10 min)"}>
-        <p>{"Replace the placeholder screen with a real UI: image preview box, a pick-from-gallery button, and an analyze button."}</p>
-        {isAndroid ? (
-          <CodeB title="Kotlin \u2014 GalleryScreen.kt (new file)" accent={BL}>{`@Composable
+        <p>{"Replace the placeholder screen with a real UI. The Gallery tab lets users pick a photo and displays a preview before sending it to the on-device AI for analysis."}</p>
+
+        <VStep num="a" title={isAndroid ? "Create the ViewModel skeleton" : "Create the ViewModel skeleton"}>
+          {isAndroid ? (
+            <div>
+              <p>Create a new Kotlin file <IC>GalleryViewModel.kt</IC>. The ViewModel will own the image state so it survives orientation changes. Add a class <IC>GalleryViewModel : ViewModel()</IC>. Declare three <IC>MutableStateFlow</IC> properties and their public <IC>StateFlow</IC> counterparts: <IC>selectedBitmap</IC> (type <IC>Bitmap?</IC>), <IC>analysisResult</IC> (type <IC>String</IC>), and <IC>isLoading</IC> (type <IC>Boolean</IC>).</p>
+              <p style={{ marginTop: 8 }}>Next, add a method to load a selected photo: <IC>fun loadBitmap(uri: Uri, context: Context)</IC>. Use the <IC>ContentResolver</IC> to open an input stream from the URI, decode it into a <IC>Bitmap</IC>, and set it to <IC>_selectedBitmap.value</IC>. Also clear the <IC>_analysisResult</IC>.</p>
+              <Section title="✅ Check your work — GalleryViewModel.kt so far" defaultOpen={false}>
+                <CodeB title="Kotlin — GalleryViewModel.kt" accent={BL}>{`import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.net.Uri
+import androidx.lifecycle.ViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+
+class GalleryViewModel : ViewModel() {
+    private val _selectedBitmap = MutableStateFlow<Bitmap?>(null)
+    val selectedBitmap: StateFlow<Bitmap?> = _selectedBitmap
+
+    private val _analysisResult = MutableStateFlow("")
+    val analysisResult: StateFlow<String> = _analysisResult
+
+    private val _isLoading = MutableStateFlow(false)
+    val isLoading: StateFlow<Boolean> = _isLoading
+
+    fun loadBitmap(uri: Uri, context: Context) {
+        val bitmap = context.contentResolver.openInputStream(uri)?.use {
+            BitmapFactory.decodeStream(it)
+        }
+        _selectedBitmap.value = bitmap
+        _analysisResult.value = ""
+    }
+}`}</CodeB>
+              </Section>
+            </div>
+          ) : (
+            <div>
+              <p>Create a new Swift file <IC>GalleryViewModel.swift</IC>. The ViewModel centralizes our state so the UI stays clean. Add a class <IC>GalleryViewModel: ObservableObject</IC> marked with <IC>@MainActor</IC>. Declare three <IC>@Published</IC> properties: <IC>selectedImage</IC> (type <IC>UIImage?</IC>), <IC>analysisResult</IC> (initialized to <IC>""</IC>), and <IC>isLoading</IC> (initialized to <IC>false</IC>).</p>
+              <p style={{ marginTop: 8 }}>Next, add a method to load a selected photo: <IC>func loadPhoto(_ item: PhotosPickerItem?) async</IC>. Load a <IC>Data</IC> transferable from the item, convert it to a <IC>UIImage</IC>, and update the state.</p>
+              <Section title="✅ Check your work — GalleryViewModel.swift so far" defaultOpen={false}>
+                <CodeB title="Swift — GalleryViewModel.swift" accent={GR}>{`import SwiftUI
+import PhotosUI
+
+@MainActor
+class GalleryViewModel: ObservableObject {
+    @Published var selectedImage: UIImage?
+    @Published var analysisResult = ""
+    @Published var isLoading = false
+
+    func loadPhoto(_ item: PhotosPickerItem?) async {
+        guard let data = try? await item?.loadTransferable(type: Data.self),
+              let image = UIImage(data: data)
+        else { return }
+        selectedImage = image
+        analysisResult = ""
+    }
+}`}</CodeB>
+              </Section>
+            </div>
+          )}
+        </VStep>
+
+        <VStep num="b" title={isAndroid ? "Build the image preview and photo picker" : "Build the image preview and photo picker"}>
+          {isAndroid ? (
+            <div>
+              <p>Create <IC>GalleryScreen.kt</IC>. Add a <IC>@Composable fun GalleryScreen(viewModel: GalleryViewModel = viewModel())</IC>. Collect the three state flows. To pick a photo without needing storage permissions, use <IC>rememberLauncherForActivityResult</IC> with <IC>ActivityResultContracts.PickVisualMedia()</IC>. In the result callback, call <IC>viewModel.loadBitmap</IC>.</p>
+              <p style={{ marginTop: 8 }}>Inside a <IC>Column</IC>, add a <IC>Box</IC> for the preview (260.dp height, light gray background). If the bitmap is not null, show an <IC>Image</IC> with <IC>ContentScale.Crop</IC>. Otherwise, show "Tap below to choose a photo". Add a <IC>Button</IC> below it that launches the picker.</p>
+              <Section title="💡 Show me the syntax — photo picker launcher" defaultOpen={false}>
+                <CodeB title="Kotlin — Activity Result Launcher" accent={BL}>{`val context = LocalContext.current
+val launcher = rememberLauncherForActivityResult(
+    ActivityResultContracts.PickVisualMedia()
+) { uri -> 
+    if (uri != null) {
+        viewModel.loadBitmap(uri, context)
+    }
+}
+
+// To launch it from a button:
+launcher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))`}</CodeB>
+              </Section>
+              <Section title="✅ Check your work — GalleryScreen.kt so far" defaultOpen={false}>
+                <CodeB title="Kotlin — GalleryScreen.kt" accent={BL}>{`import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
+import androidx.compose.material3.Text
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
+
+@Composable
 fun GalleryScreen(viewModel: GalleryViewModel = viewModel()) {
     val bitmap by viewModel.selectedBitmap.collectAsState()
-    val result by viewModel.analysisResult.collectAsState()
-    val isLoading by viewModel.isLoading.collectAsState()
-
+    val context = LocalContext.current
+    
     val launcher = rememberLauncherForActivityResult(
         ActivityResultContracts.PickVisualMedia()
-    ) { uri -> uri?.let { viewModel.loadBitmap(it) } }
+    ) { uri -> uri?.let { viewModel.loadBitmap(it, context) } }
 
     Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
-        // Preview box
         Box(
             modifier = Modifier.fillMaxWidth().height(260.dp)
                 .background(Color.LightGray, RoundedCornerShape(12.dp)),
@@ -1451,8 +1549,122 @@ fun GalleryScreen(viewModel: GalleryViewModel = viewModel()) {
         ) {
             if (bitmap != null) {
                 Image(bitmap!!.asImageBitmap(), contentDescription = null,
-                    modifier = Modifier.fillMaxSize()
-                        .clip(RoundedCornerShape(12.dp)),
+                    modifier = Modifier.fillMaxSize().clip(RoundedCornerShape(12.dp)),
+                    contentScale = ContentScale.Crop)
+            } else {
+                Text("Tap below to choose a photo", color = Color.Gray)
+            }
+        }
+        Spacer(Modifier.height(12.dp))
+        Button(
+            onClick = { launcher.launch(PickVisualMediaRequest(
+                ActivityResultContracts.PickVisualMedia.ImageOnly)) },
+            modifier = Modifier.fillMaxWidth()
+        ) { Text("Choose from Gallery") }
+    }
+}`}</CodeB>
+              </Section>
+            </div>
+          ) : (
+            <div>
+              <p>Create <IC>GalleryView.swift</IC>. Inside the view, add <IC>@StateObject private var viewModel = GalleryViewModel()</IC> and a <IC>@State private var photoItem: PhotosPickerItem?</IC>. We use <IC>PhotosPicker</IC> because it handles photo library access out-of-process, meaning your app doesn't need to ask for permission to use it.</p>
+              <p style={{ marginTop: 8 }}>Inside a <IC>ScrollView</IC> and <IC>VStack</IC>, add a <IC>ZStack</IC> for the preview box (height 260, gray background). Show the <IC>selectedImage</IC> if available. Below the box, add a <IC>PhotosPicker</IC> bound to <IC>$photoItem</IC>. Use the <IC>.onChange</IC> modifier to watch for new selections and pass them to <IC>viewModel.loadPhoto</IC>.</p>
+              <Section title="💡 Show me the syntax — PhotosPicker onChange" defaultOpen={false}>
+                <CodeB title="Swift — PhotosPicker onChange" accent={GR}>{`PhotosPicker(selection: $photoItem, matching: .images) {
+    Label("Choose from Gallery", systemImage: "photo.on.rectangle")
+}
+.buttonStyle(.bordered)
+.onChange(of: photoItem) { _, item in
+    Task { await viewModel.loadPhoto(item) }
+}`}</CodeB>
+              </Section>
+              <Section title="✅ Check your work — GalleryView.swift so far" defaultOpen={false}>
+                <CodeB title="Swift — GalleryView.swift" accent={GR}>{`import SwiftUI
+import PhotosUI
+
+struct GalleryView: View {
+    @StateObject private var viewModel = GalleryViewModel()
+    @State private var photoItem: PhotosPickerItem?
+
+    var body: some View {
+        ScrollView {
+            VStack(spacing: 14) {
+                ZStack {
+                    RoundedRectangle(cornerRadius: 12)
+                        .fill(Color.gray.opacity(0.15))
+                        .frame(height: 260)
+                    if let image = viewModel.selectedImage {
+                        Image(uiImage: image).resizable()
+                            .scaledToFill().frame(height: 260)
+                            .clipShape(RoundedRectangle(cornerRadius: 12))
+                    } else {
+                        Text("Tap below to choose a photo")
+                            .foregroundColor(.secondary)
+                    }
+                }
+                PhotosPicker(selection: $photoItem, matching: .images) {
+                    Label("Choose from Gallery", systemImage: "photo.on.rectangle")
+                }.buttonStyle(.bordered)
+                .onChange(of: photoItem) { _, item in
+                    Task { await viewModel.loadPhoto(item) }
+                }
+            }.padding()
+        }
+    }
+}`}</CodeB>
+              </Section>
+            </div>
+          )}
+        </VStep>
+
+        <VStep num="c" title="Add the Analyze button, result card, and wire into the tab bar" last>
+          {isAndroid ? (
+            <div>
+              <p>In <IC>GalleryScreen</IC>, add an "Analyze On-Device" <IC>Button</IC> below the picker. Disable it if <IC>bitmap == null</IC> or <IC>isLoading</IC> is true. Call <IC>viewModel.analyzeOnDevice()</IC> when tapped (you'll implement this in the next step). Below the button, if <IC>result</IC> is not empty, display it inside a <IC>Card</IC>.</p>
+              <p style={{ marginTop: 8 }}>Finally, open <IC>MainScreen.kt</IC> and replace the <IC>Text("Coming in Session 2")</IC> placeholder with your new <IC>GalleryScreen()</IC>.</p>
+              <Section title="✅ Check your work — complete GalleryScreen.kt" defaultOpen={false}>
+                <CodeB title="Kotlin — GalleryScreen.kt" accent={BL}>{`import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.Text
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+
+@Composable
+fun GalleryScreen(viewModel: GalleryViewModel = viewModel()) {
+    val bitmap by viewModel.selectedBitmap.collectAsState()
+    val result by viewModel.analysisResult.collectAsState()
+    val isLoading by viewModel.isLoading.collectAsState()
+    val context = LocalContext.current
+
+    val launcher = rememberLauncherForActivityResult(
+        ActivityResultContracts.PickVisualMedia()
+    ) { uri -> uri?.let { viewModel.loadBitmap(it, context) } }
+
+    Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
+        Box(
+            modifier = Modifier.fillMaxWidth().height(260.dp)
+                .background(Color.LightGray, RoundedCornerShape(12.dp)),
+            contentAlignment = Alignment.Center
+        ) {
+            if (bitmap != null) {
+                Image(bitmap!!.asImageBitmap(), contentDescription = null,
+                    modifier = Modifier.fillMaxSize().clip(RoundedCornerShape(12.dp)),
                     contentScale = ContentScale.Crop)
             } else {
                 Text("Tap below to choose a photo", color = Color.Gray)
@@ -1469,7 +1681,7 @@ fun GalleryScreen(viewModel: GalleryViewModel = viewModel()) {
             onClick = { viewModel.analyzeOnDevice() },
             enabled = bitmap != null && !isLoading,
             modifier = Modifier.fillMaxWidth()
-        ) { Text(if (isLoading) "Analyzing on-device\u2026" else "Analyze On-Device") }
+        ) { Text(if (isLoading) "Analyzing on-device…" else "Analyze On-Device") }
         if (result.isNotEmpty()) {
             Spacer(Modifier.height(14.dp))
             Card(modifier = Modifier.fillMaxWidth()) {
@@ -1479,8 +1691,15 @@ fun GalleryScreen(viewModel: GalleryViewModel = viewModel()) {
         }
     }
 }`}</CodeB>
-        ) : (
-          <CodeB title="Swift \u2014 GalleryView.swift (new file)" accent={GR}>{`import PhotosUI, SwiftUI
+              </Section>
+            </div>
+          ) : (
+            <div>
+              <p>In <IC>GalleryView</IC>, add an "Analyze On-Device" <IC>Button</IC> below the picker. Wrap the action in a <IC>Task</IC> to await <IC>viewModel.analyzeOnDevice()</IC> (you'll implement this in the next step). Disable the button if <IC>viewModel.selectedImage == nil</IC> or <IC>viewModel.isLoading</IC> is true. Below the button, if <IC>analysisResult</IC> is not empty, display it in a styled <IC>Text</IC>.</p>
+              <p style={{ marginTop: 8 }}>Finally, open <IC>ContentView.swift</IC> and replace the <IC>Text("Coming in Session 2")</IC> placeholder with your new <IC>GalleryView()</IC>.</p>
+              <Section title="✅ Check your work — complete GalleryView.swift" defaultOpen={false}>
+                <CodeB title="Swift — GalleryView.swift" accent={GR}>{`import PhotosUI
+import SwiftUI
 
 struct GalleryView: View {
     @StateObject private var viewModel = GalleryViewModel()
@@ -1489,7 +1708,6 @@ struct GalleryView: View {
     var body: some View {
         ScrollView {
             VStack(spacing: 14) {
-                // Preview box
                 ZStack {
                     RoundedRectangle(cornerRadius: 12)
                         .fill(Color.gray.opacity(0.15))
@@ -1503,21 +1721,18 @@ struct GalleryView: View {
                             .foregroundColor(.secondary)
                     }
                 }
-                PhotosPicker(selection: \$photoItem, matching: .images) {
-                    Label("Choose from Gallery",
-                          systemImage: "photo.on.rectangle")
+                PhotosPicker(selection: $photoItem, matching: .images) {
+                    Label("Choose from Gallery", systemImage: "photo.on.rectangle")
                 }.buttonStyle(.bordered)
                 .onChange(of: photoItem) { _, item in
                     Task { await viewModel.loadPhoto(item) }
                 }
+                
                 Button {
                     Task { await viewModel.analyzeOnDevice() }
                 } label: {
-                    Label(
-                        viewModel.isLoading
-                            ? "Analyzing on-device\u2026"
-                            : "Analyze On-Device",
-                        systemImage: "cpu")
+                    Label(viewModel.isLoading ? "Analyzing on-device…" : "Analyze On-Device",
+                          systemImage: "cpu")
                 }
                 .buttonStyle(.borderedProminent)
                 .disabled(viewModel.selectedImage == nil || viewModel.isLoading)
@@ -1531,37 +1746,153 @@ struct GalleryView: View {
         }
     }
 }`}</CodeB>
-        )}
+              </Section>
+            </div>
+          )}
+        </VStep>
         <Checkpoint num={2}>Gallery tab shows a preview box, gallery picker, and analyze button. Picking a photo shows a preview. Analyze button is wired up but does nothing yet.</Checkpoint>
       </Step>
 
       <Step num={3} title={"Wire up the on-device analysis (~15 min)"}>
         <p>{"Two-stage pipeline: use ML to get structured labels from the image, then feed those labels into the generative model for a natural-language response."}</p>
-        {isAndroid ? (
-          <CodeB title="Kotlin \u2014 GalleryViewModel.kt" accent={BL}>{`class GalleryViewModel : ViewModel() {
+        
+        <VStep num="a" title={isAndroid ? "Add the ML labeler and implement Stage 1" : "Add the Vision classifier and implement Stage 1"}>
+          {isAndroid ? (
+            <div>
+              <p>In <IC>GalleryViewModel</IC>, add an <IC>ImageLabeler</IC> instance using the exact same code from Session 1. This handles our first stage. Then, start implementing <IC>analyzeOnDevice()</IC>. For now, just run the ML Kit labeler and display the raw results in <IC>_analysisResult</IC>.</p>
+              <Section title="✅ Check your work — Stage 1 only" defaultOpen={false}>
+                <CodeB title="Kotlin — GalleryViewModel.kt" accent={BL}>{`    private val labeler = ImageLabeling.getClient(ImageLabelerOptions.DEFAULT_OPTIONS)
+
+    fun analyzeOnDevice() {
+        val bitmap = _selectedBitmap.value ?: return
+        _isLoading.value = true
+        viewModelScope.launch(Dispatchers.IO) {
+            // Stage 1: ML Kit labels
+            val image = InputImage.fromBitmap(bitmap, 0)
+            val labels = labeler.process(image).await()
+            val labelText = labels.take(5).joinToString(", ") {
+                "\${it.text} (\${(it.confidence * 100).toInt()}%)"
+            }
+            
+            _analysisResult.value = "Raw Labels: $labelText"
+            _isLoading.value = false
+        }
+    }`}</CodeB>
+              </Section>
+            </div>
+          ) : (
+            <div>
+              <p>In <IC>GalleryViewModel</IC>, start implementing <IC>analyzeOnDevice()</IC>. Use <IC>VNImageRequestHandler</IC> and <IC>VNClassifyImageRequest</IC> to get structured labels from the image. This is exactly what we did in Session 1, just applied to a static image instead of a camera feed.</p>
+              <Section title="✅ Check your work — Stage 1 only" defaultOpen={false}>
+                <CodeB title="Swift — GalleryViewModel.swift" accent={GR}>{`    func analyzeOnDevice() async {
+        guard let image = selectedImage, let cgImage = image.cgImage else { return }
+        isLoading = true
+
+        // Stage 1: Vision classification
+        let handler = VNImageRequestHandler(cgImage: cgImage)
+        let request = VNClassifyImageRequest()
+        try? handler.perform([request])
+        let topLabels = (request.results as? [VNClassificationObservation])?
+            .prefix(5).filter { $0.confidence > 0.05 }
+            .map { "\($0.identifier) (\(Int($0.confidence*100))%)" }
+            ?? []
+        let labelText = topLabels.joined(separator: ", ")
+        
+        analysisResult = "Raw Labels: \(labelText)"
+        isLoading = false
+    }`}</CodeB>
+              </Section>
+            </div>
+          )}
+        </VStep>
+
+        <VStep num="b" title="Add Stage 2 — the on-device generative model">
+          {isAndroid ? (
+            <div>
+              <p>Now we add the generative LLM. In Android, this is Gemini Nano. Add a <IC>GenerativeModel</IC> property and an <IC>init</IC> block to warm it up. We do this because loading the model into memory can take a moment.</p>
+              <Section title="✅ Check your work — Gemini Nano setup" defaultOpen={false}>
+                <CodeB title="Kotlin — GalleryViewModel.kt" accent={BL}>{`    private var nanoModel: GenerativeModel? = null
+
+    init { viewModelScope.launch { initNano() } }
+
+    private suspend fun initNano() {
+        nanoModel = try {
+            val m = GenerativeModel("gemini-nano", generationConfig { temperature = 0.7f })
+            m.generateContent("hello") // warm-up
+            m
+        } catch (e: Exception) { null }
+    }`}</CodeB>
+              </Section>
+            </div>
+          ) : (
+            <div>
+              <p>Now we add the generative LLM. In iOS 26+, Apple provides the <IC>FoundationModels</IC> framework. We can create a <IC>LanguageModelSession</IC> to run prompts completely offline on supported devices (iPhone 15 Pro+, Apple Silicon Macs). We first check if the model is available.</p>
+              <Warn>You must have an iOS 26+ simulator or device, and Apple Intelligence must be turned on in Settings, otherwise the model will return unavailable.</Warn>
+              <Section title="💡 Show me the syntax — Foundation Models check" defaultOpen={false}>
+                <CodeB title="Swift — Foundation Models" accent={GR}>{`import FoundationModels
+
+let model = SystemLanguageModel.default
+if case .available = model.availability {
+    let session = LanguageModelSession()
+    let response = try await session.respond(to: "Hello!")
+}`}</CodeB>
+              </Section>
+            </div>
+          )}
+        </VStep>
+
+        <VStep num="c" title="Complete the pipeline: feed labels into the LLM" last>
+          {isAndroid ? (
+            <div>
+              <p>Update <IC>analyzeOnDevice()</IC>. Instead of just showing the raw labels, feed them into a prompt for Gemini Nano. Add a fallback mechanism in case the device doesn't support Nano.</p>
+              <Section title="✅ Check your work — complete GalleryViewModel.kt" defaultOpen={false}>
+                <CodeB title="Kotlin — GalleryViewModel.kt" accent={BL}>{`import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.net.Uri
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.google.ai.edge.aicore.GenerativeModel
+import com.google.ai.edge.aicore.generationConfig
+import com.google.mlkit.vision.common.InputImage
+import com.google.mlkit.vision.label.ImageLabeling
+import com.google.mlkit.vision.label.defaults.ImageLabelerOptions
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
+
+class GalleryViewModel : ViewModel() {
     private val _selectedBitmap = MutableStateFlow<Bitmap?>(null)
     val selectedBitmap: StateFlow<Bitmap?> = _selectedBitmap
+
     private val _analysisResult = MutableStateFlow("")
     val analysisResult: StateFlow<String> = _analysisResult
+
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading
 
-    private val labeler =
-        ImageLabeling.getClient(ImageLabelerOptions.DEFAULT_OPTIONS)
+    private val labeler = ImageLabeling.getClient(ImageLabelerOptions.DEFAULT_OPTIONS)
     private var nanoModel: GenerativeModel? = null
 
     init { viewModelScope.launch { initNano() } }
 
     private suspend fun initNano() {
         nanoModel = try {
-            val m = GenerativeModel("gemini-nano",
-                generationConfig { temperature = 0.7f })
+            val m = GenerativeModel("gemini-nano", generationConfig { temperature = 0.7f })
             m.generateContent("hello") // warm-up
             m
         } catch (e: Exception) { null }
     }
 
-    fun loadBitmap(uri: Uri) { /* load bitmap from URI */ }
+    fun loadBitmap(uri: Uri, context: Context) {
+        val bitmap = context.contentResolver.openInputStream(uri)?.use {
+            BitmapFactory.decodeStream(it)
+        }
+        _selectedBitmap.value = bitmap
+        _analysisResult.value = ""
+    }
 
     fun analyzeOnDevice() {
         val bitmap = _selectedBitmap.value ?: return
@@ -1582,10 +1913,9 @@ struct GalleryView: View {
                         Write a natural 2-sentence description
                         of what this photo probably shows.
                     """.trimIndent()
-                    model.generateContent(prompt).text
-                        ?: "No response from on-device model."
+                    model.generateContent(prompt).text ?: "No response from on-device model."
                 } catch (e: Exception) {
-                    "Detected: $labelText\n(Gemini Nano unavailable on this device)"
+                    "Detected: $labelText\\n(Gemini Nano unavailable on this device)"
                 }
             } ?: "Detected: $labelText"
 
@@ -1593,8 +1923,16 @@ struct GalleryView: View {
         }
     }
 }`}</CodeB>
-        ) : (
-          <CodeB title="Swift \u2014 GalleryViewModel.swift" accent={GR}>{`import Vision, SwiftUI
+              </Section>
+            </div>
+          ) : (
+            <div>
+              <p>Update <IC>analyzeOnDevice()</IC>. Instead of showing raw labels, check if the <IC>SystemLanguageModel</IC> is available. If it is, use a <IC>LanguageModelSession</IC> to generate a natural description from the labels. If not, fallback to a bulleted list.</p>
+              <Section title="✅ Check your work — complete GalleryViewModel.swift" defaultOpen={false}>
+                <CodeB title="Swift — GalleryViewModel.swift" accent={GR}>{`import SwiftUI
+import PhotosUI
+import Vision
+import FoundationModels
 
 @MainActor
 class GalleryViewModel: ObservableObject {
@@ -1603,9 +1941,8 @@ class GalleryViewModel: ObservableObject {
     @Published var isLoading = false
 
     func loadPhoto(_ item: PhotosPickerItem?) async {
-        guard let data = try? await item?.loadTransferable(
-            type: Data.self),
-            let image = UIImage(data: data)
+        guard let data = try? await item?.loadTransferable(type: Data.self),
+              let image = UIImage(data: data)
         else { return }
         selectedImage = image
         analysisResult = ""
@@ -1626,46 +1963,62 @@ class GalleryViewModel: ObservableObject {
             ?? []
         let labelText = topLabels.joined(separator: ", ")
 
-        // Stage 2: Apple Intelligence / fallback
-        if #available(iOS 18.0, *) {
-            // Writing Tools integration point \u2014 in production use
-            // UIWritingToolsCoordinator to summarize the label text.
-            // For this lab, format the results for display.
-            analysisResult = "On-device analysis: \(labelText)"
+        // Stage 2: Apple Foundation Models / fallback
+        let model = SystemLanguageModel.default
+        if case .available = model.availability {
+            do {
+                let session = LanguageModelSession()
+                let prompt = """
+                On-device ML detected: \(labelText)
+                Write a natural 2-sentence description of what this photo probably shows.
+                """
+                analysisResult = try await session.respond(to: prompt)
+            } catch {
+                analysisResult = "Generation error: \(error.localizedDescription)"
+            }
         } else {
+            // Fallback if Apple Intelligence is unavailable
             analysisResult = topLabels.isEmpty
                 ? "No objects detected."
-                : topLabels.map { "\u2022 \($0)" }.joined(separator: "\n")
+                : topLabels.map { "• \($0)" }.joined(separator: "\\n")
         }
         isLoading = false
     }
 }`}</CodeB>
-        )}
-        <Checkpoint num={3}>Pick a photo, tap Analyze. A result appears with no network call. Now turn on airplane mode and try again \u2014 it should work identically.</Checkpoint>
+              </Section>
+            </div>
+          )}
+        </VStep>
+        <Checkpoint num={3}>Pick a photo, tap Analyze. A result appears with no network call. Now turn on airplane mode and try again — it should work identically.</Checkpoint>
       </Step>
 
       <Step num={4} title={"Verify offline, then compare to cloud (~8 min)"}>
-        <p><strong>Step 4a \u2014 Airplane mode test.</strong> Enable airplane mode on your device. Pick a different photo and tap Analyze. The result should appear just as fast. That\u2019s the whole point.</p>
-        <p style={{ marginTop: 8 }}><strong>Step 4b \u2014 Cloud comparison.</strong> Run the same photo through the Week 7 Claude vision API (or use a screenshot from last week). Compare:</p>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, margin: "10px 0" }}>
-          {[
-            { label: "On-Device (this lab)", qs: ["What did it identify correctly?", "What did it miss?", "How fast was the response?", "Did airplane mode work?"], color: TEAL_L, fg: TEAL_D },
-            { label: "Cloud AI (Week 7)", qs: ["What extra detail did Claude add?", "How was the quality difference?", "How much longer did it take?", "What happened offline?"], color: AML, fg: AM },
-          ].map(function(col) {
-            return (
-              <div key={col.label} style={{ background: col.color, borderRadius: 8, padding: "10px 12px" }}>
-                <p style={{ fontSize: 11, fontWeight: 700, color: col.fg, margin: "0 0 6px", textTransform: "uppercase" }}>{col.label}</p>
-                {col.qs.map(function(q) {
-                  return <div key={q} style={{ fontSize: 12, color: col.fg, lineHeight: 1.8 }}>{"  \u25A1 " + q}</div>;
-                })}
-              </div>
-            );
-          })}
-        </div>
-        <AiOpp>
-          <em>{"Think through the architecture tradeoff \u2192 "}</em>Ask Claude: <strong>{"\u201CMy mobile app analyzes photos. On-device is fast, private, and offline but less capable. Cloud is powerful but needs internet and costs per call. My users might be in areas with poor connectivity. What architecture would you recommend?\u201D"}</strong>
-        </AiOpp>
-        <Checkpoint num={4}>{"You\u2019ve run the same photo through both approaches and can articulate the quality vs capability tradeoff out loud."}</Checkpoint>
+        <VStep num="a" title="Airplane mode test">
+          <p>Enable airplane mode on your device or simulator. Pick a different photo and tap Analyze. The result should appear just as fast. That's the whole point of on-device ML!</p>
+        </VStep>
+        
+        <VStep num="b" title="Cloud comparison" last>
+          <p>Run the same photo through the Week 7 Claude vision API project (or use a screenshot from last week's lab if you don't have it running). Compare the two approaches:</p>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, margin: "10px 0" }}>
+            {[
+              { label: "On-Device (this lab)", qs: ["What did it identify correctly?", "What did it miss?", "How fast was the response?", "Did airplane mode work?"], color: TEAL_L, fg: TEAL_D },
+              { label: "Cloud AI (Week 7)", qs: ["What extra detail did Claude add?", "How was the quality difference?", "How much longer did it take?", "What happened offline?"], color: AML, fg: AM },
+            ].map(function(col) {
+              return (
+                <div key={col.label} style={{ background: col.color, borderRadius: 8, padding: "10px 12px" }}>
+                  <p style={{ fontSize: 11, fontWeight: 700, color: col.fg, margin: "0 0 6px", textTransform: "uppercase" }}>{col.label}</p>
+                  {col.qs.map(function(q) {
+                    return <div key={q} style={{ fontSize: 12, color: col.fg, lineHeight: 1.8 }}>{"  □ " + q}</div>;
+                  })}
+                </div>
+              );
+            })}
+          </div>
+          <AiOpp>
+            <em>{"Think through the architecture tradeoff → "}</em>Ask Claude: <strong>{"“My mobile app analyzes photos. On-device is fast, private, and offline but less capable. Cloud is powerful but needs internet and costs per call. My users might be in areas with poor connectivity. What architecture would you recommend?”"}</strong>
+          </AiOpp>
+          <Checkpoint num={4}>{"You’ve run the same photo through both approaches and can articulate the quality vs capability tradeoff out loud."}</Checkpoint>
+        </VStep>
       </Step>
 
       <Step num={5} title={"Reflect (~5 min)"}>
