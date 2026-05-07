@@ -1340,7 +1340,7 @@ const ProjectTab = () => (
     <h2 style={{ fontSize: 18, fontWeight: 600, margin: "0 0 4px" }}>Unit 1 Assignment: Polish Your ProfileCard</h2>
 
     <div style={{ marginTop: 16, marginBottom: 16, textAlign: "center" }}>
-      <img src="/profilecard_demo.gif" alt="ProfileCard Demo" style={{ maxWidth: 260, borderRadius: 8, border: "1px solid var(--color-border-tertiary)" }} />
+      <img src={`${import.meta.env.BASE_URL}profilecard_demo.gif`} alt="ProfileCard Demo" style={{ maxWidth: 260, borderRadius: 8, border: "1px solid var(--color-border-tertiary)" }} />
     </div>
 
     <p style={{ fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 1.7, margin: "0 0 14px" }}>
