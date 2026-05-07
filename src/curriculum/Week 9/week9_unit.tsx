@@ -1229,10 +1229,10 @@ function LabSession2({ platform }) {
           margin: "0 0 12px",
         }}
       >
-        In this lab, you'll hunt down performance bottlenecks in a intentionally
-        buggy starter app. You'll learn to use IDE profilers to find jank, and
-        Claude to identify memory leaks. Budget about 20–30 minutes, then switch
-        to capstone work.
+        In this lab, you'll hunt down performance bottlenecks in an
+        intentionally buggy starter app. You'll learn to use IDE profilers to
+        find jank, use memory tools to detect leaks, and use Claude to resolve
+        them. Budget about 30 minutes, then switch to capstone work.
       </p>
 
       <div
@@ -1283,7 +1283,7 @@ function LabSession2({ platform }) {
         </div>
       </VStep>
 
-      <VStep num={2} title="Profile the app (~10 min)">
+      <VStep num={2} title="Measure the CPU blockage (~5 min)">
         <div style={{ fontSize: 13, lineHeight: 1.7 }}>
           <p>
             You can't fix what you can't measure. Let's see exactly what's
@@ -1329,11 +1329,104 @@ function LabSession2({ platform }) {
         </div>
       </VStep>
 
-      <VStep num={3} title="Fix with Claude (~10 min)">
+      <VStep num={3} title="Hunt for Memory Leaks (~10 min)">
         <div style={{ fontSize: 13, lineHeight: 1.7 }}>
           <p>
-            Now that we know the app is freezing, let's use AI to spot the exact
-            threading mistake and find a hidden memory leak.
+            Now let's find the hidden memory leak. This happens when an object
+            (like a View or ViewModel) is kept alive in memory by a lingering
+            reference even after you navigate away from the screen.
+          </p>
+
+          {isAndroid ? (
+            <VStep num="a" title="Install LeakCanary" last>
+              <p>
+                LeakCanary is the industry standard tool for finding memory
+                leaks in Android. It automatically watches your Activities and
+                ViewModels and sends a notification when it detects a leak.
+              </p>
+              <CodeB
+                title="build.gradle.kts (app) — debug only"
+                accent={BL}
+              >{`dependencies {
+    // Only included in debug builds — never ships to users
+    debugImplementation("com.squareup.leakcanary:leakcanary-android:2.12")
+}`}</CodeB>
+              <p>
+                Sync your Gradle files, rebuild, and run the app. Navigate into
+                the "Heavy Data" screen, then press the back button to destroy
+                the screen.
+              </p>
+              <p>
+                Wait a few seconds. A yellow LeakCanary notification will pop up
+                on your device indicating a leak. Tap it to see the leak trace.
+              </p>
+              <div
+                style={{
+                  background: "#1e1e2e",
+                  borderRadius: 8,
+                  padding: "12px 14px",
+                  margin: "8px 0",
+                  fontSize: 12,
+                  fontFamily: "monospace",
+                  color: "#cdd6f4",
+                  lineHeight: 1.7,
+                }}
+              >
+                {"┬───\n"}
+                {"│ GC Root: Local variable in native code\n"}
+                {"│\n"}
+                {"├─ com.example.app.ui.HeavyListScreen instance\n"}
+                {"│    Leaking: YES (Activity is destroyed)\n"}
+                {"│    ↓ HeavyListScreen.viewModel\n"}
+                {"│\n"}
+                {"╰→ com.example.app.network.NetworkCallback\n"}
+                {"     Leaking: YES (held by destroyed Activity)"}
+              </div>
+              <p>
+                <strong>How to read this trace:</strong> Read it bottom-up. The
+                last line is the leaked object. The arrows show the chain of
+                references keeping it alive. This proves our listener is holding
+                a strong reference to the destroyed screen!
+              </p>
+            </VStep>
+          ) : (
+            <VStep num="a" title="Use the Memory Graph Debugger" last>
+              <p>
+                iOS memory leaks usually come from{" "}
+                <strong>strong reference cycles</strong> — two objects each
+                holding a strong reference to the other, meaning ARC (Automatic
+                Reference Counting) can never deallocate them.
+              </p>
+              <p>
+                Run the app. Navigate into the "Heavy Data" screen, then press
+                the back button to destroy the screen.
+              </p>
+              <p>
+                While the app is running in Xcode, click the{" "}
+                <strong>Memory Graph button</strong> (the icon with three
+                overlapping circles) in the Debug navigator toolbar at the
+                bottom.
+              </p>
+              <p>
+                Xcode will pause the app and show a visual graph of all live
+                objects. Look for <strong>purple warning triangles</strong> in
+                the left sidebar—these indicate detected retain cycles.
+              </p>
+              <p>
+                Click the warning to see the cycle. You will see that the{" "}
+                <IC>HeavyViewModel</IC> and a closure/listener are keeping each
+                other alive!
+              </p>
+            </VStep>
+          )}
+        </div>
+      </VStep>
+
+      <VStep num={4} title="Fix with Claude (~5 min)">
+        <div style={{ fontSize: 13, lineHeight: 1.7 }}>
+          <p>
+            Now that we have hard proof of the jank and the leak, let's use AI
+            to apply the correct technical fix.
           </p>
 
           <VStep num="a" title="Scan for performance issues">
@@ -1345,13 +1438,18 @@ function LabSession2({ platform }) {
               starter file.
             </p>
             <AiOpp>
-              <strong>Paste the file into Claude</strong> and use this prompt:
+              <strong>
+                Paste the file AND the leak trace (or Xcode warning) into Claude
+              </strong>{" "}
+              and use this prompt:
               <br />
               <br />
               <strong>
-                "Here is my ViewModel. Please scan it for performance issues and
-                memory leaks. Look specifically for: work that should be on a
-                background dispatcher/actor but isn't, and any closures or
+                "Here is my ViewModel. The profiler shows it is blocking the
+                main thread, and{" "}
+                {isAndroid ? "LeakCanary" : "the Memory Graph Debugger"} found a
+                memory leak here. Look specifically for: work that should be on
+                a background dispatcher/actor but isn't, and any closures or
                 references that could cause memory leaks. Tell me what's wrong
                 and provide the fixed code."
               </strong>
@@ -1416,13 +1514,13 @@ func startListening() {
 
           <Checkpoint num={2}>
             Run the app again. Tapping "Load Heavy Data" now shows a loading
-            spinner, and the UI remains completely responsive while the data
-            loads.
+            spinner, the UI remains completely responsive, and rotating/exiting
+            the screen no longer triggers a memory leak warning.
           </Checkpoint>
         </div>
       </VStep>
 
-      <VStep num={4} title="Capstone lab time (~remaining time)" last>
+      <VStep num={5} title="Capstone lab time (~remaining time)" last>
         <div style={{ fontSize: 13, lineHeight: 1.7 }}>
           <p>
             The rest of this session is for capstone work. Your goal is to reach
@@ -1431,15 +1529,94 @@ func startListening() {
           <Tip>
             If your capstone app feels slow, run it through the Profiler or
             paste your most complex screen into Claude using the AI scan prompt
-            from Step 3!
+            from Step 4!
           </Tip>
         </div>
       </VStep>
 
       {/* Reference Material from old lecture */}
-      <Section title="📚 Reference: Common Performance Fixes">
+      <Section title="📚 Reference: The Most Common Memory Leaks">
         <div style={{ fontSize: 13, lineHeight: 1.8 }}>
-          <p>Keep these anti-patterns in mind when writing your capstone:</p>
+          <p>
+            Review these common anti-patterns if you suspect a memory leak in
+            your capstone app:
+          </p>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: 8 }}>
+            {(isAndroid
+              ? [
+                  {
+                    title: "Static references to Context or View",
+                    fix: "Never store an Activity or View in a static field or singleton. Use ApplicationContext if you need a long-lived context.",
+                  },
+                  {
+                    title: "Anonymous listeners not unregistered",
+                    fix: "Any listener/callback that holds a reference to a View or Activity must be unregistered in onStop or onDestroy. Use lifecycle-aware alternatives where possible.",
+                  },
+                  {
+                    title: "Coroutines launched in GlobalScope",
+                    fix: "GlobalScope coroutines live for the entire process lifetime. Always use viewModelScope (in ViewModel) or lifecycleScope (in Activity/Fragment).",
+                  },
+                  {
+                    title: "Inner classes holding outer class references",
+                    fix: "Non-static inner classes implicitly hold a reference to the outer class. Make them static, or use a WeakReference, or extract them.",
+                  },
+                ]
+              : [
+                  {
+                    title: "Strong self in closures",
+                    fix: "Closures capture self strongly by default. Use [weak self] in the capture list: { [weak self] in guard let self = self else { return } }",
+                  },
+                  {
+                    title: "Delegate properties not declared weak",
+                    fix: "Delegate protocols should always be declared with weak: weak var delegate: MyDelegate?. If the delegate is a class type and not weak, it creates a retain cycle.",
+                  },
+                  {
+                    title: "Timer not invalidated",
+                    fix: "Timer holds a strong reference to its target. Always call timer.invalidate() when the owning view disappears, or use a weak target wrapper.",
+                  },
+                  {
+                    title: "NotificationCenter observer not removed",
+                    fix: "If you use the addObserver API (not the closure API), you must call removeObserver in deinit. The closure API with [weak self] is safer.",
+                  },
+                ]
+            ).map((item) => (
+              <div
+                key={item.title}
+                style={{
+                  background: "var(--color-background-secondary)",
+                  border: "0.5px solid var(--color-border-tertiary)",
+                  borderRadius: 8,
+                  padding: "10px 12px",
+                }}
+              >
+                <p
+                  style={{
+                    fontSize: 12,
+                    fontWeight: 600,
+                    color: "var(--color-text-primary)",
+                    margin: "0 0 4px",
+                  }}
+                >
+                  🚨 {item.title}
+                </p>
+                <p
+                  style={{
+                    fontSize: 12,
+                    color: "var(--color-text-secondary)",
+                    margin: 0,
+                    lineHeight: 1.5,
+                  }}
+                >
+                  <strong>Fix:</strong> {item.fix}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </Section>
+
+      <Section title="📚 Reference: Common Threading Fixes">
+        <div style={{ fontSize: 13, lineHeight: 1.8 }}>
           <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: 8 }}>
             {(isAndroid
               ? [
@@ -1447,11 +1624,6 @@ func startListening() {
                     problem: "Main Thread Blockage",
                     bad: "val result = repo.fetch() // blocks UI!",
                     good: "withContext(Dispatchers.IO) { repo.fetch() }",
-                  },
-                  {
-                    problem: "Coroutines in GlobalScope",
-                    bad: "GlobalScope.launch { ... } // leaks!",
-                    good: "viewModelScope.launch { ... }",
                   },
                   {
                     problem: "Eager Rendering of Long Lists",
@@ -1464,11 +1636,6 @@ func startListening() {
                     problem: "Main Actor Blockage",
                     bad: "let data = try! Data(...) // blocks UI!",
                     good: "await Task.detached { ... }",
-                  },
-                  {
-                    problem: "Retain Cycles in Closures",
-                    bad: "repo.listen { self.data = ... } // leaks!",
-                    good: "repo.listen { [weak self] in self?.data = ... }",
                   },
                   {
                     problem: "Eager Rendering of Long Lists",
@@ -1514,47 +1681,6 @@ func startListening() {
               </div>
             ))}
           </div>
-        </div>
-      </Section>
-
-      <Section title="📋 Reference: Capstone Performance Self-Audit">
-        <div style={{ fontSize: 13, lineHeight: 1.8 }}>
-          <ul style={{ paddingLeft: 20 }}>
-            {isAndroid ? (
-              <>
-                <li>
-                  <strong>No GlobalScope:</strong> Search for 'GlobalScope'.
-                  There should be zero results. Use <IC>viewModelScope</IC>.
-                </li>
-                <li>
-                  <strong>No UI Blocking:</strong> Search for <IC>.fetch()</IC>{" "}
-                  or network calls outside of <IC>Dispatchers.IO</IC>.
-                </li>
-                <li>
-                  <strong>Lazy UI:</strong> Check that any list over ~20 items
-                  uses <IC>LazyColumn</IC>, not a <IC>Column</IC> with a{" "}
-                  <IC>forEach</IC>.
-                </li>
-              </>
-            ) : (
-              <>
-                <li>
-                  <strong>No Strong Self:</strong> Search for closures. Make
-                  sure they use <IC>[weak self]</IC> if they outlive the calling
-                  scope.
-                </li>
-                <li>
-                  <strong>No UI Blocking:</strong> Ensure large JSON parsing or{" "}
-                  <IC>Data(contentsOf:)</IC> happens off the MainActor.
-                </li>
-                <li>
-                  <strong>Lazy UI:</strong> Check that any large{" "}
-                  <IC>ForEach</IC> is inside a <IC>List</IC> or{" "}
-                  <IC>LazyVStack</IC>, not just a <IC>ScrollView</IC>.
-                </li>
-              </>
-            )}
-          </ul>
         </div>
       </Section>
     </div>
