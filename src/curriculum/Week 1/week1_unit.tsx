@@ -1338,6 +1338,12 @@ const ProjectTab = () => (
   <div>
     <Warn>Submit this assignment by the end of Week 2 Session 1 using the Submit button on this page.</Warn>
     <h2 style={{ fontSize: 18, fontWeight: 600, margin: "0 0 4px" }}>Unit 1 Assignment: Polish Your ProfileCard</h2>
+
+    {/* TODO: Replace placeholder with real ProfileCard demo GIF */}
+    <div style={{ marginTop: 16, marginBottom: 16, textAlign: "center" }}>
+      <img src="https://placehold.co/260x520?text=ProfileCard+Demo+GIF+Coming+Soon" alt="ProfileCard Demo" style={{ maxWidth: 260, borderRadius: 8, border: "1px solid var(--color-border-tertiary)" }} />
+    </div>
+
     <p style={{ fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 1.7, margin: "0 0 14px" }}>
       You built the foundation in Lab 1 — now make it submission-ready. Take your ProfileCard app and add the three features below. You may submit in either Android (Jetpack Compose) or iOS (SwiftUI). You do not need to submit both.
     </p>
