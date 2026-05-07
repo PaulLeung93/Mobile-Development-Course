@@ -1070,52 +1070,97 @@ Then explain in plain English:
     </div>
 
     <Section title="⚡ Stretch: Ultimate Attack — Swipe Combo">
+      <p style={{ fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 1.6, margin: "0 0 8px" }}>
+        The starter code already does two things for you: it generates a random 5-gesture combo sequence each round (stored in a list called <IC>secretCombo</IC>), and it detects swipe gestures via a function called <IC>handleSwipe</IC>. Each swipe arrives as a <IC>direction</IC> parameter — one of <IC>"up"</IC>, <IC>"down"</IC>, <IC>"left"</IC>, or <IC>"right"</IC>.
+      </p>
       <p style={{ fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 1.6, margin: "0 0 12px" }}>
-        The starter code generates a random 5-gesture combo sequence each round, called <IC>secretCombo</IC>, and detects your swipe gestures. Your job is to use state to track the player's recent swipes and check whether they match the secret combo. If they do — instant kill.
+        Your job: use state to track the player's correct swipes so far, and check whether they match the full secret combo. If they do — instant kill.
       </p>
 
       <VStep num={1} title="Declare a state variable to track progress">
-        <p style={{ fontSize: 13, color: "var(--color-text-secondary)", margin: "0 0 8px" }}>You need a list that grows as the player swipes. This is a new kind of state — not a number, but a collection.</p>
+        <p style={{ fontSize: 13, color: "var(--color-text-secondary)", margin: "0 0 8px" }}>You need a list that grows as the player swipes correctly. Why must this be a <em>state</em> variable? A local variable inside <IC>handleSwipe</IC> would be recreated as an empty list on every single swipe — it would never accumulate progress. State persists across calls.</p>
         {platform === "Android" ? (
           <CodeB title="Kotlin — add alongside your other state variables" accent={BL}>{`var comboProgress by remember { mutableStateOf(listOf<String>()) }`}</CodeB>
         ) : (
           <CodeB title="Swift — add alongside your other @State properties" accent={GR}>{`@State private var comboProgress: [String] = []`}</CodeB>
         )}
+        <Checkpoint num="1a">Build and run. The app should compile with no errors — your new state variable is declared but not used yet, which is fine.</Checkpoint>
       </VStep>
 
-      <VStep num={2} title="Wire up the onSwipe callback">
-        <p style={{ fontSize: 13, color: "var(--color-text-secondary)", margin: "0 0 8px" }}>Find the <IC>handleSwipe</IC> hook in the starter code and fill it in. If the player's swipe matches the next gesture in the secret combo, add it to <IC>comboProgress</IC>. Otherwise, reset the progress to start over.</p>
+      <VStep num={2} title="Fill in the handleSwipe function">
+        <p style={{ fontSize: 13, color: "var(--color-text-secondary)", margin: "0 0 8px" }}>In the starter code, find the <IC>handleSwipe</IC> function — it already has a <IC>{platform === "Android" ? "direction: String" : "direction: String"}</IC> parameter. Your code goes inside the function body.</p>
+        <Note>The key idea: because <IC>comboProgress</IC> only contains correct gestures, its length always equals the index of the <em>next</em> gesture you are waiting for. For example, if 2 correct swipes are stored, the next expected gesture is <IC>secretCombo[2]</IC> — exactly <IC>comboProgress.{platform === "Android" ? "size" : "count"}</IC>.</Note>
         {platform === "Android" ? (
-          <CodeB title="Kotlin — inside the handleSwipe function" accent={BL}>{`val nextIndex = comboProgress.size
-if (direction == secretCombo[nextIndex]) {
+          <CodeB title="Kotlin — inside the handleSwipe function body" accent={BL}>{`val nextIndex = comboProgress.size
+if (nextIndex < secretCombo.size && direction == secretCombo[nextIndex]) {
     comboProgress = comboProgress + direction
 } else {
-    comboProgress = listOf()  // reset on wrong swipe
+    comboProgress = listOf()  // wrong swipe — start over
 }`}</CodeB>
         ) : (
-          <CodeB title="Swift — inside the handleSwipe closure" accent={GR}>{`let nextIndex = comboProgress.count
-if direction == secretCombo[nextIndex] {
+          <CodeB title="Swift — inside the handleSwipe function body" accent={GR}>{`let nextIndex = comboProgress.count
+if nextIndex < secretCombo.count && direction == secretCombo[nextIndex] {
     comboProgress.append(direction)
 } else {
-    comboProgress = []  // reset on wrong swipe
+    comboProgress = []  // wrong swipe — start over
 }`}</CodeB>
         )}
+        <Tip>The <IC>{platform === "Android" ? "nextIndex < secretCombo.size" : "nextIndex < secretCombo.count"}</IC> guard is critical — without it, swiping after all 5 correct gestures would try to read <IC>secretCombo[5]</IC> on a 5-element array and crash.</Tip>
+        <Checkpoint num="2a">Run the app and swipe a few times. Nothing visible happens yet (the ultimate trigger is in Step 3), but confirm the app does <strong>not crash</strong> when you swipe — that means your bounds check is working.</Checkpoint>
       </VStep>
 
       <VStep num={3} title="Check for the combo and trigger the ultimate" last>
-        <p style={{ fontSize: 13, color: "var(--color-text-secondary)", margin: "0 0 8px" }}>After pushing a correct swipe to <IC>comboProgress</IC>, check if the progress list has reached the total size of <IC>secretCombo</IC>. If it matches, the monster is instantly defeated.</p>
+        <p style={{ fontSize: 13, color: "var(--color-text-secondary)", margin: "0 0 8px" }}>After adding a correct swipe to <IC>comboProgress</IC>, check if the progress list has reached the total size of <IC>secretCombo</IC>. If it matches, the monster is instantly defeated.</p>
         {platform === "Android" ? (
-          <CodeB title="Kotlin — add inside handleSwipe, after updating comboProgress" accent={BL}>{`if (comboProgress.size == secretCombo.size) {
+          <>
+            <CodeB title="Kotlin — add inside handleSwipe, after updating comboProgress" accent={BL}>{`if (comboProgress.size == secretCombo.size) {
     monsterHp = 0             // instant kill!
     isMonsterHurt = true      // trigger animation
-    comboProgress = listOf()  // clean up
+    comboProgress = listOf()  // reset so the combo can't re-trigger before a new round starts
 }`}</CodeB>
+            <Section title="📋 Full handleSwipe body — check your work">
+              <p style={{ fontSize: 13, color: "var(--color-text-secondary)", margin: "0 0 8px" }}>Here is the complete <IC>handleSwipe</IC> function with Steps 2 and 3 combined. Compare your code against this to make sure everything is in the right place:</p>
+              <CodeB title="Kotlin — complete handleSwipe" accent={BL}>{`fun handleSwipe(direction: String) {
+    val nextIndex = comboProgress.size
+    if (nextIndex < secretCombo.size && direction == secretCombo[nextIndex]) {
+        comboProgress = comboProgress + direction
+    } else {
+        comboProgress = listOf()  // wrong swipe — start over
+    }
+
+    if (comboProgress.size == secretCombo.size) {
+        monsterHp = 0             // instant kill!
+        isMonsterHurt = true      // trigger animation
+        comboProgress = listOf()  // reset so the combo can't re-trigger before a new round starts
+    }
+}`}</CodeB>
+            </Section>
+          </>
         ) : (
-          <CodeB title="Swift — add inside handleSwipe, after updating comboProgress" accent={GR}>{`if comboProgress.count == secretCombo.count {
+          <>
+            <CodeB title="Swift — add inside handleSwipe, after updating comboProgress" accent={GR}>{`if comboProgress.count == secretCombo.count {
     monsterHp = 0             // instant kill!
     isMonsterHurt = true      // trigger animation
-    comboProgress = []        // clean up
+    comboProgress = []        // reset so the combo can't re-trigger before a new round starts
 }`}</CodeB>
+            <Section title="📋 Full handleSwipe body — check your work">
+              <p style={{ fontSize: 13, color: "var(--color-text-secondary)", margin: "0 0 8px" }}>Here is the complete <IC>handleSwipe</IC> function with Steps 2 and 3 combined. Compare your code against this to make sure everything is in the right place:</p>
+              <CodeB title="Swift — complete handleSwipe" accent={GR}>{`func handleSwipe(_ direction: String) {
+    let nextIndex = comboProgress.count
+    if nextIndex < secretCombo.count && direction == secretCombo[nextIndex] {
+        comboProgress.append(direction)
+    } else {
+        comboProgress = []  // wrong swipe — start over
+    }
+
+    if comboProgress.count == secretCombo.count {
+        monsterHp = 0             // instant kill!
+        isMonsterHurt = true      // trigger animation
+        comboProgress = []        // reset so the combo can't re-trigger before a new round starts
+    }
+}`}</CodeB>
+            </Section>
+          </>
         )}
         <Checkpoint num="⚡">Follow the gesture hints on the screen. Swipe correctly to land the Ultimate Attack and instantly defeat the Monster!</Checkpoint>
       </VStep>
