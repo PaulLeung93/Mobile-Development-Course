@@ -1339,9 +1339,8 @@ const ProjectTab = () => (
     <Warn>Submit this assignment by the end of Week 2 Session 1 using the Submit button on this page.</Warn>
     <h2 style={{ fontSize: 18, fontWeight: 600, margin: "0 0 4px" }}>Unit 1 Assignment: Polish Your ProfileCard</h2>
 
-    {/* TODO: Replace placeholder with real ProfileCard demo GIF */}
     <div style={{ marginTop: 16, marginBottom: 16, textAlign: "center" }}>
-      <img src="https://placehold.co/260x520?text=ProfileCard+Demo+GIF+Coming+Soon" alt="ProfileCard Demo" style={{ maxWidth: 260, borderRadius: 8, border: "1px solid var(--color-border-tertiary)" }} />
+      <img src="/profilecard_demo.gif" alt="ProfileCard Demo" style={{ maxWidth: 260, borderRadius: 8, border: "1px solid var(--color-border-tertiary)" }} />
     </div>
 
     <p style={{ fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 1.7, margin: "0 0 14px" }}>
