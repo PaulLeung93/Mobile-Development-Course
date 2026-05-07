@@ -63,6 +63,29 @@ function IC({ children }) {
   return <code style={{ background: "var(--color-background-secondary)", border: "0.5px solid var(--color-border-tertiary)", borderRadius: 4, padding: "1px 5px", fontSize: 12 }}>{children}</code>;
 }
 
+function VStep({ num, title, children, last }: { num: any, title: string, children: React.ReactNode, last?: boolean }) {
+  return (
+    <div style={{ display: "flex", gap: 12, margin: "16px 0" }}>
+      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", flexShrink: 0 }}>
+        <div style={{ width: 26, height: 26, borderRadius: "50%", background: "var(--platform-accent, #534AB7)", color: "#fff", fontSize: 12, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center", marginTop: 2 }}>{num}</div>
+        {!last && <div style={{ width: 2, flex: 1, minHeight: 20, background: "var(--color-border-tertiary)", margin: "3px 0" }} />}
+      </div>
+      <div style={{ paddingBottom: last ? 8 : 24, flex: 1, minWidth: 0 }}>
+        <h4 style={{ fontSize: 15, fontWeight: 600, margin: "3px 0 8px", color: "var(--color-text-primary)" }}>{title}</h4>
+        <div>{children}</div>
+      </div>
+    </div>
+  );
+}
+
+function Checkpoint({ num, children }: { num?: React.ReactNode, children: React.ReactNode }) {
+  return (
+    <div className="callout-checkpoint" style={{ margin: "14px 0", padding: "10px 14px", background: "#E8FCE8", borderRadius: 8, fontSize: 13, lineHeight: 1.6 }}>
+      <strong>🎯 Checkpoint {num ? num + ":" : ""}</strong> {children}
+    </div>
+  );
+}
+
 function PlatformToggle({ platform, setPlatform }) {
   return (
     <div style={{ display: "flex", gap: 0, margin: "12px 0", borderRadius: 8, overflow: "hidden", border: "1px solid var(--color-border-tertiary)", width: "fit-content" }}>
@@ -191,12 +214,13 @@ function LabSession1({ platform }) {
       </div>
 
       {/* Step 0 */}
-      <div style={{ margin: "18px 0" }}>
-        <h4 style={{ fontSize: 15, fontWeight: 600, color: "var(--platform-accent, var(--color-text-primary))", margin: "0 0 8px" }}>Step 0: The starter ViewModel (~5 min)</h4>
+      <VStep num={0} title="Review the starter ViewModel (~5 min)">
         <div style={{ fontSize: 13, lineHeight: 1.7 }}>
-          <p>You{"'"}re given a simple ViewModel that loads a list of items. Your job: write tests that verify each UI state transition. The interface it depends on is <IC>ItemRepository</IC> — you{"'"}ll replace that with a fake.</p>
-          {isAndroid ? (
-            <CodeB title="Kotlin — ItemViewModel.kt (starter)" accent={BL}>{`sealed interface ItemUiState {
+          <p>You{"'"}re given a simple ViewModel in your starter code that loads a list of items. Your job is to write tests that verify each UI state transition.</p>
+          <p>Notice that <IC>ItemRepository</IC> is an <strong>interface/protocol</strong>, not a class. This is the secret to testable code: it allows us to swap the real repository for a "fake" one in our tests (since we cannot subclass final classes). </p>
+          <Section title="🔍 Show starter code">
+            {isAndroid ? (
+              <CodeB title="Kotlin — ItemViewModel.kt (starter)" accent={BL}>{`sealed interface ItemUiState {
     object Loading : ItemUiState
     data class Success(val items: List<String>) : ItemUiState
     data class Error(val message: String) : ItemUiState
@@ -227,8 +251,8 @@ class ItemViewModel(
         }
     }
 }`}</CodeB>
-          ) : (
-            <CodeB title="Swift — ItemViewModel.swift (starter)" accent={GR}>{`enum ItemUiState {
+            ) : (
+              <CodeB title="Swift — ItemViewModel.swift (starter)" accent={GR}>{`enum ItemUiState {
     case loading
     case success([String])
     case error(String)
@@ -257,17 +281,41 @@ class ItemViewModel: ObservableObject {
         }
     }
 }`}</CodeB>
-          )}
+            )}
+          </Section>
         </div>
-      </div>
+      </VStep>
 
       {/* Step 1 */}
-      <div style={{ margin: "18px 0" }}>
-        <h4 style={{ fontSize: 15, fontWeight: 600, color: "var(--color-text-primary)", margin: "0 0 8px" }}>Step 1: Create a fake repository (~8 min)</h4>
+      <VStep num={1} title="Setup test dependencies (~5 min)">
+        <div style={{ fontSize: 13, lineHeight: 1.7 }}>
+          <p>Before we can test coroutines, we need the testing library.</p>
+          {isAndroid ? (
+            <>
+              <p><strong>Add this to your app-level <IC>build.gradle.kts</IC>:</strong> Make sure it goes into the <IC>dependencies</IC> block as <IC>testImplementation</IC> (not <IC>androidTestImplementation</IC>). Sync Gradle afterwards.</p>
+              <CodeB title="Kotlin — build.gradle.kts" accent={BL}>{`dependencies {
+    // Other dependencies...
+    
+    // For testing coroutines (runTest, TestDispatchers)
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.8.0")
+}`}</CodeB>
+            </>
+          ) : (
+            <p><strong>Make sure your test target is set up:</strong> In Xcode, your <IC>YourAppNameTests</IC> target is where all test files should live. No extra dependencies are needed; XCTest is built-in.</p>
+          )}
+        </div>
+      </VStep>
+
+      {/* Step 2 */}
+      <VStep num={2} title="Create a fake repository (~8 min)">
         <div style={{ fontSize: 13, lineHeight: 1.7 }}>
           <p>A fake replaces the real network call with a version you control. You can make it return success, return an empty list, or throw an error — whatever the test needs.</p>
           {isAndroid ? (
-            <CodeB title="Kotlin — FakeItemRepository.kt" accent={BL}>{`class FakeItemRepository : ItemRepository {
+            <>
+              <p><strong>Create a new file</strong> named <IC>FakeItemRepository.kt</IC> in your <IC>app/src/test/java/...</IC> directory (alongside your other test files).</p>
+              <CodeB title="Kotlin — FakeItemRepository.kt" accent={BL}>{`import java.io.IOException
+
+class FakeItemRepository : ItemRepository {
     // Configure these before each test
     var shouldThrow = false
     var itemsToReturn = listOf("Item A", "Item B", "Item C")
@@ -277,8 +325,14 @@ class ItemViewModel: ObservableObject {
         return itemsToReturn
     }
 }`}</CodeB>
+            </>
           ) : (
-            <CodeB title="Swift — MockItemRepository.swift" accent={GR}>{`class MockItemRepository: ItemRepository {
+            <>
+              <p><strong>Create a new file</strong> named <IC>MockItemRepository.swift</IC> in your <IC>YourAppNameTests</IC> folder.</p>
+              <CodeB title="Swift — MockItemRepository.swift" accent={GR}>{`import Foundation
+@testable import YourAppName
+
+class MockItemRepository: ItemRepository {
     // Configure these before each test
     var shouldThrow = false
     var itemsToReturn = ["Item A", "Item B", "Item C"]
@@ -290,22 +344,61 @@ class ItemViewModel: ObservableObject {
         return itemsToReturn
     }
 }`}</CodeB>
+            </>
           )}
-          <div className="callout-checkpoint" style={{ margin: "14px 0", padding: "10px 14px", background: "#E8FCE8", borderRadius: 8, fontSize: 13, lineHeight: 1.6 }}>
-            <strong>🎯 Checkpoint 1:</strong> Fake compiles with no errors. It conforms to the same <IC>ItemRepository</IC> interface as the real implementation.
-          </div>
+          <Checkpoint num={1}>Fake compiles with no errors. It conforms to the same <IC>ItemRepository</IC> interface as the real implementation.</Checkpoint>
         </div>
-      </div>
+      </VStep>
 
-      {/* Step 2 */}
-      <div style={{ margin: "18px 0" }}>
-        <h4 style={{ fontSize: 15, fontWeight: 600, color: "var(--color-text-primary)", margin: "0 0 8px" }}>Step 2: Write the tests (~20 min)</h4>
+      {/* Step 3 */}
+      <VStep num={3} title="Write the tests (~20 min)">
         <div style={{ fontSize: 13, lineHeight: 1.7 }}>
-          <p>Write at least three tests: success, error, and initial loading state.</p>
-          {isAndroid ? (
-            <>
-              <Tip>Add these dependencies to your test build.gradle if not already present: <IC>{"kotlinx-coroutines-test"}</IC> for <IC>runTest</IC> and <IC>advanceUntilIdle</IC>.</Tip>
-              <CodeB title="Kotlin — ItemViewModelTest.kt" accent={BL}>{`@ExperimentalCoroutinesApi
+          <p>We're going to write three tests: initial loading state, success, and error.</p>
+
+          <VStep num="a" title="Setup the test file and initial state">
+            <p>{isAndroid ? "Because loadItems() launches a coroutine on the Main thread, we must swap the real Main thread for a TestDispatcher." : "Mark the test class with @MainActor because the ViewModel is tied to the main thread."}</p>
+            {isAndroid ? (
+              <p>Create <IC>ItemViewModelTest.kt</IC> and <IC>MainDispatcherRule.kt</IC> in your <IC>test</IC> directory. Add the <IC>MainDispatcherRule</IC> boilerplate. Then, in <IC>ItemViewModelTest</IC>, add the rule and write a test named <IC>initial state — is Loading</IC>. Instantiate the ViewModel with a new <IC>FakeItemRepository()</IC>, and assert that the value of <IC>uiState</IC> is <IC>ItemUiState.Loading</IC>.</p>
+            ) : (
+              <p>Create <IC>ItemViewModelTests.swift</IC> in your <IC>YourAppNameTests</IC> target. Add the <IC>@MainActor</IC> test class. Write a test named <IC>testInitialState_isLoading()</IC>. Instantiate the ViewModel with a new <IC>MockItemRepository()</IC>, and verify that <IC>uiState</IC> is <IC>.loading</IC>.</p>
+            )}
+
+            {isAndroid && (
+              <Section title="💡 Show me the MainDispatcherRule boilerplate">
+                <CodeB title="Kotlin — MainDispatcherRule.kt" accent={BL}>{`import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.TestDispatcher
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.setMain
+import org.junit.rules.TestWatcher
+import org.junit.runner.Description
+
+@OptIn(ExperimentalCoroutinesApi::class)
+class MainDispatcherRule(
+    private val testDispatcher: TestDispatcher = UnconfinedTestDispatcher()
+) : TestWatcher() {
+    override fun starting(description: Description) {
+        Dispatchers.setMain(testDispatcher)
+    }
+    override fun finished(description: Description) {
+        Dispatchers.resetMain()
+    }
+}`}</CodeB>
+              </Section>
+            )}
+
+            <Section title="✅ Check your work — show me the test file so far">
+              {isAndroid ? (
+                <CodeB title="Kotlin — ItemViewModelTest.kt" accent={BL}>{`import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.runTest
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
+import org.junit.Rule
+import org.junit.Test
+
+@OptIn(ExperimentalCoroutinesApi::class)
 class ItemViewModelTest {
 
     // Swap the coroutine dispatcher so tests run synchronously
@@ -313,12 +406,128 @@ class ItemViewModelTest {
     val mainDispatcherRule = MainDispatcherRule()
 
     @Test
+    fun \`initial state — is Loading\`() {
+        val vm = ItemViewModel(FakeItemRepository())
+        assertTrue(vm.uiState.value is ItemUiState.Loading)
+    }
+}`}</CodeB>
+              ) : (
+                <CodeB title="Swift — ItemViewModelTests.swift" accent={GR}>{`import XCTest
+@testable import YourAppName
+
+@MainActor
+final class ItemViewModelTests: XCTestCase {
+
+    func testInitialState_isLoading() {
+        let vm = ItemViewModel(repo: MockItemRepository())
+        if case .loading = vm.uiState { /* pass */ }
+        else { XCTFail("Expected .loading") }
+    }
+}`}</CodeB>
+              )}
+            </Section>
+          </VStep>
+
+          <VStep num="b" title="Test the happy path">
+            <p>Now write the Success test. {isAndroid ? "Create a function named `loadItems — emits Loading then Success` and wrap the block in `runTest`." : "Create an `async` function named `testLoadItems_success`."} Instantiate the fake repo, pass it to the ViewModel, and call <IC>loadItems()</IC>. {isAndroid && "Call advanceUntilIdle() to fast-forward the coroutine. "} Then verify the state is Success and that the items list has size 3.</p>
+
+            <Section title="✅ Check your work — show me the test file so far">
+              {isAndroid ? (
+                <CodeB title="Kotlin — ItemViewModelTest.kt" accent={BL}>{`import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.runTest
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
+import org.junit.Rule
+import org.junit.Test
+
+@OptIn(ExperimentalCoroutinesApi::class)
+class ItemViewModelTest {
+
+    @get:Rule
+    val mainDispatcherRule = MainDispatcherRule()
+
+    @Test
+    fun \`initial state — is Loading\`() {
+        val vm = ItemViewModel(FakeItemRepository())
+        assertTrue(vm.uiState.value is ItemUiState.Loading)
+    }
+
+    @Test
     fun \`loadItems — emits Loading then Success\`() = runTest {
         val repo = FakeItemRepository()
         val vm = ItemViewModel(repo)
 
         vm.loadItems()
-        advanceUntilIdle()  // let all coroutines finish
+        advanceUntilIdle()  // fast-forward all coroutines
+
+        val state = vm.uiState.value
+        assertTrue(state is ItemUiState.Success)
+        assertEquals(3, (state as ItemUiState.Success).items.size)
+    }
+}`}</CodeB>
+              ) : (
+                <CodeB title="Swift — ItemViewModelTests.swift" accent={GR}>{`import XCTest
+@testable import YourAppName
+
+@MainActor
+final class ItemViewModelTests: XCTestCase {
+
+    func testInitialState_isLoading() {
+        let vm = ItemViewModel(repo: MockItemRepository())
+        if case .loading = vm.uiState { /* pass */ }
+        else { XCTFail("Expected .loading") }
+    }
+
+    func testLoadItems_success() async {
+        let mock = MockItemRepository()
+        let vm = ItemViewModel(repo: mock)
+
+        await vm.loadItems()
+
+        if case .success(let items) = vm.uiState {
+            XCTAssertEqual(items.count, 3)
+        } else {
+            XCTFail("Expected .success, got \\(vm.uiState)")
+        }
+    }
+}`}</CodeB>
+              )}
+            </Section>
+          </VStep>
+
+          <VStep num="c" title="Test the error path" last>
+            <p>Write the Error test. Create a new fake repo, but this time configure it to throw an error (e.g. <IC>shouldThrow = true</IC>). Call <IC>loadItems()</IC>, and verify the state becomes Error and that the error message is not empty.</p>
+            
+            <Section title="✅ Check your work — show me the complete test file">
+              {isAndroid ? (
+                <CodeB title="Kotlin — ItemViewModelTest.kt" accent={BL}>{`import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.runTest
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
+import org.junit.Rule
+import org.junit.Test
+
+@OptIn(ExperimentalCoroutinesApi::class)
+class ItemViewModelTest {
+
+    @get:Rule
+    val mainDispatcherRule = MainDispatcherRule()
+
+    @Test
+    fun \`initial state — is Loading\`() {
+        val vm = ItemViewModel(FakeItemRepository())
+        assertTrue(vm.uiState.value is ItemUiState.Loading)
+    }
+
+    @Test
+    fun \`loadItems — emits Loading then Success\`() = runTest {
+        val repo = FakeItemRepository()
+        val vm = ItemViewModel(repo)
+
+        vm.loadItems()
+        advanceUntilIdle()  // fast-forward all coroutines
 
         val state = vm.uiState.value
         assertTrue(state is ItemUiState.Success)
@@ -340,33 +549,19 @@ class ItemViewModelTest {
             (state as ItemUiState.Error).message.isNotBlank()
         )
     }
-
-    @Test
-    fun \`initial state — is Loading\`() {
-        val vm = ItemViewModel(FakeItemRepository())
-        assertTrue(vm.uiState.value is ItemUiState.Loading)
-    }
 }`}</CodeB>
-              <CodeB title="Kotlin — MainDispatcherRule.kt (boilerplate)" accent={BL}>{`// Put this in your test source set — used by all ViewModel tests
-class MainDispatcherRule(
-    private val dispatcher: TestCoroutineDispatcher =
-        TestCoroutineDispatcher()
-) : TestWatcher() {
-    override fun starting(description: Description) {
-        Dispatchers.setMain(dispatcher)
-    }
-    override fun finished(description: Description) {
-        Dispatchers.resetMain()
-        dispatcher.cleanupTestCoroutines()
-    }
-}`}</CodeB>
-            </>
-          ) : (
-            <CodeB title="Swift — ItemViewModelTests.swift" accent={GR}>{`import XCTest
+              ) : (
+                <CodeB title="Swift — ItemViewModelTests.swift" accent={GR}>{`import XCTest
 @testable import YourAppName
 
 @MainActor
 final class ItemViewModelTests: XCTestCase {
+
+    func testInitialState_isLoading() {
+        let vm = ItemViewModel(repo: MockItemRepository())
+        if case .loading = vm.uiState { /* pass */ }
+        else { XCTFail("Expected .loading") }
+    }
 
     func testLoadItems_success() async {
         let mock = MockItemRepository()
@@ -394,46 +589,37 @@ final class ItemViewModelTests: XCTestCase {
             XCTFail("Expected .error, got \\(vm.uiState)")
         }
     }
-
-    func testInitialState_isLoading() {
-        let vm = ItemViewModel(repo: MockItemRepository())
-        if case .loading = vm.uiState { /* pass */ }
-        else { XCTFail("Expected .loading") }
-    }
 }`}</CodeB>
-          )}
-          <div className="callout-checkpoint" style={{ margin: "14px 0", padding: "10px 14px", background: "#E8FCE8", borderRadius: 8, fontSize: 13, lineHeight: 1.6 }}>
-            <strong>🎯 Checkpoint 2:</strong> All three tests pass. Intentionally break one assertion — change an <IC>assertEquals(3, ...)</IC> to <IC>assertEquals(99, ...)</IC> — and see what a failing test output looks like. Then fix it.
-          </div>
-        </div>
-      </div>
+              )}
+            </Section>
+          </VStep>
 
-      {/* Step 3 */}
-      <div style={{ margin: "18px 0" }}>
-        <h4 style={{ fontSize: 15, fontWeight: 600, color: "var(--color-text-primary)", margin: "0 0 8px" }}>Step 3: Find edge cases with Claude (~10 min)</h4>
+          <Checkpoint num={2}>All three tests pass. Intentionally break one assertion — change an <IC>assertEquals(3, ...)</IC> (or <IC>XCTAssertEqual(items.count, 3)</IC>) to test for <IC>99</IC> instead — and see what a failing test output looks like. Then fix it.</Checkpoint>
+        </div>
+      </VStep>
+
+      {/* Step 4 */}
+      <VStep num={4} title="Find edge cases with Claude (~10 min)">
         <div style={{ fontSize: 13, lineHeight: 1.7 }}>
           <p>You{"'"}ve covered the happy path and the error path. Claude can help you think about cases you haven{"'"}t considered.</p>
           <AiOpp>
-            <em>Edge case finder →</em> Paste your ViewModel code and your existing tests into Claude, then use this prompt:
+            <em>Edge case finder →</em> <strong>Paste your ViewModel code and your existing tests</strong> into Claude, then use this prompt:
             <br /><br />
             <strong>{"\"I've written unit tests for a ViewModel that loads a list of items. Here's the ViewModel and my current tests. What edge cases am I not testing? List specific test scenarios with the assertion I should write for each one. Focus on state transitions, concurrency, and boundary conditions.\""}</strong>
             <br /><br />
             Pick the two most interesting suggestions and write those tests.
           </AiOpp>
-          <div className="callout-checkpoint" style={{ margin: "14px 0", padding: "10px 14px", background: "#E8FCE8", borderRadius: 8, fontSize: 13, lineHeight: 1.6 }}>
-            <strong>🎯 Checkpoint 3:</strong> You have at least 5 tests total. At least 2 were suggested by Claude and test scenarios you hadn{"'"}t thought of.
-          </div>
+          <Checkpoint num={3}>You have at least 5 tests total. At least 2 were suggested by Claude and test scenarios you hadn{"'"}t thought of.</Checkpoint>
         </div>
-      </div>
+      </VStep>
 
-      {/* Step 4 */}
-      <div style={{ margin: "18px 0" }}>
-        <h4 style={{ fontSize: 15, fontWeight: 600, color: "var(--color-text-primary)", margin: "0 0 8px" }}>Step 4: Capstone lab time (~remaining time)</h4>
+      {/* Step 5 */}
+      <VStep num={5} title="Capstone lab time (~remaining time)" last>
         <div style={{ fontSize: 13, lineHeight: 1.7 }}>
           <p>Remaining lab time is for capstone work. If you finish the testing steps early, open your capstone project and make progress toward M4.</p>
           <Tip>The testing pattern you just practiced — fake repository, state assertions, edge cases — works identically on your capstone{"'"}s own ViewModels. If you have time, try adding one test for your capstone{"'"}s main ViewModel.</Tip>
         </div>
-      </div>
+      </VStep>
 
       <Section title="💡 Hints">
         <div style={{ fontSize: 13, lineHeight: 1.8 }}>
@@ -441,10 +627,6 @@ final class ItemViewModelTests: XCTestCase {
             <>
               <p><strong>{"runTest"} vs {"runBlocking"}</strong></p>
               <p style={{ marginLeft: 16 }}>Always use <IC>runTest</IC> from <IC>kotlinx-coroutines-test</IC> for testing suspend functions and StateFlow. <IC>runBlocking</IC> does not work correctly with coroutine test dispatchers and can cause tests to hang.</p>
-              <p><strong>{"advanceUntilIdle()"}</strong></p>
-              <p style={{ marginLeft: 16 }}>Advances time to complete all pending coroutines without actually waiting. Call this after triggering ViewModel operations that launch coroutines. Without it, your assertions run before the coroutine finishes.</p>
-              <p><strong>{"Cannot mock final class"}</strong></p>
-              <p style={{ marginLeft: 16 }}>Kotlin classes are final by default — you can{"'"}t subclass them in a fake. Define <IC>ItemRepository</IC> as an <IC>interface</IC>, not a class. Your fake then implements the interface. This is the main reason interfaces exist in testable code.</p>
             </>
           ) : (
             <>
