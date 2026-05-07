@@ -160,29 +160,29 @@ function Overview({ platform, setPlatform }) {
         </ul>
         <strong style={{ display: "block", marginTop: 10 }}>Upcoming Due Dates</strong>
         <ul style={{ margin: "6px 0 0", paddingLeft: 20 }}>
-          <li>{"\uD83C\uDFD7\uFE0F "}<Link>Capstone M3</Link>{" \u2014 check-in during Session 2 lab (no separate submission)"}</li>
-          <li>{"\uD83D\uDCEC "}<Link>Week 9 pre-work</Link>{" \u2014 Git branching concepts (30 min)"}</li>
+          <li>{"\uD83C\uDFD7\uFE0F "}<Link>Capstone M3</Link>{" — check-in during Session 2 lab (no separate submission)"}</li>
+          <li>{"\uD83D\uDCEC "}<Link>Week 9 pre-work</Link>{" — Git branching concepts (30 min)"}</li>
         </ul>
       </div>
 
       <div style={{ marginTop: 16, padding: "14px", background: isAndroid ? BLL : GRL, borderRadius: 10, fontSize: 13, lineHeight: 1.7 }}>
         <strong style={{ color: isAndroid ? BL : GR }}>
-          {isAndroid ? "\uD83E\uDD16 Android Track" : "\uD83C\uDF4E iOS Track"}{" \u2014 This Week"}
+          {isAndroid ? "\uD83E\uDD16 Android Track" : "\uD83C\uDF4E iOS Track"}{" — This Week"}
         </strong>
         <p style={{ margin: "6px 0 0", color: isAndroid ? BL : GR }}>
           {isAndroid
-            ? "Session 1 uses ML Kit\u2019s image labeling and text recognition APIs with CameraX for live frame analysis. Session 2 introduces Gemini Nano via the Android AI Core API \u2014 a small generative LLM running entirely on-device."
+            ? "Session 1 uses ML Kit\u2019s image labeling and text recognition APIs with CameraX for live frame analysis. Session 2 introduces Gemini Nano via the Android AI Core API — a small generative LLM running entirely on-device."
             : "Session 1 uses Vision framework (VNClassifyImageRequest, VNRecognizeTextRequest) with AVFoundation for live camera input. Session 2 introduces Apple Intelligence APIs for on-device summarization and analysis on Apple Silicon devices."
           }
         </p>
       </div>
 
       <div className="callout-ai" style={{ marginTop: 16, padding: "14px", background: "#F9F0FF", borderRadius: 10, fontSize: 13, lineHeight: 1.7 }}>
-        <strong>{"\uD83D\uDD04 Cloud AI vs On-Device AI \u2014 the key tradeoffs"}</strong>
+        <strong>{"\uD83D\uDD04 Cloud AI vs On-Device AI — the key tradeoffs"}</strong>
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginTop: 10 }}>
           {[
-            { label: "Cloud AI (Week 7)", items: ["Powerful \u2014 large models like Claude", "Requires internet + API key", "Higher latency (network round trip)", "Costs money per token", "Always up-to-date model"], color: AML, fg: AM },
-            { label: "On-Device AI (this week)", items: ["Smaller models, limited capability", "Works offline, no API key needed", "Low latency \u2014 runs on the device chip", "Free after installation", "Private \u2014 data never leaves the phone"], color: TEAL_L, fg: TEAL_D },
+            { label: "Cloud AI (Week 7)", items: ["Powerful — large models like Claude", "Requires internet + API key", "Higher latency (network round trip)", "Costs money per token", "Always up-to-date model"], color: AML, fg: AM },
+            { label: "On-Device AI (this week)", items: ["Smaller models, limited capability", "Works offline, no API key needed", "Low latency — runs on the device chip", "Free after installation", "Private — data never leaves the phone"], color: TEAL_L, fg: TEAL_D },
           ].map(function(col) {
             return (
               <div key={col.label} style={{ background: col.color, borderRadius: 8, padding: "10px 12px" }}>
@@ -205,9 +205,9 @@ function Overview({ platform, setPlatform }) {
         <strong>{"\uD83D\uDCE6 This unit at a glance"}</strong>
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginTop: 10 }}>
           {[
-            { label: "Session 1", val: "Live camera feed with real-time ML overlay. Lab: build a scanner that labels objects and reads text in the viewfinder \u2014 no internet." },
-            { label: "Session 2", val: isAndroid ? "Gemini Nano on-device. Lab: analyze a photo from your gallery using a local generative model \u2014 airplane mode required to verify." : "Apple Intelligence on-device. Lab: analyze a photo using Vision + Apple Intelligence \u2014 airplane mode required to verify." },
-            { label: "Capstone M3", val: "No submission \u2014 instructor check-in during Session 2 lab. Have your app running with core navigation + at least one network call working." },
+            { label: "Session 1", val: "Live camera feed with real-time ML overlay. Lab: build a scanner that labels objects and reads text in the viewfinder — no internet." },
+            { label: "Session 2", val: isAndroid ? "Gemini Nano on-device. Lab: analyze a photo from your gallery using a local generative model — airplane mode required to verify." : "Apple Intelligence on-device. Lab: analyze a photo using Vision + Apple Intelligence — airplane mode required to verify." },
+            { label: "Capstone M3", val: "No submission — instructor check-in during Session 2 lab. Have your app running with core navigation + at least one network call working." },
             { label: "No standalone assignment", val: "M3 check-in replaces the weekly assignment. Use your lab time to make capstone progress after your check-in." },
           ].map(function(item) {
             return (
@@ -228,9 +228,9 @@ function LabSession1({ platform }) {
   var isAndroid = platform === "Android";
   return (
     <div style={{ '--platform-accent': platform === "Android" ? BL : GR } as React.CSSProperties}>
-      <h2 style={{ fontSize: 18, fontWeight: 600, margin: "0 0 4px" }}>Unit 8 Lab \u2014 Session 1: Build the Scanner</h2>
+      <h2 style={{ fontSize: 18, fontWeight: 600, margin: "0 0 4px" }}>Unit 8 Lab — Session 1: Build the Scanner</h2>
       <p style={{ fontSize: 13, color: "var(--color-text-secondary)", margin: "0 0 8px" }}>
-        {"You\u2019re building \u2014 MLScanner \u2014 a single app you\u2019ll extend in Session 2. Today: live camera feed with real-time object labeling and text recognition. No internet required."}
+        {"You\u2019re building — MLScanner — a single app you\u2019ll extend in Session 2. Today: live camera feed with real-time object labeling and text recognition. No internet required."}
       </p>
       <div style={{ background: "var(--color-background-secondary)", borderRadius: 8, padding: "10px 14px", fontSize: 12, marginBottom: 14, lineHeight: 1.6 }}>
         <strong>{"Two-session arc:"}</strong>
@@ -253,12 +253,12 @@ function LabSession1({ platform }) {
         </ul>
       </div>
 
-      <Step num={0} title={"Create a new project \u2014 MLScanner (~3 min)"}>
+      <Step num={0} title={"Create a new project — MLScanner (~3 min)"}>
         <p>Create a new {isAndroid ? "Empty Activity" : "App"} project in {isAndroid ? "Android Studio" : "Xcode"}. Name it <strong>MLScanner</strong>.{isAndroid ? " Set Minimum SDK to API 24 and confirm Kotlin + Compose are selected." : ""}</p>
         {isAndroid ? (
           <div>
-            <p style={{ fontSize: 13, margin: "8px 0 4px" }}>Open <strong>build.gradle.kts (Module: app)</strong> \u2014 the one inside the <IC>app</IC> folder, not the top-level project file. Add these lines inside the <IC>dependencies</IC> block:</p>
-            <CodeB title="build.gradle.kts (Module: app) \u2014 add CameraX + ML Kit" accent={BL}>{`// CameraX
+            <p style={{ fontSize: 13, margin: "8px 0 4px" }}>Open <strong>build.gradle.kts (Module: app)</strong> — the one inside the <IC>app</IC> folder, not the top-level project file. Add these lines inside the <IC>dependencies</IC> block:</p>
+            <CodeB title="build.gradle.kts (Module: app) — add CameraX + ML Kit" accent={BL}>{`// CameraX
 implementation("androidx.camera:camera-core:1.3.0")
 implementation("androidx.camera:camera-camera2:1.3.0")
 implementation("androidx.camera:camera-lifecycle:1.3.0")
@@ -270,30 +270,30 @@ implementation("com.google.mlkit:text-recognition:16.0.0")
 
 // Permission helper for Compose
 implementation("com.google.accompanist:accompanist-permissions:0.32.0")`}</CodeB>
-            <p style={{ fontSize: 13, margin: "8px 0 4px" }}>Click <strong>Sync Now</strong> in the yellow banner at the top of the editor (or go to <strong>File \u2192 Sync Project with Gradle Files</strong>). Wait for the sync to finish \u2014 you won\u2019t be able to import these libraries until it completes.</p>
+            <p style={{ fontSize: 13, margin: "8px 0 4px" }}>Click <strong>Sync Now</strong> in the yellow banner at the top of the editor (or go to <strong>File \u2192 Sync Project with Gradle Files</strong>). Wait for the sync to finish — you won\u2019t be able to import these libraries until it completes.</p>
           </div>
         ) : (
           <div>
-            <p style={{ fontSize: 13, margin: "8px 0 4px" }}>Vision and AVFoundation are built into the iOS SDK \u2014 no package dependencies needed. The one required step before writing any camera code is declaring the camera permission string.</p>
+            <p style={{ fontSize: 13, margin: "8px 0 4px" }}>Vision and AVFoundation are built into the iOS SDK — no package dependencies needed. The one required step before writing any camera code is declaring the camera permission string.</p>
             <p style={{ fontSize: 13, margin: "8px 0 4px" }}>In Xcode: select the <strong>MLScanner</strong> project in the Navigator \u2192 select the <strong>MLScanner target</strong> \u2192 open the <strong>Info</strong> tab \u2192 hover over any row and click <strong>+</strong> \u2192 type <IC>NSCameraUsageDescription</IC> \u2192 set the value to a user-facing description.</p>
             <CodeB title="Info.plist entry to add" accent={GR}>{`Key:   NSCameraUsageDescription
 Type:  String
 Value: Used to scan and label objects in real time.`}</CodeB>
-            <Warn>{"If NSCameraUsageDescription is missing, the app crashes silently the moment it requests camera access \u2014 no error message, no log. Add it first."}</Warn>
+            <Warn>{"If NSCameraUsageDescription is missing, the app crashes silently the moment it requests camera access — no error message, no log. Add it first."}</Warn>
           </div>
         )}
         <Checkpoint num={0}>{isAndroid ? "Gradle synced with no errors. Project builds clean." : "NSCameraUsageDescription is in Info.plist. Project builds clean."}</Checkpoint>
       </Step>
 
       <Step num={1} title={"Request camera permission (~5 min)"}>
-        <p>{"Camera access is a \"dangerous\" permission on both platforms \u2014 the OS won't grant it automatically. You must ask at runtime and handle three distinct outcomes. Build this before touching the camera so you never silently crash on a real device."}</p>
+        <p>{"Camera access is a \"dangerous\" permission on both platforms — the OS won't grant it automatically. You must ask at runtime and handle three distinct outcomes. Build this before touching the camera so you never silently crash on a real device."}</p>
 
         <VStep num="a" title={isAndroid ? "Create CameraPermissionWrapper.kt" : "Create CameraPermissionManager.swift"}>
           {isAndroid ? (
             <div>
               <p>Create a new Kotlin file called <IC>CameraPermissionWrapper.kt</IC>. Add a <IC>@Composable</IC> function <IC>CameraPermissionWrapper</IC> with no parameters. Use Accompanist's <IC>rememberPermissionState</IC>, passing <IC>android.Manifest.permission.CAMERA</IC>, to get an object that tracks the current permission status.</p>
-              <Section title="\u2705 Check your work \u2014 CameraPermissionWrapper.kt so far" defaultOpen={false}>
-                <CodeB title="Kotlin \u2014 CameraPermissionWrapper.kt (skeleton)" accent={BL}>{`import androidx.compose.runtime.Composable
+              <Section title="\u2705 Check your work — CameraPermissionWrapper.kt so far" defaultOpen={false}>
+                <CodeB title="Kotlin — CameraPermissionWrapper.kt (skeleton)" accent={BL}>{`import androidx.compose.runtime.Composable
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberPermissionState
 
@@ -310,8 +310,8 @@ fun CameraPermissionWrapper() {
           ) : (
             <div>
               <p>Create a new Swift file called <IC>CameraPermissionManager.swift</IC>. Add a class <IC>CameraPermissionManager: ObservableObject</IC>. Give it a <IC>@Published var status: AVAuthorizationStatus</IC> initialized with <IC>AVCaptureDevice.authorizationStatus(for: .video)</IC>. Add a <IC>requestPermission()</IC> method that calls <IC>AVCaptureDevice.requestAccess(for: .video)</IC> and updates <IC>status</IC> on the main thread.</p>
-              <Section title="\u2705 Check your work \u2014 CameraPermissionManager.swift" defaultOpen={false}>
-                <CodeB title="Swift \u2014 CameraPermissionManager.swift" accent={GR}>{`import AVFoundation
+              <Section title="\u2705 Check your work — CameraPermissionManager.swift" defaultOpen={false}>
+                <CodeB title="Swift — CameraPermissionManager.swift" accent={GR}>{`import AVFoundation
 
 class CameraPermissionManager: ObservableObject {
     @Published var status: AVAuthorizationStatus =
@@ -335,13 +335,13 @@ class CameraPermissionManager: ObservableObject {
             <div>
               <p>Inside <IC>CameraPermissionWrapper</IC>, add a <IC>when</IC> block on <IC>permission.status</IC>:</p>
               <ul style={{ paddingLeft: 20, margin: "6px 0" }}>
-                <li><IC>isGranted</IC> \u2014 call <IC>CameraScreen()</IC> (you'll create this in Step 2)</li>
-                <li><IC>shouldShowRationale</IC> \u2014 the user denied once; show a <IC>Column</IC> centered on screen with an explanation and a <IC>Button</IC> that calls <IC>permission.launchPermissionRequest()</IC></li>
-                <li><IC>else</IC> \u2014 first launch or permanently denied; use <IC>LaunchedEffect(Unit)</IC> to auto-request</li>
+                <li><IC>isGranted</IC> — call <IC>CameraScreen()</IC> (you'll create this in Step 2)</li>
+                <li><IC>shouldShowRationale</IC> — the user denied once; show a <IC>Column</IC> centered on screen with an explanation and a <IC>Button</IC> that calls <IC>permission.launchPermissionRequest()</IC></li>
+                <li><IC>else</IC> — first launch or permanently denied; use <IC>LaunchedEffect(Unit)</IC> to auto-request</li>
               </ul>
-              <Tip>{"shouldShowRationale is Android's signal that the user denied once but can be asked again. If they deny twice, Android permanently blocks the permission \u2014 that also falls into the else branch, which is why the LaunchedEffect becomes a no-op. You'd need to send them to Settings instead."}</Tip>
-              <Section title="\u2705 Check your work \u2014 complete CameraPermissionWrapper.kt" defaultOpen={false}>
-                <CodeB title="Kotlin \u2014 CameraPermissionWrapper.kt" accent={BL}>{`import androidx.compose.foundation.layout.*
+              <Tip>{"shouldShowRationale is Android's signal that the user denied once but can be asked again. If they deny twice, Android permanently blocks the permission — that also falls into the else branch, which is why the LaunchedEffect becomes a no-op. You'd need to send them to Settings instead."}</Tip>
+              <Section title="\u2705 Check your work — complete CameraPermissionWrapper.kt" defaultOpen={false}>
+                <CodeB title="Kotlin — CameraPermissionWrapper.kt" accent={BL}>{`import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
@@ -390,12 +390,12 @@ fun CameraPermissionWrapper() {
             <div>
               <p>Open <IC>ContentView.swift</IC> (the default one Xcode created). Replace its body with a <IC>switch perm.status</IC> block using a <IC>@StateObject private var perm = CameraPermissionManager()</IC>:</p>
               <ul style={{ paddingLeft: 20, margin: "6px 0" }}>
-                <li><IC>.authorized</IC> \u2014 show <IC>CameraView()</IC> (you'll create this in Step 2)</li>
-                <li><IC>.denied</IC> \u2014 show a <IC>VStack</IC> with a message and an "Open Settings" <IC>Button</IC></li>
-                <li><IC>default</IC> \u2014 show <IC>Color.clear</IC> with <IC>.onAppear {"{ perm.requestPermission() }"}</IC></li>
+                <li><IC>.authorized</IC> — show <IC>CameraView()</IC> (you'll create this in Step 2)</li>
+                <li><IC>.denied</IC> — show a <IC>VStack</IC> with a message and an "Open Settings" <IC>Button</IC></li>
+                <li><IC>default</IC> — show <IC>Color.clear</IC> with <IC>.onAppear {"{ perm.requestPermission() }"}</IC></li>
               </ul>
-              <Section title="\u2705 Check your work \u2014 ContentView.swift" defaultOpen={false}>
-                <CodeB title="Swift \u2014 ContentView.swift" accent={GR}>{`import SwiftUI
+              <Section title="\u2705 Check your work — ContentView.swift" defaultOpen={false}>
+                <CodeB title="Swift — ContentView.swift" accent={GR}>{`import SwiftUI
 import AVFoundation
 
 struct ContentView: View {
@@ -429,9 +429,9 @@ struct ContentView: View {
         <VStep num="c" title={isAndroid ? "Wire CameraPermissionWrapper into MainActivity" : "Confirm ContentView is the app entry point"} last>
           {isAndroid ? (
             <div>
-              <p>Open <IC>MainActivity.kt</IC>. Inside <IC>setContent {"{ }"}</IC>, replace the default content with <IC>CameraPermissionWrapper()</IC>. The <IC>CameraScreen()</IC> reference will show a compile error until Step 2 \u2014 that's expected.</p>
-              <Section title="\u2705 Check your work \u2014 MainActivity.kt" defaultOpen={false}>
-                <CodeB title="Kotlin \u2014 MainActivity.kt" accent={BL}>{`import android.os.Bundle
+              <p>Open <IC>MainActivity.kt</IC>. Inside <IC>setContent {"{ }"}</IC>, replace the default content with <IC>CameraPermissionWrapper()</IC>. The <IC>CameraScreen()</IC> reference will show a compile error until Step 2 — that's expected.</p>
+              <Section title="\u2705 Check your work — MainActivity.kt" defaultOpen={false}>
+                <CodeB title="Kotlin — MainActivity.kt" accent={BL}>{`import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.material3.MaterialTheme
@@ -450,9 +450,9 @@ class MainActivity : ComponentActivity() {
             </div>
           ) : (
             <div>
-              <p>Open your <IC>MLScannerApp.swift</IC> (the <IC>@main</IC> struct). Confirm <IC>ContentView()</IC> is already set as the <IC>WindowGroup</IC> body \u2014 Xcode puts it there by default, so no change is needed.</p>
-              <Section title="\u2705 Check your work \u2014 MLScannerApp.swift" defaultOpen={false}>
-                <CodeB title="Swift \u2014 MLScannerApp.swift" accent={GR}>{`import SwiftUI
+              <p>Open your <IC>MLScannerApp.swift</IC> (the <IC>@main</IC> struct). Confirm <IC>ContentView()</IC> is already set as the <IC>WindowGroup</IC> body — Xcode puts it there by default, so no change is needed.</p>
+              <Section title="\u2705 Check your work — MLScannerApp.swift" defaultOpen={false}>
+                <CodeB title="Swift — MLScannerApp.swift" accent={GR}>{`import SwiftUI
 
 @main
 struct MLScannerApp: App {
@@ -467,19 +467,19 @@ struct MLScannerApp: App {
           )}
         </VStep>
 
-        <Checkpoint num={1}>{"Run on a real device. On first launch it requests camera permission. Granting it navigates to CameraScreen/CameraView (shows a build error until Step 2 \u2014 that's fine). Denying shows a recovery path."}</Checkpoint>
+        <Checkpoint num={1}>{"Run on a real device. On first launch it requests camera permission. Granting it navigates to CameraScreen/CameraView (shows a build error until Step 2 — that's fine). Denying shows a recovery path."}</Checkpoint>
       </Step>
 
       <Step num={2} title={"Build the live camera preview (~10 min)"}>
-        <p>{"Get the viewfinder on screen and confirm the live feed works before adding any ML. Build this first \u2014 if the camera isn't showing, nothing else will work."}</p>
-        {isAndroid && <Tip>{"CameraX organizes camera work into use cases bound to the activity lifecycle: Preview (viewfinder), ImageCapture (single photo \u2014 from Week 7), and ImageAnalysis (called for every frame \u2014 new this week). You'll bind Preview + ImageAnalysis together."}</Tip>}
+        <p>{"Get the viewfinder on screen and confirm the live feed works before adding any ML. Build this first — if the camera isn't showing, nothing else will work."}</p>
+        {isAndroid && <Tip>{"CameraX organizes camera work into use cases bound to the activity lifecycle: Preview (viewfinder), ImageCapture (single photo — from Week 7), and ImageAnalysis (called for every frame — new this week). You'll bind Preview + ImageAnalysis together."}</Tip>}
 
         <VStep num="a" title={isAndroid ? "Create CameraPreview.kt with the composable skeleton" : "Create CameraManager.swift"}>
           {isAndroid ? (
             <div>
               <p>Create a new file <IC>CameraPreview.kt</IC>. Add a <IC>@Composable</IC> function <IC>CameraPreview</IC> that takes one parameter: <IC>onFrameAnalyzed: (ImageProxy) -{">"} Unit</IC>. Inside, use <IC>remember {"{ PreviewView(context) }"}</IC> to create the native view, and wrap it in an <IC>AndroidView</IC> that fills the max size. Leave the camera binding for the next sub-step.</p>
-              <Section title="\u2705 Check your work \u2014 CameraPreview.kt (skeleton)" defaultOpen={false}>
-                <CodeB title="Kotlin \u2014 CameraPreview.kt (skeleton)" accent={BL}>{`import androidx.camera.view.PreviewView
+              <Section title="\u2705 Check your work — CameraPreview.kt (skeleton)" defaultOpen={false}>
+                <CodeB title="Kotlin — CameraPreview.kt (skeleton)" accent={BL}>{`import androidx.camera.view.PreviewView
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -505,8 +505,8 @@ fun CameraPreview(onFrameAnalyzed: (ImageProxy) -> Unit) {
           ) : (
             <div>
               <p>Create a new Swift file <IC>CameraManager.swift</IC>. Add a class <IC>CameraManager: NSObject, ObservableObject, AVCaptureVideoDataOutputSampleBufferDelegate</IC>. Give it a <IC>let session = AVCaptureSession()</IC> property and a <IC>var onFrame: ((CMSampleBuffer) -{">"} Void)?</IC> callback. In <IC>init()</IC>: set <IC>session.sessionPreset = .high</IC>, add the back camera as input, add an <IC>AVCaptureVideoDataOutput</IC> with <IC>self</IC> as delegate on a serial queue. Add a <IC>start()</IC> method that calls <IC>session.startRunning()</IC> on a background thread. Implement the delegate's <IC>captureOutput</IC> to call <IC>onFrame?(buffer)</IC>.</p>
-              <Section title="\u2705 Check your work \u2014 CameraManager.swift" defaultOpen={false}>
-                <CodeB title="Swift \u2014 CameraManager.swift" accent={GR}>{`import AVFoundation
+              <Section title="\u2705 Check your work — CameraManager.swift" defaultOpen={false}>
+                <CodeB title="Swift — CameraManager.swift" accent={GR}>{`import AVFoundation
 
 class CameraManager: NSObject, ObservableObject,
     AVCaptureVideoDataOutputSampleBufferDelegate {
@@ -556,8 +556,8 @@ class CameraManager: NSObject, ObservableObject,
                 <li>Build an <IC>ImageAnalysis</IC> use case with <IC>STRATEGY_KEEP_ONLY_LATEST</IC> and attach an analyzer on a single-thread executor that calls <IC>onFrameAnalyzed(imageProxy)</IC></li>
                 <li>Call <IC>bindToLifecycle</IC> with both use cases</li>
               </ol>
-              <Section title="\u2705 Check your work \u2014 complete CameraPreview.kt" defaultOpen={false}>
-                <CodeB title="Kotlin \u2014 CameraPreview.kt (complete)" accent={BL}>{`import androidx.camera.core.*
+              <Section title="\u2705 Check your work — complete CameraPreview.kt" defaultOpen={false}>
+                <CodeB title="Kotlin — CameraPreview.kt (complete)" accent={BL}>{`import androidx.camera.core.*
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.compose.runtime.*
@@ -604,9 +604,9 @@ fun CameraPreview(onFrameAnalyzed: (ImageProxy) -> Unit) {
             </div>
           ) : (
             <div>
-              <p>Create a new file <IC>CameraPreviewView.swift</IC>. Add a struct <IC>CameraPreviewView: UIViewRepresentable</IC> with a <IC>let session: AVCaptureSession</IC> property. SwiftUI can't display an <IC>AVCaptureSession</IC> directly \u2014 this wrapper bridges it to a UIKit view with a preview layer. In <IC>makeUIView</IC>: create a <IC>UIView</IC>, create an <IC>AVCaptureVideoPreviewLayer</IC> with the session, set <IC>videoGravity = .resizeAspectFill</IC>, set <IC>layer.frame = view.bounds</IC>, add it as a sublayer, return the view. Leave <IC>updateUIView</IC> empty.</p>
-              <Section title="\u2705 Check your work \u2014 CameraPreviewView.swift" defaultOpen={false}>
-                <CodeB title="Swift \u2014 CameraPreviewView.swift" accent={GR}>{`import AVFoundation
+              <p>Create a new file <IC>CameraPreviewView.swift</IC>. Add a struct <IC>CameraPreviewView: UIViewRepresentable</IC> with a <IC>let session: AVCaptureSession</IC> property. SwiftUI can't display an <IC>AVCaptureSession</IC> directly — this wrapper bridges it to a UIKit view with a preview layer. In <IC>makeUIView</IC>: create a <IC>UIView</IC>, create an <IC>AVCaptureVideoPreviewLayer</IC> with the session, set <IC>videoGravity = .resizeAspectFill</IC>, set <IC>layer.frame = view.bounds</IC>, add it as a sublayer, return the view. Leave <IC>updateUIView</IC> empty.</p>
+              <Section title="\u2705 Check your work — CameraPreviewView.swift" defaultOpen={false}>
+                <CodeB title="Swift — CameraPreviewView.swift" accent={GR}>{`import AVFoundation
 import SwiftUI
 
 struct CameraPreviewView: UIViewRepresentable {
@@ -632,8 +632,8 @@ struct CameraPreviewView: UIViewRepresentable {
           {isAndroid ? (
             <div>
               <p>Create a new file <IC>CameraScreen.kt</IC>. Add a <IC>@Composable</IC> fun <IC>CameraScreen</IC>. For now: a <IC>Box(Modifier.fillMaxSize())</IC> containing <IC>CameraPreview(onFrameAnalyzed = {"{ it.close() }"})</IC>. Calling <IC>close()</IC> immediately (without analysis) keeps the pipeline running so you can verify the feed before adding ML.</p>
-              <Section title="\u2705 Check your work \u2014 CameraScreen.kt (so far)" defaultOpen={false}>
-                <CodeB title="Kotlin \u2014 CameraScreen.kt" accent={BL}>{`import androidx.compose.foundation.layout.Box
+              <Section title="\u2705 Check your work — CameraScreen.kt (so far)" defaultOpen={false}>
+                <CodeB title="Kotlin — CameraScreen.kt" accent={BL}>{`import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -650,8 +650,8 @@ fun CameraScreen() {
           ) : (
             <div>
               <p>Create a new file <IC>CameraView.swift</IC>. Add a <IC>struct CameraView: View</IC> with a <IC>@StateObject private var cameraManager = CameraManager()</IC>. In the body: wrap <IC>CameraPreviewView(session: cameraManager.session)</IC> in a <IC>ZStack</IC> that ignores safe areas. Call <IC>cameraManager.start()</IC> in <IC>.onAppear</IC>.</p>
-              <Section title="\u2705 Check your work \u2014 CameraView.swift (so far)" defaultOpen={false}>
-                <CodeB title="Swift \u2014 CameraView.swift" accent={GR}>{`import SwiftUI
+              <Section title="\u2705 Check your work — CameraView.swift (so far)" defaultOpen={false}>
+                <CodeB title="Swift — CameraView.swift" accent={GR}>{`import SwiftUI
 
 struct CameraView: View {
     @StateObject private var cameraManager = CameraManager()
@@ -670,7 +670,7 @@ struct CameraView: View {
           )}
         </VStep>
 
-        <Checkpoint num={2}>{"Run on a real device. The live camera feed fills the screen. No labels yet \u2014 just confirm the viewfinder works before plugging in ML."}</Checkpoint>
+        <Checkpoint num={2}>{"Run on a real device. The live camera feed fills the screen. No labels yet — just confirm the viewfinder works before plugging in ML."}</Checkpoint>
       </Step>
 
       <Step num={3} title={"Add real-time image labeling (~15 min)"}>
@@ -1325,9 +1325,9 @@ struct ContentView: View {
           <p><strong>{"Camera preview is black or not showing"}</strong></p>
           <p style={{ marginLeft: 16 }}>{isAndroid ? "Make sure you\u2019re calling bindToLifecycle inside a LaunchedEffect and that the PreviewView surfaceProvider is set before binding." : "Ensure AVCaptureSession.startRunning() is called on a background thread and the preview layer frame matches the view bounds."}</p>
           <p><strong>{"Labels stop updating after a few seconds"}</strong></p>
-          <p style={{ marginLeft: 16 }}>{isAndroid ? "You\u2019re not closing the ImageProxy. Call imageProxy.close() inside addOnCompleteListener \u2014 not addOnSuccessListener. If the proxy isn\u2019t closed, CameraX stops delivering new frames." : "Make sure you create a new VNImageRequestHandler for each frame rather than reusing one instance."}</p>
+          <p style={{ marginLeft: 16 }}>{isAndroid ? "You\u2019re not closing the ImageProxy. Call imageProxy.close() inside addOnCompleteListener — not addOnSuccessListener. If the proxy isn\u2019t closed, CameraX stops delivering new frames." : "Make sure you create a new VNImageRequestHandler for each frame rather than reusing one instance."}</p>
           <p><strong>{"Device gets hot or battery drains fast"}</strong></p>
-          <p style={{ marginLeft: 16 }}>{"Throttle processing to every 250ms (4 fps). You don\u2019t need ML on every frame \u2014 it looks smooth and uses far less power."}</p>
+          <p style={{ marginLeft: 16 }}>{"Throttle processing to every 250ms (4 fps). You don\u2019t need ML on every frame — it looks smooth and uses far less power."}</p>
           <AiOpp>
             <em>{"Use AI to interpret ML results \u2192 "}</em>Ask Claude: <strong>{"\u201CI\u2019m getting these confidence scores from image labeling: [paste your results]. The top result is often wrong. How should I interpret low confidence scores, and what threshold makes sense for a real-time overlay?\u201D"}</strong>
           </AiOpp>
@@ -1336,10 +1336,10 @@ struct ContentView: View {
 
       <Section title={"\uD83D\uDE80 Stretch Features"}>
         <ul style={{ paddingLeft: 20, fontSize: 13, lineHeight: 1.8 }}>
-          <li>{"Freeze frame \u2014 tap the preview to pause and lock the current label"}</li>
-          <li>{isAndroid ? "Bounding boxes \u2014 switch from ML Kit Image Labeling to Object Detection for per-object rectangles" : "Bounding boxes \u2014 use VNDetectRectanglesRequest alongside classification"}</li>
-          <li>{isAndroid ? "Barcode mode \u2014 add a third scan mode using ML Kit BarcodeScanning" : "QR code mode \u2014 add VNDetectBarcodesRequest as a third scan mode"}</li>
-          <li>{"Confidence threshold slider \u2014 let users filter out labels below a chosen confidence %"}</li>
+          <li>{"Freeze frame — tap the preview to pause and lock the current label"}</li>
+          <li>{isAndroid ? "Bounding boxes — switch from ML Kit Image Labeling to Object Detection for per-object rectangles" : "Bounding boxes — use VNDetectRectanglesRequest alongside classification"}</li>
+          <li>{isAndroid ? "Barcode mode — add a third scan mode using ML Kit BarcodeScanning" : "QR code mode — add VNDetectBarcodesRequest as a third scan mode"}</li>
+          <li>{"Confidence threshold slider — let users filter out labels below a chosen confidence %"}</li>
         </ul>
       </Section>
     </div>
@@ -1351,9 +1351,9 @@ function LabSession2({ platform }) {
   var isAndroid = platform === "Android";
   return (
     <div style={{ '--platform-accent': platform === "Android" ? BL : GR } as React.CSSProperties}>
-      <h2 style={{ fontSize: 18, fontWeight: 600, margin: "0 0 4px" }}>Unit 8 Lab \u2014 Session 2: Add the Gallery Analyzer</h2>
+      <h2 style={{ fontSize: 18, fontWeight: 600, margin: "0 0 4px" }}>Unit 8 Lab — Session 2: Add the Gallery Analyzer</h2>
       <p style={{ fontSize: 13, color: "var(--color-text-secondary)", margin: "0 0 8px" }}>
-        {"Open your MLScanner project from Session 1. Today you\u2019ll fill in the Gallery tab \u2014 pick a photo, run on-device generative AI, verify it works offline, then compare it to the cloud result from Week 7."}
+        {"Open your MLScanner project from Session 1. Today you\u2019ll fill in the Gallery tab — pick a photo, run on-device generative AI, verify it works offline, then compare it to the cloud result from Week 7."}
       </p>
       <div style={{ background: "var(--color-background-secondary)", borderRadius: 8, padding: "10px 14px", fontSize: 12, marginBottom: 14, lineHeight: 1.6 }}>
         <strong>{"Two-session arc:"}</strong>
@@ -1369,8 +1369,8 @@ function LabSession2({ platform }) {
 
       <Warn>
         {isAndroid
-          ? "Gemini Nano requires a Pixel 8 or newer. If your device isn\u2019t supported, follow the fallback note in Step 3 \u2014 you\u2019ll display ML Kit labels directly. The architecture lesson is identical."
-          : "Foundation Models requires iPhone 15 Pro or newer running iOS 26+ with Apple Intelligence enabled. If your device isn\u2019t supported, follow the Vision-only fallback in Step 3 \u2014 the architecture lesson is identical."
+          ? "Gemini Nano requires a Pixel 8 or newer. If your device isn\u2019t supported, follow the fallback note in Step 3 — you\u2019ll display ML Kit labels directly. The architecture lesson is identical."
+          : "Foundation Models requires iPhone 15 Pro or newer running iOS 26+ with Apple Intelligence enabled. If your device isn\u2019t supported, follow the Vision-only fallback in Step 3 — the architecture lesson is identical."
         }
       </Warn>
 
@@ -1391,7 +1391,7 @@ function LabSession2({ platform }) {
       <Step num={0} title={"Open MLScanner and check your Session 1 state (~3 min)"}>
         <p>Open the project from Session 1. Confirm:</p>
         <ul style={{ paddingLeft: 20, margin: "6px 0" }}>
-          <li>{"The Scanner tab works \u2014 camera feed, labels, OCR mode toggle"}</li>
+          <li>{"The Scanner tab works — camera feed, labels, OCR mode toggle"}</li>
           <li>{"The Gallery tab exists with a placeholder screen"}</li>
           <li>{"Navigation between the two tabs works"}</li>
         </ul>
@@ -1422,9 +1422,9 @@ function LabSession2({ platform }) {
           })}
         </div>
         {isAndroid ? (
-          <CodeB title="build.gradle.kts \u2014 add AI Core (if not already present)" accent={BL}>{`implementation("com.google.ai.edge.aicore:aicore:0.0.1-exp01")`}</CodeB>
+          <CodeB title="build.gradle.kts — add AI Core (if not already present)" accent={BL}>{`implementation("com.google.ai.edge.aicore:aicore:0.0.1-exp01")`}</CodeB>
         ) : (
-          <Tip>{"No third-party dependencies needed. Add import FoundationModels alongside import Vision in your ViewModel \u2014 both are built into the iOS SDK."}</Tip>
+          <Tip>{"No third-party dependencies needed. Add import FoundationModels alongside import Vision in your ViewModel — both are built into the iOS SDK."}</Tip>
         )}
         <Checkpoint num={1}>You understand the on-device model\u2019s capabilities and limits compared to the cloud model from Week 7.</Checkpoint>
       </Step>
@@ -1861,7 +1861,7 @@ if case .available = model.availability {
           {isAndroid ? (
             <div>
               <p>Update <IC>analyzeOnDevice()</IC>. Instead of just showing the raw labels, feed them into a prompt for Gemini Nano. Add a fallback mechanism in case the device doesn't support Nano.</p>
-              <Tip>{"Notice the fallback: if the generative model isn\u2019t available, we still show the ML labels. Real-world apps must always have a graceful degradation path \u2014 never assume a specific device capability."}</Tip>
+              <Tip>{"Notice the fallback: if the generative model isn\u2019t available, we still show the ML labels. Real-world apps must always have a graceful degradation path — never assume a specific device capability."}</Tip>
               <Section title="✅ Check your work — complete GalleryViewModel.kt" defaultOpen={false}>
                 <CodeB title="Kotlin — GalleryViewModel.kt" accent={BL}>{`import android.content.Context
 import android.graphics.Bitmap
@@ -1945,7 +1945,7 @@ class GalleryViewModel : ViewModel() {
           ) : (
             <div>
               <p>Update <IC>analyzeOnDevice()</IC>. Instead of showing raw labels, check if the <IC>SystemLanguageModel</IC> is available. If it is, use a <IC>LanguageModelSession</IC> to generate a natural description from the labels. If not, fallback to a bulleted list.</p>
-              <Tip>{"Notice the fallback: if the Foundation Model isn\u2019t available, we still show the Vision labels. Real-world apps must always have a graceful degradation path \u2014 never assume a specific device capability."}</Tip>
+              <Tip>{"Notice the fallback: if the Foundation Model isn\u2019t available, we still show the Vision labels. Real-world apps must always have a graceful degradation path — never assume a specific device capability."}</Tip>
               <Section title="✅ Check your work — complete GalleryViewModel.swift" defaultOpen={false}>
                 <CodeB title="Swift — GalleryViewModel.swift" accent={GR}>{`import SwiftUI
 import PhotosUI
@@ -2040,11 +2040,11 @@ class GalleryViewModel: ObservableObject {
       </Step>
 
       <Step num={5} title={"Reflect (~5 min)"}>
-        <CodeB title="Session 2 Reflection">{`// 1. Which result was higher quality \u2014 on-device or cloud?
+        <CodeB title="Session 2 Reflection">{`// 1. Which result was higher quality — on-device or cloud?
 //    In what real-world scenario would you prefer the
 //    lower-quality result anyway?
 
-// 2. Your capstone app \u2014 should it use on-device AI,
+// 2. Your capstone app — should it use on-device AI,
 //    cloud AI, or both? What drove that decision?
 
 // 3. What does "privacy-preserving AI" mean, and why might
@@ -2059,9 +2059,9 @@ class GalleryViewModel: ObservableObject {
       <Section title={"\uD83D\uDCA1 Hints"}>
         <div style={{ fontSize: 13, lineHeight: 1.8 }}>
           <p><strong>{isAndroid ? "Gemini Nano throws UnsupportedOperationException" : "Foundation Models returns unavailable"}</strong></p>
-          <p style={{ marginLeft: 16 }}>{isAndroid ? "Your device doesn\u2019t support Gemini Nano. Display the ML Kit label results directly \u2014 the two-stage architecture is identical, you just skip Stage 2. The learning is the same." : "Your device doesn\u2019t support Foundation Models. Show the Vision classification labels formatted as a list \u2014 the two-stage architecture is identical, you just skip Stage 2."}</p>
+          <p style={{ marginLeft: 16 }}>{isAndroid ? "Your device doesn\u2019t support Gemini Nano. Display the ML Kit label results directly — the two-stage architecture is identical, you just skip Stage 2. The learning is the same." : "Your device doesn\u2019t support Foundation Models. Show the Vision classification labels formatted as a list — the two-stage architecture is identical, you just skip Stage 2."}</p>
           <p><strong>{"Photo picker crashes or shows nothing"}</strong></p>
-          <p style={{ marginLeft: 16 }}>{isAndroid ? "PickVisualMedia uses the system photo picker and does not require storage permissions. If the picker shows no photos, check that your emulator has images in its gallery \u2014 drag and drop a JPEG onto the running emulator to add one." : "Confirm NSPhotoLibraryUsageDescription is in Info.plist. PhotosPicker handles permission automatically on iOS 16+."}</p>
+          <p style={{ marginLeft: 16 }}>{isAndroid ? "PickVisualMedia uses the system photo picker and does not require storage permissions. If the picker shows no photos, check that your emulator has images in its gallery — drag and drop a JPEG onto the running emulator to add one." : "Confirm NSPhotoLibraryUsageDescription is in Info.plist. PhotosPicker handles permission automatically on iOS 16+."}</p>
           <p><strong>{"Analysis is slow on first tap"}</strong></p>
           <p style={{ marginLeft: 16 }}>{"The model loads from storage into memory on first use. Subsequent calls will be much faster. Always run inference on a background thread."}</p>
         </div>
@@ -2113,7 +2113,7 @@ function CapstoneTab({ platform, setPlatform }) {
       <div style={{ background: CAP_BG, padding: "14px", borderRadius: 10, marginBottom: 16 }}>
         <h3 style={{ fontSize: 16, fontWeight: 600, margin: "0 0 6px", color: CAP_C }}>{"\uD83C\uDFD7\uFE0F Capstone M3: Mid-Point Check-In"}</h3>
         <p style={{ fontSize: 13, lineHeight: 1.6, margin: 0, color: CAP_C }}>
-          {"No submission required. Your instructor checks in with your team for 10 minutes during Session 2 lab time. App should be runnable \u2014 not polished, but working."}
+          {"No submission required. Your instructor checks in with your team for 10 minutes during Session 2 lab time. App should be runnable — not polished, but working."}
         </p>
       </div>
 
@@ -2125,16 +2125,16 @@ function CapstoneTab({ platform, setPlatform }) {
         <h4 style={{ fontSize: 14, fontWeight: 600, marginTop: 16 }}>{"\u2705 What to have ready for the check-in"}</h4>
         <ul style={{ paddingLeft: 20, lineHeight: 2 }}>
           <li>{"\u2610 App runs on "}{isAndroid ? "a device or emulator" : "the Simulator or a device"}{" without crashing on launch"}</li>
-          <li>{"\u2610 "}<strong>Core navigation</strong>{" working \u2014 you can move between main screens"}</li>
+          <li>{"\u2610 "}<strong>Core navigation</strong>{" working — you can move between main screens"}</li>
           <li>{"\u2610 At least "}<strong>one real network call</strong>{" working end-to-end (not mocked)"}</li>
-          <li>{"\u2610 "}<strong>Local persistence</strong>{" in place \u2014 data survives an app restart"}</li>
+          <li>{"\u2610 "}<strong>Local persistence</strong>{" in place — data survives an app restart"}</li>
           <li>{"\u2610 Every team member has "}<strong>meaningful commits</strong>{" on the main branch"}</li>
           <li>{"\u2610 A clear list of what\u2019s still left to build"}</li>
         </ul>
 
         <h4 style={{ fontSize: 14, fontWeight: 600, marginTop: 16 }}>{"\uD83C\uDFAF What the 10-minute check-in looks like"}</h4>
         <ol style={{ paddingLeft: 20, lineHeight: 2 }}>
-          <li>{"Demo your current state (2 min) \u2014 just show what\u2019s working, no polish needed"}</li>
+          <li>{"Demo your current state (2 min) — just show what\u2019s working, no polish needed"}</li>
           <li>{"Walk through your remaining feature list (2 min)"}</li>
           <li>{"Surface blockers and get advice (4 min)"}</li>
           <li>{"Confirm the plan for Week 9 and M4 (2 min)"}</li>
@@ -2143,7 +2143,7 @@ function CapstoneTab({ platform, setPlatform }) {
         <Warn>{"Have your app running on a device or emulator before the check-in starts. Don\u2019t spend your 10 minutes waiting for a build."}</Warn>
 
         <h4 style={{ fontSize: 14, fontWeight: 600, marginTop: 16 }}>{"\uD83D\uDEA8 If you\u2019re behind"}</h4>
-        <p>{"The check-in is the right moment to surface problems \u2014 not hide them. If core navigation or networking isn\u2019t working yet, say so. Your instructor can help you scope down or unblock. Staying quiet now will make Week 9 much harder."}</p>
+        <p>{"The check-in is the right moment to surface problems — not hide them. If core navigation or networking isn\u2019t working yet, say so. Your instructor can help you scope down or unblock. Staying quiet now will make Week 9 much harder."}</p>
 
         <AiOpp>
           <em>{"Use AI to scope what\u2019s left \u2192 "}</em>Ask Claude: <strong>{"\u201COur capstone has these features still to build: [list]. We have 2 weeks left, 3 people, and classes twice a week. Which features are highest priority for a good demo? What\u2019s safe to cut if we run out of time?\u201D"}</strong>
@@ -2154,11 +2154,11 @@ function CapstoneTab({ platform, setPlatform }) {
           <ul style={{ paddingLeft: 20, margin: "6px 0 0", lineHeight: 2 }}>
             <li style={{ opacity: 0.5 }}>{"Week 5: Team formation + platform selection \u2705"}</li>
             <li style={{ opacity: 0.5 }}>{"Week 6: Proposal due \u2705"}</li>
-            <li style={{ opacity: 0.5 }}>{"Week 7: M1 \u2014 Repo setup, architecture scaffolded \u2705"}</li>
-            <li style={{ opacity: 0.5 }}>{"Week 7: M2 \u2014 Core navigation + networking \u2705"}</li>
-            <li><strong>{"Week 8 (this week):"}</strong>{" M3 \u2014 Instructor check-in during Session 2 lab"}</li>
-            <li><strong>{"Week 9:"}</strong>{" M4 \u2014 Feature-complete, Git branching workflow in place"}</li>
-            <li><strong>{"Week 10:"}</strong>{" Final \u2014 APK/TestFlight, demo day, written reflection"}</li>
+            <li style={{ opacity: 0.5 }}>{"Week 7: M1 — Repo setup, architecture scaffolded \u2705"}</li>
+            <li style={{ opacity: 0.5 }}>{"Week 7: M2 — Core navigation + networking \u2705"}</li>
+            <li><strong>{"Week 8 (this week):"}</strong>{" M3 — Instructor check-in during Session 2 lab"}</li>
+            <li><strong>{"Week 9:"}</strong>{" M4 — Feature-complete, Git branching workflow in place"}</li>
+            <li><strong>{"Week 10:"}</strong>{" Final — APK/TestFlight, demo day, written reflection"}</li>
           </ul>
         </div>
 
@@ -2191,20 +2191,20 @@ function ResourcesTab({ platform, setPlatform }) {
 
         {isAndroid ? (
           <div>
-            <h4 style={{ fontSize: 14, fontWeight: 600, marginTop: 16 }}>{"\uD83E\uDD16 Android \u2014 ML Kit"}</h4>
+            <h4 style={{ fontSize: 14, fontWeight: 600, marginTop: 16 }}>{"\uD83E\uDD16 Android — ML Kit"}</h4>
             <ul style={{ paddingLeft: 20 }}>
-              <li><Link>ML Kit Image Labeling</Link>{" \u2014 on-device object recognition"}</li>
-              <li><Link>ML Kit Text Recognition v2 (OCR)</Link>{" \u2014 read printed text"}</li>
-              <li><Link>ML Kit Object Detection</Link>{" \u2014 bounding boxes (stretch)"}</li>
-              <li><Link>ML Kit Barcode Scanning</Link>{" \u2014 QR codes (stretch)"}</li>
+              <li><Link>ML Kit Image Labeling</Link>{" — on-device object recognition"}</li>
+              <li><Link>ML Kit Text Recognition v2 (OCR)</Link>{" — read printed text"}</li>
+              <li><Link>ML Kit Object Detection</Link>{" — bounding boxes (stretch)"}</li>
+              <li><Link>ML Kit Barcode Scanning</Link>{" — QR codes (stretch)"}</li>
             </ul>
-            <h4 style={{ fontSize: 14, fontWeight: 600, marginTop: 16 }}>{"\uD83D\uDCF7 Android \u2014 CameraX"}</h4>
+            <h4 style={{ fontSize: 14, fontWeight: 600, marginTop: 16 }}>{"\uD83D\uDCF7 Android — CameraX"}</h4>
             <ul style={{ paddingLeft: 20 }}>
-              <li><Link>CameraX overview</Link>{" \u2014 lifecycle-aware camera API"}</li>
-              <li><Link>ImageAnalysis use case</Link>{" \u2014 frame-by-frame analysis"}</li>
+              <li><Link>CameraX overview</Link>{" — lifecycle-aware camera API"}</li>
+              <li><Link>ImageAnalysis use case</Link>{" — frame-by-frame analysis"}</li>
               <li><Link>CameraX with Jetpack Compose</Link></li>
             </ul>
-            <h4 style={{ fontSize: 14, fontWeight: 600, marginTop: 16 }}>{"\u26A1 Android \u2014 Gemini Nano / AI Core"}</h4>
+            <h4 style={{ fontSize: 14, fontWeight: 600, marginTop: 16 }}>{"\u26A1 Android — Gemini Nano / AI Core"}</h4>
             <ul style={{ paddingLeft: 20 }}>
               <li><Link>Android AI Core overview</Link></li>
               <li><Link>Gemini Nano on-device API reference</Link></li>
@@ -2230,25 +2230,25 @@ implementation("com.google.ai.edge.aicore:aicore:0.0.1-exp01")`}</CodeB>
           </div>
         ) : (
           <div>
-            <h4 style={{ fontSize: 14, fontWeight: 600, marginTop: 16 }}>{"\uD83C\uDF4E iOS \u2014 Vision Framework"}</h4>
+            <h4 style={{ fontSize: 14, fontWeight: 600, marginTop: 16 }}>{"\uD83C\uDF4E iOS — Vision Framework"}</h4>
             <ul style={{ paddingLeft: 20 }}>
-              <li><Link>VNClassifyImageRequest</Link>{" \u2014 classify image content"}</li>
-              <li><Link>VNRecognizeTextRequest</Link>{" \u2014 OCR on images or live frames"}</li>
-              <li><Link>VNDetectRectanglesRequest</Link>{" \u2014 document scanning (stretch)"}</li>
+              <li><Link>VNClassifyImageRequest</Link>{" — classify image content"}</li>
+              <li><Link>VNRecognizeTextRequest</Link>{" — OCR on images or live frames"}</li>
+              <li><Link>VNDetectRectanglesRequest</Link>{" — document scanning (stretch)"}</li>
               <li><Link>Performing Vision requests on video frames</Link></li>
             </ul>
-            <h4 style={{ fontSize: 14, fontWeight: 600, marginTop: 16 }}>{"\uD83D\uDCF7 iOS \u2014 AVFoundation / Camera"}</h4>
+            <h4 style={{ fontSize: 14, fontWeight: 600, marginTop: 16 }}>{"\uD83D\uDCF7 iOS — AVFoundation / Camera"}</h4>
             <ul style={{ paddingLeft: 20 }}>
               <li><Link>AVCaptureSession overview</Link></li>
-              <li><Link>AVCaptureVideoDataOutput</Link>{" \u2014 access live video frames"}</li>
+              <li><Link>AVCaptureVideoDataOutput</Link>{" — access live video frames"}</li>
               <li><Link>Using AVFoundation in SwiftUI apps</Link></li>
             </ul>
-            <h4 style={{ fontSize: 14, fontWeight: 600, marginTop: 16 }}>{"\u26A1 iOS \u2014 Apple Intelligence"}</h4>
+            <h4 style={{ fontSize: 14, fontWeight: 600, marginTop: 16 }}>{"\u26A1 iOS — Apple Intelligence"}</h4>
             <ul style={{ paddingLeft: 20 }}>
               <li><Link>Apple Intelligence overview (WWDC 2024)</Link></li>
-              <li><Link>Writing Tools API \u2014 UIWritingToolsCoordinator</Link></li>
-              <li><Link>Core ML overview</Link>{" \u2014 run bundled custom models"}</li>
-              <li><Link>Create ML</Link>{" \u2014 train simple custom models (stretch)"}</li>
+              <li><Link>Writing Tools API — UIWritingToolsCoordinator</Link></li>
+              <li><Link>Core ML overview</Link>{" — run bundled custom models"}</li>
+              <li><Link>Create ML</Link>{" — train simple custom models (stretch)"}</li>
               <li><Link>Supported devices for Apple Intelligence</Link></li>
             </ul>
           </div>
@@ -2256,7 +2256,7 @@ implementation("com.google.ai.edge.aicore:aicore:0.0.1-exp01")`}</CodeB>
 
         <h4 style={{ fontSize: 14, fontWeight: 600, marginTop: 16 }}>{"\uD83E\uDDE0 Further Reading"}</h4>
         <ul style={{ paddingLeft: 20 }}>
-          <li><Link>{"On-device AI vs cloud AI \u2014 when to use each (a16z)"}</Link></li>
+          <li><Link>{"On-device AI vs cloud AI — when to use each (a16z)"}</Link></li>
           <li><Link>{"Privacy implications of on-device machine learning"}</Link></li>
           <li><Link>{"Edge AI in mobile: 2024 landscape"}</Link></li>
         </ul>
