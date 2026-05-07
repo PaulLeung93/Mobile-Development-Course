@@ -770,9 +770,22 @@ const LabSession2MonsterSlayer = ({ platform }: { platform: string }) => (
 
     <div style={{ marginTop: 20 }}>
       <VStep num={0} title="Open the starter project (~3 min)">
-        <p style={{ fontSize: 13, color: "var(--color-text-secondary)", margin: "0 0 8px" }}>Clone the <a href="https://github.com/PaulLeung93/MonsterSlayer-Starter" style={{ color: "var(--color-text-info)" }}>MonsterSlayer starter project</a>. Run it — you should see a dark screen with a monster sprite, a hardcoded HP display, and an attack button. Nothing reacts yet.</p>
+        <p style={{ fontSize: 13, color: "var(--color-text-secondary)", margin: "0 0 8px" }}>Clone the <a href="https://github.com/PaulLeung93/MonsterSlayer-Starter" style={{ color: "var(--color-text-info)" }}>MonsterSlayer starter project</a>, then open it in your IDE:</p>
+        {platform === "Android" ? (
+          <ul style={{ paddingLeft: 20, margin: "4px 0 8px", fontSize: 13, lineHeight: 1.9, color: "var(--color-text-secondary)" }}>
+            <li>Open the cloned folder in <strong>Android Studio</strong> — it will prompt you to sync Gradle; let it finish before running</li>
+            <li>Your instructor will point you to the main Composable file — that is where you will work today</li>
+            <li>Your emulator is already configured from Session 1 — press <strong>Run ▶</strong></li>
+          </ul>
+        ) : (
+          <ul style={{ paddingLeft: 20, margin: "4px 0 8px", fontSize: 13, lineHeight: 1.9, color: "var(--color-text-secondary)" }}>
+            <li>Open <strong>MonsterSlayer.xcodeproj</strong> (or <strong>.xcworkspace</strong> if present) in <strong>Xcode</strong></li>
+            <li>Your instructor will point you to the main View file — that is where you will work today</li>
+            <li>Your simulator is already configured from Session 1 — press <strong>Run ▶</strong></li>
+          </ul>
+        )}
         <Checkbox>Starter project runs on your simulator without errors</Checkbox>
-        <Checkpoint num={0}>Monster is on screen. It is judging you. The button does nothing.</Checkpoint>
+        <Checkpoint num={0}>Monster sprite is visible. HP shows 20/20. Attack button is on screen. Tapping it does nothing.</Checkpoint>
       </VStep>
 
       <VStep num={1} title="Wire up the attack button (~5 min)">
@@ -787,24 +800,25 @@ Button(onClick = {
     println("HP is now: $monsterHp")  // check Logcat
 }) { ... }`}</CodeB>
         ) : (
-          <CodeB title="Swift — inside your View struct body" accent={GR}>{`// Add this at the top of your body — a plain variable, no state yet
+          <CodeB title="Swift — add as a stored property on the struct (outside body)" accent={GR}>{`// Add this as a stored property on the struct — a plain variable, no state yet
 var monsterHp = 20
 
-// Wire up the button:
+// Wire up the button action:
 Button(action: {
     monsterHp -= 1
     print("HP is now: \\(monsterHp)")  // check the console
 }) { ... }`}</CodeB>
         )}
         <Checkpoint num={1}>Tap the button several times. Check the console — HP is changing. But the number on screen stays at 20. Sound familiar?</Checkpoint>
-        <Tip>This is the same problem from the lecture. The button works — the tap is registered — but without state, the UI has no reason to redraw.</Tip>
+        <Tip>This is the same problem from the lecture. The button works — the tap is registered — but without state, the UI has no reason to redraw. Before moving on: write down in one sentence why you think the screen is not updating. You will need this for the reflection.</Tip>
       </VStep>
 
       <VStep num={2} title="Add state to make it react (~8 min)">
         <p style={{ fontSize: 13, color: "var(--color-text-secondary)", margin: "0 0 8px" }}>Now fix it. Replace your plain variable with a state variable and watch the screen come alive.</p>
         {platform === "Android" ? (
           <>
-            <p style={{ fontSize: 13, margin: "0 0 6px" }}>Replace your plain <IC>var monsterHp = 20</IC> with:</p>
+            <Note>Android Studio should auto-import <IC>remember</IC> and <IC>mutableStateOf</IC> — if you see a red underline, press <strong>Alt+Enter</strong> to accept the import.</Note>
+            <p style={{ fontSize: 13, margin: "6px 0 6px" }}>Replace your plain <IC>var monsterHp = 20</IC> with state variables. You can also remove the <IC>println</IC> from Step 1 — you no longer need it:</p>
             <CodeB title="Kotlin" accent={BL}>{`var monsterHp by remember { mutableStateOf(20) }
 var attackCount by remember { mutableStateOf(0) }`}</CodeB>
             <p style={{ fontSize: 13, margin: "6px 0" }}>Update the button and the HP display:</p>
@@ -821,20 +835,20 @@ onClick = {
           </>
         ) : (
           <>
-            <p style={{ fontSize: 13, margin: "0 0 6px" }}>Replace your plain <IC>var monsterHp = 20</IC> with:</p>
+            <p style={{ fontSize: 13, margin: "0 0 6px" }}>Replace your plain <IC>var monsterHp = 20</IC> with <IC>@State</IC> properties. You can also remove the <IC>print</IC> from Step 1 — you no longer need it:</p>
             <CodeB title="Swift" accent={GR}>{`@State private var monsterHp = 20
 @State private var attackCount = 0`}</CodeB>
             <p style={{ fontSize: 13, margin: "6px 0" }}>Update the button and the HP display:</p>
             <CodeB title="Swift" accent={GR}>{`// Replace the hardcoded HP text:
 Text("HP: \\(monsterHp) / 20")
 
-// Update action — guard against going below zero:
-action: {
+// Update the Button action — guard against going below zero:
+Button(action: {
     if monsterHp > 0 {
         monsterHp -= 1
         attackCount += 1
     }
-}`}</CodeB>
+}) { /* keep your existing label */ }`}</CodeB>
           </>
         )}
         <Checkpoint num={2}>Attack the monster. HP counts down on screen. It still looks smug — we fix that next.</Checkpoint>
@@ -844,10 +858,11 @@ action: {
       </VStep>
 
       <VStep num={3} title="Add the Monster's Taunts — the monster reacts (~10 min)">
-        <p style={{ fontSize: 13, color: "var(--color-text-secondary)", margin: "0 0 8px" }}>As HP drops, the monster changes its dialogue. The starter code includes a <IC>getMonsterTaunt(hp)</IC> helper function that currently always returns identical text. Fill it in using a <IC>when</IC> / <IC>switch</IC> pattern to return different taunts based on the current HP.</p>
+        <p style={{ fontSize: 13, color: "var(--color-text-secondary)", margin: "0 0 8px" }}>As HP drops, the monster changes its dialogue. The starter code includes a <IC>getMonsterTaunt(hp)</IC> {platform === "Android" ? "helper function" : "computed property"} that currently always returns identical text. Fill it in using a <IC>{platform === "Android" ? "when" : "switch"}</IC> pattern to return different taunts based on the current HP.</p>
+        <Note><IC>{platform === "Android" ? "when" : "switch"}</IC> {platform === "Android" ? "in Kotlin" : "in Swift"} is a cleaner <IC>if / else if</IC> chain — each condition is checked in order and the first matching branch runs.</Note>
         {platform === "Android" ? (
           <>
-            <p style={{ fontSize: 13, margin: "0 0 6px" }}><strong>Step 3a:</strong> Update the <IC>getMonsterTaunt</IC> function <strong>outside</strong> your Composable:</p>
+            <p style={{ fontSize: 13, margin: "8px 0 6px" }}><strong>Step 3a — Fill in the taunts.</strong> Update the <IC>getMonsterTaunt</IC> function <strong>outside</strong> your Composable:</p>
             <CodeB title="Kotlin" accent={BL}>{`fun getMonsterTaunt(hp: Int): String = when {
     hp > 14 -> "I will crush you, tiny human!"
     hp > 9  -> "You dare wound me?!"
@@ -855,15 +870,20 @@ action: {
     hp > 0  -> "Please... have mercy..."
     else    -> "You... you beat me..."
 }`}</CodeB>
-            <p style={{ fontSize: 13, margin: "6px 0" }}><strong>Step 3b:</strong> The starter code provides animation state variables. Trigger the animations when attacked:</p>
-            <CodeB title="Kotlin" accent={BL}>{`// Inside your Button onClick, add:
-isHeroAttacking = true
-isMonsterHurt = true`}</CodeB>
-            <p style={{ fontSize: 13, margin: "6px 0" }}>Because the <IC>Sprite</IC> components are connected to these variables, they will automatically flash the attack and hurt animations.</p>
+            <p style={{ fontSize: 13, margin: "6px 0 6px" }}><strong>Step 3b — Trigger the attack animation.</strong> Update your Button's <IC>onClick</IC> to include the animation flags. They must go <em>inside</em> the <IC>if (monsterHp {">"} 0)</IC> guard so the animation only plays when an attack actually lands. The starter resets these to <IC>false</IC> automatically after each animation plays:</p>
+            <CodeB title="Kotlin — full onClick block" accent={BL}>{`onClick = {
+    if (monsterHp > 0) {
+        monsterHp -= 1
+        attackCount += 1
+        isHeroAttacking = true
+        isMonsterHurt = true
+    }
+}`}</CodeB>
+            <p style={{ fontSize: 13, margin: "6px 0 6px" }}><strong>Step 3c — Verify the taunts.</strong> Find the <IC>Text</IC> in the starter that displays the taunt — it calls <IC>getMonsterTaunt(monsterHp)</IC>. Run the app, tap past each HP threshold, and confirm the taunt changes.</p>
           </>
         ) : (
           <>
-            <p style={{ fontSize: 13, margin: "0 0 6px" }}><strong>Step 3a:</strong> Update the <IC>monsterTaunt</IC> computed property <strong>inside</strong> your View struct:</p>
+            <p style={{ fontSize: 13, margin: "8px 0 6px" }}><strong>Step 3a — Fill in the taunts.</strong> Update the <IC>monsterTaunt</IC> computed property <strong>inside</strong> your View struct:</p>
             <CodeB title="Swift" accent={GR}>{`var monsterTaunt: String {
     switch monsterHp {
     case 15...20: return "I will crush you, tiny human!"
@@ -873,11 +893,16 @@ isMonsterHurt = true`}</CodeB>
     default:      return "You... you beat me..."
     }
 }`}</CodeB>
-            <p style={{ fontSize: 13, margin: "6px 0" }}><strong>Step 3b:</strong> The starter code provides animation state variables. Trigger the animations when attacked:</p>
-            <CodeB title="Swift" accent={GR}>{`// Inside your Button action, add:
-isHeroAttacking = true
-isMonsterHurt = true`}</CodeB>
-            <p style={{ fontSize: 13, margin: "6px 0" }}>The <IC>SpriteView</IC> components will now automatically play their animations.</p>
+            <p style={{ fontSize: 13, margin: "6px 0 6px" }}><strong>Step 3b — Trigger the attack animation.</strong> Update your Button's <IC>action</IC> to include the animation flags. They must go <em>inside</em> the <IC>if monsterHp {">"} 0</IC> guard so the animation only plays when an attack actually lands. The starter resets these to <IC>false</IC> automatically after each animation plays:</p>
+            <CodeB title="Swift — full Button action" accent={GR}>{`Button(action: {
+    if monsterHp > 0 {
+        monsterHp -= 1
+        attackCount += 1
+        isHeroAttacking = true
+        isMonsterHurt = true
+    }
+}) { /* keep your existing label */ }`}</CodeB>
+            <p style={{ fontSize: 13, margin: "6px 0 6px" }}><strong>Step 3c — Verify the taunts.</strong> Find the <IC>Text</IC> in the starter that displays the taunt — it reads <IC>monsterTaunt</IC>. Run the app, tap past each HP threshold, and confirm the taunt changes.</p>
           </>
         )}
         <Checkpoint num={3}>Attack the monster past each threshold. Watch its expression and taunts shift in real time — all driven by state variables.</Checkpoint>
@@ -887,7 +912,7 @@ isMonsterHurt = true`}</CodeB>
       </VStep>
 
       <VStep num={4} title="Display the attack count (~5 min)">
-        <p style={{ fontSize: 13, color: "var(--color-text-secondary)", margin: "0 0 8px" }}>Show how many attacks the player has landed. This is your second independent state variable — changing it has no effect on HP and vice versa.</p>
+        <p style={{ fontSize: 13, color: "var(--color-text-secondary)", margin: "0 0 8px" }}>Show how many attacks the player has landed. This is your second independent state variable — changing it has no effect on HP and vice versa. If both used the same variable, resetting HP in Step 5 would also zero out the attack count. Two variables, two independent slices of truth.</p>
         {platform === "Android" ? (
           <CodeB title="Kotlin — add below your HP text" accent={BL}>{`Text(
     text = "Attacks landed: \$attackCount",
@@ -903,13 +928,27 @@ isMonsterHurt = true`}</CodeB>
       </VStep>
 
       <VStep num={5} title="Conditional UI — Defeat the Monster and Reset (~10 min)">
-        <p style={{ fontSize: 13, color: "var(--color-text-secondary)", margin: "0 0 8px" }}>When the monster's HP reaches 0, the attack button should disappear and a "Battle Again" button should replace it. This is conditional UI — rendering entirely different components based on state.</p>
-        <p style={{ fontSize: 13, color: "var(--color-text-secondary)", margin: "0 0 8px" }}>Find the <IC>Button</IC> code in your file. Wrap it in an <IC>if (!isDefeated)</IC> condition, and add the reset button in the <IC>else</IC> block.</p>
+        <p style={{ fontSize: 13, color: "var(--color-text-secondary)", margin: "0 0 8px" }}>Conditional UI means rendering entirely different components based on state — an <IC>if / else</IC> block inside your layout is re-evaluated every time state changes. When HP hits 0, the Attack button disappears and a "Battle Again" button takes its place.</p>
+        <p style={{ fontSize: 13, color: "var(--color-text-secondary)", margin: "0 0 8px" }}>Find the <IC>Button</IC> code in your file and wrap it:</p>
+        <ol style={{ paddingLeft: 20, margin: "4px 0 8px", fontSize: 13, lineHeight: 1.9, color: "var(--color-text-secondary)" }}>
+          <li>Surround the existing attack <IC>Button</IC> with <IC>if (monsterHp {">"} 0) {"{"} ... {"}"}</IC></li>
+          <li>Add an <IC>else</IC> block with a "Battle Again" button that resets <IC>monsterHp</IC> and <IC>attackCount</IC></li>
+        </ol>
         {platform === "Android" ? (
           <CodeB title="Kotlin — wrapping the Button" accent={BL}>{`if (monsterHp > 0) {
     Button(
-        // your existing attack button code...
-    )
+        onClick = {
+            if (monsterHp > 0) {
+                monsterHp -= 1
+                attackCount += 1
+                isHeroAttacking = true
+                isMonsterHurt = true
+            }
+        },
+        // keep your existing modifier and colors
+    ) {
+        Text("⚔️ Attack!")  // keep your existing label
+    }
 } else {
     OutlinedButton(onClick = {
         monsterHp = 20
@@ -921,9 +960,14 @@ isMonsterHurt = true`}</CodeB>
         ) : (
           <CodeB title="Swift — wrapping the Button" accent={GR}>{`if monsterHp > 0 {
     Button(action: {
-        // your existing attack action...
-    }) { 
-        // your existing attack label...
+        if monsterHp > 0 {
+            monsterHp -= 1
+            attackCount += 1
+            isHeroAttacking = true
+            isMonsterHurt = true
+        }
+    }) {
+        Text("⚔️ Attack!")  // keep your existing label styling
     }
 } else {
     Button(action: {
@@ -931,34 +975,34 @@ isMonsterHurt = true`}</CodeB>
         attackCount = 0
     }) {
         Text("🐉 Battle Again")
-            .padding()
-            .overlay(RoundedRectangle(cornerRadius: 8).stroke(Color.purple, lineWidth: 2))
     }
+    .buttonStyle(.bordered)
+    .tint(.purple)
 }`}</CodeB>
         )}
         <Checkpoint num={5}>Defeat the monster. The Attack button vanishes and the Battle Again button appears seamlessly. Tapping it starts a fresh round.</Checkpoint>
       </VStep>
 
       <VStep num={6} title="Dynamic Styling — Reacting to Danger (~10 min)">
-        <p style={{ fontSize: 13, color: "var(--color-text-secondary)", margin: "0 0 8px" }}>State doesn't just control text — it controls colors. Let's make the HP bar turn yellow when the monster is heavily damaged, and red when it's critical.</p>
+        <p style={{ fontSize: 13, color: "var(--color-text-secondary)", margin: "0 0 8px" }}>State doesn't just control text content — it controls every visual attribute: color, size, visibility, and layout. This is the full promise of declarative UI. Let's use it to make the HP bar turn yellow when the monster is heavily damaged, and red when it's critical.</p>
         {platform === "Android" ? (
           <>
-            <p style={{ fontSize: 13, margin: "0 0 6px" }}>Add a helper to determine the color outside your Composable:</p>
+            <p style={{ fontSize: 13, margin: "0 0 6px" }}>Add a helper outside your Composable to map HP to a color:</p>
             <CodeB title="Kotlin" accent={BL}>{`fun getHpColor(hp: Int): Color = when {
     hp > 10 -> Color(0xFF4CAF50) // Green
     hp > 5  -> Color(0xFFFFC107) // Yellow
     else    -> Color(0xFFF44336) // Red
 }`}</CodeB>
-            <p style={{ fontSize: 13, margin: "6px 0" }}>Update the <IC>LinearProgressIndicator</IC> to use your dynamic color:</p>
+            <p style={{ fontSize: 13, margin: "6px 0" }}>Update the <IC>LinearProgressIndicator</IC> to use your dynamic color. Compose 1.5+ requires <IC>progress</IC> as a lambda:</p>
             <CodeB title="Kotlin" accent={BL}>{`LinearProgressIndicator(
-    progress = ...,
-    color = getHpColor(monsterHp), // Use state-driven color!
-    trackColor = ...
+    progress = { monsterHp / 20f },
+    color = getHpColor(monsterHp),
+    trackColor = Color(0xFF444444)
 )`}</CodeB>
           </>
         ) : (
           <>
-            <p style={{ fontSize: 13, margin: "0 0 6px" }}>Add a computed property to your View struct:</p>
+            <p style={{ fontSize: 13, margin: "0 0 6px" }}>Add a computed property inside your View struct to map HP to a color:</p>
             <CodeB title="Swift" accent={GR}>{`var hpColor: Color {
     switch monsterHp {
     case 11...20: return .green
@@ -966,18 +1010,34 @@ isMonsterHurt = true`}</CodeB>
     default:      return .red
     }
 }`}</CodeB>
-            <p style={{ fontSize: 13, margin: "6px 0" }}>Update the HP bar's progress view <IC>tint</IC> to use your dynamic color:</p>
-            <CodeB title="Swift" accent={GR}>{`ProgressView(...)
-    .tint(hpColor) // Use state-driven color!`}</CodeB>
+            <p style={{ fontSize: 13, margin: "6px 0" }}>Update the HP bar's <IC>tint</IC> to use your dynamic color:</p>
+            <CodeB title="Swift" accent={GR}>{`ProgressView(value: Double(monsterHp), total: 20)
+    .tint(hpColor)`}</CodeB>
           </>
         )}
-        <Checkpoint num={6}>Attack the monster and watch the HP bar change colors at exactly 10 and 5 HP.</Checkpoint>
+        <Checkpoint num={6}>Attack until HP drops below 11 — the bar turns yellow. Below 6 — it turns red.</Checkpoint>
       </VStep>
 
       <VStep num={7} title="Ask Claude to translate — focus on state (~8 min)">
-        <AiOpp>
-          Go to claude.ai and use this prompt: <em>"I built a Monster Slayer battle screen in [{platform === "Android" ? "Jetpack Compose" : "SwiftUI"}]. Please translate the full thing to [{platform === "Android" ? "SwiftUI" : "Jetpack Compose"}]. Then explain in plain English: how does state work in Compose vs SwiftUI? What is the equivalent of @State in Compose, and why does Compose need remember but SwiftUI does not?"</em> Read the explanation before running the code.
-        </AiOpp>
+        <p style={{ fontSize: 13, color: "var(--color-text-secondary)", margin: "0 0 8px" }}>Paste this prompt into claude.ai. Read Claude's explanation of how state works <em>before</em> you run the translated code — the why matters more than the code itself here.</p>
+        {platform === "Android" ? (
+          <CodeB title="Prompt for Claude">{`I built a Monster Slayer battle screen in Jetpack Compose. Please translate the full thing to SwiftUI.
+
+Then explain in plain English:
+1. How does state work in Compose vs SwiftUI?
+2. What is the equivalent of @State in Compose, and why does Compose need remember but SwiftUI does not?`}</CodeB>
+        ) : (
+          <CodeB title="Prompt for Claude">{`I built a Monster Slayer battle screen in SwiftUI. Please translate the full thing to Jetpack Compose.
+
+Then explain in plain English:
+1. How does state work in SwiftUI vs Compose?
+2. What is the equivalent of @State in Compose, and why does Compose need remember but SwiftUI does not?`}</CodeB>
+        )}
+        <p style={{ fontSize: 13, margin: "8px 0 4px" }}>After reading the explanation, ask yourself:</p>
+        <ol style={{ paddingLeft: 20, margin: "4px 0 8px", fontSize: 13 }}>
+          <li>Could you explain to a friend what <IC>remember</IC> does, and what would happen if you removed it?</li>
+          <li>What does <IC>@State</IC> tell SwiftUI to do when the property changes?</li>
+        </ol>
         <Checkbox>Received and read the translation and state explanation</Checkbox>
         <Checkbox>Ran the translated version — HP counts down and phases shift correctly</Checkbox>
         <Section title="💡 Hint: Claude's translation has errors">
@@ -993,11 +1053,14 @@ isMonsterHurt = true`}</CodeB>
           <li>Change the HP text color — red when HP is low, white when full</li>
           <li>Write a custom taunt for one of the phases</li>
         </ul>
+        <Section title="💡 Hint: I tried a change and hit an error">
+          Don't undo the change — ask Claude: <em>"I added [describe what you added] and got this error: [paste error]. What is wrong, without rewriting the whole file?"</em> Working through an error teaches more than getting it right on the first try.
+        </Section>
         <Checkpoint num={8}>Both platform versions run. You have made at least one original change not written by Claude.</Checkpoint>
       </VStep>
 
       <VStep num={9} title="Reflect (~5 min)" last>
-        <p style={{ fontSize: 13, color: "var(--color-text-secondary)", margin: "0 0 8px" }}>Add a comment block at the top of your primary file:</p>
+        <p style={{ fontSize: 13, color: "var(--color-text-secondary)", margin: "0 0 8px" }}>Writing your reflection as comments keeps it attached to the code that prompted it — you can revisit the reasoning later. Add this block at the top of your primary file:</p>
         <CodeB title="Lab 2 Reflection">{`// Lab 2 Reflection
 // 1. In your own words: what is state, and why does declarative UI need it?
 // 2. What is one thing the monster phase system and a milestone counter have in common?
