@@ -67,7 +67,7 @@ const Warn = ({ children }) => (
   </div>
 );
 
-const Shell = ({ tag, tagColor = "teal", timer, title, subtitle, children, notes, dark = false }) => (
+const Shell = ({ tag, tagColor = "teal", timer, title, subtitle, children, notes, dark = false }: { [k: string]: any }) => (
   <div style={{ background: dark ? `linear-gradient(135deg, ${PURPLE_DARK} 0%, ${PURPLE} 100%)` : "var(--color-background-primary)", border: dark ? "none" : "0.5px solid var(--color-border-tertiary)", borderRadius: 12, padding: "20px 22px", minHeight: 340 }}>
     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 12 }}>
       <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
@@ -87,6 +87,60 @@ const Bullet = ({ children, check = false, cross = false }) => (
   <div style={{ display: "flex", gap: 7, margin: "5px 0", alignItems: "flex-start" }}>
     <span style={{ color: cross ? RED : check ? TEAL : PURPLE, fontWeight: 700, flexShrink: 0, fontSize: 13, lineHeight: 1.4 }}>{cross ? "✗" : check ? "✓" : "▸"}</span>
     <span style={{ fontSize: 12, color: TEXT, lineHeight: 1.5 }}>{children}</span>
+  </div>
+);
+
+const preStyle: React.CSSProperties = { margin: 0, background: "#1e1e2e", color: "#cdd6f4", fontSize: 10, padding: "8px 12px", borderRadius: 6, lineHeight: 1.6, fontFamily: "monospace", whiteSpace: "pre-wrap" };
+
+const OSToggle = ({ android, ios }: { [k: string]: any }) => {
+  const [platform, setPlatform] = useState<'android' | 'ios'>('android');
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+      <div style={{ display: "flex", borderRadius: 8, overflow: "hidden", border: "1px solid #e5e7eb", width: "fit-content" }}>
+        <button onClick={() => setPlatform('android')} style={{ padding: "5px 16px", fontSize: 11, fontWeight: 700, letterSpacing: ".04em", background: platform === 'android' ? PURPLE : "#fff", color: platform === 'android' ? "#fff" : MUTED, border: "none", borderRight: "1px solid #e5e7eb", cursor: "pointer" }}>
+          Android · Kotlin
+        </button>
+        <button onClick={() => setPlatform('ios')} style={{ padding: "5px 16px", fontSize: 11, fontWeight: 700, letterSpacing: ".04em", background: platform === 'ios' ? TEAL : "#fff", color: platform === 'ios' ? "#fff" : MUTED, border: "none", cursor: "pointer" }}>
+          iOS · Swift
+        </button>
+      </div>
+      {platform === 'android' ? android : ios}
+    </div>
+  );
+};
+
+const Step = ({ n, title, children, accent = PURPLE }: { [k: string]: any }) => (
+  <div style={{ marginBottom: 10, paddingLeft: 24, borderLeft: `2px solid #e5e7eb`, position: "relative" }}>
+    <div style={{ position: "absolute", left: -14, top: 0, width: 26, height: 26, borderRadius: "50%", background: "#fff", border: `2px solid ${accent}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 800, color: accent }}>
+      {n}
+    </div>
+    <p style={{ fontSize: 12, fontWeight: 700, color: TEXT, margin: "2px 0 6px" }}>{title}</p>
+    <div>{children}</div>
+  </div>
+);
+
+const ViewToggle = ({ steps, full }: { [k: string]: any }) => {
+  const [view, setView] = useState<'steps' | 'full'>('steps');
+  return (
+    <div>
+      <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 6 }}>
+        <div style={{ display: "flex", borderRadius: 20, overflow: "hidden", border: "1px solid #e5e7eb", width: "fit-content" }}>
+          <button onClick={() => setView('steps')} style={{ padding: "3px 12px", fontSize: 10, fontWeight: 700, letterSpacing: ".04em", background: view === 'steps' ? PURPLE : "#fff", color: view === 'steps' ? "#fff" : MUTED, border: "none", borderRight: "1px solid #e5e7eb", cursor: "pointer" }}>
+            Step by step
+          </button>
+          <button onClick={() => setView('full')} style={{ padding: "3px 12px", fontSize: 10, fontWeight: 700, letterSpacing: ".04em", background: view === 'full' ? PURPLE : "#fff", color: view === 'full' ? "#fff" : MUTED, border: "none", cursor: "pointer" }}>
+            Full code
+          </button>
+        </div>
+      </div>
+      {view === 'steps' ? steps : full}
+    </div>
+  );
+};
+
+const ConceptBanner = ({ children, accent = PURPLE }: { [k: string]: any }) => (
+  <div style={{ background: accent === PURPLE ? PURPLE_LIGHT : accent === TEAL ? TEAL_LIGHT : BLUE_LIGHT, borderLeft: `3px solid ${accent}`, borderRadius: 6, padding: "8px 12px", marginBottom: 8 }}>
+    <p style={{ fontSize: 12, color: accent === PURPLE ? PURPLE_DARK : accent === TEAL ? TEAL_DARK : BLUE, margin: 0, lineHeight: 1.5 }}>{children}</p>
   </div>
 );
 
@@ -455,9 +509,127 @@ description of this scene.`}</pre>
 
   // ─── 9: CODE — GALLERY UI + PHOTO PICKER ───
   () => (
-    <Shell tag="Live code-along" timer="5" title="Part 1 — Gallery UI and photo picker" notes="The gallery picker API changed significantly in Android 13+ — use ActivityResultContracts.PickVisualMedia (the new Photo Picker) rather than the old ACTION_PICK intent. It's scoped storage-safe and gives a better UX. On iOS, PhotosPicker is the modern SwiftUI-native API (iOS 16+) — don't use UIImagePickerController for new apps. | Sources: Android Photo Picker — developer.android.com/training/data-storage/shared/photopicker. PickVisualMedia contract — developer.android.com/reference/androidx/activity/result/contract/ActivityResultContracts.PickVisualMedia. PhotosPicker SwiftUI docs — developer.apple.com/documentation/photokit/photospicker. PhotosPickerItem.loadTransferable — developer.apple.com/documentation/photokit/photospickeritem/loadtransferable(type:).">
-      <div style={{ display: "flex", gap: 10, marginTop: 6 }}>
-        <CodePane title="Android — GalleryScreen.kt" accent={BLUE}>{`@Composable
+    <Shell tag="Live code-along" timer="5" title="Part 1 — Gallery UI and photo picker" subtitle="Different input source, same MVVM shape as Session 1" notes="The gallery picker API changed significantly in Android 13+ — use ActivityResultContracts.PickVisualMedia (the new Photo Picker) rather than the old ACTION_PICK intent. It's scoped storage-safe and gives a better UX. On iOS, PhotosPicker is the modern SwiftUI-native API (iOS 16+) — don't use UIImagePickerController for new apps. | Sources: Android Photo Picker — developer.android.com/training/data-storage/shared/photopicker. PickVisualMedia contract — developer.android.com/reference/androidx/activity/result/contract/ActivityResultContracts.PickVisualMedia. PhotosPicker SwiftUI docs — developer.apple.com/documentation/photokit/photospicker. PhotosPickerItem.loadTransferable — developer.apple.com/documentation/photokit/photospickeritem/loadtransferable(type:).">
+      <ConceptBanner>
+        <strong>Same MVVM shape as Session 1.</strong> ViewModel holds three things: <em>selected image</em>, <em>isLoading</em>, <em>analysisResult</em>. The picker is just a new input source — instead of camera frames, the user picks one photo from the gallery. The analyze button kicks off the on-device pipeline you'll build on the next slide.
+      </ConceptBanner>
+      <ViewToggle
+        steps={
+          <OSToggle
+            android={
+              <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                <Step n={1} title="Collect VM state and register the picker">
+                  <pre style={preStyle}>{`val bitmap  by vm.selectedBitmap.collectAsState()
+val result  by vm.analysisResult.collectAsState()
+val loading by vm.isLoading.collectAsState()
+
+val picker = rememberLauncherForActivityResult(
+    ActivityResultContracts.PickVisualMedia()
+) { uri -> uri?.let { vm.loadBitmap(it) } }`}</pre>
+                </Step>
+                <Step n={2} title="Image preview box (shows placeholder until a photo is picked)">
+                  <pre style={preStyle}>{`Box(
+    Modifier.fillMaxWidth().height(260.dp)
+        .background(Color.LightGray, RoundedCornerShape(12.dp)),
+    Alignment.Center
+) {
+    if (bitmap != null) {
+        Image(bitmap!!.asImageBitmap(), null,
+            Modifier.fillMaxSize()
+                .clip(RoundedCornerShape(12.dp)),
+            contentScale = ContentScale.Crop)
+    } else {
+        Text("Pick a photo to analyze", color = Color.Gray)
+    }
+}`}</pre>
+                </Step>
+                <Step n={3} title="Pick + Analyze buttons + result card">
+                  <pre style={preStyle}>{`Button(onClick = {
+    picker.launch(PickVisualMediaRequest(
+        ActivityResultContracts.PickVisualMedia.ImageOnly))
+}, Modifier.fillMaxWidth()) { Text("Choose from Gallery") }
+
+Button(
+    onClick = { vm.analyzeOnDevice() },
+    enabled = bitmap != null && !loading,
+    modifier = Modifier.fillMaxWidth()
+) {
+    Text(if (loading) "Analyzing on-device…" else "Analyze On-Device")
+}
+
+if (result.isNotEmpty()) {
+    Card(Modifier.fillMaxWidth()) {
+        Text(result, Modifier.padding(14.dp),
+            fontSize = 14.sp, lineHeight = 22.sp)
+    }
+}`}</pre>
+                </Step>
+              </div>
+            }
+            ios={
+              <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                <Step n={1} title="ViewModel + PhotosPickerItem state" accent={TEAL}>
+                  <pre style={preStyle}>{`import PhotosUI
+import SwiftUI
+
+struct GalleryView: View {
+    @StateObject private var vm = GalleryViewModel()
+    @State private var photoItem: PhotosPickerItem?
+    // body below ...
+}`}</pre>
+                </Step>
+                <Step n={2} title="Image preview ZStack (placeholder + selected image)" accent={TEAL}>
+                  <pre style={preStyle}>{`ZStack {
+    RoundedRectangle(cornerRadius: 12)
+        .fill(Color.gray.opacity(0.15))
+        .frame(height: 260)
+    if let image = vm.selectedImage {
+        Image(uiImage: image)
+            .resizable()
+            .scaledToFill()
+            .frame(height: 260)
+            .clipShape(RoundedRectangle(cornerRadius: 12))
+    } else {
+        Text("Pick a photo to analyze")
+            .foregroundColor(.secondary)
+    }
+}`}</pre>
+                </Step>
+                <Step n={3} title="PhotosPicker + Analyze button + result" accent={TEAL}>
+                  <pre style={preStyle}>{`PhotosPicker(selection: \$photoItem, matching: .images) {
+    Label("Choose from Gallery",
+          systemImage: "photo.on.rectangle")
+}
+.buttonStyle(.bordered)
+.onChange(of: photoItem) { _, item in
+    Task { await vm.loadPhoto(item) }
+}
+
+Button {
+    Task { await vm.analyzeOnDevice() }
+} label: {
+    Text(vm.isLoading
+        ? "Analyzing on-device…"
+        : "Analyze On-Device")
+}
+.buttonStyle(.borderedProminent)
+.disabled(vm.selectedImage == nil || vm.isLoading)
+
+if !vm.analysisResult.isEmpty {
+    Text(vm.analysisResult).font(.body)
+        .padding()
+        .background(Color.gray.opacity(0.1))
+        .cornerRadius(10)
+}`}</pre>
+                </Step>
+              </div>
+            }
+          />
+        }
+        full={
+          <OSToggle
+            android={
+              <CodePane title="Kotlin — GalleryScreen.kt" accent={PURPLE}>{`@Composable
 fun GalleryScreen(vm: GalleryViewModel = viewModel()) {
     val bitmap  by vm.selectedBitmap.collectAsState()
     val result  by vm.analysisResult.collectAsState()
@@ -514,7 +686,10 @@ fun GalleryScreen(vm: GalleryViewModel = viewModel()) {
         }
     }
 }`}</CodePane>
-        <CodePane title="iOS — GalleryView.swift" accent={GREEN}>{`import PhotosUI, SwiftUI
+            }
+            ios={
+              <CodePane title="Swift — GalleryView.swift" accent={TEAL}>{`import PhotosUI
+import SwiftUI
 
 struct GalleryView: View {
     @StateObject private var vm =
@@ -581,15 +756,158 @@ struct GalleryView: View {
         }
     }
 }`}</CodePane>
-      </div>
+            }
+          />
+        }
+      />
     </Shell>
   ),
 
   // ─── 10: CODE — TWO-STAGE ANALYSIS ───
   () => (
-    <Shell tag="Live code-along" timer="10" title="Part 2 — the two-stage on-device pipeline" notes="This is the payoff of the session. Walk through Stage 1 first (students have seen this pattern), then add Stage 2. The key line to highlight on Android: the try/catch around nanoModel.generateContent() — this is where unsupported devices will throw, and the catch block is your fallback. On iOS: the #available(iOS 18.0, *) guard is the device check. Make sure students understand the prompt construction — what you pass to Gemini Nano is just a string, exactly like calling Claude in Week 7. | Sources: ML Kit ImageLabeling.getClient — developers.google.com/ml-kit/vision/image-labeling/android#1_create_an_instance_of_imagelabeler. InputImage.fromBitmap — developers.google.com/ml-kit/reference/android/com/google/mlkit/vision/common/InputImage#fromBitmap(android.graphics.Bitmap,int). GenerativeModel.generateContent (AI Edge) — ai.google.dev/edge/mediapipe/solutions/genai/llm_inference/android. VNClassifyImageRequest on static image — developer.apple.com/documentation/vision/classifying_images_with_vision_and_core_ml. PhotosPickerItem.loadTransferable — developer.apple.com/documentation/photokit/photospickeritem/loadtransferable(type:).">
-      <div style={{ display: "flex", gap: 10, marginTop: 6 }}>
-        <CodePane title="Android — GalleryViewModel.kt (two-stage)" accent={BLUE}>{`class GalleryViewModel : ViewModel() {
+    <Shell tag="Live code-along" timer="10" title="Part 2 — the two-stage on-device pipeline" subtitle="Stage 1: ML labels. Stage 2: generate. The fallback path is part of the architecture, not an afterthought." notes="This is the payoff of the session. Walk through Stage 1 first (students have seen this pattern), then add Stage 2. The key line to highlight on Android: the try/catch around nanoModel.generateContent() — this is where unsupported devices will throw, and the catch block is your fallback. On iOS: the #available(iOS 18.0, *) guard is the device check. Make sure students understand the prompt construction — what you pass to Gemini Nano is just a string, exactly like calling Claude in Week 7. | Sources: ML Kit ImageLabeling.getClient — developers.google.com/ml-kit/vision/image-labeling/android#1_create_an_instance_of_imagelabeler. InputImage.fromBitmap — developers.google.com/ml-kit/reference/android/com/google/mlkit/vision/common/InputImage#fromBitmap(android.graphics.Bitmap,int). GenerativeModel.generateContent (AI Edge) — ai.google.dev/edge/mediapipe/solutions/genai/llm_inference/android. VNClassifyImageRequest on static image — developer.apple.com/documentation/vision/classifying_images_with_vision_and_core_ml. PhotosPickerItem.loadTransferable — developer.apple.com/documentation/photokit/photospickeritem/loadtransferable(type:).">
+      <ConceptBanner>
+        <strong>Three logical units, one ViewModel.</strong> <em>Init</em>: probe the on-device generative model, set <code>nanoModel</code> to null if unsupported. <em>Stage 1</em>: ML Kit / Vision labels — the same code from Session 1. <em>Stage 2</em>: prompt the generative model with the labels. If <code>nanoModel</code> is null or throws, fall back to formatted labels. The fallback path is part of the architecture.
+      </ConceptBanner>
+      <ViewToggle
+        steps={
+          <OSToggle
+            android={
+              <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                <Step n={1} title="State + init: probe Gemini Nano, fall back to null if unsupported">
+                  <pre style={preStyle}>{`class GalleryViewModel : ViewModel() {
+    private val _selectedBitmap = MutableStateFlow<Bitmap?>(null)
+    val selectedBitmap = _selectedBitmap.asStateFlow()
+    private val _analysisResult = MutableStateFlow("")
+    val analysisResult = _analysisResult.asStateFlow()
+    private val _isLoading = MutableStateFlow(false)
+    val isLoading = _isLoading.asStateFlow()
+
+    private val labeler = ImageLabeling.getClient(
+        ImageLabelerOptions.DEFAULT_OPTIONS)
+    private var nanoModel: GenerativeModel? = null
+
+    init { viewModelScope.launch { initNano() } }
+
+    private suspend fun initNano() {
+        nanoModel = try {
+            GenerativeModel("gemini-nano",
+                generationConfig { temperature = 0.7f }
+            ).also { it.generateContent("hi") }
+        } catch (e: Exception) { null }  // device unsupported
+    }
+
+    fun loadBitmap(uri: Uri) {
+        // decode Uri → Bitmap and set _selectedBitmap
+    }
+}`}</pre>
+                </Step>
+                <Step n={2} title="Stage 1 — ML Kit labels (same pattern as Session 1)">
+                  <pre style={preStyle}>{`fun analyzeOnDevice() {
+    val bmp = _selectedBitmap.value ?: return
+    _isLoading.value = true
+    viewModelScope.launch(Dispatchers.IO) {
+        // ── Stage 1: ML Kit labels ──────────
+        val image = InputImage.fromBitmap(bmp, 0)
+        val labels = labeler.process(image).await()
+        val labelText = labels.take(5).joinToString(", ") {
+            "\${it.text} (\${(it.confidence*100).toInt()}%)"
+        }
+        // → continue to Stage 2 below`}</pre>
+                </Step>
+                <Step n={3} title="Stage 2 — Gemini Nano prompt + fallback to labels">
+                  <pre style={preStyle}>{`        // ── Stage 2: Gemini Nano (with fallback) ──
+        _analysisResult.value = nanoModel?.let { m ->
+            try {
+                m.generateContent("""
+                    On-device ML detected: ${'$'}labelText
+                    Write a natural 2-sentence description
+                    of what this photo probably shows.
+                """.trimIndent()).text
+                    ?: "No response from on-device model."
+            } catch (e: Exception) {
+                "Detected: ${'$'}labelText"  // fallback
+            }
+        } ?: "Detected: ${'$'}labelText"     // unsupported
+
+        _isLoading.value = false
+    }
+}`}</pre>
+                </Step>
+              </div>
+            }
+            ios={
+              <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                <Step n={1} title="State + loadPhoto from PhotosPickerItem" accent={TEAL}>
+                  <pre style={preStyle}>{`import Vision
+import PhotosUI
+import SwiftUI
+
+@MainActor
+class GalleryViewModel: ObservableObject {
+    @Published var selectedImage: UIImage?
+    @Published var analysisResult = ""
+    @Published var isLoading = false
+
+    func loadPhoto(_ item: PhotosPickerItem?) async {
+        guard let data = try? await item?
+                .loadTransferable(type: Data.self),
+              let image = UIImage(data: data)
+        else { return }
+        selectedImage = image
+        analysisResult = ""
+    }
+}`}</pre>
+                </Step>
+                <Step n={2} title="Stage 1 — Vision classification on the static image" accent={TEAL}>
+                  <pre style={preStyle}>{`func analyzeOnDevice() async {
+    guard let image = selectedImage,
+          let cgImage = image.cgImage
+    else { return }
+    isLoading = true
+
+    // ── Stage 1: Vision classification ──────
+    let handler = VNImageRequestHandler(cgImage: cgImage)
+    let request = VNClassifyImageRequest()
+    try? handler.perform([request])
+
+    let topLabels = (request.results
+        as? [VNClassificationObservation])?
+        .prefix(5)
+        .filter { \$0.confidence > 0.05 }
+        .map {
+            "\(\$0.identifier) "
+            + "(\(Int(\$0.confidence*100))%)"
+        } ?? []
+    let labelText = topLabels.joined(separator: ", ")
+    // → continue to Stage 2 below`}</pre>
+                </Step>
+                <Step n={3} title="Stage 2 — Apple Intelligence guard + fallback" accent={TEAL}>
+                  <pre style={preStyle}>{`    // ── Stage 2: Apple Intelligence ──────────
+    if #available(iOS 18.0, *) {
+        // Writing Tools / FoundationModels integration point.
+        // For the lab: format labels as the result.
+        // Production: route labelText through a system
+        // generative API (e.g. UIWritingToolsCoordinator).
+        analysisResult = "On-device analysis: \(labelText)"
+    } else {
+        // Fallback: show Vision labels directly
+        analysisResult = topLabels.isEmpty
+            ? "No objects detected."
+            : topLabels.map { "• \(\$0)" }
+                .joined(separator: "\n")
+    }
+    isLoading = false
+}`}</pre>
+                </Step>
+              </div>
+            }
+          />
+        }
+        full={
+          <OSToggle
+            android={
+              <CodePane title="Kotlin — GalleryViewModel.kt (two-stage)" accent={PURPLE}>{`class GalleryViewModel : ViewModel() {
     private val _selectedBitmap =
         MutableStateFlow<Bitmap?>(null)
     val selectedBitmap = _selectedBitmap.asStateFlow()
@@ -648,7 +966,11 @@ struct GalleryView: View {
         }
     }
 }`}</CodePane>
-        <CodePane title="iOS — GalleryViewModel.swift (two-stage)" accent={GREEN}>{`import Vision, PhotosUI, SwiftUI
+            }
+            ios={
+              <CodePane title="Swift — GalleryViewModel.swift (two-stage)" accent={TEAL}>{`import Vision
+import PhotosUI
+import SwiftUI
 
 @MainActor
 class GalleryViewModel: ObservableObject {
@@ -707,7 +1029,10 @@ class GalleryViewModel: ObservableObject {
         isLoading = false
     }
 }`}</CodePane>
-      </div>
+            }
+          />
+        }
+      />
     </Shell>
   ),
 

@@ -64,7 +64,7 @@ const Warn = ({ children }) => (
   </div>
 );
 
-const Shell = ({ tag, tagColor = "teal", timer, title, subtitle, children, notes, dark = false }) => (
+const Shell = ({ tag, tagColor = "teal", timer, title, subtitle, children, notes, dark = false }: { [k: string]: any }) => (
   <div style={{ background: dark ? `linear-gradient(135deg, ${PURPLE_DARK} 0%, ${PURPLE} 100%)` : "var(--color-background-primary)", border: dark ? "none" : "0.5px solid var(--color-border-tertiary)", borderRadius: 12, padding: "20px 22px", minHeight: 340 }}>
     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 12 }}>
       <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
@@ -84,6 +84,60 @@ const Bullet = ({ children, check = false, cross = false }) => (
   <div style={{ display: "flex", gap: 7, margin: "5px 0", alignItems: "flex-start" }}>
     <span style={{ color: cross ? RED : check ? TEAL : PURPLE, fontWeight: 700, flexShrink: 0, fontSize: 13, lineHeight: 1.4 }}>{cross ? "✗" : check ? "✓" : "▸"}</span>
     <span style={{ fontSize: 12, color: TEXT, lineHeight: 1.5 }}>{children}</span>
+  </div>
+);
+
+const preStyle: React.CSSProperties = { margin: 0, background: "#1e1e2e", color: "#cdd6f4", fontSize: 10, padding: "8px 12px", borderRadius: 6, lineHeight: 1.6, fontFamily: "monospace", whiteSpace: "pre-wrap" };
+
+const OSToggle = ({ android, ios }: { [k: string]: any }) => {
+  const [platform, setPlatform] = useState<'android' | 'ios'>('android');
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+      <div style={{ display: "flex", borderRadius: 8, overflow: "hidden", border: "1px solid #e5e7eb", width: "fit-content" }}>
+        <button onClick={() => setPlatform('android')} style={{ padding: "5px 16px", fontSize: 11, fontWeight: 700, letterSpacing: ".04em", background: platform === 'android' ? PURPLE : "#fff", color: platform === 'android' ? "#fff" : MUTED, border: "none", borderRight: "1px solid #e5e7eb", cursor: "pointer" }}>
+          Android · Kotlin
+        </button>
+        <button onClick={() => setPlatform('ios')} style={{ padding: "5px 16px", fontSize: 11, fontWeight: 700, letterSpacing: ".04em", background: platform === 'ios' ? TEAL : "#fff", color: platform === 'ios' ? "#fff" : MUTED, border: "none", cursor: "pointer" }}>
+          iOS · Swift
+        </button>
+      </div>
+      {platform === 'android' ? android : ios}
+    </div>
+  );
+};
+
+const Step = ({ n, title, children, accent = PURPLE }: { [k: string]: any }) => (
+  <div style={{ marginBottom: 10, paddingLeft: 24, borderLeft: `2px solid #e5e7eb`, position: "relative" }}>
+    <div style={{ position: "absolute", left: -14, top: 0, width: 26, height: 26, borderRadius: "50%", background: "#fff", border: `2px solid ${accent}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 800, color: accent }}>
+      {n}
+    </div>
+    <p style={{ fontSize: 12, fontWeight: 700, color: TEXT, margin: "2px 0 6px" }}>{title}</p>
+    <div>{children}</div>
+  </div>
+);
+
+const ViewToggle = ({ steps, full }: { [k: string]: any }) => {
+  const [view, setView] = useState<'steps' | 'full'>('steps');
+  return (
+    <div>
+      <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 6 }}>
+        <div style={{ display: "flex", borderRadius: 20, overflow: "hidden", border: "1px solid #e5e7eb", width: "fit-content" }}>
+          <button onClick={() => setView('steps')} style={{ padding: "3px 12px", fontSize: 10, fontWeight: 700, letterSpacing: ".04em", background: view === 'steps' ? PURPLE : "#fff", color: view === 'steps' ? "#fff" : MUTED, border: "none", borderRight: "1px solid #e5e7eb", cursor: "pointer" }}>
+            Step by step
+          </button>
+          <button onClick={() => setView('full')} style={{ padding: "3px 12px", fontSize: 10, fontWeight: 700, letterSpacing: ".04em", background: view === 'full' ? PURPLE : "#fff", color: view === 'full' ? "#fff" : MUTED, border: "none", cursor: "pointer" }}>
+            Full code
+          </button>
+        </div>
+      </div>
+      {view === 'steps' ? steps : full}
+    </div>
+  );
+};
+
+const ConceptBanner = ({ children, accent = PURPLE }: { [k: string]: any }) => (
+  <div style={{ background: accent === PURPLE ? PURPLE_LIGHT : accent === TEAL ? TEAL_LIGHT : BLUE_LIGHT, borderLeft: `3px solid ${accent}`, borderRadius: 6, padding: "8px 12px", marginBottom: 8 }}>
+    <p style={{ fontSize: 12, color: accent === PURPLE ? PURPLE_DARK : accent === TEAL ? TEAL_DARK : BLUE, margin: 0, lineHeight: 1.5 }}>{children}</p>
   </div>
 );
 
@@ -219,7 +273,8 @@ const slides = [
 
         {/* Cost */}
         <div style={{ background: RED_LIGHT, borderRadius: 10, padding: "12px 14px" }}>
-          <p style={{ fontSize: 12, fontWeight: 700, color: RED, margin: "0 0 8px" }}>💸 Cost — cloud adds up fast</p>
+          <p style={{ fontSize: 12, fontWeight: 700, color: RED, margin: "0 0 4px" }}>💸 Cost — cloud adds up fast</p>
+          <p style={{ fontSize: 11, fontWeight: 700, color: RED, margin: "0 0 8px", fontStyle: "italic" }}>Takeaway: on-device wins outright at scale.</p>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 6, marginBottom: 8 }}>
             {[
               { label: "Cloud AI", val: "~$3–15 per 1M tokens\n+ image encoding costs\n+ bandwidth\nScales linearly with users", bad: true },
@@ -239,7 +294,8 @@ const slides = [
 
         {/* Privacy */}
         <div style={{ background: PURPLE_LIGHT, borderRadius: 10, padding: "12px 14px" }}>
-          <p style={{ fontSize: 12, fontWeight: 700, color: PURPLE_DARK, margin: "0 0 8px" }}>🔒 Privacy — data that never leaves the phone</p>
+          <p style={{ fontSize: 12, fontWeight: 700, color: PURPLE_DARK, margin: "0 0 4px" }}>🔒 Privacy — data that never leaves the phone</p>
+          <p style={{ fontSize: 11, fontWeight: 700, color: PURPLE_DARK, margin: "0 0 8px", fontStyle: "italic" }}>Takeaway: on-device wins for sensitive data.</p>
           <p style={{ fontSize: 12, color: PURPLE_DARK, margin: "0 0 8px", lineHeight: 1.5 }}>Every cloud API call sends your user's data to a third-party server. For most content, that's fine. For some, it isn't.</p>
           {[
             { scenario: "Medical photos", detail: "Skin condition checker, wound assessment — HIPAA implications if sent to cloud" },
@@ -259,7 +315,8 @@ const slides = [
 
         {/* Capability */}
         <div style={{ background: BLUE_LIGHT, borderRadius: 10, padding: "12px 14px" }}>
-          <p style={{ fontSize: 12, fontWeight: 700, color: BLUE, margin: "0 0 8px" }}>🧠 Capability — cloud wins, by a lot</p>
+          <p style={{ fontSize: 12, fontWeight: 700, color: BLUE, margin: "0 0 4px" }}>🧠 Capability — cloud wins, by a lot</p>
+          <p style={{ fontSize: 11, fontWeight: 700, color: BLUE, margin: "0 0 8px", fontStyle: "italic" }}>Takeaway: cloud wins for big reasoning + huge context.</p>
           {[
             { dim: "Model size",    cloud: "Claude 3 Opus: 200B+ params", device: "Gemini Nano: ~1.8B params" },
             { dim: "Context",       cloud: "200K tokens (Claude)", device: "~512–2K tokens on-device" },
@@ -277,7 +334,8 @@ const slides = [
 
         {/* Latency + offline */}
         <div style={{ background: TEAL_LIGHT, borderRadius: 10, padding: "12px 14px" }}>
-          <p style={{ fontSize: 12, fontWeight: 700, color: TEAL_DARK, margin: "0 0 8px" }}>⚡ Latency + offline — on-device wins</p>
+          <p style={{ fontSize: 12, fontWeight: 700, color: TEAL_DARK, margin: "0 0 4px" }}>⚡ Latency + offline — on-device wins</p>
+          <p style={{ fontSize: 11, fontWeight: 700, color: TEAL_DARK, margin: "0 0 8px", fontStyle: "italic" }}>Takeaway: on-device wins for real-time + offline.</p>
           {[
             { label: "Cloud latency",   val: "100ms–2s minimum (network + server)\nStreaming helps perceived speed\nUnreliable on slow networks" },
             { label: "On-device latency", val: "<50ms typical\nML Kit image label: ~20ms\nNo network dependency at all" },
@@ -431,6 +489,9 @@ const slides = [
   // ─── 7: THE ML STACK SIDE BY SIDE ───
   () => (
     <Shell tag="Platform" timer="8" title="The ML stack — Android and iOS side by side" subtitle="Different APIs, same mental model" notes="The key insight here is symmetry. Both platforms have a 'request' concept — you describe what you want to detect, hand it an image, and get back structured results. ML Kit and Vision are both high-level abstractions over the underlying model. Students should recognise this pattern: it's exactly like Retrofit vs URLSession — different syntax, same idea. | Sources: ML Kit image labeling Android — developers.google.com/ml-kit/vision/image-labeling/android. ML Kit text recognition v2 — developers.google.com/ml-kit/vision/text-recognition/v2/android. Vision framework VNClassifyImageRequest — developer.apple.com/documentation/vision/vnclassifyimagerequest. VNRecognizeTextRequest — developer.apple.com/documentation/vision/vnrecognizetextrequest. ML Kit model delivery via Play Services — developers.google.com/ml-kit/guides#use-cases.">
+      <ConceptBanner>
+        <strong>The mental model:</strong> you don't load a model. You don't write tensor code. You describe the <em>task</em> — "label this image", "read text" — and the framework picks the model and runs it for you. Same shape on both platforms.
+      </ConceptBanner>
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
         {[
           {
@@ -566,9 +627,70 @@ const slides = [
 
   // ─── 10: CODE — PERMISSION + PREVIEW ───
   () => (
-    <Shell tag="Live code-along" timer="5" title="Part 1 — permission wrapper and live preview" notes="Start with a completely empty project. Add the permission wrapper before touching the camera — students who skip this will get silent crashes on real devices. The three-branch pattern (granted / shouldShowRationale / else) is worth explaining: Android has a subtlety where if the user denies twice, you can't ask again and must send them to Settings. | Sources: Android runtime permissions guide — developer.android.com/training/permissions/requesting. shouldShowRationale explained — developer.android.com/training/permissions/requesting#explain. Accompanist rememberPermissionState — google.github.io/accompanist/permissions/#usage. iOS AVCaptureDevice.requestAccess — developer.apple.com/documentation/avfoundation/avcapturedevice/1624584-requestaccess.">
-      <div style={{ display: "flex", gap: 10, marginTop: 6 }}>
-        <CodePane title="Android — CameraPermissionWrapper.kt" accent={BLUE}>{`@Composable
+    <Shell tag="Live code-along" timer="5" title="Part 1 — permission wrapper" subtitle="Three states the wrapper handles before any camera code runs" notes="Start with a completely empty project. Add the permission wrapper before touching the camera — students who skip this will get silent crashes on real devices. The three-branch pattern (granted / shouldShowRationale / else) is worth explaining: Android has a subtlety where if the user denies twice, you can't ask again and must send them to Settings. | Sources: Android runtime permissions guide — developer.android.com/training/permissions/requesting. shouldShowRationale explained — developer.android.com/training/permissions/requesting#explain. Accompanist rememberPermissionState — google.github.io/accompanist/permissions/#usage. iOS AVCaptureDevice.requestAccess — developer.apple.com/documentation/avfoundation/avcapturedevice/1624584-requestaccess.">
+      <ConceptBanner>
+        <strong>Three states, one wrapper.</strong> ✓ <em>granted</em> → show camera. ⚠ <em>denied with rationale</em> → explain & ask again. ◷ <em>not yet asked</em> → request silently. Build this once, reuse anywhere you touch a sensitive permission.
+      </ConceptBanner>
+      <ViewToggle
+        steps={
+          <OSToggle
+            android={
+              <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                <Step n={1} title="Hold the permission state in Compose">
+                  <pre style={preStyle}>{`val permission = rememberPermissionState(
+    Manifest.permission.CAMERA
+)`}</pre>
+                </Step>
+                <Step n={2} title="Branch on the three states">
+                  <pre style={preStyle}>{`when {
+    permission.status.isGranted ->
+        CameraScreen()
+
+    permission.status.shouldShowRationale ->
+        RationaleUI(onGrant = {
+            permission.launchPermissionRequest()
+        })
+
+    else ->
+        LaunchedEffect(Unit) {
+            permission.launchPermissionRequest()
+        }
+}`}</pre>
+                </Step>
+              </div>
+            }
+            ios={
+              <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                <Step n={1} title="Wrap AVCaptureDevice in an ObservableObject" accent={TEAL}>
+                  <pre style={preStyle}>{`class CameraPermissionManager: ObservableObject {
+    @Published var status =
+        AVCaptureDevice.authorizationStatus(for: .video)
+
+    func request() {
+        AVCaptureDevice.requestAccess(for: .video) { ok in
+            DispatchQueue.main.async {
+                self.status = ok ? .authorized : .denied
+            }
+        }
+    }
+}`}</pre>
+                </Step>
+                <Step n={2} title="Switch on status in the view" accent={TEAL}>
+                  <pre style={preStyle}>{`switch perm.status {
+case .authorized:  CameraView()
+case .denied:      DeniedUI()
+default:
+    Color.clear.onAppear { perm.request() }
+}`}</pre>
+                </Step>
+              </div>
+            }
+          />
+        }
+        full={
+          <OSToggle
+            android={
+              <CodePane title="Android — CameraPermissionWrapper.kt" accent={BLUE}>{`@Composable
 fun CameraPermissionWrapper() {
     val permission = rememberPermissionState(
         Manifest.permission.CAMERA
@@ -598,8 +720,10 @@ fun CameraPermissionWrapper() {
             }
     }
 }
-// Dependency: accompanist-permissions:0.32.0`}</CodePane>
-        <CodePane title="iOS — CameraPermissionView.swift" accent={GREEN}>{`import AVFoundation
+// Dependency: com.google.accompanist:accompanist-permissions:0.36.0`}</CodePane>
+            }
+            ios={
+              <CodePane title="iOS — CameraPermissionView.swift" accent={GREEN}>{`import AVFoundation
 
 class CameraPermissionManager: ObservableObject {
     @Published var status: AVAuthorizationStatus =
@@ -639,15 +763,144 @@ struct ContentView: View {
         }
     }
 }`}</CodePane>
-      </div>
+            }
+          />
+        }
+      />
     </Shell>
   ),
 
   // ─── 11: CODE — ATTACH ML LABELING ───
   () => (
-    <Shell tag="Live code-along" timer="8" title="Part 2 — attach ML labeling to the camera feed" notes="This is the core of the session. The key insight to emphasise: we're not changing the camera code at all — we're just plugging a callback into the existing frame pipeline. The camera delivers frames; we hand them to ML Kit / Vision; we get back labels; we update state. The UI reacts to the state change and re-renders the overlay. This is MVVM in action. | Sources: ML Kit image labeling Android — developers.google.com/ml-kit/vision/image-labeling/android. InputImage from MediaImage — developers.google.com/ml-kit/reference/android/com/google/mlkit/vision/common/InputImage. ImageProxy.close() — developer.android.com/reference/androidx/camera/core/ImageProxy#close() (CRITICAL: failing to call this stalls the pipeline). VNClassifyImageRequest — developer.apple.com/documentation/vision/vnclassifyimagerequest. VNImageRequestHandler — developer.apple.com/documentation/vision/vnimagerequesthandler.">
-      <div style={{ display: "flex", gap: 10, marginTop: 6 }}>
-        <CodePane title="Android — image labeling on each frame" accent={BLUE}>{`// In ViewModel:
+    <Shell tag="Live code-along" timer="8" title="Part 2 — attach ML labeling to the camera feed" subtitle="Same camera pipeline as Week 7. We add one new step." notes="This is the core of the session. The key insight to emphasise: we're not changing the camera code at all — we're just plugging a callback into the existing frame pipeline. The camera delivers frames; we hand them to ML Kit / Vision; we get back labels; we update state. The UI reacts to the state change and re-renders the overlay. This is MVVM in action. | Sources: ML Kit image labeling Android — developers.google.com/ml-kit/vision/image-labeling/android. InputImage from MediaImage — developers.google.com/ml-kit/reference/android/com/google/mlkit/vision/common/InputImage. ImageProxy.close() — developer.android.com/reference/androidx/camera/core/ImageProxy#close() (CRITICAL: failing to call this stalls the pipeline). VNClassifyImageRequest — developer.apple.com/documentation/vision/vnclassifyimagerequest. VNImageRequestHandler — developer.apple.com/documentation/vision/vnimagerequesthandler.">
+      <ConceptBanner>
+        <strong>What's new:</strong> the camera already delivers frames — we just hand each frame to ML Kit / Vision before discarding it. Results land in a state flow; the overlay re-renders. That's it. The pipeline is: <em>camera → analyzer → state → UI</em>.
+      </ConceptBanner>
+      <ViewToggle
+        steps={
+          <OSToggle
+            android={
+              <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                <Step n={1} title="Hold the labeler + a state flow in the ViewModel">
+                  <pre style={preStyle}>{`private val labeler = ImageLabeling.getClient(
+    ImageLabelerOptions.DEFAULT_OPTIONS
+)
+private val _labels = MutableStateFlow<List<String>>(emptyList())
+val labels: StateFlow<List<String>> = _labels`}</pre>
+                </Step>
+                <Step n={2} title="Convert each frame and run the labeler">
+                  <pre style={preStyle}>{`fun analyzeFrame(imageProxy: ImageProxy) {
+    val image = InputImage.fromMediaImage(
+        imageProxy.image!!,
+        imageProxy.imageInfo.rotationDegrees
+    )
+    labeler.process(image)
+        .addOnSuccessListener { results ->
+            _labels.value = results.take(3).map {
+                "\${it.text}  \${(it.confidence*100).toInt()}%"
+            }
+        }
+        .addOnCompleteListener {
+            imageProxy.close() // ← CRITICAL
+        }
+}`}</pre>
+                </Step>
+                <Step n={3} title="Collect state in Compose and overlay it">
+                  <pre style={preStyle}>{`@Composable
+fun CameraScreen(viewModel: MLScannerViewModel = viewModel()) {
+    val labels by viewModel.labels.collectAsState()
+    Box(modifier = Modifier.fillMaxSize()) {
+        CameraPreview(onFrameAnalyzed = viewModel::analyzeFrame)
+        Column(
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .fillMaxWidth()
+                .background(Color.Black.copy(alpha = 0.55f))
+                .padding(16.dp)
+        ) {
+            labels.forEach { label ->
+                Text(label, color = Color.White,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Medium)
+            }
+        }
+    }
+}`}</pre>
+                </Step>
+              </div>
+            }
+            ios={
+              <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                <Step n={1} title="ViewModel state + a 4-fps throttle" accent={TEAL}>
+                  <pre style={preStyle}>{`class MLScannerViewModel: ObservableObject {
+    @Published var detectedLabels: [String] = []
+    private var lastProcessed: TimeInterval = 0
+}`}</pre>
+                </Step>
+                <Step n={2} title="Pull the pixel buffer and run a Vision request" accent={TEAL}>
+                  <pre style={preStyle}>{`func processFrame(_ buffer: CMSampleBuffer) {
+    let now = Date().timeIntervalSince1970
+    guard now - lastProcessed > 0.25 else { return }
+    lastProcessed = now
+
+    guard let pixelBuffer =
+        CMSampleBufferGetImageBuffer(buffer)
+    else { return }
+
+    let request = VNClassifyImageRequest {
+        [weak self] req, _ in
+        let top = (req.results
+            as? [VNClassificationObservation])?
+            .prefix(3)
+            .filter { \$0.confidence > 0.08 }
+            .map {
+                "\(\$0.identifier)  "
+                + "\(Int(\$0.confidence*100))%"
+            } ?? []
+        DispatchQueue.main.async {
+            self?.detectedLabels = top
+        }
+    }
+    try? VNImageRequestHandler(
+        cvPixelBuffer: pixelBuffer,
+        orientation: .up
+    ).perform([request])
+}`}</pre>
+                </Step>
+                <Step n={3} title="SwiftUI overlay reads the @Published array" accent={TEAL}>
+                  <pre style={preStyle}>{`struct CameraView: View {
+    @StateObject private var cameraManager = CameraManager()
+    @StateObject private var viewModel = MLScannerViewModel()
+
+    var body: some View {
+        ZStack(alignment: .bottom) {
+            CameraPreviewView(session: cameraManager.session)
+            VStack(alignment: .leading, spacing: 6) {
+                ForEach(viewModel.detectedLabels, id: \.self) {
+                    label in
+                    Text(label)
+                        .foregroundColor(.white)
+                        .font(.title3).fontWeight(.medium)
+                }
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding()
+            .background(.black.opacity(0.55))
+        }
+        .onAppear {
+            cameraManager.onFrame = viewModel.processFrame
+        }
+    }
+}`}</pre>
+                </Step>
+              </div>
+            }
+          />
+        }
+        full={
+          <OSToggle
+            android={
+              <CodePane title="Kotlin — image labeling on each frame" accent={PURPLE}>{`// In ViewModel:
 private val labeler = ImageLabeling.getClient(
     ImageLabelerOptions.DEFAULT_OPTIONS
 )
@@ -689,7 +942,9 @@ Box(modifier = Modifier.fillMaxSize()) {
         }
     }
 }`}</CodePane>
-        <CodePane title="iOS — VNClassifyImageRequest on live frames" accent={GREEN}>{`class MLScannerViewModel: ObservableObject {
+            }
+            ios={
+              <CodePane title="Swift — VNClassifyImageRequest on live frames" accent={TEAL}>{`class MLScannerViewModel: ObservableObject {
     @Published var detectedLabels: [String] = []
     private var lastProcessed: TimeInterval = 0
 
@@ -725,29 +980,156 @@ Box(modifier = Modifier.fillMaxSize()) {
 }
 
 // In SwiftUI:
-ZStack(alignment: .bottom) {
-    CameraPreviewView(session: cameraManager.session)
-    VStack(alignment: .leading, spacing: 6) {
-        ForEach(viewModel.detectedLabels, id: \.self) {
-            label in
-            Text(label)
-                .foregroundColor(.white)
-                .font(.title3).fontWeight(.medium)
+struct CameraView: View {
+    @StateObject private var cameraManager = CameraManager()
+    @StateObject private var viewModel = MLScannerViewModel()
+
+    var body: some View {
+        ZStack(alignment: .bottom) {
+            CameraPreviewView(session: cameraManager.session)
+            VStack(alignment: .leading, spacing: 6) {
+                ForEach(viewModel.detectedLabels, id: \.self) {
+                    label in
+                    Text(label)
+                        .foregroundColor(.white)
+                        .font(.title3).fontWeight(.medium)
+                }
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding()
+            .background(.black.opacity(0.55))
+        }
+        .onAppear {
+            cameraManager.onFrame = viewModel.processFrame
         }
     }
-    .frame(maxWidth: .infinity, alignment: .leading)
-    .padding()
-    .background(.black.opacity(0.55))
 }`}</CodePane>
-      </div>
+            }
+          />
+        }
+      />
     </Shell>
   ),
 
   // ─── 12: CODE — TEXT RECOGNITION MODE ───
   () => (
     <Shell tag="Live code-along" timer="6" title="Part 3 — adding text recognition (OCR) mode" subtitle="One enum, one toggle, two completely different capabilities" notes="The elegance here is in the enum. ScanMode.LABEL and ScanMode.TEXT share the same camera pipeline — the only thing that changes is which request you send the frame to. This is a good moment to pause and ask: how would you add a third mode? (barcode scanning, face detection, etc.) The answer is obvious once students see the pattern. | Sources: ML Kit text recognition v2 — developers.google.com/ml-kit/vision/text-recognition/v2/android. TextRecognition.getClient() — developers.google.com/ml-kit/reference/android/com/google/mlkit/vision/text/TextRecognition. VNRecognizeTextRequest — developer.apple.com/documentation/vision/vnrecognizetextrequest. VNRecognizeTextRequest.recognitionLevel — developer.apple.com/documentation/vision/vnrecognizetextrequest/recognitionlevel (.accurate vs .fast tradeoff). Compose FilterChip — developer.android.com/reference/kotlin/androidx/compose/material3/package-summary#FilterChip. SwiftUI Picker segmented style — developer.apple.com/documentation/swiftui/pickerstyle/segmented.">
-      <div style={{ display: "flex", gap: 10, marginTop: 6 }}>
-        <CodePane title="Android — ScanMode + TextRecognition" accent={BLUE}>{`enum class ScanMode { LABEL, TEXT }
+      <ConceptBanner accent={TEAL}>
+        <strong>The pattern is open-ended.</strong> The enum picks <em>which</em> request runs; the camera pipeline doesn't change. Adding a 3rd mode (barcode, face detection, pose) = add an enum case + one new branch. Same shape, every time.
+      </ConceptBanner>
+      <ViewToggle
+        steps={
+          <OSToggle
+            android={
+              <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                <Step n={1} title="Define the mode + add a text recognizer">
+                  <pre style={preStyle}>{`enum class ScanMode { LABEL, TEXT }
+
+private val textRecognizer = TextRecognition.getClient(
+    TextRecognizerOptions.DEFAULT_OPTIONS
+)`}</pre>
+                </Step>
+                <Step n={2} title="Branch the analyzer on the mode">
+                  <pre style={preStyle}>{`fun analyzeFrame(imageProxy: ImageProxy, mode: ScanMode) {
+    val image = InputImage.fromMediaImage(
+        imageProxy.image!!,
+        imageProxy.imageInfo.rotationDegrees
+    )
+    when (mode) {
+        ScanMode.LABEL -> labeler.process(image)
+            .addOnSuccessListener { results ->
+                _labels.value = results.take(3).map {
+                    "\${it.text}  \${(it.confidence*100).toInt()}%"
+                }
+            }
+            .addOnCompleteListener { imageProxy.close() }
+
+        ScanMode.TEXT -> textRecognizer.process(image)
+            .addOnSuccessListener { text ->
+                _labels.value =
+                    if (text.text.isBlank()) listOf("No text detected")
+                    else listOf(text.text.take(240))
+            }
+            .addOnCompleteListener { imageProxy.close() }
+    }
+}`}</pre>
+                </Step>
+                <Step n={3} title="Segmented control switches mode">
+                  <pre style={preStyle}>{`var currentMode by remember { mutableStateOf(ScanMode.LABEL) }
+
+Row(horizontalArrangement = Arrangement.Center,
+    modifier = Modifier.fillMaxWidth()) {
+    ScanMode.entries.forEach { mode ->
+        FilterChip(
+            selected = currentMode == mode,
+            onClick = { currentMode = mode },
+            label = { Text(mode.name) }
+        )
+        Spacer(Modifier.width(8.dp))
+    }
+}`}</pre>
+                </Step>
+              </div>
+            }
+            ios={
+              <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                <Step n={1} title="Define the mode" accent={TEAL}>
+                  <pre style={preStyle}>{`enum ScanMode { case label, text }`}</pre>
+                </Step>
+                <Step n={2} title="Switch on mode to pick the Vision request" accent={TEAL}>
+                  <pre style={preStyle}>{`func processFrame(_ buffer: CMSampleBuffer, mode: ScanMode) {
+    let now = Date().timeIntervalSince1970
+    guard now - lastProcessed > 0.25 else { return }
+    lastProcessed = now
+    guard let pixelBuffer =
+        CMSampleBufferGetImageBuffer(buffer) else { return }
+
+    let request: VNRequest
+    switch mode {
+    case .label:
+        request = VNClassifyImageRequest { [weak self] req, _ in
+            let top = (req.results
+                as? [VNClassificationObservation])?
+                .prefix(3).filter { \$0.confidence > 0.08 }
+                .map { "\(\$0.identifier)  "
+                    + "\(Int(\$0.confidence*100))%" } ?? []
+            DispatchQueue.main.async { self?.detectedLabels = top }
+        }
+    case .text:
+        let r = VNRecognizeTextRequest { [weak self] req, _ in
+            let text = (req.results
+                as? [VNRecognizedTextObservation])?
+                .compactMap { \$0.topCandidates(1).first?.string }
+                .joined(separator: " ") ?? ""
+            DispatchQueue.main.async {
+                self?.detectedLabels = text.isEmpty
+                    ? ["No text detected"] : [text]
+            }
+        }
+        r.recognitionLevel = .accurate
+        request = r
+    }
+    try? VNImageRequestHandler(
+        cvPixelBuffer: pixelBuffer, orientation: .up
+    ).perform([request])
+}`}</pre>
+                </Step>
+                <Step n={3} title="Segmented Picker drives the mode" accent={TEAL}>
+                  <pre style={preStyle}>{`@State private var scanMode: ScanMode = .label
+
+Picker("Mode", selection: \$scanMode) {
+    Text("Label").tag(ScanMode.label)
+    Text("Text").tag(ScanMode.text)
+}.pickerStyle(.segmented).padding()`}</pre>
+                </Step>
+              </div>
+            }
+          />
+        }
+        full={
+          <OSToggle
+            android={
+              <CodePane title="Kotlin — ScanMode + TextRecognition" accent={PURPLE}>{`enum class ScanMode { LABEL, TEXT }
 
 private val textRecognizer = TextRecognition.getClient(
     TextRecognizerOptions.DEFAULT_OPTIONS
@@ -763,7 +1145,7 @@ fun analyzeFrame(imageProxy: ImageProxy, mode: ScanMode) {
             labeler.process(image)
                 .addOnSuccessListener { results ->
                     _labels.value = results.take(3).map {
-                        "\${it.text} \${(it.confidence*100).toInt()}%"
+                        "\${it.text}  \${(it.confidence*100).toInt()}%"
                     }
                 }
                 .addOnCompleteListener {
@@ -786,9 +1168,11 @@ fun analyzeFrame(imageProxy: ImageProxy, mode: ScanMode) {
 }
 
 // In Compose UI — segmented control to switch:
+var currentMode by remember { mutableStateOf(ScanMode.LABEL) }
+
 Row(horizontalArrangement = Arrangement.Center,
     modifier = Modifier.fillMaxWidth()) {
-    ScanMode.values().forEach { mode ->
+    ScanMode.entries.forEach { mode ->
         FilterChip(
             selected = currentMode == mode,
             onClick = { currentMode = mode },
@@ -797,7 +1181,9 @@ Row(horizontalArrangement = Arrangement.Center,
         Spacer(Modifier.width(8.dp))
     }
 }`}</CodePane>
-        <CodePane title="iOS — ScanMode enum + VNRecognizeTextRequest" accent={GREEN}>{`enum ScanMode { case label, text }
+            }
+            ios={
+              <CodePane title="Swift — ScanMode enum + VNRecognizeTextRequest" accent={TEAL}>{`enum ScanMode { case label, text }
 
 func processFrame(
     _ buffer: CMSampleBuffer,
@@ -846,11 +1232,16 @@ func processFrame(
 }
 
 // Picker in SwiftUI:
+@State private var scanMode: ScanMode = .label
+
 Picker("Mode", selection: \$scanMode) {
     Text("Label").tag(ScanMode.label)
     Text("Text").tag(ScanMode.text)
 }.pickerStyle(.segmented).padding()`}</CodePane>
-      </div>
+            }
+          />
+        }
+      />
     </Shell>
   ),
 
