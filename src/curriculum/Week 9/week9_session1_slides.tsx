@@ -53,7 +53,59 @@ const Discussion = ({ children }) => (
   </div>
 );
 
-const Shell = ({ tag, tagColor = "teal", timer, title, subtitle, children, notes }) => (
+const OSToggle = ({ android, ios }: { [k: string]: any }) => {
+  const [platform, setPlatform] = useState<'android' | 'ios'>('android');
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+      <div style={{ display: "flex", borderRadius: 8, overflow: "hidden", border: "1px solid #e5e7eb", width: "fit-content" }}>
+        <button onClick={() => setPlatform('android')} style={{ padding: "5px 16px", fontSize: 11, fontWeight: 700, letterSpacing: ".04em", background: platform === 'android' ? PURPLE : "#fff", color: platform === 'android' ? "#fff" : MUTED, border: "none", borderRight: "1px solid #e5e7eb", cursor: "pointer" }}>
+          Android · Kotlin
+        </button>
+        <button onClick={() => setPlatform('ios')} style={{ padding: "5px 16px", fontSize: 11, fontWeight: 700, letterSpacing: ".04em", background: platform === 'ios' ? TEAL : "#fff", color: platform === 'ios' ? "#fff" : MUTED, border: "none", cursor: "pointer" }}>
+          iOS · Swift
+        </button>
+      </div>
+      {platform === 'android' ? android : ios}
+    </div>
+  );
+};
+
+const Step = ({ n, title, children, accent = PURPLE }: { [k: string]: any }) => (
+  <div style={{ marginBottom: 10, paddingLeft: 24, borderLeft: `2px solid #e5e7eb`, position: "relative" }}>
+    <div style={{ position: "absolute", left: -14, top: 0, width: 26, height: 26, borderRadius: "50%", background: "#fff", border: `2px solid ${accent}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 800, color: accent }}>
+      {n}
+    </div>
+    <p style={{ fontSize: 12, fontWeight: 700, color: TEXT, margin: "2px 0 6px" }}>{title}</p>
+    <div>{children}</div>
+  </div>
+);
+
+const ViewToggle = ({ steps, full }: { [k: string]: any }) => {
+  const [view, setView] = useState<'steps' | 'full'>('steps');
+  return (
+    <div>
+      <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 6 }}>
+        <div style={{ display: "flex", borderRadius: 20, overflow: "hidden", border: "1px solid #e5e7eb", width: "fit-content" }}>
+          <button onClick={() => setView('steps')} style={{ padding: "3px 12px", fontSize: 10, fontWeight: 700, letterSpacing: ".04em", background: view === 'steps' ? PURPLE : "#fff", color: view === 'steps' ? "#fff" : MUTED, border: "none", borderRight: "1px solid #e5e7eb", cursor: "pointer" }}>
+            Step by step
+          </button>
+          <button onClick={() => setView('full')} style={{ padding: "3px 12px", fontSize: 10, fontWeight: 700, letterSpacing: ".04em", background: view === 'full' ? PURPLE : "#fff", color: view === 'full' ? "#fff" : MUTED, border: "none", cursor: "pointer" }}>
+            Full code
+          </button>
+        </div>
+      </div>
+      {view === 'steps' ? steps : full}
+    </div>
+  );
+};
+
+const preStyle = { margin: 0, background: "#1e1e2e", color: "#cdd6f4", fontSize: 10, padding: "8px 12px", borderRadius: 6, lineHeight: 1.6, fontFamily: "monospace", whiteSpace: "pre-wrap" as const };
+
+const IC = ({ children }: { [k: string]: any }) => (
+  <code style={{ background: "rgba(83,74,183,0.12)", color: PURPLE_DARK, borderRadius: 4, padding: "1px 5px", fontSize: 11, fontFamily: "monospace" }}>{children}</code>
+);
+
+const Shell = ({ tag, tagColor = "teal", timer, title, subtitle, children, notes }: { [k: string]: any }) => (
   <div style={{ background: "var(--color-background-primary)", border: "0.5px solid var(--color-border-tertiary)", borderRadius: 12, padding: "20px 22px", minHeight: 340 }}>
     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 12 }}>
       <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
@@ -110,12 +162,17 @@ const slides = [
         { time: "0:00–0:05",  label: "Hook",                  desc: "The moment a test saves you — what that feels like", section: null },
         { time: "0:05–0:12",  label: "Why tests exist",        desc: "The real reason — confidence to change code", section: null },
         { time: "0:12–0:18",  label: "The test pyramid",       desc: "Unit, integration, E2E — and why we start at the bottom", section: null },
-        { time: "0:18–0:28",  label: "Testable code",          desc: "What makes code easy to test — and how MVVM sets you up", section: null },
-        { time: "0:28–0:36",  label: "Test doubles",           desc: "Fakes, stubs, and mocks — and which one you'll use today", section: null },
-        { time: "0:36–0:52",  label: "Writing tests",          desc: "The starter ViewModel — Loading, Success, Error assertions", section: null },
-        { time: "0:52–1:00",  label: "Edge cases with Claude", desc: "AI as a test-case generator", section: "ai" },
-        { time: "1:00–1:05",  label: "Lab intro",              desc: "What you're building in the lab", section: null },
-        { time: "1:05–2:00",  label: "Lab — breakout rooms",   desc: "Write tests for the shared starter ViewModel", section: "lab" },
+        { time: "0:18–0:28",  label: "Testable code + DI",     desc: "Why MVVM sets you up — dependency injection as the test seam", section: null },
+        { time: "0:28–0:33",  label: "Test doubles",           desc: "Fakes, stubs, and mocks — and which one you'll use today", section: null },
+        { time: "0:33–0:43",  label: "Code-along: VM + fake",  desc: "The starter ViewModel and the FakeRepository", section: null },
+        { time: "0:43–0:48",  label: "Anatomy of a test",      desc: "@Test, runTest, XCTestCase — and the AAA pattern", section: null },
+        { time: "0:48–0:52",  label: "Assertion toolkit",      desc: "assertEquals, assertTrue, XCTAssertEqual — and the gotchas", section: null },
+        { time: "0:52–0:56",  label: "Async tests gotcha",     desc: "Why you must drain coroutines / await before asserting", section: null },
+        { time: "0:56–1:04",  label: "Writing the tests",      desc: "Loading, Success, Error — one test per state", section: null },
+        { time: "1:04–1:12",  label: "Failures + pitfalls",    desc: "Reading a failing assertion · the four lab pitfalls", section: null },
+        { time: "1:12–1:18",  label: "Edge cases with Claude", desc: "AI as a test-case generator", section: "ai" },
+        { time: "1:18–1:22",  label: "Lab intro",              desc: "What you're building in the lab", section: null },
+        { time: "1:22–2:00",  label: "Lab — breakout rooms",   desc: "Write tests for the shared starter ViewModel", section: "lab" },
         { time: "2:00–2:10",  label: "Wrap-up + survey",       desc: "Session 2 preview: app performance", section: "wrapup" },
       ].map(r => (
         <div key={r.time} style={{
@@ -265,10 +322,12 @@ const slides = [
   () => (
     <Shell tag="Concept" timer="8" title="What makes code testable" subtitle="MVVM wasn't just about architecture — it was about this"
       notes="This is the payoff for everything in Week 6. Students built MVVM because they were told it was a good pattern. Now they find out why: a ViewModel with no UI imports and an injected repository is exactly the shape of code that is easy to test. Walk through the two ViewModel examples and ask students which one they could write a test for without a running app. The answer should be obvious.">
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
-        <div>
-          <p style={{ fontSize: 12, fontWeight: 600, color: RED, margin: "0 0 8px" }}>Hard to test ❌</p>
-          <CodePane title="Kotlin — AlbumScreen.kt (mixed)" accent={RED}>{`@Composable
+      <OSToggle
+        android={
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+            <div>
+              <p style={{ fontSize: 12, fontWeight: 600, color: RED, margin: "0 0 8px" }}>Hard to test ❌</p>
+              <CodePane title="Kotlin — AlbumScreen.kt (mixed)" accent={RED}>{`@Composable
 fun AlbumScreen() {
   var albums by remember {
     mutableStateOf(emptyList<Album>())
@@ -280,38 +339,93 @@ fun AlbumScreen() {
   }
   // ...
 }`}</CodePane>
-          <div style={{ background: RED_LIGHT, borderRadius: 6, padding: "8px 10px", marginTop: 6 }}>
-            <p style={{ fontSize: 11, color: RED, margin: 0, lineHeight: 1.5 }}>
-              To test this you need a Composable, a running coroutine, and a real (or mocked) Retrofit client. That{"'"}s not a unit test — it{"'"}s almost an integration test.
-            </p>
-          </div>
-        </div>
-        <div>
-          <p style={{ fontSize: 12, fontWeight: 600, color: TEAL_DARK, margin: "0 0 8px" }}>Easy to test ✅</p>
-          <CodePane title="Kotlin — AlbumViewModel.kt (MVVM)" accent={TEAL_DARK}>{`class AlbumViewModel(
+              <div style={{ background: RED_LIGHT, borderRadius: 6, padding: "8px 10px", marginTop: 6 }}>
+                <p style={{ fontSize: 11, color: RED, margin: 0, lineHeight: 1.5 }}>
+                  To test this you need a Composable, a running coroutine, and a real (or mocked) Retrofit client. That{"'"}s not a unit test — it{"'"}s almost an integration test.
+                </p>
+              </div>
+            </div>
+            <div>
+              <p style={{ fontSize: 12, fontWeight: 600, color: TEAL_DARK, margin: "0 0 8px" }}>Easy to test ✅</p>
+              <CodePane title="Kotlin — AlbumViewModel.kt (MVVM)" accent={TEAL_DARK}>{`class AlbumViewModel(
   private val repo: AlbumRepository
 ) : ViewModel() {
   private val _uiState =
-    MutableStateFlow<UiState>(Loading)
+    MutableStateFlow<AlbumUiState>(
+      AlbumUiState.Loading)
   val uiState = _uiState.asStateFlow()
 
   fun loadAlbums() {
     viewModelScope.launch {
       _uiState.value = try {
-        Success(repo.getAlbums())
+        AlbumUiState.Success(repo.getAlbums())
       } catch (e: Exception) {
-        Error(e.message ?: "")
+        AlbumUiState.Error(e.message ?: "")
       }
     }
   }
 }`}</CodePane>
-          <div style={{ background: TEAL_LIGHT, borderRadius: 6, padding: "8px 10px", marginTop: 6 }}>
-            <p style={{ fontSize: 11, color: TEAL_DARK, margin: 0, lineHeight: 1.5 }}>
-              To test this: create a fake repo, create the ViewModel, call <span style={{ fontFamily: "monospace" }}>loadAlbums()</span>, assert the state. No UI, no network, no device.
-            </p>
+              <div style={{ background: TEAL_LIGHT, borderRadius: 6, padding: "8px 10px", marginTop: 6 }}>
+                <p style={{ fontSize: 11, color: TEAL_DARK, margin: 0, lineHeight: 1.5 }}>
+                  To test this: create a fake repo, create the ViewModel, call <span style={{ fontFamily: "monospace" }}>loadAlbums()</span>, assert the state. No UI, no network, no device.
+                </p>
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
+        }
+        ios={
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+            <div>
+              <p style={{ fontSize: 12, fontWeight: 600, color: RED, margin: "0 0 8px" }}>Hard to test ❌</p>
+              <CodePane title="Swift — AlbumScreen.swift (mixed)" accent={RED}>{`struct AlbumScreen: View {
+  @State private var albums: [Album] = []
+
+  var body: some View {
+    List(albums, id: \\.id) { /* ... */ }
+      .task {
+        // Network call directly in the View
+        albums = try await
+          URLSession.shared.albums()
+      }
+  }
+}`}</CodePane>
+              <div style={{ background: RED_LIGHT, borderRadius: 6, padding: "8px 10px", marginTop: 6 }}>
+                <p style={{ fontSize: 11, color: RED, margin: 0, lineHeight: 1.5 }}>
+                  To test this you need a SwiftUI View hierarchy, a running task, and a real (or stubbed) URLSession. That{"'"}s not a unit test — it{"'"}s almost an integration test.
+                </p>
+              </div>
+            </div>
+            <div>
+              <p style={{ fontSize: 12, fontWeight: 600, color: TEAL_DARK, margin: "0 0 8px" }}>Easy to test ✅</p>
+              <CodePane title="Swift — AlbumViewModel.swift (MVVM)" accent={TEAL_DARK}>{`@MainActor
+class AlbumViewModel: ObservableObject {
+  @Published var uiState: AlbumUiState
+    = .loading
+  private let repo: AlbumRepository
+
+  init(repo: AlbumRepository) {
+    self.repo = repo
+  }
+
+  func loadAlbums() async {
+    do {
+      let albums = try await repo.getAlbums()
+      uiState = .success(albums)
+    } catch {
+      uiState = .error(
+        error.localizedDescription)
+    }
+  }
+}`}</CodePane>
+              <div style={{ background: TEAL_LIGHT, borderRadius: 6, padding: "8px 10px", marginTop: 6 }}>
+                <p style={{ fontSize: 11, color: TEAL_DARK, margin: 0, lineHeight: 1.5 }}>
+                  To test this: create a fake repo, create the ViewModel, await <span style={{ fontFamily: "monospace" }}>loadAlbums()</span>, assert the state. No UI, no network, no device.
+                </p>
+              </div>
+            </div>
+          </div>
+        }
+      />
       <div style={{ background: PURPLE_LIGHT, borderRadius: 8, padding: "10px 14px", marginTop: 12 }}>
         <p style={{ fontSize: 12, color: PURPLE_DARK, margin: 0, lineHeight: 1.5 }}>
           <strong>The testability rule:</strong> if you can create the class you want to test by just calling its constructor — passing in its dependencies — it{"'"}s testable. If you need a running app, a screen, or a network connection just to instantiate it, it{"'"}s not.
@@ -355,7 +469,7 @@ val vm = AlbumViewModel(fakeRepo)`}</pre>
           </div>
           <div style={{ background: TEAL_LIGHT, borderRadius: 8, padding: "12px 14px", marginTop: 8 }}>
             <pre style={{ margin: 0, fontSize: 11, fontFamily: "monospace", color: TEAL_DARK, lineHeight: 1.7, whiteSpace: "pre-wrap" }}>{`// iOS equivalent
-let fakeRepo = MockAlbumRepository()
+let fakeRepo = FakeAlbumRepository()
 fakeRepo.albumsToReturn = [Album(...)]
 let vm = AlbumViewModel(repo: fakeRepo)`}</pre>
           </div>
@@ -417,15 +531,91 @@ let vm = AlbumViewModel(repo: fakeRepo)`}</pre>
   () => (
     <Shell tag="Code-along" timer="5" title="The starter ViewModel" subtitle="What you're testing — read this before writing a single test"
       notes="Spend time here. Students need to understand what this ViewModel does before they can write meaningful assertions about it. Walk through it line by line: what state does it start in? What does loadItems() do? What are the possible outcomes? The answer to those three questions IS the test plan.">
-      <div style={{ display: "flex", gap: 12 }}>
-        <CodePane title="Kotlin — ItemViewModel.kt" accent={BLUE}>{`sealed interface ItemUiState {
+      <div style={{ marginTop: 4 }}>
+        <ViewToggle
+          steps={
+            <OSToggle
+              android={
+                <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                  <Step n={1} title="The state contract — three possible outcomes">
+                    <pre style={preStyle}>{`sealed interface ItemUiState {
     object Loading : ItemUiState
-    data class Success(
-        val items: List<String>
-    ) : ItemUiState
-    data class Error(
-        val message: String
-    ) : ItemUiState
+    data class Success(val items: List<String>) : ItemUiState
+    data class Error(val message: String) : ItemUiState
+}`}</pre>
+                  </Step>
+                  <Step n={2} title="The repository interface — the injection point">
+                    <pre style={preStyle}>{`interface ItemRepository {
+    suspend fun getItems(): List<String>
+}`}</pre>
+                  </Step>
+                  <Step n={3} title="The ViewModel — moves between states">
+                    <pre style={preStyle}>{`class ItemViewModel(
+    private val repo: ItemRepository
+) : ViewModel() {
+    private val _uiState =
+        MutableStateFlow<ItemUiState>(ItemUiState.Loading)
+    val uiState: StateFlow<ItemUiState> = _uiState.asStateFlow()
+
+    fun loadItems() {
+        _uiState.value = ItemUiState.Loading
+        viewModelScope.launch {
+            _uiState.value = try {
+                ItemUiState.Success(repo.getItems())
+            } catch (e: Exception) {
+                ItemUiState.Error(e.message ?: "")
+            }
+        }
+    }
+}`}</pre>
+                  </Step>
+                </div>
+              }
+              ios={
+                <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                  <Step n={1} title="The state contract — three possible outcomes" accent={TEAL}>
+                    <pre style={preStyle}>{`enum ItemUiState {
+    case loading
+    case success([String])
+    case error(String)
+}`}</pre>
+                  </Step>
+                  <Step n={2} title="The repository protocol — the injection point" accent={TEAL}>
+                    <pre style={preStyle}>{`protocol ItemRepository {
+    func getItems() async throws -> [String]
+}`}</pre>
+                  </Step>
+                  <Step n={3} title="The ViewModel — moves between states" accent={TEAL}>
+                    <pre style={preStyle}>{`@MainActor
+class ItemViewModel: ObservableObject {
+    @Published var uiState: ItemUiState = .loading
+    private let repo: ItemRepository
+
+    init(repo: ItemRepository) {
+        self.repo = repo
+    }
+
+    func loadItems() async {
+        uiState = .loading
+        do {
+            let items = try await repo.getItems()
+            uiState = .success(items)
+        } catch {
+            uiState = .error(error.localizedDescription)
+        }
+    }
+}`}</pre>
+                  </Step>
+                </div>
+              }
+            />
+          }
+          full={
+            <OSToggle
+              android={<CodePane title="Kotlin — ItemViewModel.kt" accent={PURPLE}>{`sealed interface ItemUiState {
+    object Loading : ItemUiState
+    data class Success(val items: List<String>) : ItemUiState
+    data class Error(val message: String) : ItemUiState
 }
 
 interface ItemRepository {
@@ -436,36 +626,33 @@ class ItemViewModel(
     private val repo: ItemRepository
 ) : ViewModel() {
     private val _uiState =
-        MutableStateFlow<ItemUiState>(Loading)
-    val uiState: StateFlow<ItemUiState> =
-        _uiState.asStateFlow()
+        MutableStateFlow<ItemUiState>(ItemUiState.Loading)
+    val uiState: StateFlow<ItemUiState> = _uiState.asStateFlow()
 
     fun loadItems() {
-        _uiState.value = Loading
+        _uiState.value = ItemUiState.Loading
         viewModelScope.launch {
             _uiState.value = try {
-                Success(repo.getItems())
+                ItemUiState.Success(repo.getItems())
             } catch (e: Exception) {
-                Error(e.message ?: "")
+                ItemUiState.Error(e.message ?: "")
             }
         }
     }
-}`}</CodePane>
-        <CodePane title="Swift — ItemViewModel.swift" accent={GREEN}>{`enum ItemUiState {
+}`}</CodePane>}
+              ios={<CodePane title="Swift — ItemViewModel.swift" accent={TEAL}>{`enum ItemUiState {
     case loading
     case success([String])
     case error(String)
 }
 
 protocol ItemRepository {
-    func getItems() async throws
-        -> [String]
+    func getItems() async throws -> [String]
 }
 
 @MainActor
 class ItemViewModel: ObservableObject {
-    @Published var uiState: ItemUiState
-        = .loading
+    @Published var uiState: ItemUiState = .loading
     private let repo: ItemRepository
 
     init(repo: ItemRepository) {
@@ -475,15 +662,16 @@ class ItemViewModel: ObservableObject {
     func loadItems() async {
         uiState = .loading
         do {
-            let items = try await
-                repo.getItems()
+            let items = try await repo.getItems()
             uiState = .success(items)
         } catch {
-            uiState = .error(
-                error.localizedDescription)
+            uiState = .error(error.localizedDescription)
         }
     }
-}`}</CodePane>
+}`}</CodePane>}
+            />
+          }
+        />
       </div>
       <Discussion>{"Before writing any tests — what are all the possible states this ViewModel can be in? What inputs would cause each one?"}</Discussion>
     </Shell>
@@ -508,7 +696,7 @@ class ItemViewModel: ObservableObject {
         return itemsToReturn
     }
 }`}</CodePane>
-        <CodePane title="Swift — MockItemRepository.swift" accent={GREEN}>{`class MockItemRepository: ItemRepository {
+        <CodePane title="Swift — FakeItemRepository.swift" accent={GREEN}>{`class FakeItemRepository: ItemRepository {
     // Configure before each test
     var shouldThrow = false
     var itemsToReturn =
@@ -539,12 +727,199 @@ class ItemViewModel: ObservableObject {
     </Shell>
   ),
 
-  // 11 — Writing the tests
+  // 11 — Anatomy of a test
+  () => (
+    <Shell tag="Concept" timer="5" title="Anatomy of a test" subtitle="Every test has the same shape — Arrange · Act · Assert"
+      notes="Surface the framework primitives now so the next slide isn't a wall of unfamiliar tokens. Walk through AAA: arrange dependencies, act on the system, assert on the outcome. Point out test names are documentation — a good name reads as a sentence describing the behaviour. JUnit lets you backtick a name with spaces; XCTest discovers any function whose name starts with 'test'.">
+      <OSToggle
+        android={
+          <div style={{ display: "grid", gridTemplateColumns: "1.2fr 1fr", gap: 12 }}>
+            <CodePane title="Kotlin — JUnit + kotlinx-coroutines-test" accent={PURPLE}>{`@Test                              // ① mark as a test
+fun \`loadItems emits Success\`()    // ② name = behaviour
+    = runTest {                    // ③ test coroutine scope
+
+    // Arrange
+    val fake = FakeItemRepository()
+    val vm = ItemViewModel(fake)
+
+    // Act
+    vm.loadItems()
+    advanceUntilIdle()             // ④ flush coroutines
+
+    // Assert
+    assertTrue(vm.uiState.value
+        is ItemUiState.Success)
+}`}</CodePane>
+            <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+              {[
+                { n: "①", label: "@Test annotation", desc: "Tells JUnit this method is a runnable test." },
+                { n: "②", label: "Backticked names", desc: "Kotlin lets you write the behaviour as a sentence — these names show up directly in test output." },
+                { n: "③", label: "runTest { }", desc: "A virtual-time coroutine scope. Without it, async work would either skip or hang." },
+                { n: "④", label: "advanceUntilIdle()", desc: "Run all pending coroutines to completion before asserting." },
+                { n: "AAA", label: "Arrange · Act · Assert", desc: "Set up, exercise, verify. Every test you write follows this shape." },
+              ].map(it => (
+                <div key={it.n} style={{ background: GRAY, borderRadius: 6, padding: "6px 8px" }}>
+                  <p style={{ fontSize: 11, margin: "0 0 1px" }}><strong style={{ color: PURPLE_DARK }}>{it.n} {it.label}</strong></p>
+                  <p style={{ fontSize: 11, color: MUTED, margin: 0, lineHeight: 1.4 }}>{it.desc}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        }
+        ios={
+          <div style={{ display: "grid", gridTemplateColumns: "1.2fr 1fr", gap: 12 }}>
+            <CodePane title="Swift — XCTest" accent={TEAL}>{`@MainActor                            // ① UI/Published on main
+final class ItemViewModelTests:       // ② subclass XCTestCase
+    XCTestCase {
+
+  func testLoadItemsSuccess()         // ③ name starts with "test"
+      async {                          // ④ async test method
+    // Arrange
+    let fake = FakeItemRepository()
+    let vm = ItemViewModel(repo: fake)
+
+    // Act
+    await vm.loadItems()               // ⑤ await flushes async work
+
+    // Assert
+    if case .success(let items)
+        = vm.uiState {
+      XCTAssertEqual(items.count, 3)
+    }
+  }
+}`}</CodePane>
+            <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+              {[
+                { n: "①", label: "@MainActor", desc: "ViewModel uses @Published — assertions must run on main." },
+                { n: "②", label: "XCTestCase", desc: "Test classes inherit from XCTestCase. One class per type under test is the convention." },
+                { n: "③", label: "test prefix", desc: "XCTest discovers tests by name — every test method must start with 'test'." },
+                { n: "④", label: "async function", desc: "Marks the test as awaiting suspension points — the runner handles the rest." },
+                { n: "⑤", label: "await", desc: "Suspends until the async work finishes, so the assertion runs after the state has updated." },
+              ].map(it => (
+                <div key={it.n} style={{ background: GRAY, borderRadius: 6, padding: "6px 8px" }}>
+                  <p style={{ fontSize: 11, margin: "0 0 1px" }}><strong style={{ color: TEAL_DARK }}>{it.n} {it.label}</strong></p>
+                  <p style={{ fontSize: 11, color: MUTED, margin: 0, lineHeight: 1.4 }}>{it.desc}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        }
+      />
+      <div style={{ background: PURPLE_LIGHT, borderRadius: 8, padding: "10px 14px", marginTop: 10 }}>
+        <p style={{ fontSize: 12, color: PURPLE_DARK, margin: 0, lineHeight: 1.5 }}>
+          <strong>Every test follows the AAA shape.</strong> If a test of yours doesn{"'"}t look like Arrange → Act → Assert, you{"'"}ve probably mixed two tests into one.
+        </p>
+      </div>
+    </Shell>
+  ),
+
+  // 12 — The assertion toolkit
+  () => (
+    <Shell tag="Concept" timer="4" title="The assertion toolkit" subtitle="The functions you'll actually call in every test"
+      notes="Don't lecture through every row — students can read. Highlight the two callouts: the JUnit argument-order convention (Expected first, Actual second) and the 'use the most specific assertion' rule. The point is students leave knowing the menu exists, not memorising every API.">
+      <div style={{ marginTop: 4 }}>
+        <div style={{ display: "grid", gridTemplateColumns: "1.1fr 1.2fr 1.2fr", gap: 6, padding: "5px 8px", background: GRAY, borderRadius: "6px 6px 0 0" }}>
+          <div style={{ fontSize: 10, fontWeight: 700, color: MUTED, textTransform: "uppercase", letterSpacing: ".05em" }}>What you{"'"}re checking</div>
+          <div style={{ fontSize: 10, fontWeight: 700, color: PURPLE, textTransform: "uppercase", letterSpacing: ".05em" }}>JUnit · Kotlin</div>
+          <div style={{ fontSize: 10, fontWeight: 700, color: TEAL, textTransform: "uppercase", letterSpacing: ".05em" }}>XCTest · Swift</div>
+        </div>
+        {[
+          { purpose: "Boolean true / false", kotlin: "assertTrue(cond)\nassertFalse(cond)", swift: "XCTAssertTrue(cond)\nXCTAssertFalse(cond)" },
+          { purpose: "Value equality", kotlin: "assertEquals(expected, actual)", swift: "XCTAssertEqual(a, b)" },
+          { purpose: "Nullability", kotlin: "assertNull(x)\nassertNotNull(x)", swift: "XCTAssertNil(x)\nXCTAssertNotNil(x)" },
+          { purpose: "Expected to throw", kotlin: "assertThrows<IOException> { ... }", swift: "XCTAssertThrowsError(try ...)" },
+          { purpose: "Force a failure", kotlin: `fail("message")`, swift: `XCTFail("message")` },
+        ].map((r) => (
+          <div key={r.purpose} style={{ display: "grid", gridTemplateColumns: "1.1fr 1.2fr 1.2fr", gap: 6, padding: "5px 8px", borderTop: `0.5px solid ${GRAY}` }}>
+            <div style={{ fontSize: 11, color: TEXT, fontWeight: 500 }}>{r.purpose}</div>
+            <div style={{ fontSize: 10, color: PURPLE_DARK, fontFamily: "monospace", whiteSpace: "pre-wrap", lineHeight: 1.5 }}>{r.kotlin}</div>
+            <div style={{ fontSize: 10, color: TEAL_DARK, fontFamily: "monospace", whiteSpace: "pre-wrap", lineHeight: 1.5 }}>{r.swift}</div>
+          </div>
+        ))}
+      </div>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginTop: 12 }}>
+        <div style={{ background: AMBER_LIGHT, borderRadius: 8, padding: "10px 12px" }}>
+          <p style={{ fontSize: 12, fontWeight: 700, color: AMBER_DARK, margin: "0 0 4px" }}>⚠️ JUnit argument order</p>
+          <p style={{ fontSize: 11, color: AMBER_DARK, margin: 0, lineHeight: 1.5 }}>
+            Convention is <IC>assertEquals(expected, actual)</IC>. Flip them and the failure message reads backwards — &ldquo;Expected: 0, Actual: 3&rdquo; when you meant the opposite. XCTest doesn{"'"}t enforce order; just stay consistent.
+          </p>
+        </div>
+        <div style={{ background: TEAL_LIGHT, borderRadius: 8, padding: "10px 12px" }}>
+          <p style={{ fontSize: 12, fontWeight: 700, color: TEAL_DARK, margin: "0 0 4px" }}>✅ Prefer the most specific assertion</p>
+          <p style={{ fontSize: 11, color: TEAL_DARK, margin: 0, lineHeight: 1.5 }}>
+            <IC>assertEquals(3, list.size)</IC> fails with &ldquo;Expected: 3, Actual: 0.&rdquo; <IC>assertTrue(list.size == 3)</IC> fails with &ldquo;Expected: true, Actual: false&rdquo; — far less useful.
+          </p>
+        </div>
+      </div>
+    </Shell>
+  ),
+
+  // 13 — Async tests — the gotcha
+  () => (
+    <Shell tag="Pitfall" tagColor="amber" timer="4" title="Async tests — the gotcha" subtitle="The bug that makes a test pass when it shouldn't"
+      notes="This is the single most common reason a unit test passes when it shouldn't. The setup looks fine, the assertion looks fine — but the assertion runs BEFORE the async work finishes, so it's checking the initial state, not the post-load state. Walk through the failure example carefully. The fix on each platform is small but specific.">
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+        <div style={{ background: RED_LIGHT, borderRadius: 8, padding: "12px 14px" }}>
+          <p style={{ fontSize: 12, fontWeight: 700, color: RED, margin: "0 0 8px" }}>❌ Passes for the wrong reason</p>
+          <pre style={{ ...preStyle, fontSize: 10 }}>{`@Test
+fun \`loadItems emits Success\`() = runTest {
+    val fake = FakeItemRepository()
+    val vm = ItemViewModel(fake)
+    vm.loadItems()
+    // ↓ no advanceUntilIdle()
+    assertTrue(vm.uiState.value
+        is ItemUiState.Loading)
+    // ✓ Loading IS the current state...
+    // ...because the coroutine hasn't run yet.
+}`}</pre>
+          <p style={{ fontSize: 11, color: RED, margin: "8px 0 0", lineHeight: 1.5 }}>
+            The assertion runs <em>before</em> the launched coroutine. The state is still <IC>Loading</IC> when you check — the test goes green, but it{"'"}s not testing what you think.
+          </p>
+        </div>
+        <div style={{ background: TEAL_LIGHT, borderRadius: 8, padding: "12px 14px" }}>
+          <p style={{ fontSize: 12, fontWeight: 700, color: TEAL_DARK, margin: "0 0 8px" }}>✅ Drain the work, then assert</p>
+          <p style={{ fontSize: 10, fontWeight: 600, color: TEAL_DARK, margin: "0 0 3px", textTransform: "uppercase", letterSpacing: ".05em" }}>Android · Kotlin</p>
+          <pre style={{ ...preStyle, fontSize: 10, marginBottom: 8 }}>{`vm.loadItems()
+advanceUntilIdle()  // ← drain
+assertTrue(vm.uiState.value
+    is ItemUiState.Success)`}</pre>
+          <p style={{ fontSize: 10, fontWeight: 600, color: TEAL_DARK, margin: "0 0 3px", textTransform: "uppercase", letterSpacing: ".05em" }}>iOS · Swift</p>
+          <pre style={{ ...preStyle, fontSize: 10 }}>{`await vm.loadItems()  // ← await
+if case .success(let items) = vm.uiState {
+    XCTAssertEqual(items.count, 3)
+}`}</pre>
+          <p style={{ fontSize: 11, color: TEAL_DARK, margin: "8px 0 0", lineHeight: 1.5 }}>
+            Android: <IC>runTest</IC> + <IC>advanceUntilIdle()</IC> drain queued coroutines.<br/>iOS: <IC>async</IC> test methods naturally suspend at every <IC>await</IC>.
+          </p>
+        </div>
+      </div>
+      <div style={{ background: AMBER_LIGHT, borderRadius: 8, padding: "10px 14px", marginTop: 10 }}>
+        <p style={{ fontSize: 12, color: AMBER_DARK, margin: 0, lineHeight: 1.5 }}>
+          <strong>Rule of thumb:</strong> if your VM kicks off a coroutine or async task, you must drain it before asserting. Forgetting this is the #1 cause of flaky tests in MVVM codebases.
+        </p>
+      </div>
+    </Shell>
+  ),
+
+  // 14 — Writing the tests
   () => (
     <Shell tag="Code-along" timer="10" title="Step 2 — write the three baseline tests" subtitle="Loading · Success · Error — one test per state"
       notes="Walk through each test slowly. The pattern is always: 1) configure the fake, 2) create the ViewModel with the fake, 3) call the method, 4) wait for coroutines to finish, 5) assert the state. The advanceUntilIdle() / async call is the step students most often forget — without it, the assertion runs before the coroutine completes. For iOS, async test functions handle this automatically. Point out the MainDispatcherRule for Android — it replaces the main dispatcher with a test one.">
-      <div style={{ display: "flex", gap: 12 }}>
-        <CodePane title="Kotlin — ItemViewModelTest.kt" accent={BLUE}>{`@Test
+      <div style={{ marginTop: 4 }}>
+        <ViewToggle
+          steps={
+            <OSToggle
+              android={
+                <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                  <Step n={1} title="Initial state — no method called yet, ViewModel should be Loading">
+                    <pre style={preStyle}>{`@Test
+fun \`initial state is Loading\`() {
+    val vm = ItemViewModel(FakeItemRepository())
+    assertTrue(vm.uiState.value is ItemUiState.Loading)
+}`}</pre>
+                  </Step>
+                  <Step n={2} title="Success path — fake returns 3 items, expect Success(3)">
+                    <pre style={preStyle}>{`@Test
 fun \`loadItems emits Success\`() = runTest {
     val fake = FakeItemRepository()
     val vm = ItemViewModel(fake)
@@ -552,71 +927,124 @@ fun \`loadItems emits Success\`() = runTest {
     advanceUntilIdle()  // let coroutine finish
     val state = vm.uiState.value
     assertTrue(state is ItemUiState.Success)
-    assertEquals(3,
-        (state as ItemUiState.Success)
-            .items.size)
-}
-
-@Test
-fun \`loadItems emits Error when repo throws\`()
-    = runTest {
-    val fake = FakeItemRepository()
-        .also { it.shouldThrow = true }
+    assertEquals(3, (state as ItemUiState.Success).items.size)
+}`}</pre>
+                  </Step>
+                  <Step n={3} title="Error path — configure fake to throw, expect Error">
+                    <pre style={preStyle}>{`@Test
+fun \`loadItems emits Error when repo throws\`() = runTest {
+    val fake = FakeItemRepository().also { it.shouldThrow = true }
     val vm = ItemViewModel(fake)
     vm.loadItems()
     advanceUntilIdle()
-    assertTrue(vm.uiState.value
-        is ItemUiState.Error)
+    assertTrue(vm.uiState.value is ItemUiState.Error)
+}`}</pre>
+                  </Step>
+                </div>
+              }
+              ios={
+                <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                  <Step n={1} title="Initial state — no method called yet, ViewModel should be .loading" accent={TEAL}>
+                    <pre style={preStyle}>{`func testInitialStateIsLoading() {
+    let vm = ItemViewModel(repo: FakeItemRepository())
+    if case .loading = vm.uiState { /* pass */ }
+    else { XCTFail("Expected .loading") }
+}`}</pre>
+                  </Step>
+                  <Step n={2} title="Success path — fake returns 3 items, expect .success(3)" accent={TEAL}>
+                    <pre style={preStyle}>{`func testLoadItemsSuccess() async {
+    let fake = FakeItemRepository()
+    let vm = ItemViewModel(repo: fake)
+    await vm.loadItems()
+    if case .success(let items) = vm.uiState {
+        XCTAssertEqual(items.count, 3)
+    } else {
+        XCTFail("Expected .success, got \\(vm.uiState)")
+    }
+}`}</pre>
+                  </Step>
+                  <Step n={3} title="Error path — configure fake to throw, expect .error" accent={TEAL}>
+                    <pre style={preStyle}>{`func testLoadItemsError() async {
+    let fake = FakeItemRepository()
+    fake.shouldThrow = true
+    let vm = ItemViewModel(repo: fake)
+    await vm.loadItems()
+    guard case .error = vm.uiState else {
+        XCTFail("Expected .error")
+        return
+    }
+}`}</pre>
+                  </Step>
+                </div>
+              }
+            />
+          }
+          full={
+            <OSToggle
+              android={<CodePane title="Kotlin — ItemViewModelTest.kt" accent={PURPLE}>{`@Test
+fun \`initial state is Loading\`() {
+    val vm = ItemViewModel(FakeItemRepository())
+    assertTrue(vm.uiState.value is ItemUiState.Loading)
 }
 
 @Test
-fun \`initial state is Loading\`() {
-    val vm = ItemViewModel(
-        FakeItemRepository())
-    assertTrue(vm.uiState.value
-        is ItemUiState.Loading)
-}`}</CodePane>
-        <CodePane title="Swift — ItemViewModelTests.swift" accent={GREEN}>{`@MainActor
+fun \`loadItems emits Success\`() = runTest {
+    val fake = FakeItemRepository()
+    val vm = ItemViewModel(fake)
+    vm.loadItems()
+    advanceUntilIdle()
+    val state = vm.uiState.value
+    assertTrue(state is ItemUiState.Success)
+    assertEquals(3, (state as ItemUiState.Success).items.size)
+}
+
+@Test
+fun \`loadItems emits Error when repo throws\`() = runTest {
+    val fake = FakeItemRepository().also { it.shouldThrow = true }
+    val vm = ItemViewModel(fake)
+    vm.loadItems()
+    advanceUntilIdle()
+    assertTrue(vm.uiState.value is ItemUiState.Error)
+}`}</CodePane>}
+              ios={<CodePane title="Swift — ItemViewModelTests.swift" accent={TEAL}>{`@MainActor
 final class ItemViewModelTests: XCTestCase {
 
+    func testInitialStateIsLoading() {
+        let vm = ItemViewModel(repo: FakeItemRepository())
+        if case .loading = vm.uiState { /* pass */ }
+        else { XCTFail("Expected .loading") }
+    }
+
     func testLoadItemsSuccess() async {
-        let mock = MockItemRepository()
-        let vm = ItemViewModel(repo: mock)
+        let fake = FakeItemRepository()
+        let vm = ItemViewModel(repo: fake)
         await vm.loadItems()
-        if case .success(let items) =
-            vm.uiState {
+        if case .success(let items) = vm.uiState {
             XCTAssertEqual(items.count, 3)
         } else {
-            XCTFail("Expected .success,
-                got \(vm.uiState)")
+            XCTFail("Expected .success, got \\(vm.uiState)")
         }
     }
 
     func testLoadItemsError() async {
-        let mock = MockItemRepository()
-        mock.shouldThrow = true
-        let vm = ItemViewModel(repo: mock)
+        let fake = FakeItemRepository()
+        fake.shouldThrow = true
+        let vm = ItemViewModel(repo: fake)
         await vm.loadItems()
-        guard case .error = vm.uiState
-        else {
+        guard case .error = vm.uiState else {
             XCTFail("Expected .error")
             return
         }
     }
-
-    func testInitialStateIsLoading() {
-        let vm = ItemViewModel(
-            repo: MockItemRepository())
-        if case .loading = vm.uiState
-        { /* pass */ }
-        else { XCTFail("Expected .loading") }
-    }
-}`}</CodePane>
+}`}</CodePane>}
+            />
+          }
+        />
       </div>
     </Shell>
   ),
 
-  // 12 — Reading a failing test
+  // 15 — Reading a failing test
   () => (
     <Shell tag="Concept" timer="4" title="Reading a failing test" subtitle="A failing test is information — not a problem"
       notes="Students instinctively treat a red test as bad news. Reframe it: a failing test is the test doing its job. The assertion output tells you exactly what went wrong — more precisely than any print statement or manual check. Walk through the two failure examples. The first one is a value assertion failure (easy to read). The second is a type mismatch (slightly harder). Ask: which would you prefer — finding this now, or finding it when a user reports a bug?">
@@ -660,7 +1088,56 @@ final class ItemViewModelTests: XCTestCase {
     </Shell>
   ),
 
-  // 13 — Edge cases with Claude
+  // 16 — Common pitfalls
+  () => (
+    <Shell tag="Pitfall" tagColor="amber" timer="4" title="Common pitfalls" subtitle="The mistakes that bite during lab — call them out before they happen"
+      notes="These are the four pitfalls students hit most often during this exact lab. Walk through each in 30 seconds. Don't dwell — they'll re-encounter them in their own code, and now they'll recognise the symptom.">
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+        {[
+          {
+            n: "1",
+            title: "Forgetting to drain async work",
+            symptom: "Test passes but is actually checking the Loading state, not the post-load state.",
+            fix: "Android: call advanceUntilIdle() before asserting. iOS: await the call.",
+          },
+          {
+            n: "2",
+            title: "Asserting full equality on data classes",
+            symptom: "Tests break every time you add a field to your model — even unrelated ones.",
+            fix: "Assert on the type or one specific property. Save full-equality checks for true value objects.",
+          },
+          {
+            n: "3",
+            title: "Sharing one fake across tests",
+            symptom: "Test order changes the outcome. Flaky failures that disappear when run in isolation.",
+            fix: "Create a fresh fake inside each test, or in @Before / setUp().",
+          },
+          {
+            n: "4",
+            title: "Testing the fake instead of the VM",
+            symptom: "Test passes regardless of what the ViewModel does — you're just asserting on the fake.",
+            fix: "Always assert on vm.uiState.value, never on fake.itemsToReturn.",
+          },
+        ].map(p => (
+          <div key={p.n} style={{ background: AMBER_LIGHT, borderRadius: 8, padding: "10px 12px", display: "flex", gap: 10 }}>
+            <div style={{ width: 24, height: 24, borderRadius: "50%", background: AMBER, color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, fontSize: 12, fontWeight: 700 }}>{p.n}</div>
+            <div style={{ minWidth: 0 }}>
+              <p style={{ fontSize: 12, fontWeight: 700, color: AMBER_DARK, margin: "0 0 4px" }}>{p.title}</p>
+              <p style={{ fontSize: 11, color: AMBER_DARK, margin: "0 0 3px", lineHeight: 1.45 }}><strong>Symptom:</strong> {p.symptom}</p>
+              <p style={{ fontSize: 11, color: AMBER_DARK, margin: 0, lineHeight: 1.45 }}><strong>Fix:</strong> {p.fix}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+      <div style={{ background: PURPLE_LIGHT, borderRadius: 8, padding: "10px 14px", marginTop: 10 }}>
+        <p style={{ fontSize: 12, color: PURPLE_DARK, margin: 0, lineHeight: 1.5 }}>
+          <strong>If a test passes the first time you write it, be suspicious.</strong> Break it on purpose for a moment to confirm the assertion is actually checking what you think it{"'"}s checking.
+        </p>
+      </div>
+    </Shell>
+  ),
+
+  // 17 — Edge cases with Claude
   () => (
     <Shell tag="AI opportunity" tagColor="purple" timer="6" title="Finding edge cases with Claude" subtitle="AI as a test-case generator"
       notes="This is a genuine use case where AI adds value — it can enumerate edge cases faster than most humans, especially for state machines and error paths. The key discipline students need to learn: read every suggested test before writing it. Claude sometimes suggests tests for behaviour the current implementation doesn't support yet (which is fine — those are called 'wishlist' tests or 'test-driven' specs), but students shouldn't add them without understanding what they mean.">
@@ -707,7 +1184,7 @@ final class ItemViewModelTests: XCTestCase {
     </Shell>
   ),
 
-  // 14 — Lab intro
+  // 18 — Lab intro
   () => (
     <Shell tag="Lab intro" tagColor="teal" timer="5" title="Today's lab — writing tests for a shared ViewModel" subtitle="55 minutes in breakout rooms"
       notes="Students all work from the same starter ViewModel (ItemViewModel). The goal is to have at least 5 tests by the end: Loading initial state, Success with items, Error on throw, and 2 edge cases from Claude. Students who finish early should write one test for their own capstone ViewModel — that's the real-world application.">
@@ -715,7 +1192,7 @@ final class ItemViewModelTests: XCTestCase {
         <div>
           <p style={{ fontSize: 12, fontWeight: 600, color: TEXT, margin: "0 0 8px" }}>What you{"'"}re building</p>
           {[
-            { n: "1", t: "Write the fake repository", d: "FakeItemRepository (Kotlin) or MockItemRepository (Swift)" },
+            { n: "1", t: "Write the fake repository", d: "FakeItemRepository (Kotlin and Swift)" },
             { n: "2", t: "Write 3 baseline tests", d: "Initial loading state · Success · Error on throw" },
             { n: "3", t: "Break one test intentionally", d: "Read the assertion output — understand what it tells you" },
             { n: "4", t: "Find edge cases with Claude", d: "Paste ViewModel + tests, ask for edge cases, write 2 more" },
@@ -767,7 +1244,7 @@ final class ItemViewModelTests: XCTestCase {
     </Shell>
   ),
 
-  // 15 — Closing
+  // 19 — Closing
   () => (
     <div style={{ background: `linear-gradient(135deg, ${PURPLE_DARK} 0%, ${PURPLE} 100%)`, borderRadius: 12, padding: "44px 40px", minHeight: 360, display: "flex", flexDirection: "column", justifyContent: "space-between", boxSizing: "border-box" }}>
       <div>
@@ -817,10 +1294,6 @@ final class ItemViewModelTests: XCTestCase {
     </div>
   ),
 ];
-
-const IC = ({ children }) => (
-  <code style={{ background: "rgba(83,74,183,0.12)", color: PURPLE_DARK, borderRadius: 4, padding: "1px 5px", fontSize: 11, fontFamily: "monospace" }}>{children}</code>
-);
 
 export default function App() {
   const [cur, setCur] = useState(0);
