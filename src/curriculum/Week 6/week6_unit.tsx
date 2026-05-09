@@ -138,7 +138,6 @@ const Overview = ({ platform, setPlatform }) => (
       <strong style={{ display: "block", marginTop: 10 }}>Upcoming Due Dates</strong>
       <ul style={{ margin: "6px 0 0", paddingLeft: 20 }}>
         <li>📝 Capstone proposal due by end of Session 2</li>
-        <li>📬 <Link>Project 6</Link> (MVVM refactor) due by the next session</li>
       </ul>
     </div>
 
@@ -160,7 +159,6 @@ const Overview = ({ platform, setPlatform }) => (
         {[
           { label: "Session 1", val: "MVVM architecture refactor — separate Model, ViewModel, and View layers in your Week 4 API app." },
           { label: "Session 2", val: "AI-assisted development — use Claude, Copilot, or Cursor to scaffold your capstone project." },
-          { label: "Project 6", val: "MVVM refactor of your Week 4 networked app. First platform-specific independent project." },
           { label: "Capstone Proposal", val: "1-page proposal due by end of Session 2. Defines your app idea, team roles, and feature scope." },
         ].map(item => (
           <div key={item.label} style={{ background: "var(--color-background-primary)", border: "0.5px solid var(--color-border-tertiary)", borderRadius: 8, padding: "10px 12px" }}>
