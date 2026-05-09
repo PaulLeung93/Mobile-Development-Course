@@ -84,7 +84,7 @@ const slides = [
   () => (
     <div style={{ background: `linear-gradient(135deg, ${IOS_DARK} 0%, ${IOS} 60%, ${PURPLE} 100%)`, borderRadius: 12, padding: "44px 40px", minHeight: 360, display: "flex", flexDirection: "column", justifyContent: "space-between", boxSizing: "border-box" as const }}>
       <div>
-        <div style={{ marginBottom: 10 }}><Tag color="#fff">Bonus · iOS 16+</Tag></div>
+        <div style={{ marginBottom: 10 }}><Tag color="#fff">Week 9 · iOS 16+</Tag></div>
         <h1 style={{ fontSize: 30, fontWeight: 800, color: "#fff", margin: "10px 0 8px", lineHeight: 1.2 }}>App Intents<br />iOS Apps in the Age of AI Agents</h1>
         <p style={{ fontSize: 15, color: "rgba(255,255,255,0.7)", margin: "0 0 28px" }}>How to expose your app's capabilities so Siri and Apple Intelligence can act on behalf of your users</p>
         <div style={{ display: "flex", gap: 20 }}>
@@ -486,7 +486,7 @@ export default function AppFunctionsIosSlides() {
     <div style={{ fontFamily: "var(--font-sans)", padding: "1rem 0" }}>
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
         <div>
-          <p style={{ fontSize: 11, color: MUTED, margin: 0, textTransform: "uppercase" as const, letterSpacing: ".06em" }}>Bonus · App Intents (iOS) · {slides.length} slides</p>
+          <p style={{ fontSize: 11, color: MUTED, margin: 0, textTransform: "uppercase" as const, letterSpacing: ".06em" }}>Week 9 · S2 iOS · App Intents · {slides.length} slides</p>
           <p style={{ fontSize: 14, fontWeight: 600, color: TEXT, margin: 0 }}>iOS Apps in the Age of AI Agents</p>
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>

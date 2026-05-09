@@ -62,13 +62,16 @@ While AI serves as an incredible force multiplier, building resilient applicatio
   - Session 1: On-device image & text recognition 🤖
   - Session 2: Running a local model end-to-end 🤖
 
-### Phase 3 — Testing, Polish & Demo Day (Weeks 9–10)
-- **Week 9: Introduction to testing & capstone sprint**
-  - Session 1: Introduction to unit testing
-  - Session 2: App performance (Jank, memory leaks & profiling) + Capstone work session
+### Phase 3 — Agentic AI, Polish & Demo Day (Weeks 9–10)
+- **Week 9: Agentic AI on mobile — when AI takes action**
+  - Session 1: LLM tool use & function calling 🤖
+  - Session 2: App capabilities for AI agents — AppFunctions (Android) / App Intents (iOS) 🤖
+  - *Note: Week 9 is framed as **exposure**, not integration. Capstones are entering polish phase; these features are not rubric requirements.*
 - **Week 10: Ship it & demo day**
   - Session 1: App store publishing + polish + demo prep
   - Session 2: Live capstone presentations
+
+> **Bonus units:** Testing (unit tests with JUnit/XCTest) and App Performance (jank, memory leaks, profiling) — previously Week 9 content, now available as self-paced bonus units for students who want deeper engineering rigor.
 
 *(Each week contains lesson units and slide presentations. Review individual directories for specific session materials).*
 

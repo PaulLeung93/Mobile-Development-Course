@@ -109,12 +109,12 @@ const ResourceCard = ({ title, description, url, tag, tagColor = "purple" }: {
 );
 
 /* ══════════════════════ OVERVIEW ══════════════════════════════════════════════ */
-const Overview = () => {
+export const Overview = () => {
   const [platform, setPlatform] = useState<"Android" | "iOS">("Android");
   return (
   <div>
     <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6, flexWrap: "wrap" as const }}>
-      <h2 style={{ fontSize: 20, fontWeight: 600, margin: 0 }}>Bonus: App Capabilities for AI Agents</h2>
+      <h2 style={{ fontSize: 20, fontWeight: 600, margin: 0 }}>Session 2: App Capabilities for AI Agents</h2>
       <Tag color="green">Android 16+</Tag>
       <Tag color="ios">iOS 16+</Tag>
       <Tag color="amber">Android: Experimental</Tag>
@@ -147,8 +147,8 @@ const Overview = () => {
     <h3 style={{ fontSize: 15, fontWeight: 600, margin: "0 0 10px" }}>Unit at a glance</h3>
     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 20 }}>
       {[
-        { icon: "🤖", label: "Android slides", desc: "16 slides — AppFunctions concept, the 4-step flow, @AppFunction implementation, ADB verification, and agent invocation" },
-        { icon: "🍎", label: "iOS slides",     desc: "14 slides — App Intents concept, AppIntent struct, @Parameter, AppShortcutsProvider, @AssistantIntent, and Shortcuts testing" },
+        { icon: "🤖", label: "Android slides", desc: "AppFunctions concept, the 4-step flow, @AppFunction implementation, ADB verification, and agent invocation" },
+        { icon: "🍎", label: "iOS slides",     desc: "App Intents concept, AppIntent struct, @Parameter, AppShortcutsProvider, @AssistantIntent, and Shortcuts testing" },
         { icon: "🔬", label: "Lab",            desc: "Step-by-step Android lab: add KSP dependency, create @AppFunctionSerializable type, annotate functions, verify with ADB and Gemini" },
         { icon: "📚", label: "Resources",      desc: "Official docs, the Android Developers blog post, Apple developer docs, and EAP registration links" },
       ].map(item => (
@@ -214,6 +214,13 @@ const AndroidLab = () => (
     <p style={{ fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 1.7, margin: "0 0 16px" }}>
       In this lab you will add AppFunctions to a simple notes app. By the end, your app will expose three callable actions — <IC>listNotes</IC>, <IC>createNote</IC>, and <IC>editNote</IC> — that AI agents on Android 16 can discover and invoke.
     </p>
+
+    <div style={{ background: AML, border: `1px solid ${AM_C}`, borderRadius: 8, padding: "10px 14px", margin: "0 0 20px" }}>
+      <p style={{ fontSize: 13, fontWeight: 600, color: AM, margin: "0 0 4px" }}>⚠️ Remember: this is different from LLM Tool Use (Session 1)</p>
+      <p style={{ fontSize: 13, color: AM, margin: 0, lineHeight: 1.6 }}>
+        In Session 1, the user was in <strong>your app's chat screen</strong> and Claude (the LLM you called via API) chose which functions to invoke. Here, the user is in <strong>Gemini Assistant — outside your app</strong>. Gemini reaches in and invokes the functions you expose. Your app sits passively, waiting to be called.
+      </p>
+    </div>
 
     <Note>
       <strong>Android 16 required.</strong> AppFunctions are only available on Android API 36 (Android 16) and above. Make sure your emulator is set to API 36 before you begin. If you don't have one set up, go to <strong>Android Studio → Device Manager → Create Virtual Device</strong> and select an API 36 system image.
@@ -590,6 +597,13 @@ const IosLab = () => (
       In this lab you will add App Intents to a simple notes app. By the end, your app will expose a <IC>CreateNoteIntent</IC> that Siri and the Shortcuts app can discover and invoke — testable right now on any iOS 16+ simulator.
     </p>
 
+    <div style={{ background: AML, border: `1px solid ${AM_C}`, borderRadius: 8, padding: "10px 14px", margin: "0 0 20px" }}>
+      <p style={{ fontSize: 13, fontWeight: 600, color: AM, margin: "0 0 4px" }}>⚠️ Remember: this is different from LLM Tool Use (Session 1)</p>
+      <p style={{ fontSize: 13, color: AM, margin: 0, lineHeight: 1.6 }}>
+        In Session 1, the user was in <strong>your app's chat screen</strong> and Claude (the LLM you called via API) chose which functions to invoke. Here, the user is in <strong>Siri — outside your app</strong>. Siri reaches in and invokes the intents you expose. Your app sits passively, waiting to be called.
+      </p>
+    </div>
+
     <Note>
       <strong>iOS 16+ required.</strong> App Intents require a deployment target of iOS 16.0 or later. Unlike Android AppFunctions, no special hardware is needed — the Shortcuts app on any iOS 16+ simulator or device is enough to test your intent end-to-end.
     </Note>
@@ -855,7 +869,7 @@ struct NoteShortcuts: AppShortcutsProvider {
 );
 
 /* ══════════════════════ LAB WRAPPER ═══════════════════════════════════════════ */
-const Lab = () => {
+export const Lab = () => {
   const [platform, setPlatform] = useState<"Android" | "iOS">("Android");
   return (
     <div>
@@ -872,7 +886,7 @@ const Lab = () => {
 };
 
 /* ══════════════════════ RESOURCES ═════════════════════════════════════════════ */
-const Resources = () => {
+export const Resources = () => {
   const groups: { heading: string; accent: string; accentLight: string; items: { title: string; description: string; url: string; tag: string; tagColor: string }[] }[] = [
     {
       heading: "Official Documentation",

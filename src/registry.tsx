@@ -22,11 +22,10 @@ import Week5S1 from './curriculum/Week 5/week5_session1_slides';
 import Week5S2 from './curriculum/Week 5/week5_session2_slides';
 import GitForTeams from './curriculum/Week 5/git_for_teams_slides';
 import GitUnit from './curriculum/Bonus/git_unit';
-import AppFunctionsUnit from './curriculum/Bonus/appfunctions_unit';
-import AppFunctionsSlides from './curriculum/Bonus/appfunctions_slides';
-import AppFunctionsIosSlides from './curriculum/Bonus/appfunctions_ios_slides';
 import FirebaseUnit from './curriculum/Bonus/firebase_unit';
-import LlmToolUseUnit from './curriculum/Bonus/llm_tool_use_unit';
+import TestingPerformanceUnit from './curriculum/Bonus/testing_performance_unit';
+import TestingSlides from './curriculum/Bonus/testing_slides';
+import PerformanceSlides from './curriculum/Bonus/performance_slides';
 
 import Week6Unit from './curriculum/Week 6/week6_unit';
 import Week6S1 from './curriculum/Week 6/week6_session1_slides';
@@ -41,8 +40,8 @@ import Week8S1 from './curriculum/Week 8/week8_session1_slides';
 import Week8S2 from './curriculum/Week 8/week8_session2_slides';
 
 import Week9Unit from './curriculum/Week 9/week9_unit';
-import Week9S1 from './curriculum/Week 9/week9_session1_slides';
-import Week9S2 from './curriculum/Week 9/week9_session2_slides';
+import Week9S2Android from './curriculum/Week 9/week9_session2_appfunctions_android';
+import Week9S2Ios from './curriculum/Week 9/week9_session2_appfunctions_ios';
 
 import Week10Unit from './curriculum/Week 10/week10_unit';
 import Week10S1 from './curriculum/Week 10/week10_session1_slides';
@@ -97,8 +96,8 @@ export const navigationRegistry: Record<string, Record<string, React.ElementType
   },
   "Week 9": {
     "Unit": Week9Unit,
-    "Session 1": Week9S1,
-    "Session 2": Week9S2
+    "S2 Android": Week9S2Android,
+    "S2 iOS": Week9S2Ios
   },
   "Week 10": {
     "Unit": Week10Unit,
@@ -112,15 +111,15 @@ export const bonusRegistry: Record<string, Record<string, React.ElementType>> = 
     "Unit": GitUnit,
     "Slides": GitForTeams
   },
-  "AppFunctions": {
-    "Unit": AppFunctionsUnit,
-    "Android": AppFunctionsSlides,
-    "iOS": AppFunctionsIosSlides
-  },
   "Firebase": {
     "Unit": FirebaseUnit
   },
-  "LLM Tool Use": {
-    "Unit": LlmToolUseUnit
+  "Testing": {
+    "Unit": TestingPerformanceUnit,
+    "Slides": TestingSlides
+  },
+  "App Performance": {
+    "Unit": TestingPerformanceUnit,
+    "Slides": PerformanceSlides
   }
 };

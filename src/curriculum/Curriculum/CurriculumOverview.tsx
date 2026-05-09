@@ -185,25 +185,29 @@ export default function CurriculumOverview() {
         </div>
       </div>
 
-      <span className="phase-pill ph3">Phase 3 — Testing, polish & demo day (Weeks 9–10)</span>
+      <span className="phase-pill ph3">Phase 3 — Agentic AI, polish & demo day (Weeks 9–10)</span>
 
       <div className="week-card">
-        <div className="week-header"><span className="week-num">Week 9</span><p className="week-title">Introduction to testing & capstone sprint</p></div>
+        <div className="week-header"><span className="week-num">Week 9</span><p className="week-title">Agentic AI on mobile — when AI takes action</p></div>
+        <div className="track-grid">
+          <div className="track track-a"><p className="t-label">Android</p><p className="t-detail">Claude tool use with OkHttp/coroutines · AppFunctions API + Gemini Assistant</p></div>
+          <div className="track track-b"><p className="t-label">iOS</p><p className="t-detail">Claude tool use with URLSession/async-await · App Intents + Siri / Apple Intelligence</p></div>
+        </div>
         <div className="sessions">
           <div className="session">
-            <p className="s-label">Session 1</p>
-            <p className="s-topic">Introduction to unit testing</p>
-            <p className="s-lab"><b>Lab:</b> Write unit tests for a shared starter ViewModel using JUnit4 (Android) or XCTest (iOS). Use fakes to isolate dependencies. Find edge cases with Claude.</p>
+            <p className="s-label">Session 1 <span className="tag-ai">AI feature</span></p>
+            <p className="s-topic">LLM Tool Use & Function Calling</p>
+            <p className="s-lab"><b>Lab:</b> Smart Notes Assistant — extend a Week 7 chat with three tools (<code>create_note</code>, <code>search_notes</code>, <code>update_note</code>). Practice the tool-use loop and JSON schema design.</p>
           </div>
           <div className="session">
-            <p className="s-label">Session 2</p>
-            <p className="s-topic">Capstone work session</p>
-            <p className="s-lab"><b>Lab:</b> Unstructured capstone build time with full TA support. Teams work on their highest-priority remaining features. Goal: feature-complete by end of session.</p>
+            <p className="s-label">Session 2 <span className="tag-ai">AI feature</span></p>
+            <p className="s-topic">App Capabilities for AI agents (AppFunctions / App Intents)</p>
+            <p className="s-lab"><b>Lab:</b> Implement and register one capability so the platform's AI assistant can invoke it. Android: <code>@AppFunction</code>. iOS: <code>AppIntent</code> + Shortcuts.</p>
           </div>
         </div>
         <div className="milestone m-cap">
           <span className="m-label">Capstone M4</span>
-          <p className="m-text">Feature-complete build. All core screens working, data persists, at least one stretch feature implemented. Repo reflects the branching workflow set up in Week 6.</p>
+          <p className="m-text">Feature-complete build. All core screens working, data persists, at least one stretch feature implemented. Repo reflects the branching workflow set up in Week 6. Note: Week 9 content is exposure-only — AI agentic features are not capstone requirements.</p>
         </div>
       </div>
 

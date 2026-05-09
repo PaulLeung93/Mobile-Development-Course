@@ -109,21 +109,21 @@ const ResourceCard = ({ title, description, url, tag, tagColor = "purple" }: {
 );
 
 /* ══════════════════════ OVERVIEW ══════════════════════════════════════════════ */
-const Overview = () => {
+export const Overview = () => {
   const [platform, setPlatform] = useState<"Android" | "iOS">("Android");
   return (
     <div>
       <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6, flexWrap: "wrap" as const }}>
-        <h2 style={{ fontSize: 20, fontWeight: 600, margin: 0 }}>Bonus: LLM Tool Use & Function Calling</h2>
+        <h2 style={{ fontSize: 20, fontWeight: 600, margin: 0 }}>Session 1: LLM Tool Use & Function Calling</h2>
         <Tag color="purple">Builds on Week 7</Tag>
       </div>
       <p style={{ fontSize: 12, color: MUTED, margin: "0 0 16px" }}>Claude API · Tool Use · Agentic Loops</p>
 
       {/* AppFunctions distinction — prominent callout */}
       <div style={{ background: AML, border: `1.5px solid ${AM_C}`, borderRadius: 10, padding: "14px 16px", margin: "0 0 20px" }}>
-        <p style={{ fontSize: 13, fontWeight: 700, color: AM, margin: "0 0 10px" }}>⚠️ If you've done the AppFunctions unit — this is NOT the same thing</p>
+        <p style={{ fontSize: 13, fontWeight: 700, color: AM, margin: "0 0 10px" }}>⚠️ Tool Use vs. AppFunctions (Session 2) — they are NOT the same thing</p>
         <p style={{ fontSize: 13, color: AM, margin: "0 0 12px", lineHeight: 1.6 }}>
-          Both AppFunctions and Tool Use involve "an AI calling your functions." But <strong>which AI</strong> and <strong>where the user is</strong> are completely different.
+          Session 2 also involves "an AI calling your functions," but <strong>which AI</strong> and <strong>where the user is</strong> are completely different. Internalise the contrast below — it is the most important conceptual move of the week.
         </p>
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
           <div style={{ background: "rgba(255,255,255,0.7)", borderRadius: 8, padding: "10px 12px" }}>
@@ -132,7 +132,7 @@ const Overview = () => {
             <p style={{ fontSize: 12, fontStyle: "italic", color: MUTED, margin: 0 }}>Your app is the tool being called.</p>
           </div>
           <div style={{ background: "rgba(255,255,255,0.7)", borderRadius: 8, padding: "10px 12px" }}>
-            <p style={{ fontSize: 11, fontWeight: 700, color: PD, textTransform: "uppercase" as const, letterSpacing: ".06em", margin: "0 0 6px" }}>LLM Tool Use (this unit)</p>
+            <p style={{ fontSize: 11, fontWeight: 700, color: PD, textTransform: "uppercase" as const, letterSpacing: ".06em", margin: "0 0 6px" }}>LLM Tool Use (this session)</p>
             <p style={{ fontSize: 12, color: AM, margin: "0 0 4px", lineHeight: 1.6 }}>The user is typing in <strong>your app's own chat screen</strong>. Claude — the LLM your app is calling — decides to invoke functions you defined. Your app runs the function and sends the result back to Claude.</p>
             <p style={{ fontSize: 12, fontStyle: "italic", color: MUTED, margin: 0 }}>Your app is the orchestrator.</p>
           </div>
@@ -226,13 +226,6 @@ const AndroidLab = () => (
     <p style={{ fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 1.7, margin: "0 0 12px" }}>
       You will extend your Week 7 chat app so that Claude can use three tools: <IC>get_current_time</IC>, <IC>create_note</IC>, and <IC>list_notes</IC>. By the end, users can ask things like <em>"What time is it?"</em> or <em>"Save a note about my meeting"</em> and Claude will call your Kotlin functions to answer accurately.
     </p>
-
-    <div style={{ background: AML, border: `1px solid ${AM_C}`, borderRadius: 8, padding: "10px 14px", margin: "0 0 20px" }}>
-      <p style={{ fontSize: 13, fontWeight: 600, color: AM, margin: "0 0 4px" }}>⚠️ Remember: this is different from AppFunctions</p>
-      <p style={{ fontSize: 13, color: AM, margin: 0, lineHeight: 1.6 }}>
-        In AppFunctions, Gemini reaches into your app from outside. Here, the user is already in <strong>your app's chat screen</strong>. Claude — the LLM you're calling via API — decides to call the functions below. Your app runs them and sends the results back. You are in control the whole time.
-      </p>
-    </div>
 
     <Note>
       <strong>No new dependencies required.</strong> This lab uses the same OkHttp client and <IC>org.json</IC> from Week 7. The changes are entirely in how you build the request body and handle the response.
@@ -711,13 +704,6 @@ const IosLab = () => (
       You will extend your Week 7 chat app so that Claude can use three tools: <IC>get_current_time</IC>, <IC>create_note</IC>, and <IC>list_notes</IC>. By the end, users can ask things like <em>"What time is it?"</em> or <em>"Save a note about my meeting"</em> and Claude will call your Swift functions to answer accurately.
     </p>
 
-    <div style={{ background: AML, border: `1px solid ${AM_C}`, borderRadius: 8, padding: "10px 14px", margin: "0 0 20px" }}>
-      <p style={{ fontSize: 13, fontWeight: 600, color: AM, margin: "0 0 4px" }}>⚠️ Remember: this is different from App Intents</p>
-      <p style={{ fontSize: 13, color: AM, margin: 0, lineHeight: 1.6 }}>
-        In App Intents, Siri reaches into your app from outside. Here, the user is already in <strong>your app's chat screen</strong>. Claude — the LLM you're calling via API — decides to call the functions below. Your app runs them and sends the results back. You are in control the whole time.
-      </p>
-    </div>
-
     <Note>
       <strong>No new dependencies required.</strong> This lab uses the same URLSession async/await and Codable patterns from Week 7. The key additions are a new response model for tool calls and a loop in your send function.
     </Note>
@@ -1175,7 +1161,7 @@ enum AnyCodableValue: Codable {
 );
 
 /* ══════════════════════ LAB WRAPPER ═══════════════════════════════════════════ */
-const Lab = () => {
+export const Lab = () => {
   const [platform, setPlatform] = useState<"Android" | "iOS">("Android");
   return (
     <div>
@@ -1192,7 +1178,7 @@ const Lab = () => {
 };
 
 /* ══════════════════════ RESOURCES ═════════════════════════════════════════════ */
-const Resources = () => {
+export const Resources = () => {
   const groups: { heading: string; accent: string; items: { title: string; description: string; url: string; tag: string; tagColor: string }[] }[] = [
     {
       heading: "Official Documentation",

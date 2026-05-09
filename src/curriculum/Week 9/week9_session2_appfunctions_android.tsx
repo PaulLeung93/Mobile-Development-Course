@@ -84,7 +84,7 @@ const slides = [
   () => (
     <div style={{ background: `linear-gradient(135deg, ${PURPLE_DARK} 0%, ${AND_DARK} 100%)`, borderRadius: 12, padding: "44px 40px", minHeight: 360, display: "flex", flexDirection: "column", justifyContent: "space-between", boxSizing: "border-box" as const }}>
       <div>
-        <div style={{ marginBottom: 10 }}><Tag color="#fff">Bonus · Android 16</Tag></div>
+        <div style={{ marginBottom: 10 }}><Tag color="#fff">Week 9 · Android 16</Tag></div>
         <h1 style={{ fontSize: 30, fontWeight: 800, color: "#fff", margin: "10px 0 8px", lineHeight: 1.2 }}>AppFunctions<br />Apps in the Age of AI Agents</h1>
         <p style={{ fontSize: 15, color: "rgba(255,255,255,0.7)", margin: "0 0 28px" }}>How to expose your app's capabilities so AI can act on behalf of your users</p>
         <div style={{ display: "flex", gap: 20 }}>
@@ -93,13 +93,13 @@ const slides = [
           ))}
         </div>
       </div>
-      <Notes>{"Welcome to the AppFunctions bonus unit. This is a forward-looking topic — AppFunctions is still experimental as of 2026, but it represents the direction the Android ecosystem is heading. Today's goal: understand the concept deeply and get hands-on with a basic implementation. The exact API will change before stable, but the mental model will not."} </Notes>
+      <Notes>{"Welcome to Week 9 Session 2 — AppFunctions. This is a forward-looking topic — AppFunctions is still experimental as of 2026, but it represents the direction the Android ecosystem is heading. Frame this as exposure: today's goal is to understand the concept deeply and get hands-on with a basic implementation, not to integrate it into capstones. The exact API will change before stable, but the mental model will not."} </Notes>
     </div>
   ),
 
   // ─── SLIDE 2: Agenda ───
   () => (
-    <Shell tag="Agenda" title="What we'll cover" notes="This is a bonus topic, so the format is more self-paced than a regular session. Walk through the agenda to set expectations. Emphasize that while the API is experimental, the concepts are production-relevant — students will encounter AppFunctions (or its successor) in real Android apps within 1-2 years.">
+    <Shell tag="Agenda" title="What we'll cover" notes="Frame this as exposure-not-integration: students should understand AppFunctions deeply but should not feel pressure to add it to their capstone in the final stretch. Walk through the agenda to set expectations. Emphasize that while the API is experimental, the concepts are production-relevant — students will encounter AppFunctions (or its successor) in real Android apps within 1-2 years.">
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginTop: 6 }}>
         {[
           { num: "01", time: "8 min",  title: "The shift to agent-centric apps",     desc: "How users are beginning to interact with Android differently" },
@@ -448,7 +448,7 @@ com.example.noteapp/editNote`}</CodePane>
       <div>
         <div style={{ marginBottom: 10 }}><Tag color="#fff">Wrap-up</Tag></div>
         <h2 style={{ fontSize: 28, fontWeight: 800, color: "#fff", margin: "0 0 8px" }}>Key takeaways</h2>
-        <p style={{ fontSize: 15, color: "rgba(255,255,255,0.7)", margin: "0 0 24px" }}>What to carry forward from this unit</p>
+        <p style={{ fontSize: 15, color: "rgba(255,255,255,0.7)", margin: "0 0 24px" }}>What to carry forward from this session</p>
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
           <div style={{ background: "rgba(255,255,255,0.1)", borderRadius: 8, padding: "12px 16px" }}>
             <p style={{ fontSize: 11, fontWeight: 700, color: "rgba(255,255,255,0.6)", margin: "0 0 8px", textTransform: "uppercase" as const, letterSpacing: ".06em" }}>The concept</p>
@@ -489,7 +489,7 @@ export default function AppFunctionsSlides() {
     <div style={{ fontFamily: "var(--font-sans)", padding: "1rem 0" }}>
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
         <div>
-          <p style={{ fontSize: 11, color: MUTED, margin: 0, textTransform: "uppercase" as const, letterSpacing: ".06em" }}>Bonus · AppFunctions · {slides.length} slides</p>
+          <p style={{ fontSize: 11, color: MUTED, margin: 0, textTransform: "uppercase" as const, letterSpacing: ".06em" }}>Week 9 · S2 Android · AppFunctions · {slides.length} slides</p>
           <p style={{ fontSize: 14, fontWeight: 600, color: TEXT, margin: 0 }}>Apps in the Age of AI Agents</p>
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
