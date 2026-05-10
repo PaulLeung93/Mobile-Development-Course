@@ -1,17 +1,25 @@
 import { useState } from "react";
 
-const SLATE = "#0F1117";
-const SLATE_2 = "#1A1D27";
-const SLATE_3 = "#252836";
-const BORDER = "#2E3245";
-const ACCENT = "#4F8EF7";
-const ACCENT_2 = "#F7894F";
-const GREEN = "#3ECF8E";
-const MUTED = "#7A8099";
-const TEXT = "#E8EAF2";
-const TEXT_DIM = "#B0B5CC";
+// Neutral colors — CSS variables that switch automatically with light/dark mode
+const SLATE    = "var(--bg-dark)";
+const SLATE_2  = "var(--color-background-primary)";
+const SLATE_3  = "var(--color-background-secondary)";
+const BORDER   = "var(--color-border-tertiary)";
+const TEXT     = "var(--color-text-primary)";
+const TEXT_DIM = "var(--color-text-secondary)";
+const MUTED    = "var(--color-text-tertiary)";
+
+// Code block colors — intentionally dark in both modes (standard code-block convention)
+const CODE_BG     = "#1A1D27";
+const CODE_HDR    = "#252836";
+const CODE_BORDER = "#2E3245";
+
+// Accent colors — same in both modes
+const ACCENT      = "#4F8EF7";
+const ACCENT_2    = "#F7894F";
+const GREEN       = "#3ECF8E";
 const KOTLIN_COLOR = "#7F52FF";
-const SWIFT_COLOR = "#F05138";
+const SWIFT_COLOR  = "#F05138";
 
 const Tab = ({ active, color, onClick, children }) => (
   <button onClick={onClick} style={{ padding: "8px 20px", borderRadius: 6, border: `1.5px solid ${active ? color : BORDER}`, background: active ? `${color}18` : "transparent", color: active ? color : MUTED, fontSize: 13, fontFamily: "inherit", fontWeight: 600, cursor: "pointer", letterSpacing: ".02em", transition: "all .15s" }}>
@@ -39,12 +47,12 @@ const Step = ({ n, title, time, children, accent = ACCENT }) => (
 );
 
 const CodeBlock = ({ lang, children, color }) => (
-  <div style={{ margin: "12px 0", borderRadius: 8, overflow: "hidden", border: `1px solid ${BORDER}` }}>
-    <div style={{ background: SLATE_3, padding: "5px 14px", display: "flex", alignItems: "center", gap: 8, borderBottom: `1px solid ${BORDER}` }}>
+  <div style={{ margin: "12px 0", borderRadius: 8, overflow: "hidden", border: `1px solid ${CODE_BORDER}` }}>
+    <div style={{ background: CODE_HDR, padding: "5px 14px", display: "flex", alignItems: "center", gap: 8, borderBottom: `1px solid ${CODE_BORDER}` }}>
       <span style={{ width: 8, height: 8, borderRadius: "50%", background: color || ACCENT, display: "inline-block" }} />
-      <span style={{ fontSize: 11, color: MUTED, fontFamily: "monospace", letterSpacing: ".04em" }}>{lang}</span>
+      <span style={{ fontSize: 11, color: "#7A8099", fontFamily: "monospace", letterSpacing: ".04em" }}>{lang}</span>
     </div>
-    <pre style={{ margin: 0, background: SLATE_2, color: "#CDD6F4", fontSize: 12, padding: "14px 16px", lineHeight: 1.75, overflowX: "auto", whiteSpace: "pre", fontFamily: "monospace" }}>
+    <pre style={{ margin: 0, background: CODE_BG, color: "#CDD6F4", fontSize: 12, padding: "14px 16px", lineHeight: 1.75, overflowX: "auto", whiteSpace: "pre", fontFamily: "monospace" }}>
       {children}
     </pre>
   </div>
