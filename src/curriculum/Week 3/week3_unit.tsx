@@ -123,21 +123,25 @@ function Overview() {
       <div className="callout-checkpoint" style={{ background: "#E8FCE8", padding: "10px 14px", borderRadius: 8, fontSize: 13, marginBottom: 12 }}>
         Don{"'"}t forget to fill out the {"✏️"} Session Survey at the end of each class session!
       </div>
-      <h1 style={{ fontSize: 20, fontWeight: 500, margin: "0 0 12px", color: "var(--color-text-primary)" }}>Unit 3: Lists, Shared Transitions, and Adaptive Layouts</h1>
-      <p style={{ fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 1.7, margin: "0 0 14px" }}>Almost every real app has a list — a feed, a catalogue, an inbox, a search results page. This week you learn how to build them with production-quality polish. By the end of Week 3 you will have a scrollable, searchable list that navigates to a detail screen with smooth shared element transitions and adapts its layout for tablets. This is the pattern that powers every browsing app you use every day — and you will build it with a level of polish that most courses do not reach until the final weeks.</p>
+      <h1 style={{ fontSize: 20, fontWeight: 500, margin: "0 0 12px", color: "var(--color-text-primary)" }}>Unit 3: Lists, Forms, Sheets & Swipe Actions</h1>
+      <p style={{ fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 1.7, margin: "0 0 14px" }}>Almost every real app has a list — a feed, a catalogue, an inbox, a search results page. This week you learn how to build them with production-quality polish. Session 1 gives you a scrollable, searchable list with tap-to-detail navigation. Session 2 takes that foundation further with forms, modal bottom sheets, and swipe-to-dismiss — the interactive patterns you find in every production app.</p>
       <div style={{ background: "var(--color-background-secondary)", border: "0.5px solid var(--color-border-tertiary)", borderRadius: 8, padding: "12px 16px", margin: "12px 0" }}>
-        <p style={{ color: "var(--color-text-primary)", margin: 0 }}><strong>{"⚡"} AI-Powered Advantage:</strong> This course relies heavily on AI to handle boilerplate and dense framework syntax. Because AI handles the scaffolding, we can teach advanced UX concepts — like shared element transitions and adaptive layouts — much earlier than a traditional CS class. The goal is conceptual mastery and UX architecture, not rote memorization of complex API wrappers.</p>
+        <p style={{ color: "var(--color-text-primary)", margin: 0 }}><strong>{"⚡"} AI-Powered Advantage:</strong> This course relies heavily on AI to handle boilerplate and dense framework syntax. The goal is conceptual mastery — understanding what each pattern does and why — not memorizing verbose API signatures. Use AI to generate scaffolding, then read and verify what it produces.</p>
       </div>
       <h2 style={{ fontSize: 18, fontWeight: 600, margin: "24px 0 8px" }}>What you will learn</h2>
       <UL items={[
         "LazyColumn (Compose) and List (SwiftUI) — efficient scrolling lists",
         "Custom row layouts, unique tracking keys, and list-to-detail navigation wiring",
         "Real-time search filtering and empty state handling (stretch)",
-        "Shared Element Transitions — spatial continuity and 'object permanence' in UI",
-        "Adaptive Layouts — responsive design that adapts from phone to tablet",
-        "Prompt engineering — using AI to implement complex framework patterns",
+        "Form fields and input validation — text fields, toggles, and pickers",
+        "Modal bottom sheets — showing supplemental content without losing context",
+        "Swipe-to-dismiss / swipe actions on list rows",
+        "Prompt engineering — using AI to implement complex interactive patterns",
       ]} />
-      <div style={{ marginTop: 20, padding: "14px", background: "var(--color-background-secondary)", borderRadius: 10, fontSize: 13, lineHeight: 1.7 }}>
+      <div style={{ marginTop: 12, padding: "10px 14px", background: "#F9F0FF", borderRadius: 8, fontSize: 13, lineHeight: 1.6 }}>
+        <strong>✨ Bonus:</strong> Want to add shared element transitions and adaptive tablet layouts to your album browser? Check out the <strong>Bonus: Shared Elements & Adaptive Layouts</strong> unit after completing Week 3.
+      </div>
+      <div style={{ marginTop: 16, padding: "14px", background: "var(--color-background-secondary)", borderRadius: 10, fontSize: 13, lineHeight: 1.7 }}>
         <strong>Session Info</strong>
         <ul style={{ margin: "6px 0 0", paddingLeft: 20 }}>
           <li>{"📅"} See your cohort{"'"}'s schedule for session times</li>
@@ -154,10 +158,10 @@ function Overview() {
         <strong>{"📦 This unit at a glance"}</strong>
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginTop: 10 }}>
           {[
-            { label: "Session 1", val: "LazyColumn / List basics, custom row layouts, and list-to-detail navigation wiring. Lab: build the album browser with a pre-built detail screen. Stretch: real-time search and empty state." },
-            { label: "Session 2", val: "Premium polish — shared element transitions for spatial continuity, and adaptive layouts for tablet/landscape. AI-driven scaffolding throughout." },
-            { label: "Lab (each session)", val: "Session 1: build the album browser. Session 2: add shared element transitions and use AI to refactor for adaptive layouts." },
-            { label: "Assignment 3", val: "Guided starter — same album browser structure, your own content and theme. Stretch: add shared element transitions and adaptive layouts." },
+            { label: "Session 1", val: "LazyColumn / List basics, custom row layouts, and list-to-detail navigation wiring. Lab: build the album browser. Stretch: real-time search and empty state." },
+            { label: "Session 2", val: "Forms, modal bottom sheets, and swipe actions — the interactive patterns that turn a working list into a fully featured app." },
+            { label: "Lab (each session)", val: "Session 1: build the album browser. Session 2: add a form, a bottom sheet, and swipe-to-dismiss to your album app." },
+            { label: "Assignment 3", val: "Guided starter — same album browser structure, your own content and theme. Stretch: add a form or bottom sheet." },
           ].map(item => (
             <div key={item.label} style={{ background: "var(--color-background-primary)", border: "0.5px solid var(--color-border-tertiary)", borderRadius: 8, padding: "10px 12px" }}>
               <p style={{ fontSize: 11, fontWeight: 500, color: "var(--color-text-tertiary)", margin: "0 0 4px", textTransform: "uppercase", letterSpacing: ".04em" }}>{item.label}</p>

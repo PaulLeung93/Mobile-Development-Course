@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 
 const PURPLE = "#534AB7";
 const PURPLE_DARK = "#3C3489";
@@ -9,64 +9,64 @@ const GRAY = "#F5F5F7";
 const TEXT = "#1a1a2e";
 const MUTED = "#6b7280";
 
-const Tag = ({ children, color = PURPLE }) => (
+const preStyle = { margin: 0, background: "#1e1e2e", color: "#cdd6f4", fontSize: 10, padding: "8px 12px", borderRadius: 6, lineHeight: 1.6, fontFamily: "monospace", whiteSpace: "pre-wrap" as const };
+
+const Tag = ({ children, color = PURPLE }: { [k: string]: any }) => (
   <span style={{ fontSize: 10, fontWeight: 600, letterSpacing: ".06em", textTransform: "uppercase", background: color === PURPLE ? PURPLE_LIGHT : TEAL_LIGHT, color, padding: "2px 8px", borderRadius: 20 }}>{children}</span>
 );
 
-const CodePane = ({ title, accent = PURPLE, children }) => (
+const CodePane = ({ title, accent = PURPLE, children }: { [k: string]: any }) => (
   <div style={{ flex: 1, minWidth: 0 }}>
     {title && <div style={{ background: accent, color: "#fff", fontSize: 11, fontWeight: 600, padding: "4px 12px", borderRadius: "8px 8px 0 0", letterSpacing: ".04em" }}>{title}</div>}
     <pre style={{ margin: 0, background: "#1e1e2e", color: "#cdd6f4", fontSize: 11, padding: "12px 14px", borderRadius: title ? "0 0 8px 8px" : 8, lineHeight: 1.7, overflowX: "auto", whiteSpace: "pre-wrap", fontFamily: "monospace" }}>{children}</pre>
   </div>
 );
 
-const Step = ({ n, title, children, accent = PURPLE }) => (
-  <div style={{ marginBottom: 12, paddingLeft: 20, borderLeft: `2px solid #e5e7eb`, position: "relative" }}>
-    <div style={{ position: "absolute", left: -14, top: -2, width: 26, height: 26, borderRadius: "50%", background: "#fff", border: `2px solid ${accent}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 800, color: accent }}>
+const Step = ({ n, title, children, accent = PURPLE }: { [k: string]: any }) => (
+  <div style={{ marginBottom: 10, paddingLeft: 24, borderLeft: `2px solid #e5e7eb`, position: "relative" }}>
+    <div style={{ position: "absolute", left: -14, top: 0, width: 26, height: 26, borderRadius: "50%", background: "#fff", border: `2px solid ${accent}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 800, color: accent }}>
       {n}
     </div>
-    <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8 }}>
-      <p style={{ fontSize: 13, fontWeight: 700, color: TEXT, margin: 0 }}>{title}</p>
-    </div>
+    <p style={{ fontSize: 12, fontWeight: 700, color: TEXT, margin: "2px 0 6px" }}>{title}</p>
     <div>{children}</div>
   </div>
 );
 
-const Bullet = ({ children, sub, done }) => (
+const Bullet = ({ children, sub, done }: { [k: string]: any }) => (
   <div style={{ display: "flex", gap: 8, margin: sub ? "3px 0 3px 20px" : "7px 0", alignItems: "flex-start" }}>
     <span style={{ color: done ? TEAL : sub ? TEAL : PURPLE, fontWeight: 700, fontSize: sub ? 12 : 14, marginTop: 1, flexShrink: 0 }}>{done ? "✓" : sub ? "◦" : "▸"}</span>
     <span style={{ fontSize: sub ? 13 : 14, color: sub ? MUTED : TEXT, lineHeight: 1.5 }}>{children}</span>
   </div>
 );
 
-const Notes = ({ children }) => (
+const Notes = ({ children }: { [k: string]: any }) => (
   <div style={{ borderTop: `2px dashed ${PURPLE_LIGHT}`, marginTop: 14, paddingTop: 10 }}>
     <p style={{ fontSize: 11, fontWeight: 600, color: PURPLE, margin: "0 0 3px", textTransform: "uppercase", letterSpacing: ".06em" }}>Speaker notes</p>
     <p style={{ fontSize: 12, color: MUTED, margin: 0, lineHeight: 1.6 }}>{children}</p>
   </div>
 );
 
-const Discussion = ({ children }) => (
+const Discussion = ({ children }: { [k: string]: any }) => (
   <div style={{ background: TEAL_LIGHT, border: `1px solid ${TEAL}`, borderRadius: 8, padding: "10px 14px", margin: "10px 0" }}>
     <p style={{ fontSize: 11, fontWeight: 600, color: TEAL, margin: "0 0 3px", textTransform: "uppercase", letterSpacing: ".06em" }}>Discussion prompt</p>
     <p style={{ fontSize: 13, color: "#085041", margin: 0, lineHeight: 1.5 }}>{children}</p>
   </div>
 );
 
-const Info = ({ children }) => (
+const Info = ({ children }: { [k: string]: any }) => (
   <div style={{ background: PURPLE_LIGHT, borderRadius: 8, padding: "8px 14px", margin: "8px 0" }}>
     <p style={{ fontSize: 12, color: PURPLE_DARK, margin: 0, lineHeight: 1.5 }}>{children}</p>
   </div>
 );
 
-const Warn = ({ title, children }) => (
+const Warn = ({ title, children }: { [k: string]: any }) => (
   <div className="callout-warn" style={{ background: "#fff3cd", border: "1px solid #f59e0b", borderRadius: 8, padding: "8px 12px", margin: "8px 0" }}>
     {title && <p style={{ fontSize: 12, fontWeight: 600, color: "#92400e", margin: "0 0 2px" }}>{title}</p>}
     <p style={{ fontSize: 12, color: "#92400e", margin: 0, lineHeight: 1.5 }}>{children}</p>
   </div>
 );
 
-const Shell = ({ tag, tagColor, title, subtitle, timer, children, notes, dark }) => (
+const Shell = ({ tag, tagColor, title, subtitle, timer, children, notes, dark }: { [k: string]: any }) => (
   <div style={{ background: dark ? PURPLE_DARK : "#fff", border: `1px solid ${dark ? "transparent" : "#e5e7eb"}`, borderRadius: 12, padding: "24px 28px 18px", minHeight: 360, display: "flex", flexDirection: "column", boxSizing: "border-box" }}>
     <div style={{ marginBottom: 12 }}>
       <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
@@ -80,6 +80,42 @@ const Shell = ({ tag, tagColor, title, subtitle, timer, children, notes, dark })
     {notes && <Notes>{notes}</Notes>}
   </div>
 );
+
+const OSToggle = ({ android, ios }: { [k: string]: any }) => {
+  const [platform, setPlatform] = useState<'android' | 'ios'>('android');
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+      <div style={{ display: "flex", borderRadius: 8, overflow: "hidden", border: "1px solid #e5e7eb", width: "fit-content" }}>
+        <button onClick={() => setPlatform('android')} style={{ padding: "5px 16px", fontSize: 11, fontWeight: 700, letterSpacing: ".04em", background: platform === 'android' ? PURPLE : "#fff", color: platform === 'android' ? "#fff" : MUTED, border: "none", borderRight: "1px solid #e5e7eb", cursor: "pointer" }}>
+          Android · Kotlin
+        </button>
+        <button onClick={() => setPlatform('ios')} style={{ padding: "5px 16px", fontSize: 11, fontWeight: 700, letterSpacing: ".04em", background: platform === 'ios' ? TEAL : "#fff", color: platform === 'ios' ? "#fff" : MUTED, border: "none", cursor: "pointer" }}>
+          iOS · Swift
+        </button>
+      </div>
+      {platform === 'android' ? android : ios}
+    </div>
+  );
+};
+
+const ViewToggle = ({ steps, full }: { [k: string]: any }) => {
+  const [view, setView] = useState<'steps' | 'full'>('steps');
+  return (
+    <div>
+      <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 6 }}>
+        <div style={{ display: "flex", borderRadius: 20, overflow: "hidden", border: "1px solid #e5e7eb", width: "fit-content" }}>
+          <button onClick={() => setView('steps')} style={{ padding: "3px 12px", fontSize: 10, fontWeight: 700, letterSpacing: ".04em", background: view === 'steps' ? PURPLE : "#fff", color: view === 'steps' ? "#fff" : MUTED, border: "none", borderRight: "1px solid #e5e7eb", cursor: "pointer" }}>
+            Step by step
+          </button>
+          <button onClick={() => setView('full')} style={{ padding: "3px 12px", fontSize: 10, fontWeight: 700, letterSpacing: ".04em", background: view === 'full' ? PURPLE : "#fff", color: view === 'full' ? "#fff" : MUTED, border: "none", cursor: "pointer" }}>
+            Full code
+          </button>
+        </div>
+      </div>
+      {view === 'steps' ? steps : full}
+    </div>
+  );
+};
 
 export const slides = [
   // ─── SLIDE 1: Title ───
@@ -176,77 +212,60 @@ export const slides = [
     </Shell>
   ),
 
-  // ─── SLIDE 5a: Form Inputs (Compose) ───
+  // ─── SLIDE 5: Conceptual A (Why inputs don't hold state) ───
   () => (
-    <Shell tag="Forms" title="Form Inputs — Jetpack Compose" notes="Show them the core building blocks of a form in Compose. Remind them that inputs in declarative UI are 'stateless' — they don't hold their own text! We must pass state into them, and update state on change.">
-      <p style={{ fontSize: 13, color: MUTED, margin: "0 0 10px" }}>Inputs in declarative UI are "dumb" — they don't hold their own text. We must bind them to state.</p>
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
-        <CodePane title="OutlinedTextField" accent={PURPLE}>
-{`var title by remember { mutableStateOf("") }
-
-OutlinedTextField(
-    value = title,
-    onValueChange = { title = it },
-    label = { Text("Album Title") }
-)`}
-        </CodePane>
-        <CodePane title="Switch" accent={PURPLE}>
-{`var isFavorite by remember { mutableStateOf(false) }
-
-Switch(
-    checked = isFavorite,
-    onCheckedChange = { isFavorite = it }
-)`}
-        </CodePane>
-        <div style={{ gridColumn: "1 / -1" }}>
-            <CodePane title="Slider (e.g. for a 1-5 rating)" accent={PURPLE}>
-{`var rating by remember { mutableStateOf(3f) }
-
-Slider(
-    value = rating,
-    onValueChange = { rating = it },
-    valueRange = 1f..5f,
-    steps = 3 // creates discrete steps (1, 2, 3, 4, 5)
-)`}
-            </CodePane>
+    <Shell tag="Concept" title="Why inputs don't hold their own state" notes="Explain declarative UI state binding.">
+      <p style={{ fontSize: 13, color: MUTED, margin: "0 0 10px" }}>In traditional UI, a TextField is a box that remembers what you typed. In Declarative UI, a TextField is just a window showing the current value of a variable.</p>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+        <div style={{ background: "#fff3f3", border: "1px solid #fca5a5", borderRadius: 8, padding: "14px 16px" }}>
+          <p style={{ fontSize: 12, fontWeight: 700, color: "#b91c1c", margin: "0 0 8px" }}>Traditional UI (Imperative)</p>
+          <div style={{ background: "#fff", border: "1px solid #ccc", padding: 8, borderRadius: 4, marginBottom: 8, color: "#aaa" }}>User types "Hello"</div>
+          <p style={{ fontSize: 12, color: "#b91c1c" }}>The text field holds the string internally. When you need it, you query the field: <code>textField.getText()</code></p>
+        </div>
+        <div style={{ background: TEAL_LIGHT, border: `1px solid ${TEAL}`, borderRadius: 8, padding: "14px 16px" }}>
+          <p style={{ fontSize: 12, fontWeight: 700, color: TEAL, margin: "0 0 8px" }}>Declarative UI (Compose / SwiftUI)</p>
+          <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
+            <div style={{ background: "#fff", border: `1px solid ${TEAL}`, padding: 8, borderRadius: 4, flex: 1, color: TEAL, fontWeight: 600 }}>State: "Hello"</div>
+            <span style={{ fontSize: 20 }}>↔️</span>
+            <div style={{ background: "#fff", border: "1px solid #ccc", padding: 8, borderRadius: 4, flex: 1 }}>UI shows "Hello"</div>
+          </div>
+          <p style={{ fontSize: 12, color: TEAL }}>The field has no memory. It displays the state. When the user types, it asks the state to update. The UI then redraws.</p>
         </div>
       </div>
+      <Info>{"This is why we must bind inputs to a state variable. Without state, the input is read-only and won't change when you type!"}</Info>
     </Shell>
   ),
 
-  // ─── SLIDE 5b: Form Inputs (SwiftUI) ───
+  // ─── SLIDE 6: Form Inputs (Merged OSToggle) ───
   () => (
-    <Shell tag="Forms" title="Form Inputs — SwiftUI" notes="Show the SwiftUI equivalents. Notice how SwiftUI uses the '$' binding syntax, which makes two-way data binding slightly cleaner than Compose's value/onValueChange pairs.">
-      <p style={{ fontSize: 13, color: MUTED, margin: "0 0 10px" }}>SwiftUI uses the <code>$</code> syntax to create a two-way binding directly to the @State variable.</p>
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
-        <CodePane title="TextField" accent={TEAL}>
-{`@State private var title = ""
-
-TextField("Album Title", text: $title)
-    .textFieldStyle(.roundedBorder)`}
-        </CodePane>
-        <CodePane title="Toggle" accent={TEAL}>
-{`@State private var isFavorite = false
-
-Toggle("Favorite", isOn: $isFavorite)`}
-        </CodePane>
-        <div style={{ gridColumn: "1 / -1" }}>
-            <CodePane title="Slider (e.g. for a 1-5 rating)" accent={TEAL}>
-{`@State private var rating: Double = 3
-
-Slider(
-    value: $rating, 
-    in: 1...5, 
-    step: 1
-)`}
-            </CodePane>
-        </div>
-      </div>
-      <Info>{"The '$' in SwiftUI means 'I am giving this UI element permission to read AND write to my state variable.' It's shorthand for Compose's `value = x, onValueChange = { x = it }`."}</Info>
+    <Shell tag="Forms" title="Form Inputs in Declarative UI" notes="Show how to bind inputs to state on both platforms.">
+      <OSToggle
+        android={
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+            <CodePane title="OutlinedTextField" accent={PURPLE}>{`var title by remember { mutableStateOf("") }\n\nOutlinedTextField(\n    value = title,\n    onValueChange = { title = it },\n    label = { Text("Album Title") }\n)`}</CodePane>
+            <CodePane title="Switch" accent={PURPLE}>{`var isFavorite by remember { mutableStateOf(false) }\n\nSwitch(\n    checked = isFavorite,\n    onCheckedChange = { isFavorite = it }\n)`}</CodePane>
+            <div style={{ gridColumn: "1 / -1" }}>
+                <CodePane title="Slider (e.g. for a 1-5 rating)" accent={PURPLE}>{`var rating by remember { mutableStateOf(3f) }\n\nSlider(\n    value = rating,\n    onValueChange = { rating = it },\n    valueRange = 1f..5f,\n    steps = 3\n)`}</CodePane>
+            </div>
+          </div>
+        }
+        ios={
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+            <CodePane title="TextField" accent={TEAL}>{`@State private var title = ""\n\nTextField("Album Title", text: $title)\n    .textFieldStyle(.roundedBorder)`}</CodePane>
+            <CodePane title="Toggle" accent={TEAL}>{`@State private var isFavorite = false\n\nToggle("Favorite", isOn: $isFavorite)`}</CodePane>
+            <div style={{ gridColumn: "1 / -1" }}>
+                <CodePane title="Slider (e.g. for a 1-5 rating)" accent={TEAL}>{`@State private var rating: Double = 3\n\nSlider(\n    value: $rating, \n    in: 1...5, \n    step: 1\n)`}</CodePane>
+            </div>
+            <div style={{ gridColumn: "1 / -1", marginTop: 8 }}>
+                <Info>{"The '$' in SwiftUI creates a two-way binding. It means 'I am giving this UI element permission to read AND write to my state variable.' It's shorthand for Compose's `value = x, onValueChange = { x = it }`."}</Info>
+            </div>
+          </div>
+        }
+      />
     </Shell>
   ),
 
-  // ─── SLIDE 6: The Bottom Sheet UX ───
+  // ─── SLIDE 7: The Bottom Sheet UX ───
   () => (
     <Shell tag="UX Pattern" title="The Bottom Sheet" notes="Explain WHY we use bottom sheets. From a UX perspective, it keeps context. From a technical perspective (which is the real secret here), it keeps the form and the list in the same scope, so we don't have to pass state between screens yet!">
       <div style={{ display: "grid", gridTemplateColumns: "1.5fr 1fr", gap: 12, marginTop: 6 }}>
@@ -277,74 +296,50 @@ Slider(
     </Shell>
   ),
 
-  // ─── SLIDE 7a: Implementing a Bottom Sheet (Compose) ───
+  // ─── SLIDE 8: Conceptual B (How a Bottom Sheet is wired) ───
   () => (
-    <Shell tag="Bottom Sheets" title="ModalBottomSheet in Compose" notes="Android's Bottom Sheet is slightly verbose. This is a perfect moment to suggest using AI to scaffold it. Explain that we need a boolean state to track if it's open, and the ModalBottomSheet composable itself.">
-      <div style={{ display: "flex", gap: 10 }}>
-        <CodePane title="Compose Bottom Sheet" accent={PURPLE}>
-{`var showSheet by remember { mutableStateOf(false) }
-
-// A button to open it
-FloatingActionButton(onClick = { showSheet = true }) {
-    Icon(Icons.Default.Add, contentDescription = "Add")
-}
-
-// The sheet itself
-if (showSheet) {
-    ModalBottomSheet(
-        onDismissRequest = { showSheet = false }
-    ) {
-        // Sheet Content goes here!
-        Column(modifier = Modifier.padding(16.dp)) {
-            Text("Add Item", fontSize = 24.sp)
-            // TextField, Slider, etc.
-        }
-    }
-}`}
-        </CodePane>
-        <div style={{ flex: 0.6, display: "flex", flexDirection: "column", gap: 8 }}>
-          <div style={{ background: PURPLE_LIGHT, borderRadius: 8, padding: "14px 16px" }}>
-            <p style={{ fontSize: 13, fontWeight: 600, color: PURPLE_DARK, margin: "0 0 8px" }}>Verbose? Yes.</p>
-            <p style={{ fontSize: 12, color: PURPLE, margin: 0, lineHeight: 1.5 }}>Android's <code>ModalBottomSheet</code> requires experimental APIs and specific scaffolds in some versions.<br/><br/><strong>Pro tip:</strong> This is the perfect time to use AI. <br/><br/><em>"Claude, write me a simple Jetpack Compose screen with a LazyColumn and a FloatingActionButton that opens a ModalBottomSheet."</em></p>
-          </div>
+    <Shell tag="Concept" title="How a Bottom Sheet is wired" notes="Explain the state mechanism behind bottom sheets.">
+      <p style={{ fontSize: 13, color: MUTED, margin: "0 0 10px" }}>A bottom sheet isn't a new screen. It's an overlay controlled by a simple boolean switch.</p>
+      <div style={{ display: "flex", gap: 20, alignItems: "center", background: GRAY, padding: 20, borderRadius: 12 }}>
+        <div style={{ flex: 1, background: "#fff", border: `2px solid ${PURPLE}`, borderRadius: 8, padding: 16, textAlign: "center" }}>
+          <p style={{ fontSize: 14, fontWeight: "bold", color: PURPLE, margin: "0 0 8px" }}>State Variable</p>
+          <div style={{ display: "inline-block", background: PURPLE_LIGHT, padding: "4px 12px", borderRadius: 20, color: PURPLE_DARK, fontFamily: "monospace", fontWeight: "bold" }}>showSheet = true</div>
+        </div>
+        <div style={{ fontSize: 24, color: MUTED }}>→</div>
+        <div style={{ flex: 1.5 }}>
+          <Bullet><strong>The boolean is the on/off switch.</strong></Bullet>
+          <Bullet>Setting it to <code>true</code> (e.g., tapping an Add button) renders the sheet overlay.</Bullet>
+          <Bullet>Setting it to <code>false</code> (e.g., tapping Submit, or swiping it down) hides the sheet.</Bullet>
         </div>
       </div>
     </Shell>
   ),
 
-  // ─── SLIDE 7b: Implementing a Bottom Sheet (SwiftUI) ───
+  // ─── SLIDE 9: Implementing a Bottom Sheet (Merged OSToggle) ───
   () => (
-    <Shell tag="Bottom Sheets" title="Sheets in SwiftUI" notes="SwiftUI makes sheets incredibly elegant. You just attach the `.sheet` modifier to a view, and pass the binding.">
-      <div style={{ display: "flex", gap: 10 }}>
-        <CodePane title="SwiftUI Sheet" accent={TEAL}>
-{`@State private var showSheet = false
-
-var body: some View {
-    List {
-        // list content
-    }
-    .safeAreaInset(edge: .bottom) {
-        Button("Add Item") { showSheet = true }
-    }
-    // The modifier that attaches the sheet
-    .sheet(isPresented: $showSheet) {
-        // Sheet Content goes here!
-        VStack {
-            Text("Add Item").font(.title)
-            // TextField, Slider, etc.
+    <Shell tag="Bottom Sheets" title="Adding the Sheet" notes="Show how to trigger the sheet on both platforms.">
+      <OSToggle
+        android={
+          <div style={{ display: "flex", gap: 10 }}>
+            <CodePane title="Compose ModalBottomSheet" accent={PURPLE}>{`var showSheet by remember { mutableStateOf(false) }\n\nFloatingActionButton(onClick = { showSheet = true }) {\n    Icon(Icons.Default.Add, contentDescription = "Add")\n}\n\nif (showSheet) {\n    ModalBottomSheet(onDismissRequest = { showSheet = false }) {\n        Column(modifier = Modifier.padding(16.dp)) {\n            Text("Add Item")\n        }\n    }\n}`}</CodePane>
+            <div style={{ flex: 0.6, display: "flex", flexDirection: "column", justifyContent: "center" }}>
+              <Info>{"ModalBottomSheet is stable in Material 3. Simply wrap it in an `if (showSheet)` condition, and pass `showSheet = false` to onDismissRequest so it can close itself."}</Info>
+            </div>
+          </div>
         }
-        .padding()
-        // Optional: Make it only take up half the screen!
-        .presentationDetents([.medium, .large]) 
-    }
-}`}
-        </CodePane>
-      </div>
-      <Info>{"In SwiftUI, `.sheet` is a modifier. Notice `presentationDetents` — this incredible one-liner lets the sheet snap to the middle or top of the screen."}</Info>
+        ios={
+          <div style={{ display: "flex", gap: 10 }}>
+            <CodePane title="SwiftUI .sheet Modifier" accent={TEAL}>{`@State private var showSheet = false\n\nvar body: some View {\n    List { /* ... */ }\n    .toolbar {\n        Button("Add") { showSheet = true }\n    }\n    .sheet(isPresented: $showSheet) {\n        VStack {\n            Text("Add Item")\n        }\n        .padding()\n        .presentationDetents([.medium, .large])\n    }\n}`}</CodePane>
+            <div style={{ flex: 0.6, display: "flex", flexDirection: "column", justifyContent: "center" }}>
+              <Info>{"In SwiftUI, `.sheet` is a modifier attached to the List or main view. Notice `presentationDetents` — this incredible one-liner lets the sheet snap to the middle or top of the screen."}</Info>
+            </div>
+          </div>
+        }
+      />
     </Shell>
   ),
 
-  // ─── SLIDE 8: Live Code-Along Intro ───
+  // ─── SLIDE 10: Live Code-Along Intro ───
   () => (
     <Shell tag="Live code-along" timer="15" title="Build: The Album Tracker" subtitle="Bringing it all together" dark notes="This is the core of the class. Walk through building this step-by-step.">
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginTop: 8 }}>
@@ -352,7 +347,7 @@ var body: some View {
           <p style={{ fontSize: 13, fontWeight: 600, color: "rgba(255,255,255,0.9)", margin: "0 0 10px" }}>Our Goal Today</p>
           {[
             { n: 1, t: "Create a list backed by state" },
-            { n: 2, t: "Add a FAB (Floating Action Button)" },
+            { n: 2, t: "Add a toolbar / Floating Action Button" },
             { n: 3, t: "Open a Bottom Sheet on tap" },
             { n: 4, t: "Build an 'Add Album' form" },
             { n: 5, t: "Save the form data back to the list" },
@@ -365,115 +360,288 @@ var body: some View {
         </div>
         <div style={{ background: "rgba(255,255,255,0.08)", borderRadius: 12, padding: 16, display: "flex", flexDirection: "column" }}>
           <p style={{ fontSize: 12, color: TEAL, margin: "0 0 8px" }}>The List State:</p>
-          <CodePane dark>
-{`// Compose
-val albums = remember { 
-    mutableStateListOf<Album>() 
-}
-
-// SwiftUI
-@State private var albums: [Album] = []`}
-          </CodePane>
-          <p style={{ fontSize: 11, color: "rgba(255,255,255,0.6)", marginTop: 8 }}>By keeping the list state and the sheet in the same file, the form can simply call <code>albums.add(newAlbum)</code> and the list instantly updates!</p>
+          <OSToggle
+            android={<CodePane dark accent={PURPLE}>{`val albums = remember { \n    mutableStateListOf<Album>() \n}`}</CodePane>}
+            ios={<CodePane dark accent={TEAL}>{`@State private var albums: [Album] = []`}</CodePane>}
+          />
+          <p style={{ fontSize: 11, color: "rgba(255,255,255,0.6)", marginTop: 8 }}>By keeping the list state and the sheet in the same file, the form can simply add new items directly to the list array, and the UI will automatically update!</p>
         </div>
       </div>
     </Shell>
   ),
 
-  // ─── SLIDE 9: Swipe Actions ───
+  // ─── SLIDE: Unique IDs ───
   () => (
-    <Shell tag="Gestures" timer="10" title="Swipe to Delete" notes="We added data, now we need to remove it. Swipe-to-delete is the industry standard for removing items from a list on mobile. Show how it's done natively.">
-      <p style={{ fontSize: 13, color: MUTED, margin: "0 0 10px" }}>You added data to the list. How do you remove it? A tiny 'X' button? No. We use gestures.</p>
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
-        <CodePane title="Compose: SwipeToDismissBox" accent={PURPLE}>
-{`// Requires experimental APIs currently
-val dismissState = rememberSwipeToDismissBoxState(
-    confirmValueChange = { dismissValue ->
-        if (dismissValue == SwipeToDismissBoxValue.EndToStart) {
-            albums.remove(album)
-            true
-        } else false
-    }
-)
-
-SwipeToDismissBox(
-    state = dismissState,
-    backgroundContent = {
-        // Red background with trash icon
-        Box(Modifier.background(Color.Red)) {
-            Icon(Icons.Default.Delete)
-        }
-    }
-) {
-    // Your normal list row goes here
-    AlbumRow(album)
-}`}
-        </CodePane>
-        <CodePane title="SwiftUI: .swipeActions" accent={TEAL}>
-{`List {
-    ForEach(albums) { album in
-        AlbumRow(album: album)
-            .swipeActions(edge: .trailing) {
-                Button(role: .destructive) {
-                    // Logic to delete
-                    albums.removeAll { $0.id == album.id }
-                } label: {
-                    Label("Delete", systemImage: "trash")
-                }
-            }
-    }
-}`}
-        </CodePane>
+    <Shell tag="Concept" title="The importance of Unique IDs" notes="Explain why lazy lists need unique IDs when items can be deleted or added.">
+      <p style={{ fontSize: 13, color: MUTED, margin: "0 0 10px" }}>When lists become interactive (adding and deleting items), the UI needs to know exactly which item changed to animate smoothly and avoid bugs.</p>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+        <div style={{ background: "#fff3f3", border: "1px solid #fca5a5", borderRadius: 8, padding: "14px 16px" }}>
+          <p style={{ fontSize: 12, fontWeight: 700, color: "#b91c1c", margin: "0 0 8px" }}>Bad: Relying on Index</p>
+          <Bullet>If you delete item at index 1, item 2 becomes index 1.</Bullet>
+          <Bullet>The UI gets confused about what to animate.</Bullet>
+          <Bullet>Can cause crashes when deleting items fast.</Bullet>
+        </div>
+        <div style={{ background: TEAL_LIGHT, border: `1px solid ${TEAL}`, borderRadius: 8, padding: "14px 16px" }}>
+          <p style={{ fontSize: 12, fontWeight: 700, color: TEAL, margin: "0 0 8px" }}>Good: Stable Unique IDs</p>
+          <Bullet>Every item has a unique string/UUID.</Bullet>
+          <Bullet>Compose uses the <code>key</code> parameter.</Bullet>
+          <Bullet>SwiftUI uses the <code>Identifiable</code> protocol.</Bullet>
+        </div>
       </div>
-      <Info>{"SwiftUI makes this remarkably easy with `.swipeActions`. Jetpack Compose's `SwipeToDismissBox` is a bit more manual, giving you full control over the background drawing."}</Info>
+      <Info>{"Always assign a unique ID (like a UUID) to data models when they will be displayed in an interactive list."}</Info>
     </Shell>
   ),
 
-  // ─── SLIDE 10: Alert Dialogs ───
+  // ─── SLIDE 11: Live Code 1 (Add Album 1/3) ───
   () => (
-    <Shell tag="UX Pattern" timer="5" title="Confirming Destructive Actions" notes="Before deleting user data, always ask for confirmation. Explain the AlertDialog.">
-      <p style={{ fontSize: 13, color: MUTED, margin: "0 0 10px" }}>Wait! If a user accidentally swipes, their data is gone forever. We need an Alert Dialog.</p>
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
-        <CodePane title="Compose AlertDialog" accent={PURPLE}>
-{`var showDialog by remember { mutableStateOf(false) }
+    <Shell tag="Live code-along — Step 1 of 3" title="State & The Add Button" subtitle="Setting up the list state and trigger">
+      <div style={{ marginTop: 8 }}>
+        <ViewToggle
+          steps={
+            <OSToggle
+              android={
+                <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                  <Step n={1} title="Make the list mutable">
+                    <pre style={preStyle}>{`val albums = remember { mutableStateListOf<Album>() }\nvar showAddSheet by remember { mutableStateOf(false) }`}</pre>
+                  </Step>
+                  <Step n={2} title="Add the Floating Action Button">
+                    <pre style={preStyle}>{`Scaffold(\n    floatingActionButton = {\n        FloatingActionButton(onClick = { showAddSheet = true }) {\n            Icon(Icons.Default.Add, contentDescription = "Add Album")\n        }\n    }\n) { paddingValues ->\n    // ...`}</pre>
+                  </Step>
+                </div>
+              }
+              ios={
+                <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                  <Step n={1} title="Define the state variables" accent={TEAL}>
+                    <pre style={preStyle}>{`@State private var albums: [Album] = []\n@State private var showAddSheet = false`}</pre>
+                  </Step>
+                  <Step n={2} title="Add a toolbar button to trigger it" accent={TEAL}>
+                    <pre style={preStyle}>{`NavigationStack {\n    List(albums) { album in\n        AlbumRow(album: album)\n    }\n    .toolbar {\n        ToolbarItem(placement: .navigationBarTrailing) {\n            Button(action: { showAddSheet = true }) {\n                Image(systemName: "plus")\n            }\n        }\n    }\n}`}</pre>
+                  </Step>
+                </div>
+              }
+            />
+          }
+          full={
+             <OSToggle
+                android={<CodePane title="Kotlin — Step 1 & 2" accent={PURPLE}>{`val albums = remember { mutableStateListOf<Album>() }\nvar showAddSheet by remember { mutableStateOf(false) }\n\nScaffold(\n    floatingActionButton = {\n        FloatingActionButton(onClick = { showAddSheet = true }) {\n            Icon(Icons.Default.Add, contentDescription = "Add Album")\n        }\n    }\n) { paddingValues ->\n    LazyColumn(contentPadding = paddingValues) {\n        items(albums) { album -> AlbumRow(album) }\n    }\n}`}</CodePane>}
+                ios={<CodePane title="Swift — Step 1 & 2" accent={TEAL}>{`@State private var albums: [Album] = []\n@State private var showAddSheet = false\n\nvar body: some View {\n    NavigationStack {\n        List(albums) { album in\n            AlbumRow(album: album)\n        }\n        .navigationTitle("Albums")\n        .toolbar {\n            ToolbarItem(placement: .navigationBarTrailing) {\n                Button(action: { showAddSheet = true }) {\n                    Image(systemName: "plus")\n                }\n            }\n        }\n    }\n}`}</CodePane>}
+             />
+          }
+        />
+      </div>
+      <Info>{"First, we need state to hold our albums and a boolean to control the bottom sheet. Then we add a button to set that boolean to true."}</Info>
+    </Shell>
+  ),
 
-if (showDialog) {
-    AlertDialog(
-        onDismissRequest = { showDialog = false },
-        title = { Text("Delete Album?") },
-        text = { Text("This cannot be undone.") },
-        confirmButton = {
-            TextButton(onClick = {
-                // Delete logic
-                showDialog = false
-            }) { Text("Delete", color = Color.Red) }
-        },
-        dismissButton = {
-            TextButton(onClick = { showDialog = false }) {
-                Text("Cancel")
-            }
-        }
-    )
-}`}
-        </CodePane>
-        <CodePane title="SwiftUI .alert" accent={TEAL}>
-{`@State private var showDialog = false
+  // ─── SLIDE: Testing the connection ───
+  () => (
+    <Shell tag="Checkpoint" title="Testing the connection" notes="Take a moment to verify the FAB toggles the boolean.">
+      <p style={{ fontSize: 13, color: MUTED, margin: "0 0 10px" }}>Before we build the complex Bottom Sheet form, let's verify our state is working!</p>
+      <div style={{ background: GRAY, borderRadius: 8, padding: "16px", textAlign: "center" }}>
+        <p style={{ fontSize: 14, fontWeight: "bold", color: TEXT, marginBottom: 12 }}>Does your button flip the boolean?</p>
+        <OSToggle
+          android={<CodePane title="Print to Logcat" accent={PURPLE}>{`FloatingActionButton(onClick = {\n    showAddSheet = true\n    println("Sheet state is now: $showAddSheet")\n})`}</CodePane>}
+          ios={<CodePane title="Print to Console" accent={TEAL}>{`Button(action: {\n    showAddSheet = true\n    print("Sheet state is now: \\(showAddSheet)")\n})`}</CodePane>}
+        />
+      </div>
+      <Info>{"Debugging UI is hard. Always verify your state updates before building the UI that depends on it!"}</Info>
+    </Shell>
+  ),
 
-// Attach modifier to your view
-.alert("Delete Album?", isPresented: $showDialog) {
-    Button("Cancel", role: .cancel) { }
-    Button("Delete", role: .destructive) {
-        // Delete logic here
-    }
-} message: {
-    Text("This cannot be undone.")
-}`}
-        </CodePane>
+  // ─── SLIDE 12: Live Code 2 (Add Album 2/3) ───
+  () => (
+    <Shell tag="Live code-along — Step 2 of 3" title="The Bottom Sheet UI" subtitle="Creating the form overlay">
+      <div style={{ marginTop: 8 }}>
+        <ViewToggle
+          steps={
+            <OSToggle
+              android={
+                <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                  <Step n={3} title="Add the ModalBottomSheet conditionally">
+                    <pre style={preStyle}>{`if (showAddSheet) {\n    ModalBottomSheet(onDismissRequest = { showAddSheet = false }) {\n        AddAlbumForm() // We will build this next!\n    }\n}`}</pre>
+                  </Step>
+                  <Step n={4} title="Create the Form Composable">
+                    <pre style={preStyle}>{`@Composable\nfun AddAlbumForm() {\n    var title by remember { mutableStateOf("") }\n    var artist by remember { mutableStateOf("") }\n    \n    Column(modifier = Modifier.padding(16.dp)) {\n        Text("Add New Album", style = MaterialTheme.typography.titleLarge)\n        OutlinedTextField(value = title, onValueChange = { title = it }, label = { Text("Title") })\n        OutlinedTextField(value = artist, onValueChange = { artist = it }, label = { Text("Artist") })\n        // Submit button next...\n    }\n}`}</pre>
+                  </Step>
+                </div>
+              }
+              ios={
+                <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                  <Step n={3} title="Attach the .sheet modifier" accent={TEAL}>
+                    <pre style={preStyle}>{`    // ... List closing bracket\n    .sheet(isPresented: $showAddSheet) {\n        AddAlbumForm()\n            .presentationDetents([.medium])\n    }\n}`}</pre>
+                  </Step>
+                  <Step n={4} title="Create the Form View" accent={TEAL}>
+                    <pre style={preStyle}>{`struct AddAlbumForm: View {\n    @State private var title = ""\n    @State private var artist = ""\n    \n    var body: some View {\n        NavigationStack {\n            Form {\n                TextField("Title", text: $title)\n                TextField("Artist", text: $artist)\n            }\n            .navigationTitle("Add New Album")\n            // Submit button next...\n        }\n    }\n}`}</pre>
+                  </Step>
+                </div>
+              }
+            />
+          }
+          full={
+             <OSToggle
+                android={<CodePane title="Kotlin — Step 3 & 4" accent={PURPLE}>{`if (showAddSheet) {\n    ModalBottomSheet(onDismissRequest = { showAddSheet = false }) {\n        AddAlbumForm()\n    }\n}\n\n// Somewhere else in the file\n@Composable\nfun AddAlbumForm() {\n    var title by remember { mutableStateOf("") }\n    var artist by remember { mutableStateOf("") }\n    \n    Column(modifier = Modifier.padding(16.dp)) {\n        Text("Add New Album", style = MaterialTheme.typography.titleLarge)\n        OutlinedTextField(value = title, onValueChange = { title = it }, label = { Text("Title") })\n        OutlinedTextField(value = artist, onValueChange = { artist = it }, label = { Text("Artist") })\n    }\n}`}</CodePane>}
+                ios={<CodePane title="Swift — Step 3 & 4" accent={TEAL}>{`    .sheet(isPresented: $showAddSheet) {\n        AddAlbumForm()\n            .presentationDetents([.medium])\n    }\n\n// Somewhere else in the file\nstruct AddAlbumForm: View {\n    @State private var title = ""\n    @State private var artist = ""\n    \n    var body: some View {\n        NavigationStack {\n            Form {\n                TextField("Title", text: $title)\n                TextField("Artist", text: $artist)\n            }\n            .navigationTitle("Add New Album")\n        }\n    }\n}`}</CodePane>}
+             />
+          }
+        />
       </div>
     </Shell>
   ),
 
-  // ─── SLIDE 11: Wrap-up & Lab ───
+  // ─── SLIDE 13: Live Code 3 (Add Album 3/3) ───
+  () => (
+    <Shell tag="Live code-along — Step 3 of 3" title="Saving the Data" subtitle="Sending the form data back to the list">
+      <div style={{ marginTop: 8 }}>
+        <ViewToggle
+          steps={
+            <OSToggle
+              android={
+                <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                  <Step n={5} title="Pass a callback to the form">
+                    <pre style={preStyle}>{`@Composable\nfun AddAlbumForm(onSubmit: (Album) -> Unit) {\n    // ... form fields ...\n    Button(onClick = {\n        val newAlbum = Album(id = UUID.randomUUID().toString(), title = title, artist = artist)\n        onSubmit(newAlbum)\n    }) {\n        Text("Save Album")\n    }\n}`}</pre>
+                  </Step>
+                  <Step n={6} title="Handle the submission">
+                    <pre style={preStyle}>{`if (showAddSheet) {\n    ModalBottomSheet(onDismissRequest = { showAddSheet = false }) {\n        AddAlbumForm(onSubmit = { newAlbum -> \n            albums.add(newAlbum)\n            showAddSheet = false\n        })\n    }\n}`}</pre>
+                  </Step>
+                </div>
+              }
+              ios={
+                <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                  <Step n={5} title="Pass a callback closure" accent={TEAL}>
+                    <pre style={preStyle}>{`struct AddAlbumForm: View {\n    var onSubmit: (Album) -> Void\n    // ... form fields ...\n    Button("Save Album") {\n        let newAlbum = Album(id: UUID().uuidString, title: title, artist: artist)\n        onSubmit(newAlbum)\n    }\n}`}</pre>
+                  </Step>
+                  <Step n={6} title="Handle the submission" accent={TEAL}>
+                    <pre style={preStyle}>{`.sheet(isPresented: $showAddSheet) {\n    AddAlbumForm { newAlbum in\n        albums.append(newAlbum)\n        showAddSheet = false\n    }\n    .presentationDetents([.medium])\n}`}</pre>
+                  </Step>
+                </div>
+              }
+            />
+          }
+          full={
+             <OSToggle
+                android={<CodePane title="Kotlin — Step 5 & 6" accent={PURPLE}>{`if (showAddSheet) {\n    ModalBottomSheet(onDismissRequest = { showAddSheet = false }) {\n        AddAlbumForm(onSubmit = { newAlbum -> \n            albums.add(newAlbum)\n            showAddSheet = false\n        })\n    }\n}\n\n@Composable\nfun AddAlbumForm(onSubmit: (Album) -> Unit) {\n    var title by remember { mutableStateOf("") }\n    var artist by remember { mutableStateOf("") }\n    Column(modifier = Modifier.padding(16.dp)) {\n        OutlinedTextField(value = title, onValueChange = { title = it }, label = { Text("Title") })\n        OutlinedTextField(value = artist, onValueChange = { artist = it }, label = { Text("Artist") })\n        Button(onClick = {\n            val newAlbum = Album(id = UUID.randomUUID().toString(), title = title, artist = artist)\n            onSubmit(newAlbum)\n        }) {\n            Text("Save Album")\n        }\n    }\n}`}</CodePane>}
+                ios={<CodePane title="Swift — Step 5 & 6" accent={TEAL}>{`.sheet(isPresented: $showAddSheet) {\n    AddAlbumForm { newAlbum in\n        albums.append(newAlbum)\n        showAddSheet = false\n    }\n    .presentationDetents([.medium])\n}\n\nstruct AddAlbumForm: View {\n    var onSubmit: (Album) -> Void\n    @State private var title = ""\n    @State private var artist = ""\n    \n    var body: some View {\n        NavigationStack {\n            Form {\n                TextField("Title", text: $title)\n                TextField("Artist", text: $artist)\n                Button("Save Album") {\n                    let newAlbum = Album(id: UUID().uuidString, title: title, artist: artist)\n                    onSubmit(newAlbum)\n                }\n            }\n            .navigationTitle("Add New Album")\n        }\n    }\n}`}</CodePane>}
+             />
+          }
+        />
+      </div>
+    </Shell>
+  ),
+
+  // ─── SLIDE 14: Swipe Actions (OSToggle merged) ───
+  () => (
+    <Shell tag="Gestures" timer="10" title="Swipe to Delete" notes="Show how to delete items natively.">
+      <OSToggle
+        android={
+          <div style={{ display: "flex", gap: 10 }}>
+            <CodePane title="Compose SwipeToDismissBox" accent={PURPLE}>{`val dismissState = rememberSwipeToDismissBoxState(\n    confirmValueChange = { dismissValue ->\n        if (dismissValue == SwipeToDismissBoxValue.EndToStart) {\n            albums.remove(album)\n            true\n        } else false\n    }\n)\n\nSwipeToDismissBox(\n    state = dismissState,\n    backgroundContent = {\n        Box(Modifier.fillMaxSize().background(Color.Red)) {\n            Icon(Icons.Default.Delete, contentDescription = "Delete")\n        }\n    }\n) {\n    AlbumRow(album)\n}`}</CodePane>
+          </div>
+        }
+        ios={
+          <div style={{ display: "flex", gap: 10 }}>
+            <CodePane title="SwiftUI .swipeActions" accent={TEAL}>{`List {\n    ForEach(albums) { album in\n        AlbumRow(album: album)\n            .swipeActions(edge: .trailing) {\n                Button(role: .destructive) {\n                    // Note: 'albums' must be accessible in this scope\n                    albums.removeAll { $0.id == album.id }\n                } label: {\n                    Label("Delete", systemImage: "trash")\n                }\n            }\n    }\n}`}</CodePane>
+          </div>
+        }
+      />
+      <div style={{ marginTop: 8 }}>
+        <Info>{"SwiftUI makes this remarkably easy with `.swipeActions`. Jetpack Compose's `SwipeToDismissBox` is a bit more manual, giving you full control over the background drawing."}</Info>
+      </div>
+    </Shell>
+  ),
+
+  // ─── SLIDE 15: Conceptual D (When to confirm) ───
+  () => (
+    <Shell tag="UX Pattern" title="When to confirm vs. when to just do it" notes="Discuss when alert dialogs are appropriate.">
+      <p style={{ fontSize: 13, color: MUTED, margin: "0 0 10px" }}>Before we build an Alert Dialog, let's ask: should we?</p>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 10 }}>
+        <div style={{ background: GRAY, padding: 16, borderRadius: 8 }}>
+          <p style={{ fontSize: 14, fontWeight: "bold", color: TEXT }}>Swipe to archive email</p>
+          <p style={{ fontSize: 12, color: TEAL, fontWeight: "bold" }}>No confirmation</p>
+          <p style={{ fontSize: 12, color: MUTED }}>It's easily reversible (undo button or find it in archive).</p>
+        </div>
+        <div style={{ background: GRAY, padding: 16, borderRadius: 8 }}>
+          <p style={{ fontSize: 14, fontWeight: "bold", color: TEXT }}>Marking an item as read</p>
+          <p style={{ fontSize: 12, color: TEAL, fontWeight: "bold" }}>No confirmation</p>
+          <p style={{ fontSize: 12, color: MUTED }}>Non-destructive and trivial to revert.</p>
+        </div>
+        <div style={{ background: "#fff3f3", border: "1px solid #fca5a5", padding: 16, borderRadius: 8 }}>
+          <p style={{ fontSize: 14, fontWeight: "bold", color: "#b91c1c" }}>Deleting an album forever</p>
+          <p style={{ fontSize: 12, color: "#b91c1c", fontWeight: "bold" }}>Always confirm</p>
+          <p style={{ fontSize: 12, color: MUTED }}>Destructive and irreversible. We must catch accidental swipes!</p>
+        </div>
+      </div>
+      <Info>{"Rule of Thumb: If an action is destructive and irreversible, always show a confirmation dialog."}</Info>
+    </Shell>
+  ),
+
+  // ─── SLIDE 16: Alert Dialogs (Merged) ───
+  () => (
+    <Shell tag="Alerts" title="Confirming Destructive Actions" notes="Show Alert Dialog implementations.">
+      <OSToggle
+        android={
+            <CodePane title="Compose AlertDialog" accent={PURPLE}>{`var showDialog by remember { mutableStateOf(false) }\n\nif (showDialog) {\n    AlertDialog(\n        onDismissRequest = { showDialog = false },\n        title = { Text("Delete Album?") },\n        text = { Text("This cannot be undone.") },\n        confirmButton = {\n            TextButton(onClick = {\n                // Delete logic\n                showDialog = false\n            }) { Text("Delete", color = Color.Red) }\n        },\n        dismissButton = {\n            TextButton(onClick = { showDialog = false }) {\n                Text("Cancel")\n            }\n        }\n    )\n}`}</CodePane>
+        }
+        ios={
+            <CodePane title="SwiftUI .alert" accent={TEAL}>{`@State private var showDialog = false\n\n// Attach modifier to your view\n.alert("Delete Album?", isPresented: $showDialog) {\n    Button("Cancel", role: .cancel) { }\n    Button("Delete", role: .destructive) {\n        // Delete logic here\n    }\n} message: {\n    Text("This cannot be undone.")\n}`}</CodePane>
+        }
+      />
+    </Shell>
+  ),
+
+  // ─── SLIDE: Full Code: Swipe to Delete + Alert ───
+  () => (
+    <Shell tag="Live code-along — Wrap up" title="Full Code: Swipe to Delete" subtitle="Combining gestures and alerts">
+      <div style={{ marginTop: 8 }}>
+        <OSToggle
+          android={
+            <CodePane title="Kotlin — SwipeToDismissBox + AlertDialog" accent={PURPLE}>{`var albumToDelete by remember { mutableStateOf<Album?>(null) }\n\n// Swipe to dismiss state\nval dismissState = rememberSwipeToDismissBoxState(\n    confirmValueChange = { dismissValue ->\n        if (dismissValue == SwipeToDismissBoxValue.EndToStart) {\n            albumToDelete = album\n            false // Don't dismiss until confirmed\n        } else false\n    }\n)\n\n// Render list with swipe\nSwipeToDismissBox(state = dismissState, /* ... */) { AlbumRow(album) }\n\n// Alert Dialog\nif (albumToDelete != null) {\n    AlertDialog(\n        onDismissRequest = { albumToDelete = null },\n        title = { Text("Delete Album?") },\n        text = { Text("This cannot be undone.") },\n        confirmButton = {\n            TextButton(onClick = {\n                albums.remove(albumToDelete)\n                albumToDelete = null\n            }) { Text("Delete", color = Color.Red) }\n        },\n        dismissButton = {\n            TextButton(onClick = { albumToDelete = null }) { Text("Cancel") }\n        }\n    )\n}`}</CodePane>
+          }
+          ios={
+            <CodePane title="Swift — .swipeActions + .alert" accent={TEAL}>{`@State private var albumToDelete: Album? = nil\n@State private var showDeleteAlert = false\n\nList(albums) { album in\n    AlbumRow(album: album)\n        .swipeActions(edge: .trailing) {\n            Button(role: .destructive) {\n                albumToDelete = album\n                showDeleteAlert = true\n            } label: {\n                Label("Delete", systemImage: "trash")\n            }\n        }\n}\n.alert("Delete Album?", isPresented: $showDeleteAlert) {\n    Button("Cancel", role: .cancel) { albumToDelete = nil }\n    Button("Delete", role: .destructive) {\n        if let album = albumToDelete {\n            albums.removeAll { $0.id == album.id }\n        }\n        albumToDelete = nil\n    }\n} message: {\n    Text("This cannot be undone.")\n}`}</CodePane>
+          }
+        />
+      </div>
+    </Shell>
+  ),
+
+  // ─── SLIDE 17: Conceptual E (Putting it together) ───
+  () => (
+    <Shell tag="Concept" title="Putting it together — The Full Flow" notes="Trace the data lifecycle.">
+      <p style={{ fontSize: 13, color: MUTED, margin: "0 0 10px" }}>Let's trace how all three patterns connect in our app's lifecycle.</p>
+      <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+        <div style={{ display: "flex", gap: 12, alignItems: "center", background: GRAY, padding: 12, borderRadius: 8 }}>
+          <span style={{ fontSize: 20 }}>1️⃣</span>
+          <div>
+            <p style={{ fontSize: 13, fontWeight: "bold", margin: 0 }}>Trigger Sheet</p>
+            <p style={{ fontSize: 12, color: MUTED, margin: 0 }}>User taps Add button. <code>showAddSheet = true</code>. Bottom Sheet appears.</p>
+          </div>
+        </div>
+        <div style={{ display: "flex", gap: 12, alignItems: "center", background: GRAY, padding: 12, borderRadius: 8 }}>
+          <span style={{ fontSize: 20 }}>2️⃣</span>
+          <div>
+            <p style={{ fontSize: 13, fontWeight: "bold", margin: 0 }}>Submit Form</p>
+            <p style={{ fontSize: 12, color: MUTED, margin: 0 }}>User taps Save. Album is appended to <code>albums</code> state. Sheet closes.</p>
+          </div>
+        </div>
+        <div style={{ display: "flex", gap: 12, alignItems: "center", background: GRAY, padding: 12, borderRadius: 8 }}>
+          <span style={{ fontSize: 20 }}>3️⃣</span>
+          <div>
+            <p style={{ fontSize: 13, fontWeight: "bold", margin: 0 }}>Swipe & Confirm</p>
+            <p style={{ fontSize: 12, color: MUTED, margin: 0 }}>User swipes row. <code>showDialog = true</code>. Alert Dialog catches accidental swipes.</p>
+          </div>
+        </div>
+        <div style={{ display: "flex", gap: 12, alignItems: "center", background: GRAY, padding: 12, borderRadius: 8 }}>
+          <span style={{ fontSize: 20 }}>4️⃣</span>
+          <div>
+            <p style={{ fontSize: 13, fontWeight: "bold", margin: 0 }}>Delete</p>
+            <p style={{ fontSize: 12, color: MUTED, margin: 0 }}>User confirms. Album is removed from <code>albums</code> state. UI automatically updates!</p>
+          </div>
+        </div>
+      </div>
+    </Shell>
+  ),
+
+  // ─── SLIDE 18: Wrap-up & Lab ───
   () => (
     <Shell tag="Lab Intro" title="Time to build: Interactive Lists" notes="Wrap up and transition to the lab.">
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginTop: 6 }}>
@@ -485,11 +653,11 @@ if (showDialog) {
           <Bullet>Alert dialogs prevent accidental data loss.</Bullet>
         </div>
         <div style={{ background: TEAL_LIGHT, border: `1px solid ${TEAL}`, borderRadius: 8, padding: "14px 16px" }}>
-          <p style={{ fontSize: 13, fontWeight: 700, color: TEAL, margin: "0 0 8px", textTransform: "uppercase" }}>The Lab: Expense Tracker</p>
-          <Bullet>Build an app to track your expenses.</Bullet>
-          <Bullet>Use a Bottom Sheet to add new expenses (Name, Amount, Category).</Bullet>
-          <Bullet>Add swipe-to-delete for mistakes.</Bullet>
-          <Bullet>Challenge: Calculate and display the total amount dynamically!</Bullet>
+          <p style={{ fontSize: 13, fontWeight: 700, color: TEAL, margin: "0 0 8px", textTransform: "uppercase" }}>The Lab: Album Browser</p>
+          <Bullet>Extend your Album Browser from Session 1.</Bullet>
+          <Bullet>Use a Bottom Sheet to add new albums (Title, Artist).</Bullet>
+          <Bullet>Add swipe-to-delete for albums.</Bullet>
+          <Bullet>Challenge: Use an Alert Dialog to confirm deletions!</Bullet>
         </div>
       </div>
       <div style={{ textAlign: "center", marginTop: 20 }}>
@@ -497,7 +665,6 @@ if (showDialog) {
       </div>
     </Shell>
   ),
-
 ];
 
 export default function App() {
