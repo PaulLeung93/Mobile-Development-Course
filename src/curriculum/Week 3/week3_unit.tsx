@@ -1204,8 +1204,937 @@ List(filtered) { album in
 function Session2Lab({ platform: _platform }: { platform: string }) {
   return (
     <div style={{ '--platform-accent': _platform === "Android" ? BL : GR } as React.CSSProperties}>
-      <h1 style={{ fontSize: 20, fontWeight: 500, margin: "0 0 6px", color: "var(--color-text-primary)" }}>Session 2 Lab: Local Data Mutation (Forms & Sheets)</h1>
-      <p style={{ fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 1.7, margin: "0 0 14px" }}>Coming soon: Learn how to mutate state and understand Unidirectional Data Flow by building forms, bottom sheets, and native swipe gestures.</p>
+      <h1 style={{ fontSize: 20, fontWeight: 500, margin: "0 0 6px", color: "var(--color-text-primary)" }}>Session 2 Lab: Local Data Mutation — Forms, Sheets & Swipe Actions</h1>
+      <p style={{ fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 1.7, margin: "0 0 14px" }}>You are going to build on top of the AlbumBrowser you finished in Session 1. Right now the list is read-only — it shows albums but you cannot add or remove any. By the end of this lab, tapping a + button opens a modal sheet with a form to add a new album, and swiping a row deletes it. Budget about 80–90 minutes.</p>
+
+      <div style={{ fontSize: 13, lineHeight: 1.7 }}>
+        <strong>{"🎯"} Goals</strong>
+        <ul style={{ paddingLeft: 20, margin: "6px 0 12px" }}>
+          <li>Understand Unidirectional Data Flow — why you mutate <em>data</em>, not UI</li>
+          <li>Convert a static list into observable, mutable state</li>
+          <li>Add a floating action button (Android) or toolbar button (iOS) to trigger a sheet</li>
+          <li>Build a form with text fields to capture user input</li>
+          <li>Append a new album to the list and watch the UI update automatically</li>
+          <li>Delete albums with a swipe gesture</li>
+          <li><strong>Stretch:</strong> Input validation, delete confirmation dialog, undo delete</li>
+        </ul>
+      </div>
+
+      <div style={{ marginTop: 20 }}>
+
+        <VStep num={0} title="Open your AlbumBrowser project from Session 1">
+          <p style={{ fontSize: 13, color: "var(--color-text-secondary)", margin: "0 0 8px" }}>Open the AlbumBrowser project you built in Session 1. If you did not finish Session 1, ask your TA for the starter code before continuing.</p>
+          {_platform === "Android"
+            ? <Tip>No new dependencies needed — <IC>ModalBottomSheet</IC> and <IC>SwipeToDismissBox</IC> are both in Material3, which is included in every new Compose project. If you did not add the material-icons-extended dependency in Session 1, you may need it for the delete icon: <IC>implementation("androidx.compose.material:material-icons-extended")</IC></Tip>
+            : <Tip>No new dependencies needed — <IC>.sheet</IC> and <IC>.onDelete</IC> are built into SwiftUI.</Tip>}
+          <Note>Right now <IC>sampleAlbums</IC> is a plain {_platform === "Android" ? "Kotlin list" : "Swift array"} defined outside any view. It can never change — the UI has no way to observe it. The first task is turning it into something the framework watches and reacts to.</Note>
+        </VStep>
+
+        <VStep num={1} title="Make the album list mutable state">
+          <p style={{ fontSize: 13, color: "var(--color-text-secondary)", margin: "0 0 8px" }}>Before you can add or delete albums, the list must be <em>observable state</em> — a value the framework watches. When it changes, the UI redraws automatically. This is Unidirectional Data Flow in action: you mutate data, and the UI follows.</p>
+
+          <VStep num="a" title="Understand why a plain list does not work">
+            <p style={{ fontSize: 13, margin: "0 0 8px" }}>Open <IC>{_platform === "Android" ? "AlbumListScreen.kt" : "AlbumListScreen.swift"}</IC>. Right now the list screen reads directly from the global <IC>sampleAlbums</IC> constant:</p>
+            {_platform === "Android" ? (
+              <CodeB title="Kotlin — current AlbumListScreen.kt" accent={BL}>{`// sampleAlbums is a top-level val — it never changes.
+// LazyColumn renders it once. Even if you could mutate it,
+// Compose has no way to know the data changed and the
+// screen would never update.
+items(sampleAlbums, key = { it.id }) { album ->
+    AlbumRow(album = album, onClick = { onAlbumClicked(album) })
+}`}</CodeB>
+            ) : (
+              <CodeB title="Swift — current AlbumListScreen.swift" accent={GR}>{`// sampleAlbums is a global constant.
+// SwiftUI is watching nothing — if you could mutate it,
+// the List would not know and would not redraw.
+List(sampleAlbums) { album in
+    AlbumRow(album: album)
+}`}</CodeB>
+            )}
+            <Tip><strong>The core rule of Unidirectional Data Flow:</strong> never reach into the UI to add or remove a view. Instead, mutate the underlying data. The framework detects the change and redraws only what is affected.</Tip>
+          </VStep>
+
+          <VStep num="b" title="Convert the list to observable state" last>
+            <p style={{ fontSize: 13, margin: "0 0 8px" }}>
+              {_platform === "Android"
+                ? <>Inside <IC>AlbumListScreen</IC>, declare a mutable state list at the top of the composable function body. Then replace every reference to <IC>sampleAlbums</IC> with your new <IC>albums</IC> variable.</>
+                : <>Inside <IC>AlbumListScreen</IC>, add a <IC>{"@State"}</IC> property that holds the albums array. Then replace every reference to <IC>sampleAlbums</IC> with <IC>albums</IC> — including the one inside <IC>.navigationDestination</IC>, so newly added albums can still be navigated to.</>}
+            </p>
+            {_platform === "Android" ? (
+              <>
+                <p style={{ fontSize: 13, margin: "0 0 6px" }}>Add this line <strong>at the very top of your <IC>AlbumListScreen</IC> function body</strong>, before the LazyColumn:</p>
+                <CodeB title="Kotlin — add inside AlbumListScreen" accent={BL}>{`// mutableStateListOf creates a list Compose observes.
+// remember keeps it alive across recompositions.
+// The spread operator (*) copies sampleAlbums into the new
+// list so you start with data but can now add or remove items.
+val albums = remember { mutableStateListOf(*sampleAlbums.toTypedArray()) }`}</CodeB>
+                <p style={{ fontSize: 13, margin: "8px 0 6px" }}>Then update the <IC>items()</IC> call to use <IC>albums</IC> instead of <IC>sampleAlbums</IC>:</p>
+                <CodeB title="Kotlin — update items() call" accent={BL}>{`items(albums, key = { it.id }) { album ->
+    AlbumRow(album = album, onClick = { onAlbumClicked(album) })
+}`}</CodeB>
+              </>
+            ) : (
+              <>
+                <p style={{ fontSize: 13, margin: "0 0 6px" }}>Add this property <strong>at the top of the <IC>AlbumListScreen</IC> struct</strong>, before <IC>var body</IC>:</p>
+                <CodeB title="Swift — add to AlbumListScreen" accent={GR}>{`// @State marks this as observable.
+// When albums changes, SwiftUI redraws the List automatically.
+@State private var albums = sampleAlbums`}</CodeB>
+                <p style={{ fontSize: 13, margin: "8px 0 6px" }}>Replace <IC>sampleAlbums</IC> with <IC>albums</IC> in two places — the <IC>List()</IC> call and the <IC>.navigationDestination</IC> lookup:</p>
+                <CodeB title="Swift — update List and navigationDestination" accent={GR}>{`// Change List(sampleAlbums) → List(albums):
+List(albums) { album in ...
+
+// Update the lookup so newly added albums are navigable too:
+.navigationDestination(for: Int.self) { id in
+    let album = albums.first { $0.id == id }!
+    AlbumDetailScreen(album: album)
+}`}</CodeB>
+              </>
+            )}
+            <Section title={`✅ Check your work — show me the complete ${_platform === "Android" ? "AlbumListScreen.kt" : "AlbumListScreen.swift"} so far`}>
+              {_platform === "Android" ? (
+                <CodeB title="Kotlin — AlbumListScreen.kt (mutable state)" accent={BL}>{`@Composable
+fun AlbumListScreen(onAlbumClicked: (Album) -> Unit = {}) {
+    val albums = remember { mutableStateListOf(*sampleAlbums.toTypedArray()) }
+
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color(0xFFF5F5F5)),
+        contentPadding = PaddingValues(16.dp),
+        verticalArrangement = Arrangement.spacedBy(4.dp)
+    ) {
+        items(albums, key = { it.id }) { album ->
+            AlbumRow(album = album, onClick = { onAlbumClicked(album) })
+        }
+    }
+}`}</CodeB>
+              ) : (
+                <CodeB title="Swift — AlbumListScreen.swift (mutable state)" accent={GR}>{`struct AlbumListScreen: View {
+    @State private var albums = sampleAlbums
+
+    var body: some View {
+        ZStack {
+            Color(UIColor.systemGray6).ignoresSafeArea()
+            List(albums) { album in
+                NavigationLink(value: album.id) {
+                    AlbumRow(album: album)
+                }
+                .listRowInsets(EdgeInsets(
+                    top: 4, leading: 16,
+                    bottom: 4, trailing: 16))
+                .listRowBackground(Color.clear)
+                .listRowSeparator(.hidden)
+            }
+            .listStyle(.plain)
+            .navigationDestination(for: Int.self) { id in
+                let album = albums.first { $0.id == id }!
+                AlbumDetailScreen(album: album)
+            }
+        }
+        .navigationTitle("Albums")
+    }
+}`}</CodeB>
+              )}
+            </Section>
+            <Checkpoint num={1}>Run the app. It should look <strong>identical</strong> to Session 1 — all 8 albums visible, navigation working. Nothing visible changed yet, but the list is now observable state. Any mutation you make in the next steps will instantly appear on screen.</Checkpoint>
+          </VStep>
+        </VStep>
+
+        <VStep num={2} title="Add a button to trigger the Add Album flow">
+          <p style={{ fontSize: 13, color: "var(--color-text-secondary)", margin: "0 0 8px" }}>
+            {_platform === "Android"
+              ? "You need a way for the user to say \"I want to add an album.\" On Android, a Floating Action Button (FAB) is the standard pattern for a screen's primary action. You will place it via Scaffold — the layout container that knows where to position FABs, top bars, and bottom bars relative to system insets."
+              : "On iOS, a toolbar button in the navigation bar is the standard way to trigger a primary action. You will add a + button that toggles sheet visibility."}
+          </p>
+
+          <VStep num="a" title={_platform === "Android" ? "Wrap AlbumListScreen in a Scaffold" : "Add a state variable for sheet visibility"}>
+            {_platform === "Android" ? (
+              <>
+                <p style={{ fontSize: 13, margin: "0 0 8px" }}><IC>Scaffold</IC> is a Material3 layout composable with slots for FABs, top bars, and bottom bars. It also handles inset padding so content does not slide under system UI. Add a <IC>showSheet</IC> state variable, then wrap the existing <IC>LazyColumn</IC> inside a <IC>Scaffold</IC>. Pass <IC>innerPadding</IC> from the Scaffold lambda into the LazyColumn's modifier:</p>
+                <CodeB title="Kotlin — AlbumListScreen with Scaffold" accent={BL}>{`@Composable
+fun AlbumListScreen(onAlbumClicked: (Album) -> Unit = {}) {
+    val albums = remember { mutableStateListOf(*sampleAlbums.toTypedArray()) }
+    var showSheet by remember { mutableStateOf(false) }
+
+    Scaffold(
+        floatingActionButton = { /* FAB goes here in sub-step b */ }
+    ) { innerPadding ->
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color(0xFFF5F5F5))
+                .padding(innerPadding),  // keeps content above the FAB
+            contentPadding = PaddingValues(16.dp),
+            verticalArrangement = Arrangement.spacedBy(4.dp)
+        ) {
+            items(albums, key = { it.id }) { album ->
+                AlbumRow(album = album, onClick = { onAlbumClicked(album) })
+            }
+        }
+    }
+}`}</CodeB>
+                <Tip><strong>Why innerPadding?</strong> Scaffold calculates how much space the FAB, top bar, and bottom bar occupy and passes it to you as <IC>innerPadding</IC>. Without it, the last list item scrolls under the FAB and becomes unreachable.</Tip>
+                <Section title="✅ Check your work — show me the complete AlbumListScreen.kt so far">
+                  <CodeB title="Kotlin — AlbumListScreen.kt (Scaffold added)" accent={BL}>{`@Composable
+fun AlbumListScreen(onAlbumClicked: (Album) -> Unit = {}) {
+    val albums = remember { mutableStateListOf(*sampleAlbums.toTypedArray()) }
+    var showSheet by remember { mutableStateOf(false) }
+
+    Scaffold(
+        floatingActionButton = { }
+    ) { innerPadding ->
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color(0xFFF5F5F5))
+                .padding(innerPadding),
+            contentPadding = PaddingValues(16.dp),
+            verticalArrangement = Arrangement.spacedBy(4.dp)
+        ) {
+            items(albums, key = { it.id }) { album ->
+                AlbumRow(album = album, onClick = { onAlbumClicked(album) })
+            }
+        }
+    }
+}`}</CodeB>
+                </Section>
+              </>
+            ) : (
+              <>
+                <p style={{ fontSize: 13, margin: "0 0 8px" }}>Add a second <IC>{"@State"}</IC> property to <IC>AlbumListScreen</IC> that tracks whether the Add Album sheet is visible. This is a simple boolean that starts as <IC>false</IC> — setting it to <IC>true</IC> will open the sheet once you wire everything up.</p>
+                <CodeB title="Swift — add to AlbumListScreen" accent={GR}>{`struct AlbumListScreen: View {
+    @State private var albums = sampleAlbums
+    @State private var showingAddSheet = false   // ← add this
+    ...
+}`}</CodeB>
+                <Section title="✅ Check your work — show me the complete AlbumListScreen.swift so far">
+                  <CodeB title="Swift — AlbumListScreen.swift (sheet state added)" accent={GR}>{`struct AlbumListScreen: View {
+    @State private var albums = sampleAlbums
+    @State private var showingAddSheet = false
+
+    var body: some View {
+        ZStack {
+            Color(UIColor.systemGray6).ignoresSafeArea()
+            List(albums) { album in
+                NavigationLink(value: album.id) {
+                    AlbumRow(album: album)
+                }
+                .listRowInsets(EdgeInsets(
+                    top: 4, leading: 16,
+                    bottom: 4, trailing: 16))
+                .listRowBackground(Color.clear)
+                .listRowSeparator(.hidden)
+            }
+            .listStyle(.plain)
+            .navigationDestination(for: Int.self) { id in
+                let album = albums.first { $0.id == id }!
+                AlbumDetailScreen(album: album)
+            }
+        }
+        .navigationTitle("Albums")
+    }
+}`}</CodeB>
+                </Section>
+              </>
+            )}
+          </VStep>
+
+          <VStep num="b" title={_platform === "Android" ? "Add the FloatingActionButton" : "Add the toolbar button"} last>
+            {_platform === "Android" ? (
+              <>
+                <p style={{ fontSize: 13, margin: "0 0 8px" }}>Fill in the <IC>floatingActionButton</IC> slot with a <IC>FloatingActionButton</IC> that sets <IC>showSheet = true</IC> when tapped. Inside it, add an <IC>Icon</IC> using <IC>Icons.Filled.Add</IC>:</p>
+                <CodeB title="Kotlin — fill in the FAB slot" accent={BL}>{`Scaffold(
+    floatingActionButton = {
+        FloatingActionButton(onClick = { showSheet = true }) {
+            Icon(
+                imageVector = Icons.Filled.Add,
+                contentDescription = "Add album"
+            )
+        }
+    }
+) { innerPadding -> ... }`}</CodeB>
+                <Section title="💡 Hint: Red squiggle under Icons.Filled.Add">
+                  <p style={{ fontSize: 13, margin: "0 0 6px" }}>Press Alt+Enter (Option+Enter on Mac) to auto-import. If it does not appear in the list, add the extended icons dependency to <IC>build.gradle</IC>:</p>
+                  <CodeB accent={BL}>{`implementation("androidx.compose.material:material-icons-extended")`}</CodeB>
+                </Section>
+                <Section title="✅ Check your work — show me the complete AlbumListScreen.kt so far">
+                  <CodeB title="Kotlin — AlbumListScreen.kt (FAB added)" accent={BL}>{`@Composable
+fun AlbumListScreen(onAlbumClicked: (Album) -> Unit = {}) {
+    val albums = remember { mutableStateListOf(*sampleAlbums.toTypedArray()) }
+    var showSheet by remember { mutableStateOf(false) }
+
+    Scaffold(
+        floatingActionButton = {
+            FloatingActionButton(onClick = { showSheet = true }) {
+                Icon(
+                    imageVector = Icons.Filled.Add,
+                    contentDescription = "Add album"
+                )
+            }
+        }
+    ) { innerPadding ->
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color(0xFFF5F5F5))
+                .padding(innerPadding),
+            contentPadding = PaddingValues(16.dp),
+            verticalArrangement = Arrangement.spacedBy(4.dp)
+        ) {
+            items(albums, key = { it.id }) { album ->
+                AlbumRow(album = album, onClick = { onAlbumClicked(album) })
+            }
+        }
+    }
+}`}</CodeB>
+                </Section>
+              </>
+            ) : (
+              <>
+                <p style={{ fontSize: 13, margin: "0 0 8px" }}>Add a <IC>.toolbar</IC> modifier to the outer <IC>ZStack</IC> in <IC>AlbumListScreen</IC>. Place a <IC>ToolbarItem</IC> in the <IC>.navigationBarTrailing</IC> position with a <IC>Button</IC> that sets <IC>showingAddSheet = true</IC>:</p>
+                <CodeB title="Swift — toolbar modifier" accent={GR}>{`// Add after .navigationTitle("Albums")
+.toolbar {
+    ToolbarItem(placement: .navigationBarTrailing) {
+        Button(action: { showingAddSheet = true }) {
+            Image(systemName: "plus")
+        }
+    }
+}`}</CodeB>
+                <Section title="✅ Check your work — show me the complete AlbumListScreen.swift so far">
+                  <CodeB title="Swift — AlbumListScreen.swift (toolbar added)" accent={GR}>{`struct AlbumListScreen: View {
+    @State private var albums = sampleAlbums
+    @State private var showingAddSheet = false
+
+    var body: some View {
+        ZStack {
+            Color(UIColor.systemGray6).ignoresSafeArea()
+            List(albums) { album in
+                NavigationLink(value: album.id) {
+                    AlbumRow(album: album)
+                }
+                .listRowInsets(EdgeInsets(
+                    top: 4, leading: 16,
+                    bottom: 4, trailing: 16))
+                .listRowBackground(Color.clear)
+                .listRowSeparator(.hidden)
+            }
+            .listStyle(.plain)
+            .navigationDestination(for: Int.self) { id in
+                let album = albums.first { $0.id == id }!
+                AlbumDetailScreen(album: album)
+            }
+        }
+        .navigationTitle("Albums")
+        .toolbar {
+            ToolbarItem(placement: .navigationBarTrailing) {
+                Button(action: { showingAddSheet = true }) {
+                    Image(systemName: "plus")
+                }
+            }
+        }
+    }
+}`}</CodeB>
+                </Section>
+              </>
+            )}
+            <Checkpoint num={2}>{_platform === "Android" ? "A floating action button with a + icon appears at the bottom right. Tapping it does nothing visible yet — but showSheet is toggling to true." : "A + button appears in the top-right corner of the navigation bar. Tapping it does nothing visible yet — but showingAddSheet is toggling."}</Checkpoint>
+          </VStep>
+        </VStep>
+
+        <VStep num={3} title="Build the Add Album form">
+          <p style={{ fontSize: 13, color: "var(--color-text-secondary)", margin: "0 0 8px" }}>Now you will build the form that collects album details. It lives inside a modal — a {_platform === "Android" ? "ModalBottomSheet that slides up from the bottom" : "sheet that slides up from the bottom"}. You will create a separate file for the form content, then connect it to <IC>AlbumListScreen</IC>.</p>
+
+          <VStep num="a" title={_platform === "Android" ? "Create AddAlbumSheet.kt with text fields" : "Create AddAlbumView.swift with text fields"}>
+            <p style={{ fontSize: 13, margin: "0 0 8px" }}>
+              {_platform === "Android"
+                ? <>Create a new file called <IC>AddAlbumSheet.kt</IC>. Define a <IC>{"@Composable"}</IC> function <IC>AddAlbumSheet</IC> that takes one parameter: <IC>{"onSave: (Album) -> Unit"}</IC>. This is a callback — the sheet does not know what to do with the new album; it just packages the user input and fires the callback. <IC>AlbumListScreen</IC> will receive it and mutate its state.</>
+                : <>Create a new file called <IC>AddAlbumView.swift</IC>. Define a <IC>struct AddAlbumView: View</IC> with one property: <IC>{"let onSave: (Album) -> Void"}</IC>. This view does not mutate state directly — it gathers input and fires the callback. <IC>AlbumListScreen</IC> will handle the mutation.</>}
+            </p>
+            <p style={{ fontSize: 13, margin: "0 0 8px" }}>
+              {_platform === "Android"
+                ? <>Inside <IC>AddAlbumSheet</IC>, declare four state variables — one for each field: <IC>title</IC>, <IC>artist</IC>, <IC>year</IC>, <IC>genre</IC>. Then add a <IC>Column</IC> with 24dp padding and <IC>fillMaxWidth()</IC> containing: a bold 18sp heading "Add Album", a 16dp <IC>Spacer</IC>, and four <IC>OutlinedTextField</IC>s each with <IC>fillMaxWidth()</IC> and a matching <IC>label</IC>. For the Year field, set <IC>keyboardOptions</IC> to show the number pad.</>
+                : <>Inside <IC>AddAlbumView</IC>, declare four <IC>{"@State"}</IC> properties for input and an <IC>{"@Environment(\\.dismiss)"}</IC> variable for the Cancel button. In the body, add a <IC>NavigationStack</IC> wrapping a <IC>Form</IC> with a <IC>{"Section(\"Album Details\")"}</IC> containing four <IC>TextField</IC>s. For the Year field, add <IC>.keyboardType(.numberPad)</IC>. Add <IC>.navigationTitle("Add Album")</IC> and <IC>.navigationBarTitleDisplayMode(.inline)</IC>.</>}
+            </p>
+            {_platform === "Android" ? (
+              <Section title="💡 Show me the OutlinedTextField syntax">
+                <CodeB title="Kotlin — OutlinedTextField pattern" accent={BL}>{`OutlinedTextField(
+    value = title,
+    onValueChange = { title = it },
+    label = { Text("Title") },
+    modifier = Modifier.fillMaxWidth()
+)
+// For the Year field, also add:
+// keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)`}</CodeB>
+              </Section>
+            ) : (
+              <Section title="💡 Show me the TextField syntax">
+                <CodeB title="Swift — TextField pattern" accent={GR}>{`TextField("Title", text: $title)
+// For the Year field, also add:
+// .keyboardType(.numberPad)`}</CodeB>
+              </Section>
+            )}
+            <Section title={`✅ Check your work — show me the complete ${_platform === "Android" ? "AddAlbumSheet.kt" : "AddAlbumView.swift"} so far`}>
+              {_platform === "Android" ? (
+                <CodeB title="Kotlin — AddAlbumSheet.kt (fields only, no Save yet)" accent={BL}>{`@Composable
+fun AddAlbumSheet(onSave: (Album) -> Unit) {
+    var title  by remember { mutableStateOf("") }
+    var artist by remember { mutableStateOf("") }
+    var year   by remember { mutableStateOf("") }
+    var genre  by remember { mutableStateOf("") }
+
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(24.dp)
+    ) {
+        Text("Add Album", fontSize = 18.sp, fontWeight = FontWeight.Bold)
+        Spacer(modifier = Modifier.height(16.dp))
+        OutlinedTextField(
+            value = title,
+            onValueChange = { title = it },
+            label = { Text("Title") },
+            modifier = Modifier.fillMaxWidth()
+        )
+        OutlinedTextField(
+            value = artist,
+            onValueChange = { artist = it },
+            label = { Text("Artist") },
+            modifier = Modifier.fillMaxWidth()
+        )
+        OutlinedTextField(
+            value = year,
+            onValueChange = { year = it },
+            label = { Text("Year") },
+            modifier = Modifier.fillMaxWidth(),
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Number
+            )
+        )
+        OutlinedTextField(
+            value = genre,
+            onValueChange = { genre = it },
+            label = { Text("Genre") },
+            modifier = Modifier.fillMaxWidth()
+        )
+        // Save button goes in sub-step b
+    }
+}`}</CodeB>
+              ) : (
+                <CodeB title="Swift — AddAlbumView.swift (fields only, no Save yet)" accent={GR}>{`struct AddAlbumView: View {
+    @Environment(\\.dismiss) var dismiss
+    @State private var title  = ""
+    @State private var artist = ""
+    @State private var year   = ""
+    @State private var genre  = ""
+
+    let onSave: (Album) -> Void
+
+    var body: some View {
+        NavigationStack {
+            Form {
+                Section("Album Details") {
+                    TextField("Title",  text: $title)
+                    TextField("Artist", text: $artist)
+                    TextField("Year",   text: $year)
+                        .keyboardType(.numberPad)
+                    TextField("Genre",  text: $genre)
+                }
+            }
+            .navigationTitle("Add Album")
+            .navigationBarTitleDisplayMode(.inline)
+            // toolbar with Cancel + Save buttons goes in sub-step b
+        }
+    }
+}`}</CodeB>
+              )}
+            </Section>
+          </VStep>
+
+          <VStep num="b" title="Add the Save button">
+            <p style={{ fontSize: 13, margin: "0 0 8px" }}>
+              {_platform === "Android"
+                ? <>Below the last <IC>OutlinedTextField</IC>, add a 16dp <IC>Spacer</IC> and then a full-width <IC>Button</IC> labelled "Save Album". In its <IC>onClick</IC>: build a new <IC>Album</IC> from the field values, then call <IC>onSave(newAlbum)</IC>. Use <IC>System.currentTimeMillis().toInt()</IC> for the id (guarantees uniqueness), <IC>{"year.toIntOrNull() ?: 2024"}</IC> to parse the year safely, and <IC>0</IC> / <IC>0.0</IC> as placeholder values for tracks and rating.</>
+                : <>Add a <IC>.toolbar</IC> modifier to the <IC>Form</IC> with two toolbar items: a Cancel button using <IC>.cancellationAction</IC> placement that calls <IC>dismiss()</IC>, and a Save button using <IC>.confirmationAction</IC> that builds a new <IC>Album</IC> and calls <IC>onSave(newAlbum)</IC>. Use <IC>{"Int.random(in: 1000...9999)"}</IC> for the id, <IC>{"Int(year) ?? 2024"}</IC> to parse the year, and <IC>0</IC> / <IC>0.0</IC> for tracks and rating.</>}
+            </p>
+            <Section title={`✅ Check your work — show me the complete ${_platform === "Android" ? "AddAlbumSheet.kt" : "AddAlbumView.swift"}`}>
+              {_platform === "Android" ? (
+                <CodeB title="Kotlin — AddAlbumSheet.kt (complete)" accent={BL}>{`@Composable
+fun AddAlbumSheet(onSave: (Album) -> Unit) {
+    var title  by remember { mutableStateOf("") }
+    var artist by remember { mutableStateOf("") }
+    var year   by remember { mutableStateOf("") }
+    var genre  by remember { mutableStateOf("") }
+
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(24.dp)
+    ) {
+        Text("Add Album", fontSize = 18.sp, fontWeight = FontWeight.Bold)
+        Spacer(modifier = Modifier.height(16.dp))
+        OutlinedTextField(
+            value = title, onValueChange = { title = it },
+            label = { Text("Title") }, modifier = Modifier.fillMaxWidth()
+        )
+        OutlinedTextField(
+            value = artist, onValueChange = { artist = it },
+            label = { Text("Artist") }, modifier = Modifier.fillMaxWidth()
+        )
+        OutlinedTextField(
+            value = year, onValueChange = { year = it },
+            label = { Text("Year") }, modifier = Modifier.fillMaxWidth(),
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+        )
+        OutlinedTextField(
+            value = genre, onValueChange = { genre = it },
+            label = { Text("Genre") }, modifier = Modifier.fillMaxWidth()
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+        Button(
+            onClick = {
+                val newAlbum = Album(
+                    id     = System.currentTimeMillis().toInt(),
+                    title  = title,
+                    artist = artist,
+                    year   = year.toIntOrNull() ?: 2024,
+                    genre  = genre,
+                    tracks = 0,
+                    rating = 0.0
+                )
+                onSave(newAlbum)
+            },
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text("Save Album")
+        }
+    }
+}`}</CodeB>
+              ) : (
+                <CodeB title="Swift — AddAlbumView.swift (complete)" accent={GR}>{`struct AddAlbumView: View {
+    @Environment(\\.dismiss) var dismiss
+    @State private var title  = ""
+    @State private var artist = ""
+    @State private var year   = ""
+    @State private var genre  = ""
+
+    let onSave: (Album) -> Void
+
+    var body: some View {
+        NavigationStack {
+            Form {
+                Section("Album Details") {
+                    TextField("Title",  text: $title)
+                    TextField("Artist", text: $artist)
+                    TextField("Year",   text: $year)
+                        .keyboardType(.numberPad)
+                    TextField("Genre",  text: $genre)
+                }
+            }
+            .navigationTitle("Add Album")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel") { dismiss() }
+                }
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Save") {
+                        let newAlbum = Album(
+                            id:     Int.random(in: 1000...9999),
+                            title:  title,
+                            artist: artist,
+                            year:   Int(year) ?? 2024,
+                            genre:  genre,
+                            tracks: 0,
+                            rating: 0.0
+                        )
+                        onSave(newAlbum)
+                    }
+                }
+            }
+        }
+    }
+}`}</CodeB>
+              )}
+            </Section>
+          </VStep>
+
+          <VStep num="c" title={_platform === "Android" ? "Connect ModalBottomSheet to AlbumListScreen" : "Connect the sheet to AlbumListScreen"} last>
+            <p style={{ fontSize: 13, margin: "0 0 8px" }}>
+              {_platform === "Android"
+                ? <>Back in <IC>AlbumListScreen.kt</IC>, add a <IC>ModalBottomSheet</IC> <strong>after the closing brace of the Scaffold block</strong>. Guard it with <IC>if (showSheet)</IC> so it only appears when triggered. Pass an <IC>onSave</IC> lambda that appends the new album to <IC>albums</IC> and sets <IC>showSheet = false</IC>.</>
+                : <>Back in <IC>AlbumListScreen.swift</IC>, add a <IC>.sheet(isPresented: $showingAddSheet)</IC> modifier to the outer <IC>ZStack</IC>, after <IC>.toolbar</IC>. In the sheet closure, create an <IC>AddAlbumView</IC> and pass an <IC>onSave</IC> closure that appends the album to <IC>albums</IC> and sets <IC>showingAddSheet = false</IC>.</>}
+            </p>
+            {_platform === "Android" ? (
+              <CodeB title="Kotlin — add after Scaffold { } in AlbumListScreen" accent={BL}>{`if (showSheet) {
+    ModalBottomSheet(
+        onDismissRequest = { showSheet = false }
+    ) {
+        AddAlbumSheet(
+            onSave = { newAlbum ->
+                albums.add(newAlbum)  // mutate state → list redraws
+                showSheet = false     // dismiss the sheet
+            }
+        )
+    }
+}`}</CodeB>
+            ) : (
+              <CodeB title="Swift — add to ZStack in AlbumListScreen" accent={GR}>{`// Add after .toolbar { }
+.sheet(isPresented: $showingAddSheet) {
+    AddAlbumView { newAlbum in
+        albums.append(newAlbum)   // mutate state → list redraws
+        showingAddSheet = false   // dismiss the sheet
+    }
+}`}</CodeB>
+            )}
+            <Section title={`✅ Check your work — show me the complete ${_platform === "Android" ? "AlbumListScreen.kt" : "AlbumListScreen.swift"}`}>
+              {_platform === "Android" ? (
+                <CodeB title="Kotlin — AlbumListScreen.kt (complete with sheet)" accent={BL}>{`@Composable
+fun AlbumListScreen(onAlbumClicked: (Album) -> Unit = {}) {
+    val albums = remember { mutableStateListOf(*sampleAlbums.toTypedArray()) }
+    var showSheet by remember { mutableStateOf(false) }
+
+    Scaffold(
+        floatingActionButton = {
+            FloatingActionButton(onClick = { showSheet = true }) {
+                Icon(
+                    imageVector = Icons.Filled.Add,
+                    contentDescription = "Add album"
+                )
+            }
+        }
+    ) { innerPadding ->
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color(0xFFF5F5F5))
+                .padding(innerPadding),
+            contentPadding = PaddingValues(16.dp),
+            verticalArrangement = Arrangement.spacedBy(4.dp)
+        ) {
+            items(albums, key = { it.id }) { album ->
+                AlbumRow(album = album, onClick = { onAlbumClicked(album) })
+            }
+        }
+    }
+
+    if (showSheet) {
+        ModalBottomSheet(
+            onDismissRequest = { showSheet = false }
+        ) {
+            AddAlbumSheet(
+                onSave = { newAlbum ->
+                    albums.add(newAlbum)
+                    showSheet = false
+                }
+            )
+        }
+    }
+}`}</CodeB>
+              ) : (
+                <CodeB title="Swift — AlbumListScreen.swift (complete with sheet)" accent={GR}>{`struct AlbumListScreen: View {
+    @State private var albums = sampleAlbums
+    @State private var showingAddSheet = false
+
+    var body: some View {
+        ZStack {
+            Color(UIColor.systemGray6).ignoresSafeArea()
+            List(albums) { album in
+                NavigationLink(value: album.id) {
+                    AlbumRow(album: album)
+                }
+                .listRowInsets(EdgeInsets(
+                    top: 4, leading: 16,
+                    bottom: 4, trailing: 16))
+                .listRowBackground(Color.clear)
+                .listRowSeparator(.hidden)
+            }
+            .listStyle(.plain)
+            .navigationDestination(for: Int.self) { id in
+                let album = albums.first { $0.id == id }!
+                AlbumDetailScreen(album: album)
+            }
+        }
+        .navigationTitle("Albums")
+        .toolbar {
+            ToolbarItem(placement: .navigationBarTrailing) {
+                Button(action: { showingAddSheet = true }) {
+                    Image(systemName: "plus")
+                }
+            }
+        }
+        .sheet(isPresented: $showingAddSheet) {
+            AddAlbumView { newAlbum in
+                albums.append(newAlbum)
+                showingAddSheet = false
+            }
+        }
+    }
+}`}</CodeB>
+              )}
+            </Section>
+            <Checkpoint num={3}>Tap the {_platform === "Android" ? "FAB" : "+ button"}. The sheet slides up. Fill in a title, artist, year, and genre, then tap Save. The sheet closes and the new album appears at the bottom of the list — immediately, with no refresh. This is Unidirectional Data Flow: you mutated <IC>albums</IC>, and the UI followed automatically.</Checkpoint>
+          </VStep>
+        </VStep>
+
+        <VStep num={4} title="Swipe to delete">
+          <p style={{ fontSize: 13, color: "var(--color-text-secondary)", margin: "0 0 8px" }}>
+            {_platform === "Android"
+              ? "Deleting is the other half of local mutation. You will wrap each row in a SwipeToDismissBox so that swiping left reveals a red delete background and removes the album from state."
+              : "SwiftUI's List has a built-in .onDelete modifier that handles the swipe gesture automatically. You need to switch from the List(albums) shorthand to an explicit ForEach so .onDelete has somewhere to attach, then tell it how to update state."}
+          </p>
+
+          {_platform === "Android" ? (
+            <>
+              <VStep num="a" title="Wrap AlbumRow in SwipeToDismissBox" last>
+                <p style={{ fontSize: 13, margin: "0 0 8px" }}>Inside the <IC>items()</IC> block, wrap <IC>AlbumRow</IC> in a <IC>SwipeToDismissBox</IC>. It takes two key parameters:</p>
+                <ul style={{ fontSize: 13, paddingLeft: 20, margin: "0 0 8px", lineHeight: 1.7 }}>
+                  <li><IC>state</IC> — created with <IC>rememberSwipeToDismissBoxState</IC>, tracks how far the user has swiped. The <IC>confirmValueChange</IC> lambda fires when a full swipe completes. Return <IC>true</IC> to confirm the dismiss (item is removed) or <IC>false</IC> to snap the row back.</li>
+                  <li><IC>backgroundContent</IC> — the red panel revealed as the row slides away. Use a full-size red <IC>Box</IC> with a white delete icon aligned to the end edge.</li>
+                </ul>
+                <CodeB title="Kotlin — SwipeToDismissBox inside items()" accent={BL}>{`items(albums, key = { it.id }) { album ->
+    SwipeToDismissBox(
+        state = rememberSwipeToDismissBoxState(
+            confirmValueChange = { value ->
+                if (value == SwipeToDismissBoxValue.EndToStart) {
+                    albums.remove(album)  // mutate state
+                    true                  // confirm: row animates out
+                } else {
+                    false                 // cancel: row snaps back
+                }
+            }
+        ),
+        backgroundContent = {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.Red)
+                    .padding(end = 20.dp),
+                contentAlignment = Alignment.CenterEnd
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.Delete,
+                    contentDescription = "Delete",
+                    tint = Color.White
+                )
+            }
+        }
+    ) {
+        AlbumRow(album = album, onClick = { onAlbumClicked(album) })
+    }
+}`}</CodeB>
+                <Section title="💡 Hint: Red squiggles under SwipeToDismissBox or Icons.Filled.Delete">
+                  Press Alt+Enter on each symbol to auto-import. You need <IC>SwipeToDismissBox</IC>, <IC>SwipeToDismissBoxValue</IC>, <IC>rememberSwipeToDismissBoxState</IC>, and <IC>Icons.Filled.Delete</IC>.
+                </Section>
+                <Section title="✅ Check your work — show me the complete AlbumListScreen.kt">
+                  <CodeB title="Kotlin — AlbumListScreen.kt (complete with swipe-to-delete)" accent={BL}>{`@Composable
+fun AlbumListScreen(onAlbumClicked: (Album) -> Unit = {}) {
+    val albums = remember { mutableStateListOf(*sampleAlbums.toTypedArray()) }
+    var showSheet by remember { mutableStateOf(false) }
+
+    Scaffold(
+        floatingActionButton = {
+            FloatingActionButton(onClick = { showSheet = true }) {
+                Icon(Icons.Filled.Add, contentDescription = "Add album")
+            }
+        }
+    ) { innerPadding ->
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color(0xFFF5F5F5))
+                .padding(innerPadding),
+            contentPadding = PaddingValues(16.dp),
+            verticalArrangement = Arrangement.spacedBy(4.dp)
+        ) {
+            items(albums, key = { it.id }) { album ->
+                SwipeToDismissBox(
+                    state = rememberSwipeToDismissBoxState(
+                        confirmValueChange = { value ->
+                            if (value == SwipeToDismissBoxValue.EndToStart) {
+                                albums.remove(album)
+                                true
+                            } else false
+                        }
+                    ),
+                    backgroundContent = {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .background(Color.Red)
+                                .padding(end = 20.dp),
+                            contentAlignment = Alignment.CenterEnd
+                        ) {
+                            Icon(
+                                Icons.Filled.Delete,
+                                contentDescription = "Delete",
+                                tint = Color.White
+                            )
+                        }
+                    }
+                ) {
+                    AlbumRow(album = album, onClick = { onAlbumClicked(album) })
+                }
+            }
+        }
+    }
+
+    if (showSheet) {
+        ModalBottomSheet(onDismissRequest = { showSheet = false }) {
+            AddAlbumSheet(
+                onSave = { newAlbum ->
+                    albums.add(newAlbum)
+                    showSheet = false
+                }
+            )
+        }
+    }
+}`}</CodeB>
+                </Section>
+              </VStep>
+              <Note><IC>albums.remove(album)</IC> triggers a recomposition of the <IC>LazyColumn</IC>. Because every row has a unique <IC>key</IC>, Compose knows exactly which row to animate out — it does not redraw the whole list.</Note>
+            </>
+          ) : (
+            <>
+              <VStep num="a" title="Switch to ForEach and add .onDelete" last>
+                <p style={{ fontSize: 13, margin: "0 0 8px" }}>The <IC>.onDelete</IC> modifier must attach to a <IC>ForEach</IC> inside the list, not the list itself. Change <IC>List(albums) {"{"} album in ... {"}"}</IC> to <IC>List {"{"} ForEach(albums) {"{"} album in ... {"}"} .onDelete {"{"} ... {"}"} {"}"}</IC>. The visual result is identical — only the structure changes:</p>
+                <CodeB title="Swift — List + ForEach + .onDelete" accent={GR}>{`List {
+    ForEach(albums) { album in
+        NavigationLink(value: album.id) {
+            AlbumRow(album: album)
+        }
+        .listRowInsets(EdgeInsets(
+            top: 4, leading: 16,
+            bottom: 4, trailing: 16))
+        .listRowBackground(Color.clear)
+        .listRowSeparator(.hidden)
+    }
+    .onDelete { indexSet in
+        albums.remove(atOffsets: indexSet)  // mutate state
+    }
+}`}</CodeB>
+                <Tip><strong>Why ForEach instead of List(_:)?</strong> <IC>List(_:)</IC> with a data array is a convenience shorthand that creates an implicit <IC>ForEach</IC> internally. <IC>.onDelete</IC> needs to attach to an <em>explicit</em> <IC>ForEach</IC> so SwiftUI knows which rows are deletable. Switching gives you that control — one extra line of structure for built-in swipe gestures.</Tip>
+                <Section title="✅ Check your work — show me the complete AlbumListScreen.swift">
+                  <CodeB title="Swift — AlbumListScreen.swift (complete with swipe-to-delete)" accent={GR}>{`struct AlbumListScreen: View {
+    @State private var albums = sampleAlbums
+    @State private var showingAddSheet = false
+
+    var body: some View {
+        ZStack {
+            Color(UIColor.systemGray6).ignoresSafeArea()
+            List {
+                ForEach(albums) { album in
+                    NavigationLink(value: album.id) {
+                        AlbumRow(album: album)
+                    }
+                    .listRowInsets(EdgeInsets(
+                        top: 4, leading: 16,
+                        bottom: 4, trailing: 16))
+                    .listRowBackground(Color.clear)
+                    .listRowSeparator(.hidden)
+                }
+                .onDelete { indexSet in
+                    albums.remove(atOffsets: indexSet)
+                }
+            }
+            .listStyle(.plain)
+            .navigationDestination(for: Int.self) { id in
+                let album = albums.first { $0.id == id }!
+                AlbumDetailScreen(album: album)
+            }
+        }
+        .navigationTitle("Albums")
+        .toolbar {
+            ToolbarItem(placement: .navigationBarTrailing) {
+                Button(action: { showingAddSheet = true }) {
+                    Image(systemName: "plus")
+                }
+            }
+        }
+        .sheet(isPresented: $showingAddSheet) {
+            AddAlbumView { newAlbum in
+                albums.append(newAlbum)
+                showingAddSheet = false
+            }
+        }
+    }
+}`}</CodeB>
+                </Section>
+              </VStep>
+              <Note><IC>albums.remove(atOffsets:)</IC> is one line. SwiftUI handles the swipe gesture, the red Delete button reveal, the animation, and the list update — all because the list is backed by <IC>{"@State"}</IC>.</Note>
+            </>
+          )}
+
+          <Checkbox>Swipe any album row to the left. A red delete indicator appears.</Checkbox>
+          <Checkbox>Complete the swipe — the album disappears with an animation. Other rows stay in place.</Checkbox>
+          <Checkbox>Add a new album via the form, then swipe it away. Confirms delete works on dynamically added rows.</Checkbox>
+          <Checkbox>Navigate into a detail screen, press back, and swipe that album away. State is consistent across navigation.</Checkbox>
+          <Checkpoint num={4}>Every row is swipeable. Deleting an album removes only that row — all others stay exactly in place. This is the key in action: because every item has a unique ID, the framework updates only the affected row.</Checkpoint>
+        </VStep>
+
+        <VStep num={5} title="Ask Claude to translate and compare">
+          <p style={{ fontSize: 13, color: "var(--color-text-secondary)", margin: "0 0 8px" }}>You have implemented local data mutation on one platform. Ask Claude to translate the key pieces to the other and explain how the patterns compare.</p>
+          <AiOpp>
+            Paste your <IC>AlbumListScreen</IC> and <IC>{_platform === "Android" ? "AddAlbumSheet" : "AddAlbumView"}</IC> into Claude and use this prompt: <em>{_platform === "Android"
+              ? "\"I built a Compose screen with mutableStateListOf, a ModalBottomSheet with a form, and SwipeToDismissBox for delete. Translate AlbumListScreen and AddAlbumSheet to SwiftUI. Then compare: mutableStateListOf vs @State array, ModalBottomSheet vs .sheet, SwipeToDismissBox vs .onDelete — which required more code and why?\""
+              : "\"I built a SwiftUI screen with @State albums, a .sheet with a Form, and ForEach + .onDelete for delete. Translate AlbumListScreen and AddAlbumView to Compose. Then compare: @State array vs mutableStateListOf, .sheet vs ModalBottomSheet, .onDelete vs SwipeToDismissBox — which required more code and why?\""}</em>
+          </AiOpp>
+          <Checkbox>Received and read Claude's translation and explanation</Checkbox>
+          <Checkbox>Both platform versions compile and run: add works, swipe-to-delete works</Checkbox>
+        </VStep>
+
+        <VStep num={6} title="Reflect" last>
+          <p style={{ fontSize: 13, color: "var(--color-text-secondary)", margin: "0 0 8px" }}>Add a reflection comment block at the top of <IC>{_platform === "Android" ? "AlbumListScreen.kt" : "AlbumListScreen.swift"}</IC> and answer these questions in your own words:</p>
+          <CodeB title="Lab Reflection (Week 3, Session 2)">{`// Lab Reflection (Week 3, Session 2)
+// 1. What is Unidirectional Data Flow? Describe it in one or two
+//    sentences using the "add album" feature as your example.
+// 2. What would happen if you forgot mutableStateListOf / @State and
+//    just used a plain list? Why would the UI not update?
+// 3. When you swipe to delete, only the deleted row animates away.
+//    Why doesn't the whole list re-render?
+// 4. Compare the swipe-to-delete APIs on both platforms. Which gave
+//    you more control? Which required less code?`}</CodeB>
+          <Checkpoint num="Final">Show a TA your album browser: add a new album and watch it appear instantly; swipe an album away and watch it disappear. Walk them through your reflection answers.</Checkpoint>
+        </VStep>
+
+      </div>
+
+      <Section title="🚀 Stretch Features">
+        <p style={{ fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 1.6, margin: "0 0 16px" }}>If you finished early, these extend what you built. None are covered in lecture — use Claude if you get stuck.</p>
+
+        <div style={{ marginBottom: 24 }}>
+          <h4 style={{ fontSize: 14, fontWeight: 600, color: _platform === "Android" ? BL : GR, margin: "0 0 8px" }}>Stretch A — Input validation</h4>
+          <p style={{ fontSize: 13, margin: "0 0 8px" }}>Prevent saving when title or artist is empty. Disable the Save button when either required field is blank.</p>
+          {_platform === "Android" ? (
+            <CodeB title="Kotlin — validation hint" accent={BL}>{`Button(
+    onClick = { ... },
+    enabled = title.isNotBlank() && artist.isNotBlank(),
+    modifier = Modifier.fillMaxWidth()
+) { Text("Save Album") }`}</CodeB>
+          ) : (
+            <CodeB title="Swift — validation hint" accent={GR}>{`Button("Save") { ... }
+    .disabled(title.isEmpty || artist.isEmpty)`}</CodeB>
+          )}
+          <Checkpoint num="A">Try tapping Save with an empty title — the button is disabled. Fill in all required fields — the button enables.</Checkpoint>
+        </div>
+
+        <div style={{ marginBottom: 24 }}>
+          <h4 style={{ fontSize: 14, fontWeight: 600, color: _platform === "Android" ? BL : GR, margin: "0 0 8px" }}>Stretch B — Delete confirmation</h4>
+          <p style={{ fontSize: 13, margin: "0 0 8px" }}>Before permanently deleting, show a confirmation dialog. Only delete if the user confirms.</p>
+          <AiOpp>
+            Use this prompt: <em>{_platform === "Android"
+              ? "\"In my Compose app, when a SwipeToDismissBox swipe completes, I want to show an AlertDialog — 'Delete [album title]? This cannot be undone.' with Cancel and Delete buttons — before calling albums.remove(album). Show me how.\""
+              : "\"In my SwiftUI app, when a user triggers .onDelete, I want to show a confirmationDialog — 'Delete [album title]?' with Cancel and Delete buttons — before removing it from state. Show me how to modify the .onDelete handler.\""}</em>
+          </AiOpp>
+        </div>
+
+        <h4 style={{ fontSize: 14, fontWeight: 600, margin: "8px 0 8px" }}>More stretch ideas</h4>
+        <ul style={{ paddingLeft: 20, fontSize: 13, lineHeight: 1.8, margin: 0 }}>
+          <li>Add an undo toast — briefly show a {"\""}Deleted [title] — Undo{"\""}  message that re-inserts the album if tapped</li>
+          <li>Add a character counter below the title field: {"\""}12 / 50{"\""}  that updates as the user types</li>
+          <li>Add a rating slider (1.0–5.0) to the form and display the saved rating in the row</li>
+          <li>Long-press a row to open the sheet pre-filled with that album{"'"}s data for editing</li>
+        </ul>
+      </Section>
     </div>
   );
 }
