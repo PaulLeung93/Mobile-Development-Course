@@ -149,7 +149,7 @@ function Overview() {
         </ul>
         <strong style={{ display: "block", marginTop: 10 }}>Upcoming Due Dates</strong>
         <ul style={{ margin: "6px 0 0", paddingLeft: 20 }}>
-          <li>{"📬"} Assignment 3 (browse app) — due before Week 4 Session 1</li>
+          <li>{"📬"} Assignment 3 (Habit Tracker) — due before Week 4 Session 1</li>
         </ul>
       </div>
 
@@ -160,7 +160,7 @@ function Overview() {
             { label: "Session 1", val: "LazyColumn / List basics, custom row layouts, and list-to-detail navigation wiring. Lab: build the album browser. Stretch: real-time search and empty state." },
             { label: "Session 2", val: "Local Data Mutation (Create & Delete) and Unidirectional Data Flow — mastering state updates using forms, bottom sheets, and swipe-to-dismiss." },
             { label: "Lab (each session)", val: "Session 1: build the album browser. Session 2: add a form, a bottom sheet, and swipe-to-dismiss to your album app." },
-            { label: "Assignment 3", val: "Guided starter — same album browser structure, your own content and theme. Stretch: add a form or bottom sheet." },
+            { label: "Assignment 3", val: "Habit Tracker — starter gives you the data model, you build the list, toggle, add-habit sheet, and swipe-to-delete. Stretch: progress header, reset, emoji picker." },
           ].map(item => (
             <div key={item.label} style={{ background: "var(--color-background-primary)", border: "0.5px solid var(--color-border-tertiary)", borderRadius: 8, padding: "10px 12px" }}>
               <p style={{ fontSize: 11, fontWeight: 500, color: "var(--color-text-tertiary)", margin: "0 0 4px", textTransform: "uppercase", letterSpacing: ".04em" }}>{item.label}</p>
@@ -2175,85 +2175,71 @@ function Lab() {
 }
 
 function Project() {
+  const [platform, setPlatform] = useState("Android");
   return (
     <div>
-      <h2 style={{ fontSize: 18, fontWeight: 600, margin: "0 0 4px" }}>Unit 3 Project: Browse App</h2>
+      <h2 style={{ fontSize: 18, fontWeight: 600, margin: "0 0 4px" }}>Unit 3 Project: Habit Tracker</h2>
       <Warn>Submit this assignment by the end of Week 4 Session 1 using the Submit button on this page.</Warn>
       <p style={{ fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 1.7, margin: "0 0 14px" }}>
-        Build a browse app — a scrollable, searchable list that navigates to a detail screen when a row is tapped. The structure is the same as the album browser you built in lab. The theme and content are entirely yours. You may build in either Android (Jetpack Compose) or iOS (SwiftUI). You do not need to submit both.
+        Build a Habit Tracker — a state-driven list where you can add habits, mark them complete, and delete them. This project combines the list-building skills from Session 1 with the local data mutation patterns from Session 2. You may build in either Android (Jetpack Compose) or iOS (SwiftUI). You do not need to submit both.
       </p>
 
-      <Section title="📋 Step 1 — Pick your theme">
-        <p style={{ fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 1.7, margin: "0 0 10px" }}>Choose a category of things you genuinely know about. You need at least 8 items, each with at least 4 meaningful fields. The more specific your theme, the more interesting the app.</p>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8, margin: "10px 0" }}>
-          {[
-            { theme: "Video games", fields: "Title, studio, year, genre, platform, rating" },
-            { theme: "National parks", fields: "Name, state, area (sq mi), established year, best season" },
-            { theme: "Sneakers", fields: "Name, brand, year released, colorway, retail price" },
-            { theme: "Films", fields: "Title, director, year, genre, runtime, Rotten Tomatoes score" },
-            { theme: "Coffee shops", fields: "Name, city, specialty, rating, must-order item" },
-            { theme: "Programming languages", fields: "Name, created year, creator, primary use case, typing" },
-          ].map(ex => (
-            <div key={ex.theme} style={{ background: "var(--color-background-secondary)", border: "0.5px solid var(--color-border-tertiary)", borderRadius: 8, padding: "10px 12px" }}>
-              <p style={{ fontSize: 12, fontWeight: 600, color: "var(--color-text-primary)", margin: "0 0 3px" }}>{ex.theme}</p>
-              <p style={{ fontSize: 11, color: "var(--color-text-secondary)", margin: 0, lineHeight: 1.4 }}>{ex.fields}</p>
-            </div>
-          ))}
-        </div>
-        <Tip>You are not limited to these examples. Any theme works as long as you can write 8 genuine items with real data. Do not make things up — use actual values.</Tip>
-      </Section>
-
-      <Section title="🗂️ Step 2 — Define your data model">
-        <p style={{ fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 1.7, margin: "0 0 10px" }}>Before writing any UI, define your data model. It must have:</p>
-        <Checkbox>An <IC>id</IC> field (Int) — required for LazyColumn keys and SwiftUI <IC>Identifiable</IC></Checkbox>
-        <Checkbox>At least 4 additional fields with meaningful types (String, Int, Double, Boolean)</Checkbox>
-        <Checkbox>At least 8 hardcoded items in your sample data list</Checkbox>
-        <p style={{ fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 1.7, margin: "10px 0 6px" }}>Example for a video games theme:</p>
-        <CodeB>{`data class Game(
-    val id: Int,
-    val title: String,
-    val studio: String,
-    val year: Int,
-    val genre: String,
-    val rating: Double
-)`}</CodeB>
+      <Section title="📦 Step 1 — Get the starter code">
+        <p style={{ fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 1.7, margin: "0 0 10px" }}>
+          The starter repo contains a blank project with the <IC>Habit</IC> data model already defined. Fork it, clone your fork, and open it in your IDE — then you build everything from there.
+        </p>
+        <PlatformToggle platform={platform} setPlatform={setPlatform} />
+        <ol style={{ fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 2, paddingLeft: 20, margin: "10px 0" }}>
+          <li>Go to the starter repo: <a href="#" style={{ color: "var(--color-text-info)" }}>github.com/codepath/HabitTracker-Starter</a> and click <strong>Fork</strong> to copy it to your GitHub account</li>
+          <li>Clone your fork to your computer:<br />
+            <code style={{ background: "var(--color-background-secondary)", border: "0.5px solid var(--color-border-tertiary)", borderRadius: 4, padding: "2px 8px", fontSize: 12 }}>
+              git clone https://github.com/YOUR-USERNAME/HabitTracker-Starter
+            </code>
+          </li>
+          {platform === "Android" ? (
+            <li>Open the cloned folder in <strong>Android Studio</strong> — it will prompt you to sync Gradle; let it finish before running</li>
+          ) : (
+            <li>Open <strong>HabitTracker.xcodeproj</strong> in <strong>Xcode</strong></li>
+          )}
+          <li>Press <strong>Run ▶</strong> — you should see a blank app launch with no errors</li>
+        </ol>
+        <Checkpoint num="1">The starter app builds and runs on your {platform === "Android" ? "emulator" : "simulator"} with no errors before you write any code.</Checkpoint>
       </Section>
 
       <Section title="✅ Required Features" defaultOpen={true}>
-        <p style={{ fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 1.7, margin: "0 0 10px" }}>Each feature below has a clear acceptance criterion — what a reviewer will check when grading.</p>
+        <p style={{ fontSize: 12, fontWeight: 600, color: "var(--color-text-tertiary)", textTransform: "uppercase", letterSpacing: ".04em", margin: "12px 0 6px" }}>1. List</p>
+        <Checkbox>A scrollable list of at least 5 habits is displayed on launch</Checkbox>
 
-        <p style={{ fontSize: 12, fontWeight: 600, color: "var(--color-text-tertiary)", textTransform: "uppercase", letterSpacing: ".04em", margin: "12px 0 6px" }}>1. List screen</p>
-        <Checkbox>Uses <IC>LazyColumn</IC> (Compose) or <IC>List</IC> (SwiftUI) — not a Column with forEach</Checkbox>
-        <Checkbox>Shows all 8+ items on launch, each in a custom row layout</Checkbox>
-        <Checkbox>Each row displays at least 3 fields — not just the title</Checkbox>
-        <Checkbox>Rows have a visible card style (background + rounded corners) — not plain text on a gray screen</Checkbox>
+        <p style={{ fontSize: 12, fontWeight: 600, color: "var(--color-text-tertiary)", textTransform: "uppercase", letterSpacing: ".04em", margin: "12px 0 6px" }}>2. HabitRow</p>
+        <Checkbox>Each row shows the habit emoji, name, and a completion toggle (Checkbox or Toggle)</Checkbox>
+        <Checkbox>Completed habits look visually distinct — e.g. strikethrough text or muted color</Checkbox>
 
-        <p style={{ fontSize: 12, fontWeight: 600, color: "var(--color-text-tertiary)", textTransform: "uppercase", letterSpacing: ".04em", margin: "12px 0 6px" }}>2. Search</p>
-        <Checkbox>A search bar is visible at the top of the list screen</Checkbox>
-        <Checkbox>Typing filters the list in real time — updates on every keystroke without tapping a button</Checkbox>
-        <Checkbox>Search matches at least 2 fields (e.g. title AND artist, not just title)</Checkbox>
-        <Checkbox>Clearing the search restores the full list</Checkbox>
+        <p style={{ fontSize: 12, fontWeight: 600, color: "var(--color-text-tertiary)", textTransform: "uppercase", letterSpacing: ".04em", margin: "12px 0 6px" }}>3. Toggle completion</p>
+        <Checkbox>Tapping the toggle marks a habit complete — tapping again un-completes it</Checkbox>
+        <Checkbox>The UI updates immediately without a restart</Checkbox>
 
-        <p style={{ fontSize: 12, fontWeight: 600, color: "var(--color-text-tertiary)", textTransform: "uppercase", letterSpacing: ".04em", margin: "12px 0 6px" }}>3. Empty state</p>
-        <Checkbox>When search produces no results, a message is shown — not a blank screen</Checkbox>
-        <Checkbox>The empty state includes at least a title ("No results found") and a subtitle ("Try a different search term")</Checkbox>
+        <p style={{ fontSize: 12, fontWeight: 600, color: "var(--color-text-tertiary)", textTransform: "uppercase", letterSpacing: ".04em", margin: "12px 0 6px" }}>4. Add habit</p>
+        <Checkbox>A FAB or toolbar button opens a bottom sheet with a name field and Save button</Checkbox>
+        <Checkbox>Tapping Save adds the habit to the list and dismisses the sheet</Checkbox>
+        <Checkbox>Tapping Save with an empty name does nothing</Checkbox>
 
-        <p style={{ fontSize: 12, fontWeight: 600, color: "var(--color-text-tertiary)", textTransform: "uppercase", letterSpacing: ".04em", margin: "12px 0 6px" }}>4. Detail screen</p>
-        <Checkbox>Tapping any row navigates to a detail screen for that item</Checkbox>
-        <Checkbox>The detail screen shows ALL fields from the data model — not just the ones visible in the row</Checkbox>
-        <Checkbox>The detail screen has a visible back button or gesture that returns to the list</Checkbox>
-        <Checkbox>The search query is preserved when returning to the list — it does not reset</Checkbox>
+        <p style={{ fontSize: 12, fontWeight: 600, color: "var(--color-text-tertiary)", textTransform: "uppercase", letterSpacing: ".04em", margin: "12px 0 6px" }}>5. Delete habit</p>
+        <Checkbox>Swiping a row removes it from the list</Checkbox>
 
-        <p style={{ fontSize: 12, fontWeight: 600, color: "var(--color-text-tertiary)", textTransform: "uppercase", letterSpacing: ".04em", margin: "12px 0 6px" }}>5. Code quality</p>
-        <Checkbox>The row UI is extracted as a separate Composable or View — not inlined inside <IC>items()</IC></Checkbox>
-        <Checkbox>The app does not crash at any point during normal use</Checkbox>
+        <p style={{ fontSize: 12, fontWeight: 600, color: "var(--color-text-tertiary)", textTransform: "uppercase", letterSpacing: ".04em", margin: "12px 0 6px" }}>6. Empty state</p>
+        <Checkbox>When no habits remain, a friendly message is shown instead of a blank screen</Checkbox>
+
+        <p style={{ fontSize: 12, fontWeight: 600, color: "var(--color-text-tertiary)", textTransform: "uppercase", letterSpacing: ".04em", margin: "12px 0 6px" }}>7. Code quality</p>
+        <Checkbox><IC>HabitRow</IC> is a separate component — not inlined</Checkbox>
+        <Checkbox>The app does not crash during normal use</Checkbox>
       </Section>
 
       <Section title="🚀 Stretch Features">
-        <Checkbox>Add a second filter dimension — a row of tappable chips (e.g. genre buttons) that filter in addition to the search bar</Checkbox>
-        <Checkbox>Add a sort toggle — e.g. alphabetical vs by rating — that reorders the list without reloading</Checkbox>
-        <Checkbox>Add a favorites feature — a heart or bookmark icon on the detail screen saves the item to a separate favorites list accessible from the main screen</Checkbox>
-        <Checkbox>Add a result count label above the list — "Showing 3 of 8 results" — that updates with the filter</Checkbox>
+        <Checkbox>Delete with confirmation — show an alert dialog before removing a habit</Checkbox>
+        <Checkbox>Progress header — display "X of Y completed" above the list; updates reactively as habits are toggled</Checkbox>
+        <Checkbox>Reset all — a button that marks every habit as incomplete, simulating a new day</Checkbox>
+        <Checkbox>Emoji picker — add a row of preset emoji options to the Add Habit sheet so users can choose one before saving</Checkbox>
+        <Checkbox>Reorder habits — let the user drag rows to reorder the list</Checkbox>
       </Section>
 
       <Section title="📘 Submitting your project">
@@ -2262,7 +2248,7 @@ function Project() {
           <li>Push your code to the repository</li>
           <li>Create a README using the Unit 3 README template</li>
           <li>In the README, check off all features you implemented by changing <IC>-[ ]</IC> to <IC>-[x]</IC></li>
-          <li>Record a GIF that shows: the list on launch, typing a search query, the empty state, tapping a row to detail, and pressing back</li>
+          <li>Record a GIF that shows: the list on launch, adding a new habit, marking a habit complete, swiping to delete, and the empty state (if you reach it)</li>
           <li>Add the GIF to the README</li>
           <li>Make the repo private and add <IC>codepathreview</IC> as a collaborator</li>
         </ol>
@@ -2272,20 +2258,20 @@ function Project() {
       <Section title="💡 Hints">
         <ul style={{ fontSize: 13, lineHeight: 1.6, paddingLeft: 20, margin: 0 }}>
           <li style={{ marginBottom: 10 }}>
-            <strong>My filter is not updating in real time</strong>
-            <p style={{ margin: "4px 0 0", color: "var(--color-text-secondary)" }}>Make sure <IC>query</IC> is a state variable — <IC>remember {"{ mutableStateOf(\"\") }"}</IC> in Compose, or <IC>@State</IC> in SwiftUI. A regular <IC>var</IC> does not trigger re-renders, so the list will appear frozen even though the value is changing.</p>
+            <strong>My toggle isn{"'"}t updating the UI</strong>
+            <p style={{ margin: "4px 0 0", color: "var(--color-text-secondary)" }}>In Compose, use <IC>mutableStateListOf</IC> and replace the item at its index — e.g. <IC>habits[index] = habits[index].copy(isCompleted = !habits[index].isCompleted)</IC>. In SwiftUI, <IC>isCompleted</IC> must be <IC>var</IC> (not <IC>let</IC>) and you need to find and mutate it inside <IC>$habits</IC>.</p>
           </li>
           <li style={{ marginBottom: 10 }}>
-            <strong>My detail screen shows the wrong item</strong>
-            <p style={{ margin: "4px 0 0", color: "var(--color-text-secondary)" }}>In Compose, find the item by ID from your sample list after navigating — do not try to pass the whole object through the route string. Route strings only carry primitive values like <IC>Int</IC> or <IC>String</IC>.</p>
+            <strong>My bottom sheet isn{"'"}t opening</strong>
+            <p style={{ margin: "4px 0 0", color: "var(--color-text-secondary)" }}>Make sure <IC>showSheet</IC> is a state variable — <IC>remember {"{ mutableStateOf(false) }"}</IC> in Compose, <IC>@State var showSheet = false</IC> in SwiftUI. Setting a plain variable to <IC>true</IC> won{"'"}t trigger a recomposition.</p>
           </li>
           <li style={{ marginBottom: 10 }}>
-            <strong>The search query resets when I navigate back from detail</strong>
-            <p style={{ margin: "4px 0 0", color: "var(--color-text-secondary)" }}>This happens when you call <IC>navigate()</IC> to a new list screen instead of using <IC>popBackStack()</IC>. Popping returns to the existing list screen with its state intact — navigating creates a fresh one with an empty query.</p>
+            <strong>Saving adds a blank row instead of doing nothing</strong>
+            <p style={{ margin: "4px 0 0", color: "var(--color-text-secondary)" }}>Check that your empty-name guard runs before appending: <IC>if (name.isBlank()) return</IC> in Kotlin, or <IC>guard !name.isEmpty else {"{ return }"}</IC> in Swift.</p>
           </li>
           <li style={{ marginBottom: 0 }}>
-            <strong>My row layout looks cramped or misaligned</strong>
-            <p style={{ margin: "4px 0 0", color: "var(--color-text-secondary)" }}>In Compose, use <IC>Modifier.weight(1f)</IC> on the content column inside the row. In SwiftUI, use <IC>Spacer()</IC>. Without it, the trailing element (rating, badge, etc.) will overlap the content.</p>
+            <strong>My empty state never appears even after deleting everything</strong>
+            <p style={{ margin: "4px 0 0", color: "var(--color-text-secondary)" }}>Use an <IC>if/else</IC> outside the <IC>LazyColumn</IC> to show either the list or the empty view based on <IC>habits.isEmpty()</IC>. If you place the empty state inside the <IC>LazyColumn</IC>, it won{"'"}t appear — an empty <IC>LazyColumn</IC> renders nothing at all.</p>
           </li>
         </ul>
       </Section>

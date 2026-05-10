@@ -49,22 +49,22 @@ export default function CurriculumOverview() {
       </div>
 
       <div className="week-card">
-        <div className="week-header"><span className="week-num">Week 3</span><p className="week-title">Lists, Shared Transitions & Adaptive Layouts</p></div>
+        <div className="week-header"><span className="week-num">Week 3</span><p className="week-title">Lists & Local Data Mutation</p></div>
         <div className="sessions">
           <div className="session">
             <p className="s-label">Session 1</p>
-            <p className="s-topic">LazyColumn / List basics, search & navigation wiring</p>
-            <p className="s-lab"><b>Lab:</b> Build an album browser with a scrollable list, real-time search filtering, empty states, and list-to-detail navigation.</p>
+            <p className="s-topic">LazyColumn / List basics, custom row layouts & navigation wiring</p>
+            <p className="s-lab"><b>Lab:</b> Build an album browser with a scrollable list, custom row layout, and list-to-detail navigation.</p>
           </div>
           <div className="session">
             <p className="s-label">Session 2</p>
-            <p className="s-topic">Premium polish — Shared Element Transitions & Adaptive Layouts</p>
-            <p className="s-lab"><b>Lab:</b> Add shared element transitions for spatial continuity, and use AI to refactor the app for adaptive tablet/landscape layouts.</p>
+            <p className="s-topic">Local Data Mutation — forms, bottom sheets & swipe-to-delete</p>
+            <p className="s-lab"><b>Lab:</b> Extend the album browser with a bottom sheet form to add albums, and swipe-to-delete with a confirmation dialog.</p>
           </div>
         </div>
         <div className="milestone m-assign">
           <span className="m-label">Assignment 3</span>
-          <p className="m-text">Build a custom searchable browser app (contacts, movies, etc.) with a detail screen. Stretch: add shared element transitions and adaptive layouts.</p>
+          <p className="m-text">Build a Habit Tracker — a state-driven list where users can add habits, mark them complete, and swipe to delete. Stretch: progress header, reset-all, and emoji picker.</p>
         </div>
       </div>
 
