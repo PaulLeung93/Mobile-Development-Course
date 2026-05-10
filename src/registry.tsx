@@ -48,6 +48,9 @@ import Week10Unit from './curriculum/Week 10/week10_unit';
 import Week10S1 from './curriculum/Week 10/week10_session1_slides';
 import Week10S2 from './curriculum/Week 10/week10_session2_slides';
 
+import AdaptiveUiUnit from './curriculum/Bonus/bonus_adaptive_ui_unit';
+import AdaptiveUiSlides from './curriculum/Bonus/bonus_adaptive_ui_slides';
+
 export const navigationRegistry: Record<string, Record<string, React.ElementType>> = {
   "Prework": {
     "Spec": PreworkSpec
@@ -122,5 +125,9 @@ export const bonusRegistry: Record<string, Record<string, React.ElementType>> = 
   "App Performance": {
     "Unit": PerformanceUnit,
     "Slides": PerformanceSlides
+  },
+  "Adaptive UI": {
+    "Unit": AdaptiveUiUnit,
+    "Slides": AdaptiveUiSlides
   }
 };

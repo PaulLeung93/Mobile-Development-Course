@@ -38,8 +38,8 @@ While AI serves as an incredible force multiplier, building resilient applicatio
   - Session 1: Navigation fundamentals
   - Session 2: Passing data between screens & the back stack
 - **Week 3: Lists, scrolling & dynamic data**
-  - Session 1: LazyColumn / List & custom row layouts
-  - Session 2: Search, filter & empty states
+  - Session 1: LazyColumn / List, custom row layouts & empty states
+  - Session 2: Forms, Sheets & Swipe Actions
 - **Week 4: Networking & REST APIs**
   - Session 1: HTTP, JSON & async patterns
   - Session 2: Loading states, errors & image loading
