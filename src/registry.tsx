@@ -23,7 +23,8 @@ import Week5S2 from './curriculum/Week 5/week5_session2_slides';
 import GitForTeams from './curriculum/Week 5/git_for_teams_slides';
 import GitUnit from './curriculum/Bonus/git_unit';
 import FirebaseUnit from './curriculum/Bonus/firebase_unit';
-import TestingPerformanceUnit from './curriculum/Bonus/testing_performance_unit';
+import TestingUnit from './curriculum/Bonus/testing_unit';
+import PerformanceUnit from './curriculum/Bonus/performance_unit';
 import TestingSlides from './curriculum/Bonus/testing_slides';
 import PerformanceSlides from './curriculum/Bonus/performance_slides';
 
@@ -115,11 +116,11 @@ export const bonusRegistry: Record<string, Record<string, React.ElementType>> = 
     "Unit": FirebaseUnit
   },
   "Testing": {
-    "Unit": TestingPerformanceUnit,
+    "Unit": TestingUnit,
     "Slides": TestingSlides
   },
   "App Performance": {
-    "Unit": TestingPerformanceUnit,
+    "Unit": PerformanceUnit,
     "Slides": PerformanceSlides
   }
 };

@@ -1,19 +1,15 @@
 import { useState } from "react";
 
-const TABS = ["Overview", "Lab", "Capstone", "Resources"];
+const TABS = ["Overview", "Lab", "Resources"];
 const PLATFORMS = ["Android", "iOS"];
 
-const P_C = "#534AB7",
-  PL = "#EEEDFE",
-  PD = "#3C3489";
+const P_C = "#534AB7";
 const AM = "#633806",
   AML = "#FAEEDA";
 const BL = "#7F52FF",
   BLL = "#F0EEFF";
 const GR = "#F05138",
   GRL = "#FFF2F0";
-const CAP_C = "#993C1D",
-  CAP_BG = "#FAECE7";
 
 function Section({ title, children, defaultOpen }) {
   const [open, setOpen] = useState(!!defaultOpen);
@@ -124,25 +120,6 @@ function AiOpp({ children }) {
         ✨ AI Opportunity
       </div>
       {children}
-    </div>
-  );
-}
-
-function Warn({ children }) {
-  return (
-    <div
-      className="callout-warn"
-      style={{
-        margin: "12px 0",
-        padding: "10px 14px",
-        background: "#FFF8E6",
-        borderRadius: 8,
-        fontSize: 13,
-        lineHeight: 1.6,
-        borderLeft: "3px solid #EF9F27",
-      }}
-    >
-      ⚠️ {children}
     </div>
   );
 }
@@ -331,35 +308,8 @@ function Overview({ platform, setPlatform }) {
   var isAndroid = platform === "Android";
   return (
     <div>
-      <div
-        className="callout-checkpoint"
-        style={{
-          background: "#E8FCE8",
-          padding: "10px 14px",
-          borderRadius: 8,
-          fontSize: 13,
-          marginBottom: 12,
-        }}
-      >
-        Don{"'"}t forget to fill out the ✏️ <Link>Session Survey</Link> at the
-        end of each class session!
-      </div>
-      <div
-        style={{
-          background: CAP_BG,
-          padding: "10px 14px",
-          borderRadius: 8,
-          fontSize: 13,
-          marginBottom: 16,
-          color: CAP_C,
-        }}
-      >
-        🏗️ <strong>REMINDER:</strong> <Link>Capstone M4</Link> (feature-complete
-        build) is due by the end of Session 2 this week.
-      </div>
-
       <h2 style={{ fontSize: 20, fontWeight: 600, margin: "0 0 6px" }}>
-        Unit 9: Testing &amp; App Performance
+        Bonus: Unit Testing
       </h2>
 
       <p
@@ -370,18 +320,16 @@ function Overview({ platform, setPlatform }) {
           margin: "0 0 16px",
         }}
       >
-        Two focused sessions this week. Session 1 introduces unit testing — a
-        professional skill that makes your code more reliable and easier to
-        change. Session 2 covers app performance: how to find jank, memory
-        leaks, and battery drain in your own apps using profiling tools and
-        AI-assisted code scanning. Lab time both sessions is dedicated capstone
-        work.
+        Self-paced introduction to unit testing on mobile — a professional
+        skill that makes your code more reliable and easier to change. You{"'"}ll
+        write tests for a starter ViewModel using fakes, then use Claude to
+        find edge cases you hadn{"'"}t thought of.
       </p>
 
       <PlatformToggle platform={platform} setPlatform={setPlatform} />
 
       <div style={{ fontSize: 13, lineHeight: 1.7 }}>
-        <p style={{ margin: "0 0 10px" }}>This week we{"'"}ll cover:</p>
+        <p style={{ margin: "0 0 10px" }}>What this unit covers:</p>
         <ul style={{ margin: 0, paddingLeft: 20 }}>
           <li>
             {isAndroid
@@ -390,59 +338,14 @@ function Overview({ platform, setPlatform }) {
           </li>
           <li>What makes code testable, and how MVVM sets you up for it</li>
           <li>
-            The three mobile performance problems: jank, memory leaks, and
-            battery drain
+            Writing tests for Loading, Success, and Error state transitions
           </li>
           <li>
-            {isAndroid
-              ? "Android Studio Profiler — CPU, Memory, and Energy tabs"
-              : "Xcode Instruments — Time Profiler, Leaks, and Allocations"}
+            Using fakes/stubs to swap real network calls for predictable test
+            doubles
           </li>
-          <li>
-            {isAndroid
-              ? "LeakCanary and Android Studio's built-in memory leak detection"
-              : "Instruments Leaks template and Xcode Memory Graph"}
-          </li>
-          <li>
-            Using AI to scan your codebase for performance issues, threading
-            mistakes, and memory retention patterns
-          </li>
-        </ul>
-      </div>
-
-      <div
-        style={{
-          marginTop: 20,
-          padding: "14px",
-          background: "var(--color-background-secondary)",
-          borderRadius: 10,
-          fontSize: 13,
-          lineHeight: 1.7,
-        }}
-      >
-        <strong>Session Info</strong>
-        <ul style={{ margin: "6px 0 0", paddingLeft: 20 }}>
-          <li>📅 See your cohort{"'"}s schedule for session times</li>
-          <li>
-            ↗ <Link>Session Zoom Link</Link> | Passcode:{" "}
-            <strong>codepath</strong>
-          </li>
-          <li>
-            📊 <Link>Link to Slides</Link>
-          </li>
-        </ul>
-        <strong style={{ display: "block", marginTop: 10 }}>
-          Upcoming Due Dates
-        </strong>
-        <ul style={{ margin: "6px 0 0", paddingLeft: 20 }}>
-          <li>
-            🏗️ <Link>Capstone M4</Link> — feature-complete build, due end of
-            Session 2
-          </li>
-          <li>
-            📬 <Link>Week 9 pre-work</Link> — Git branching concepts (30 min),
-            due before Session 1
-          </li>
+          <li>Using Claude to find edge cases you haven{"'"}t considered</li>
+          <li>Reading assertion errors and debugging a failing test</li>
         </ul>
       </div>
 
@@ -467,20 +370,22 @@ function Overview({ platform, setPlatform }) {
         >
           {[
             {
-              label: "Session 1",
-              val: "Introduction to unit testing. Lab: write tests for a starter ViewModel using fakes, find edge cases with Claude.",
+              label: "Lab",
+              val: "Write tests for a starter ViewModel using fakes. Find edge cases with Claude. ~50–60 minutes.",
             },
             {
-              label: "Session 2",
-              val: "App performance — profiling, memory leak detection, and using AI to scan your codebase for issues. Lab: capstone build time.",
+              label: "Format",
+              val: "Self-paced bonus content. Work through the lab at your own pace — no submission required.",
             },
             {
-              label: "Capstone M4",
-              val: "Feature-complete build. All core screens working, data persists, at least one stretch feature. Due end of Session 2.",
+              label: "Prereqs",
+              val: "Comfort with MVVM and a working ViewModel pattern. Helpful: a project of your own to apply this to.",
             },
             {
-              label: "No standalone assignment",
-              val: "M4 is the deliverable this week. Lab time both sessions goes toward capstone progress.",
+              label: "Tools",
+              val: isAndroid
+                ? "JUnit4, kotlinx-coroutines-test (runTest, TestDispatcher)."
+                : "XCTest with async test functions (Swift 5.5+).",
             },
           ].map((item) => (
             <div
@@ -522,8 +427,8 @@ function Overview({ platform, setPlatform }) {
   );
 }
 
-/* ====== LAB SESSION 1 ====== */
-function LabSession1({ platform }) {
+/* ====== LAB ====== */
+function Lab({ platform, setPlatform }) {
   var isAndroid = platform === "Android";
   return (
     <div
@@ -534,7 +439,7 @@ function LabSession1({ platform }) {
       }
     >
       <h2 style={{ fontSize: 18, fontWeight: 600, margin: "0 0 4px" }}>
-        Session 1 Lab: Writing Unit Tests for a ViewModel
+        Lab: Writing Unit Tests for a ViewModel
       </h2>
       <p
         style={{
@@ -546,6 +451,8 @@ function LabSession1({ platform }) {
         Write unit tests for a shared starter ViewModel. Use fakes to isolate
         dependencies from real network calls. Budget about 50–60 minutes.
       </p>
+
+      <PlatformToggle platform={platform} setPlatform={setPlatform} />
 
       <div style={{ fontSize: 13, lineHeight: 1.7 }}>
         <strong>🎯 Goals</strong>
@@ -584,10 +491,10 @@ function LabSession1({ platform }) {
         </p>
         <p style={{ fontSize: 13, color: AM, margin: 0, lineHeight: 1.6 }}>
           The ViewModel is the most testable layer in MVVM — it has no UI code
-          and no Android/iOS framework dependencies (if you wrote it right in
-          Week 6). That means you can run tests on the JVM or in Swift without a
-          simulator. If your ViewModel is hard to test, it{"'"}s a signal the
-          architecture needs work.
+          and no Android/iOS framework dependencies (if it was written
+          correctly). That means you can run tests on the JVM or in Swift
+          without a simulator. If your ViewModel is hard to test, it{"'"}s a
+          signal the architecture needs work.
         </p>
       </div>
 
@@ -699,7 +606,7 @@ class ItemViewModel: ObservableObject {
                 accent={BL}
               >{`dependencies {
     // Other dependencies...
-    
+
     // For testing coroutines (runTest, TestDispatchers)
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.8.0")
 }`}</CodeB>
@@ -1123,17 +1030,17 @@ final class ItemViewModelTests: XCTestCase {
       </VStep>
 
       {/* Step 5 */}
-      <VStep num={5} title="Capstone lab time (~remaining time)" last>
+      <VStep num={5} title="Apply it to your own project (optional)" last>
         <div style={{ fontSize: 13, lineHeight: 1.7 }}>
           <p>
-            Remaining lab time is for capstone work. If you finish the testing
-            steps early, open your capstone project and make progress toward M4.
+            If you have a project of your own, the next step is to write one
+            real test against one of its ViewModels.
           </p>
           <Tip>
             The testing pattern you just practiced — fake repository, state
-            assertions, edge cases — works identically on your capstone{"'"}s
-            own ViewModels. If you have time, try adding one test for your
-            capstone{"'"}s main ViewModel.
+            assertions, edge cases — works identically on any MVVM ViewModel.
+            Pick the simplest ViewModel in your project and add one Loading or
+            Success test for it.
           </Tip>
         </div>
       </VStep>
@@ -1201,704 +1108,9 @@ final class ItemViewModelTests: XCTestCase {
             Add a fake that introduces a simulated delay — verify the UI shows
             Loading during the delay
           </li>
-          <li>Write one test for your own capstone ViewModel</li>
+          <li>Write one test for a ViewModel in your own project</li>
         </ul>
       </Section>
-    </div>
-  );
-}
-
-/* ====== LAB SESSION 2 ====== */
-function LabSession2({ platform }) {
-  var isAndroid = platform === "Android";
-  return (
-    <div
-      style={
-        {
-          "--platform-accent": platform === "Android" ? BL : GR,
-        } as React.CSSProperties
-      }
-    >
-      <h2 style={{ fontSize: 18, fontWeight: 600, margin: "0 0 4px" }}>
-        Session 2 Lab: Profiling & App Performance
-      </h2>
-      <p
-        style={{
-          fontSize: 13,
-          color: "var(--color-text-secondary)",
-          margin: "0 0 12px",
-        }}
-      >
-        In this lab, you'll hunt down performance bottlenecks in an
-        intentionally buggy starter app. You'll learn to use IDE profilers to
-        find jank, use memory tools to detect leaks, and use Claude to resolve
-        them. Budget about 30 minutes, then switch to capstone work.
-      </p>
-
-      <div
-        style={{
-          background: AML,
-          border: "1px solid #FAC775",
-          borderRadius: 8,
-          padding: "12px 16px",
-          margin: "12px 0",
-        }}
-      >
-        <p
-          style={{
-            fontSize: 13,
-            fontWeight: 600,
-            color: AM,
-            margin: "0 0 4px",
-          }}
-        >
-          The Three Mobile Performance Problems
-        </p>
-        <p style={{ fontSize: 13, color: AM, margin: 0, lineHeight: 1.6 }}>
-          <strong>🎞️ Jank (Dropped frames):</strong> Usually caused by blocking
-          the main thread (heavy processing or network).
-          <br />
-          <strong>🧠 Memory leaks:</strong> Objects that should be
-          garbage-collected are kept alive by lingering references.
-          <br />
-          <strong>🔋 Battery drain:</strong> Doing unnecessary CPU/network work
-          when the app is backgrounded.
-        </p>
-      </div>
-
-      <VStep num={1} title="Reproduce the Jank (~5 min)">
-        <div style={{ fontSize: 13, lineHeight: 1.7 }}>
-          <p>
-            Run the Week 9 Session 2 starter app. It contains a screen that
-            fetches and processes a large list of images.
-          </p>
-          <p>
-            Tap the <strong>"Load Heavy Data"</strong> button and immediately
-            try to scroll the screen or tap other buttons.
-          </p>
-          <Checkpoint num={1}>
-            The app freezes completely for a few seconds. This is classic
-            main-thread "jank."
-          </Checkpoint>
-        </div>
-      </VStep>
-
-      <VStep num={2} title="Measure the CPU blockage (~5 min)">
-        <div style={{ fontSize: 13, lineHeight: 1.7 }}>
-          <p>
-            You can't fix what you can't measure. Let's see exactly what's
-            blocking the thread using the built-in IDE profilers.
-          </p>
-          {isAndroid ? (
-            <VStep num="a" title="Use the Android Studio CPU Profiler" last>
-              <p>
-                While the app is running on your device/emulator, go to{" "}
-                <strong>View → Tool Windows → Profiler</strong>.
-              </p>
-              <p>
-                Click on the <strong>CPU</strong> timeline to start a recording.
-                Inside your app, tap the <strong>"Load Heavy Data"</strong>{" "}
-                button again. Once the freeze is over, click{" "}
-                <strong>Stop</strong> in the profiler.
-              </p>
-              <p>
-                Look at the orange "main" thread row. You will see a massive
-                block of time where a single function is running, confirming
-                that we are blocking the UI.
-              </p>
-            </VStep>
-          ) : (
-            <VStep num="a" title="Use Xcode Instruments (Time Profiler)" last>
-              <p>
-                In Xcode, go to <strong>Product → Profile (⌘I)</strong>. This
-                will build your app and open Instruments.
-              </p>
-              <p>
-                Select the <strong>Time Profiler</strong> template. Click the
-                red Record button. Inside your app, tap the{" "}
-                <strong>"Load Heavy Data"</strong> button again.
-              </p>
-              <p>
-                Once the freeze is over, pause the recording. Look at the Main
-                Thread track—you will see a huge spike in CPU usage. Highlight
-                that region and look at the call tree to find the offending
-                function.
-              </p>
-            </VStep>
-          )}
-        </div>
-      </VStep>
-
-      <VStep num={3} title="Hunt for Memory Leaks (~10 min)">
-        <div style={{ fontSize: 13, lineHeight: 1.7 }}>
-          <p>
-            Now let's find the hidden memory leak. This happens when an object
-            (like a View or ViewModel) is kept alive in memory by a lingering
-            reference even after you navigate away from the screen.
-          </p>
-
-          {isAndroid ? (
-            <VStep num="a" title="Install LeakCanary" last>
-              <p>
-                LeakCanary is the industry standard tool for finding memory
-                leaks in Android. It automatically watches your Activities and
-                ViewModels and sends a notification when it detects a leak.
-              </p>
-              <CodeB
-                title="build.gradle.kts (app) — debug only"
-                accent={BL}
-              >{`dependencies {
-    // Only included in debug builds — never ships to users
-    debugImplementation("com.squareup.leakcanary:leakcanary-android:2.12")
-}`}</CodeB>
-              <p>
-                Sync your Gradle files, rebuild, and run the app. Navigate into
-                the "Heavy Data" screen, then press the back button to destroy
-                the screen.
-              </p>
-              <p>
-                Wait a few seconds. A yellow LeakCanary notification will pop up
-                on your device indicating a leak. Tap it to see the leak trace.
-              </p>
-              <div
-                style={{
-                  background: "#1e1e2e",
-                  borderRadius: 8,
-                  padding: "12px 14px",
-                  margin: "8px 0",
-                  fontSize: 12,
-                  fontFamily: "monospace",
-                  color: "#cdd6f4",
-                  lineHeight: 1.7,
-                }}
-              >
-                {"┬───\n"}
-                {"│ GC Root: Local variable in native code\n"}
-                {"│\n"}
-                {"├─ com.example.app.ui.HeavyListScreen instance\n"}
-                {"│    Leaking: YES (Activity is destroyed)\n"}
-                {"│    ↓ HeavyListScreen.viewModel\n"}
-                {"│\n"}
-                {"╰→ com.example.app.network.NetworkCallback\n"}
-                {"     Leaking: YES (held by destroyed Activity)"}
-              </div>
-              <p>
-                <strong>How to read this trace:</strong> Read it bottom-up. The
-                last line is the leaked object. The arrows show the chain of
-                references keeping it alive. This proves our listener is holding
-                a strong reference to the destroyed screen!
-              </p>
-            </VStep>
-          ) : (
-            <VStep num="a" title="Use the Memory Graph Debugger" last>
-              <p>
-                iOS memory leaks usually come from{" "}
-                <strong>strong reference cycles</strong> — two objects each
-                holding a strong reference to the other, meaning ARC (Automatic
-                Reference Counting) can never deallocate them.
-              </p>
-              <p>
-                Run the app. Navigate into the "Heavy Data" screen, then press
-                the back button to destroy the screen.
-              </p>
-              <p>
-                While the app is running in Xcode, click the{" "}
-                <strong>Memory Graph button</strong> (the icon with three
-                overlapping circles) in the Debug navigator toolbar at the
-                bottom.
-              </p>
-              <p>
-                Xcode will pause the app and show a visual graph of all live
-                objects. Look for <strong>purple warning triangles</strong> in
-                the left sidebar—these indicate detected retain cycles.
-              </p>
-              <p>
-                Click the warning to see the cycle. You will see that the{" "}
-                <IC>HeavyViewModel</IC> and a closure/listener are keeping each
-                other alive!
-              </p>
-            </VStep>
-          )}
-        </div>
-      </VStep>
-
-      <VStep num={4} title="Fix with Claude (~5 min)">
-        <div style={{ fontSize: 13, lineHeight: 1.7 }}>
-          <p>
-            Now that we have hard proof of the jank and the leak, let's use AI
-            to apply the correct technical fix.
-          </p>
-
-          <VStep num="a" title="Scan for performance issues">
-            <p>
-              Open the{" "}
-              <IC>
-                {isAndroid ? "HeavyViewModel.kt" : "HeavyViewModel.swift"}
-              </IC>{" "}
-              starter file.
-            </p>
-            <AiOpp>
-              <strong>
-                Paste the file AND the leak trace (or Xcode warning) into Claude
-              </strong>{" "}
-              and use this prompt:
-              <br />
-              <br />
-              <strong>
-                "Here is my ViewModel. The profiler shows it is blocking the
-                main thread, and{" "}
-                {isAndroid ? "LeakCanary" : "the Memory Graph Debugger"} found a
-                memory leak here. Look specifically for: work that should be on
-                a background dispatcher/actor but isn't, and any closures or
-                references that could cause memory leaks. Tell me what's wrong
-                and provide the fixed code."
-              </strong>
-            </AiOpp>
-          </VStep>
-
-          <VStep num="b" title="Apply the fixes" last>
-            <p>Claude should point out two things:</p>
-            <ol style={{ paddingLeft: 20, margin: "6px 0" }}>
-              <li>
-                The heavy data parsing is happening synchronously on the main
-                thread.
-              </li>
-              <li>
-                {isAndroid
-                  ? "There's a listener holding a strong reference to the Activity/Context, causing a memory leak."
-                  : "There's a closure capturing 'self' strongly, creating a retain cycle."}
-              </li>
-            </ol>
-            <p>Apply Claude's fixed code to your ViewModel.</p>
-            <Section title="✅ Check your work — show me what the fixed ViewModel should look like">
-              {isAndroid ? (
-                <CodeB
-                  title="Kotlin — HeavyViewModel.kt (Fixed)"
-                  accent={BL}
-                >{`// ✅ Fixed: Run heavy work on Dispatchers.IO
-fun loadHeavyData() {
-    viewModelScope.launch {
-        _uiState.value = UiState.Loading
-        val result = withContext(Dispatchers.IO) {
-            repository.parseMassiveJsonPayload() 
-        }
-        _uiState.value = UiState.Success(result)
-    }
-}
-
-// ✅ Fixed: Removed the static/long-lived Context reference
-// ViewModels should NEVER hold a reference to an Activity or View!`}</CodeB>
-              ) : (
-                <CodeB
-                  title="Swift — HeavyViewModel.swift (Fixed)"
-                  accent={GR}
-                >{`// ✅ Fixed: Run heavy work on a background detached Task
-func loadHeavyData() async {
-    uiState = .loading
-    let result = await Task.detached(priority: .userInitiated) {
-        return self.repository.parseMassiveJsonPayload()
-    }.value
-    
-    uiState = .success(result)
-}
-
-// ✅ Fixed: Weak capture to prevent retain cycles
-func startListening() {
-    repository.listenForUpdates { [weak self] newData in
-        self?.uiState = .success(newData)
-    }
-}`}</CodeB>
-              )}
-            </Section>
-          </VStep>
-
-          <Checkpoint num={2}>
-            Run the app again. Tapping "Load Heavy Data" now shows a loading
-            spinner, the UI remains completely responsive, and rotating/exiting
-            the screen no longer triggers a memory leak warning.
-          </Checkpoint>
-        </div>
-      </VStep>
-
-      <VStep num={5} title="Capstone lab time (~remaining time)" last>
-        <div style={{ fontSize: 13, lineHeight: 1.7 }}>
-          <p>
-            The rest of this session is for capstone work. Your goal is to reach
-            the M4 Milestone (Feature-Complete Build).
-          </p>
-          <Tip>
-            If your capstone app feels slow, run it through the Profiler or
-            paste your most complex screen into Claude using the AI scan prompt
-            from Step 4!
-          </Tip>
-        </div>
-      </VStep>
-
-      {/* Reference Material from old lecture */}
-      <Section title="📚 Reference: The Most Common Memory Leaks">
-        <div style={{ fontSize: 13, lineHeight: 1.8 }}>
-          <p>
-            Review these common anti-patterns if you suspect a memory leak in
-            your capstone app:
-          </p>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: 8 }}>
-            {(isAndroid
-              ? [
-                  {
-                    title: "Static references to Context or View",
-                    fix: "Never store an Activity or View in a static field or singleton. Use ApplicationContext if you need a long-lived context.",
-                  },
-                  {
-                    title: "Anonymous listeners not unregistered",
-                    fix: "Any listener/callback that holds a reference to a View or Activity must be unregistered in onStop or onDestroy. Use lifecycle-aware alternatives where possible.",
-                  },
-                  {
-                    title: "Coroutines launched in GlobalScope",
-                    fix: "GlobalScope coroutines live for the entire process lifetime. Always use viewModelScope (in ViewModel) or lifecycleScope (in Activity/Fragment).",
-                  },
-                  {
-                    title: "Inner classes holding outer class references",
-                    fix: "Non-static inner classes implicitly hold a reference to the outer class. Make them static, or use a WeakReference, or extract them.",
-                  },
-                ]
-              : [
-                  {
-                    title: "Strong self in closures",
-                    fix: "Closures capture self strongly by default. Use [weak self] in the capture list: { [weak self] in guard let self = self else { return } }",
-                  },
-                  {
-                    title: "Delegate properties not declared weak",
-                    fix: "Delegate protocols should always be declared with weak: weak var delegate: MyDelegate?. If the delegate is a class type and not weak, it creates a retain cycle.",
-                  },
-                  {
-                    title: "Timer not invalidated",
-                    fix: "Timer holds a strong reference to its target. Always call timer.invalidate() when the owning view disappears, or use a weak target wrapper.",
-                  },
-                  {
-                    title: "NotificationCenter observer not removed",
-                    fix: "If you use the addObserver API (not the closure API), you must call removeObserver in deinit. The closure API with [weak self] is safer.",
-                  },
-                ]
-            ).map((item) => (
-              <div
-                key={item.title}
-                style={{
-                  background: "var(--color-background-secondary)",
-                  border: "0.5px solid var(--color-border-tertiary)",
-                  borderRadius: 8,
-                  padding: "10px 12px",
-                }}
-              >
-                <p
-                  style={{
-                    fontSize: 12,
-                    fontWeight: 600,
-                    color: "var(--color-text-primary)",
-                    margin: "0 0 4px",
-                  }}
-                >
-                  🚨 {item.title}
-                </p>
-                <p
-                  style={{
-                    fontSize: 12,
-                    color: "var(--color-text-secondary)",
-                    margin: 0,
-                    lineHeight: 1.5,
-                  }}
-                >
-                  <strong>Fix:</strong> {item.fix}
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </Section>
-
-      <Section title="📚 Reference: Common Threading Fixes">
-        <div style={{ fontSize: 13, lineHeight: 1.8 }}>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: 8 }}>
-            {(isAndroid
-              ? [
-                  {
-                    problem: "Main Thread Blockage",
-                    bad: "val result = repo.fetch() // blocks UI!",
-                    good: "withContext(Dispatchers.IO) { repo.fetch() }",
-                  },
-                  {
-                    problem: "Eager Rendering of Long Lists",
-                    bad: "Column { items.forEach { ... } } // slow!",
-                    good: "LazyColumn { items(...) { ... } }",
-                  },
-                ]
-              : [
-                  {
-                    problem: "Main Actor Blockage",
-                    bad: "let data = try! Data(...) // blocks UI!",
-                    good: "await Task.detached { ... }",
-                  },
-                  {
-                    problem: "Eager Rendering of Long Lists",
-                    bad: "ScrollView { ForEach(...) { ... } }",
-                    good: "List { ... } or LazyVStack { ... }",
-                  },
-                ]
-            ).map((item, i) => (
-              <div
-                key={i}
-                style={{
-                  padding: "8px",
-                  background: "var(--color-background-secondary)",
-                  borderRadius: 6,
-                  border: "0.5px solid var(--color-border-tertiary)",
-                }}
-              >
-                <strong>🚨 {item.problem}</strong>
-                <pre
-                  style={{
-                    margin: "4px 0",
-                    background: "#1e1e2e",
-                    color: "#f38ba8",
-                    padding: "6px",
-                    fontSize: 11,
-                    borderRadius: 4,
-                  }}
-                >
-                  ❌ {item.bad}
-                </pre>
-                <pre
-                  style={{
-                    margin: 0,
-                    background: "#1e1e2e",
-                    color: "#a6e3a1",
-                    padding: "6px",
-                    fontSize: 11,
-                    borderRadius: 4,
-                  }}
-                >
-                  ✅ {item.good}
-                </pre>
-              </div>
-            ))}
-          </div>
-        </div>
-      </Section>
-    </div>
-  );
-}
-
-/* ====== LAB TAB SWITCHER ====== */
-function LabTab({ platform, setPlatform }) {
-  var [session, setSession] = useState(1);
-  return (
-    <div>
-      <div
-        style={{
-          display: "flex",
-          gap: 0,
-          marginBottom: 12,
-          borderRadius: 8,
-          overflow: "hidden",
-          border: "1px solid var(--color-border-tertiary)",
-          width: "fit-content",
-        }}
-      >
-        {[1, 2].map(function (n) {
-          return (
-            <button
-              key={n}
-              onClick={function () {
-                setSession(n);
-              }}
-              style={{
-                padding: "8px 20px",
-                fontSize: 13,
-                fontWeight: 500,
-                border: "none",
-                cursor: "pointer",
-                background:
-                  session === n ? PL : "var(--color-background-primary)",
-                color: session === n ? PD : "var(--color-text-secondary)",
-              }}
-            >
-              {n === 1
-                ? "Session 1 — Unit Testing"
-                : "Session 2 — App Performance"}
-            </button>
-          );
-        })}
-      </div>
-      <PlatformToggle platform={platform} setPlatform={setPlatform} />
-      {session === 1 ? (
-        <LabSession1 platform={platform} />
-      ) : (
-        <LabSession2 platform={platform} />
-      )}
-    </div>
-  );
-}
-
-/* ====== CAPSTONE TAB ====== */
-function CapstoneTab({ platform, setPlatform }) {
-  var isAndroid = platform === "Android";
-  return (
-    <div>
-      <div
-        style={{
-          background: CAP_BG,
-          padding: "14px",
-          borderRadius: 10,
-          marginBottom: 16,
-        }}
-      >
-        <h3
-          style={{
-            fontSize: 16,
-            fontWeight: 600,
-            margin: "0 0 6px",
-            color: CAP_C,
-          }}
-        >
-          🏗️ Capstone M4: Feature-Complete Build
-        </h3>
-        <p style={{ fontSize: 13, lineHeight: 1.6, margin: 0, color: CAP_C }}>
-          Due end of Session 2. Submit by sharing the GitHub repo link in Slack.
-          This is the last milestone before demo day.
-        </p>
-      </div>
-
-      <PlatformToggle platform={platform} setPlatform={setPlatform} />
-
-      <div style={{ fontSize: 13, lineHeight: 1.7 }}>
-        <h4 style={{ fontSize: 14, fontWeight: 600, marginTop: 16 }}>
-          ✅ M4 Deliverables
-        </h4>
-        <ul style={{ paddingLeft: 20, lineHeight: 2 }}>
-          {[
-            "All core screens navigable end-to-end — no dead ends or placeholder screens",
-            "At least one real network call or AI feature working end-to-end",
-            "Local persistence working — data survives an app restart",
-            "At least one stretch feature from your original proposal is implemented",
-            "Git branching workflow in place — feature branches merged via PRs, not pushed directly to main",
-            "Every team member has meaningful commits on the main branch",
-            "App icon is set — not the default placeholder",
-            "No build-breaking crashes during a normal use flow",
-          ].map((item, i) => (
-            <li key={i}>{item}</li>
-          ))}
-        </ul>
-
-        <h4 style={{ fontSize: 14, fontWeight: 600, marginTop: 20 }}>
-          📋 What the week looks like
-        </h4>
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "1fr 1fr",
-            gap: 8,
-            margin: "10px 0",
-          }}
-        >
-          {[
-            {
-              label: "Session 1 lab",
-              val: "After unit testing steps are done, switch to capstone. TAs available.",
-            },
-            {
-              label: "Session 2 lab",
-              val: "Full capstone work session. Use performance tools from the lecture if useful.",
-            },
-            {
-              label: "Between sessions",
-              val: "Finish any remaining M4 features. Review teammate PRs. Run a quick perf audit.",
-            },
-            {
-              label: "End of Session 2",
-              val: "Submit M4 via the Slack form. Repo link + confirmation that required features are done.",
-            },
-          ].map((item) => (
-            <div
-              key={item.label}
-              style={{
-                background: "var(--color-background-primary)",
-                border: "0.5px solid var(--color-border-tertiary)",
-                borderRadius: 8,
-                padding: "10px 12px",
-              }}
-            >
-              <p
-                style={{
-                  fontSize: 11,
-                  fontWeight: 500,
-                  color: "var(--color-text-tertiary)",
-                  margin: "0 0 4px",
-                  textTransform: "uppercase",
-                  letterSpacing: ".04em",
-                }}
-              >
-                {item.label}
-              </p>
-              <p
-                style={{
-                  fontSize: 12,
-                  color: "var(--color-text-secondary)",
-                  margin: 0,
-                  lineHeight: 1.5,
-                }}
-              >
-                {item.val}
-              </p>
-            </div>
-          ))}
-        </div>
-
-        <Warn>
-          {
-            'Have your app running on a device or emulator when you submit M4. The instructor will do a quick check during demo prep — "works on my machine" needs to be demonstrable, not theoretical.'
-          }
-        </Warn>
-
-        <AiOpp>
-          <em>Scope what{"'"}s left → </em>Ask Claude:{" "}
-          <strong>
-            {
-              '"Our capstone has these features still to build: [list]. We have one week left until demo day. Which features are highest priority for a great demo? What\'s safe to cut?"'
-            }
-          </strong>
-        </AiOpp>
-
-        <div
-          className="callout-ai"
-          style={{
-            marginTop: 16,
-            padding: "12px 14px",
-            background: "#F9F0FF",
-            borderRadius: 8,
-          }}
-        >
-          <strong>📅 Capstone Timeline</strong>
-          <ul style={{ paddingLeft: 20, margin: "6px 0 0", lineHeight: 2 }}>
-            <li style={{ opacity: 0.5 }}>
-              Week 5: Team formation + platform selection ✅
-            </li>
-            <li style={{ opacity: 0.5 }}>Week 6: Proposal due ✅</li>
-            <li style={{ opacity: 0.5 }}>
-              Week 7: M1 — Repo setup, architecture scaffolded ✅
-            </li>
-            <li style={{ opacity: 0.5 }}>
-              Week 8: M3 — Instructor check-in ✅
-            </li>
-            <li>
-              <strong>Week 9 (this week):</strong> M4 — Feature-complete, Git
-              branching workflow
-            </li>
-            <li>
-              <strong>Week 10:</strong> Final — APK/TestFlight, demo day,
-              written reflection
-            </li>
-          </ul>
-        </div>
-      </div>
     </div>
   );
 }
@@ -1913,7 +1125,7 @@ function ResourcesTab({ platform, setPlatform }) {
         <p>Helpful links for this unit.</p>
 
         <h4 style={{ fontSize: 14, fontWeight: 600, marginTop: 12 }}>
-          📹 Session Recordings
+          📹 Recordings
         </h4>
         <ul style={{ paddingLeft: 20 }}>
           <li>
@@ -1923,9 +1135,6 @@ function ResourcesTab({ platform, setPlatform }) {
             <Link>Office Hours Video Playlist</Link>
           </li>
         </ul>
-        <p style={{ fontSize: 12, color: "var(--color-text-tertiary)" }}>
-          May take 24–48 hours to appear after the session.
-        </p>
 
         {isAndroid ? (
           <>
@@ -1955,52 +1164,6 @@ function ResourcesTab({ platform, setPlatform }) {
                   style={{ color: "var(--color-text-info)" }}
                 >
                   Test doubles (fakes, mocks, stubs) — Android guide
-                </a>
-              </li>
-            </ul>
-
-            <h4 style={{ fontSize: 14, fontWeight: 600, marginTop: 16 }}>
-              ⚡ Performance — Android
-            </h4>
-            <ul style={{ paddingLeft: 20 }}>
-              <li>
-                <a
-                  href="https://developer.android.com/studio/profile"
-                  style={{ color: "var(--color-text-info)" }}
-                >
-                  Android Studio Profiler overview
-                </a>
-              </li>
-              <li>
-                <a
-                  href="https://developer.android.com/studio/profile/memory-profiler"
-                  style={{ color: "var(--color-text-info)" }}
-                >
-                  Memory Profiler — capture heap dumps and track leaks
-                </a>
-              </li>
-              <li>
-                <a
-                  href="https://square.github.io/leakcanary/"
-                  style={{ color: "var(--color-text-info)" }}
-                >
-                  LeakCanary — automatic memory leak detection
-                </a>
-              </li>
-              <li>
-                <a
-                  href="https://developer.android.com/topic/performance/vitals/render"
-                  style={{ color: "var(--color-text-info)" }}
-                >
-                  Slow rendering — how to find and fix jank
-                </a>
-              </li>
-              <li>
-                <a
-                  href="https://developer.android.com/kotlin/coroutines/coroutines-best-practices"
-                  style={{ color: "var(--color-text-info)" }}
-                >
-                  Coroutines best practices — threading and cancellation
                 </a>
               </li>
             </ul>
@@ -2036,44 +1199,6 @@ function ResourcesTab({ platform, setPlatform }) {
                 </a>
               </li>
             </ul>
-
-            <h4 style={{ fontSize: 14, fontWeight: 600, marginTop: 16 }}>
-              ⚡ Performance — iOS
-            </h4>
-            <ul style={{ paddingLeft: 20 }}>
-              <li>
-                <a
-                  href="https://developer.apple.com/documentation/xcode/improving-your-app-s-performance"
-                  style={{ color: "var(--color-text-info)" }}
-                >
-                  Improving your app{"'"}s performance — Apple guide
-                </a>
-              </li>
-              <li>
-                <a
-                  href="https://developer.apple.com/documentation/xcode/gathering-information-about-memory-use"
-                  style={{ color: "var(--color-text-info)" }}
-                >
-                  Gathering information about memory use — Instruments
-                </a>
-              </li>
-              <li>
-                <a
-                  href="https://developer.apple.com/documentation/xcode/diagnosing-memory-thread-and-crash-issues-early"
-                  style={{ color: "var(--color-text-info)" }}
-                >
-                  Memory Graph Debugger — Xcode
-                </a>
-              </li>
-              <li>
-                <a
-                  href="https://developer.apple.com/documentation/swift/maintaining-a-stable-identity"
-                  style={{ color: "var(--color-text-info)" }}
-                >
-                  Avoiding retain cycles in Swift — closures and [weak self]
-                </a>
-              </li>
-            </ul>
           </>
         )}
       </div>
@@ -2082,7 +1207,7 @@ function ResourcesTab({ platform, setPlatform }) {
 }
 
 /* ====== MAIN ====== */
-export default function Week9Unit() {
+export default function TestingUnit() {
   var tabState = useState("Overview");
   var tab = tabState[0];
   var setTab = tabState[1];
@@ -2111,7 +1236,7 @@ export default function Week9Unit() {
           MOBILE DEVELOPMENT IN THE AGE OF AI
         </div>
         <div style={{ fontSize: 11, color: "var(--color-text-tertiary)" }}>
-          {"CodePath \u00B7 10 weeks \u00B7 2 sessions/week"}
+          {"CodePath · Bonus async unit"}
         </div>
       </div>
       <div
@@ -2152,10 +1277,7 @@ export default function Week9Unit() {
         <Overview platform={platform} setPlatform={setPlatform} />
       )}
       {tab === "Lab" && (
-        <LabTab platform={platform} setPlatform={setPlatform} />
-      )}
-      {tab === "Capstone" && (
-        <CapstoneTab platform={platform} setPlatform={setPlatform} />
+        <Lab platform={platform} setPlatform={setPlatform} />
       )}
       {tab === "Resources" && (
         <ResourcesTab platform={platform} setPlatform={setPlatform} />
