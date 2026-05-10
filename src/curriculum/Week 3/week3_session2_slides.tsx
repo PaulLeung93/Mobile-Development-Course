@@ -4,6 +4,7 @@ const PURPLE = "#534AB7";
 const PURPLE_DARK = "#3C3489";
 const PURPLE_LIGHT = "#EEEDFE";
 const TEAL = "#1D9E75";
+const TEAL_DARK = "#0F513C";
 const TEAL_LIGHT = "#E1F5EE";
 const GRAY = "#F5F5F7";
 const TEXT = "#1a1a2e";
@@ -123,15 +124,15 @@ export const slides = [
     <div style={{ background: `linear-gradient(135deg, ${PURPLE_DARK} 0%, ${PURPLE} 100%)`, borderRadius: 12, padding: "44px 40px", minHeight: 360, display: "flex", flexDirection: "column", justifyContent: "space-between", boxSizing: "border-box" }}>
       <div>
         <div style={{ marginBottom: 10 }}><Tag color="#fff">Week 3 — Session 2</Tag></div>
-        <h1 style={{ fontSize: 30, fontWeight: 800, color: "#fff", margin: "10px 0 8px", lineHeight: 1.2 }}>Forms, Sheets &<br/>Swipe Actions</h1>
-        <p style={{ fontSize: 15, color: "rgba(255,255,255,0.7)", margin: "0 0 28px" }}>Making your lists fully interactive</p>
+        <h1 style={{ fontSize: 30, fontWeight: 800, color: "#fff", margin: "10px 0 8px", lineHeight: 1.2 }}>Local Data Mutation</h1>
+        <p style={{ fontSize: 15, color: "rgba(255,255,255,0.7)", margin: "0 0 28px" }}>Forms, Sheets & Swipe Actions</p>
         <div style={{ display: "flex", gap: 20 }}>
           {["Builds on Session 1", "Android · Jetpack Compose", "iOS · SwiftUI"].map(t => (
             <span key={t} style={{ fontSize: 12, color: "rgba(255,255,255,0.6)", borderLeft: `2px solid ${TEAL}`, paddingLeft: 8 }}>{t}</span>
           ))}
         </div>
       </div>
-      <Notes>{"Welcome back! In Session 1, we learned how to build beautiful, scrolling lists. But they were read-only. Today, we're taking off the training wheels and making our lists fully interactive: adding items through forms, deleting items with swipe gestures, and using native mobile UX patterns like bottom sheets."}</Notes>
+      <Notes>{"Welcome back! In Session 1, we learned how to build beautiful, scrolling lists to Read data. But they were read-only. Today, we're taking off the training wheels and learning how to Create and Delete data by mutating our local state. We'll do this by adding items through forms inside bottom sheets, and deleting items with swipe gestures. This is the essence of Unidirectional Data Flow."}</Notes>
     </div>
   ),
 
@@ -163,13 +164,12 @@ export const slides = [
     <Shell tag="Agenda" title="Today's session — ~55 minutes" notes="This is a highly interactive session. We're going to build out a full 'Add Item' flow using a bottom sheet, and add swipe-to-delete. It's our first taste of real CRUD operations on mobile!">
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginTop: 6 }}>
         {[
-          { num: "01", time: "5 min",  title: "Recap", desc: "Reviewing lists and state" },
-          { num: "02", time: "8 min",  title: "Mobile Forms", desc: "Inputs, sliders, and toggles" },
-          { num: "03", time: "10 min", title: "The Bottom Sheet UX", desc: "Why we use them & how they solve state headaches" },
-          { num: "04", time: "15 min", title: "Live code: Add Item", desc: "Building a form in a bottom sheet to add to a list" },
-          { num: "05", time: "10 min", title: "Swipe Actions", desc: "Swipe-to-delete: a core mobile gesture" },
-          { num: "06", time: "5 min",  title: "Alert Dialogs", desc: "Confirming destructive actions" },
-          { num: "07", time: "2 min",  title: "Recap + Lab", desc: "Review what we covered, then break before lab" },
+          { num: "01", time: "5 min",  title: "The State Problem", desc: "Why imperative UI fails at scale" },
+          { num: "02", time: "10 min", title: "Declarative UI & UDF", desc: "State mutation and Unidirectional Data Flow" },
+          { num: "03", time: "5 min",  title: "CRUD Operations", desc: "Understanding Create and Delete" },
+          { num: "04", time: "10 min", title: "Mobile UI Forms", desc: "Forms in a declarative world" },
+          { num: "05", time: "15 min", title: "Live Code: Create", desc: "Building an Add Album Bottom Sheet" },
+          { num: "06", time: "10 min", title: "Live Code: Delete", desc: "Mutating state via Swipe Gestures" },
         ].map(item => (
           <div key={item.num} style={{ display: "flex", gap: 10, padding: "9px 11px", background: GRAY, borderRadius: 8, alignItems: "flex-start" }}>
             <span style={{ fontSize: 16, fontWeight: 800, color: PURPLE_LIGHT, flexShrink: 0, lineHeight: 1, minWidth: 22 }}>{item.num}</span>
@@ -186,7 +186,142 @@ export const slides = [
     </Shell>
   ),
 
-  // ─── SLIDE 4: Mobile Forms vs Web Forms ───
+  // ─── SLIDE 4: The Core Problem ───
+  () => (
+    <Shell tag="Concept" title="The Naive Approach to Adding Data" notes="Explain the old imperative way of building UI.">
+      <p style={{ fontSize: 13, color: MUTED, margin: "0 0 10px" }}>Imagine we want to add a new album to our list. What is the instinctual, naive approach?</p>
+      
+      <div style={{ background: "#fff3f3", border: "1px solid #fca5a5", borderRadius: 8, padding: "20px", display: "flex", flexDirection: "column", gap: 12 }}>
+        <p style={{ fontSize: 14, fontWeight: 700, color: "#b91c1c", margin: 0 }}>The Imperative Workflow</p>
+        
+        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+          <div style={{ background: "#fff", border: "1px solid #ccc", padding: "8px 12px", borderRadius: 4, flex: 1, textAlign: "center" }}>User clicks "Save"</div>
+          <span>➡️</span>
+          <div style={{ background: "#fff", border: "1px solid #ccc", padding: "8px 12px", borderRadius: 4, flex: 1, textAlign: "center" }}>Create a new View object</div>
+          <span>➡️</span>
+          <div style={{ background: "#fff", border: "1px solid #ccc", padding: "8px 12px", borderRadius: 4, flex: 1, textAlign: "center" }}>Find the List UI and append View</div>
+        </div>
+        
+        <div style={{ marginTop: 10 }}>
+          <Bullet><b>Problem 1:</b> The UI is manually manipulated. We have to write code to "find" the list and "add" the view.</Bullet>
+          <Bullet><b>Problem 2:</b> The actual underlying data (our array of albums) might not get updated! The UI and the data are now out of sync.</Bullet>
+          <Bullet><b>Problem 3:</b> This leads to spaghetti code. This is how iOS (UIKit) and Android (XML) used to work.</Bullet>
+        </div>
+      </div>
+    </Shell>
+  ),
+
+  // ─── SLIDE 5: The Declarative Solution ───
+  () => (
+    <Shell tag="Concept" title="The Declarative Solution: State Mutation" notes="Contrast with declarative UI. We mutate data, not UI.">
+      <p style={{ fontSize: 13, color: MUTED, margin: "0 0 10px" }}>In modern mobile development (Compose / SwiftUI), we never touch the UI directly.</p>
+      
+      <div style={{ background: TEAL_LIGHT, border: `1px solid ${TEAL}`, borderRadius: 8, padding: "20px", display: "flex", flexDirection: "column", gap: 12 }}>
+        <p style={{ fontSize: 14, fontWeight: 700, color: TEAL_DARK, margin: 0 }}>The Declarative Workflow</p>
+        
+        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+          <div style={{ background: "#fff", border: `1px solid ${TEAL}`, padding: "8px 12px", borderRadius: 4, flex: 1, textAlign: "center" }}>User clicks "Save"</div>
+          <span>➡️</span>
+          <div style={{ background: "#fff", border: `1px solid ${TEAL}`, padding: "8px 12px", borderRadius: 4, flex: 1, textAlign: "center", fontWeight: "bold", color: TEAL }}>Mutate Data State</div>
+          <span>➡️</span>
+          <div style={{ background: "#fff", border: `1px solid ${TEAL}`, padding: "8px 12px", borderRadius: 4, flex: 1, textAlign: "center" }}>UI rebuilds automatically</div>
+        </div>
+        
+        <div style={{ marginTop: 10 }}>
+          <Bullet><b>Benefit 1:</b> We don't write code to update the screen. We only write code to update the data.</Bullet>
+          <Bullet><b>Benefit 2:</b> The UI is guaranteed to match the data. They can never be out of sync.</Bullet>
+          <Bullet><b>Benefit 3:</b> The UI is simply a function of your state.</Bullet>
+        </div>
+      </div>
+    </Shell>
+  ),
+
+  // ─── SLIDE 6: CRUD ───
+  () => (
+    <Shell tag="Concept" title="What is Local Data Mutation?" notes="Introduce CRUD and explain how we will mutate our local list.">
+      <p style={{ fontSize: 13, color: MUTED, margin: "0 0 10px" }}>Before we build forms, we need to understand *why* we are building them. We are learning how to mutate data locally.</p>
+      
+      <div style={{ display: "flex", gap: 12, marginTop: 10 }}>
+        <div style={{ flex: 1, background: GRAY, borderRadius: 8, padding: "16px 20px" }}>
+          <p style={{ fontSize: 16, fontWeight: 700, color: PURPLE_DARK, margin: "0 0 8px" }}>CRUD Operations</p>
+          <p style={{ fontSize: 13, color: TEXT, marginBottom: 16 }}>Almost every app revolves around four basic data operations. Today, we focus on Create and Delete using local state.</p>
+          
+          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 10, background: "#fff", padding: 8, borderRadius: 6 }}>
+              <span style={{ fontWeight: 800, color: TEAL, width: 20 }}>C</span>
+              <span style={{ fontSize: 13 }}><b>Create:</b> Adding a new album via a Bottom Sheet Form</span>
+            </div>
+            <div style={{ display: "flex", alignItems: "center", gap: 10, background: "#fff", padding: 8, borderRadius: 6, opacity: 0.5 }}>
+              <span style={{ fontWeight: 800, color: MUTED, width: 20 }}>R</span>
+              <span style={{ fontSize: 13 }}><b>Read:</b> Displaying the list of albums (Done in Session 1)</span>
+            </div>
+            <div style={{ display: "flex", alignItems: "center", gap: 10, background: "#fff", padding: 8, borderRadius: 6, opacity: 0.5 }}>
+              <span style={{ fontWeight: 800, color: MUTED, width: 20 }}>U</span>
+              <span style={{ fontSize: 13 }}><b>Update:</b> Editing an existing album (Future topic)</span>
+            </div>
+            <div style={{ display: "flex", alignItems: "center", gap: 10, background: "#fff", padding: 8, borderRadius: 6 }}>
+              <span style={{ fontWeight: 800, color: "#b91c1c", width: 20 }}>D</span>
+              <span style={{ fontSize: 13 }}><b>Delete:</b> Removing an album via Swipe-to-Delete gestures</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </Shell>
+  ),
+
+  // ─── SLIDE 7: Unidirectional Data Flow ───
+  () => (
+    <Shell tag="Architecture" title="Unidirectional Data Flow" notes="Explain 'Events up, State down' which is the foundation of modern declarative mobile UI.">
+      <p style={{ fontSize: 13, color: MUTED, margin: "0 0 10px" }}>How do we safely mutate our CRUD data? We use a pattern called Unidirectional Data Flow (UDF).</p>
+      
+      <div style={{ background: PURPLE_LIGHT, borderRadius: 8, padding: "20px", display: "flex", flexDirection: "column", alignItems: "center", gap: 16 }}>
+        <div style={{ background: "#fff", padding: "12px 24px", borderRadius: 8, border: `2px solid ${PURPLE}`, fontWeight: 700, color: PURPLE_DARK }}>
+          Source of Truth (State List)
+        </div>
+        
+        <div style={{ display: "flex", gap: 40, width: "100%", justifyContent: "center" }}>
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 8 }}>
+            <span style={{ fontSize: 24 }}>⬇️</span>
+            <span style={{ fontSize: 12, fontWeight: 700, color: PURPLE, background: "#fff", padding: "4px 8px", borderRadius: 4 }}>State flows DOWN</span>
+          </div>
+          
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 8 }}>
+            <span style={{ fontSize: 24 }}>⬆️</span>
+            <span style={{ fontSize: 12, fontWeight: 700, color: TEAL, background: "#fff", padding: "4px 8px", borderRadius: 4 }}>Events flow UP</span>
+          </div>
+        </div>
+        
+        <div style={{ background: "#fff", padding: "12px 24px", borderRadius: 8, border: `2px solid ${TEAL}`, fontWeight: 700, color: TEAL_DARK, width: "80%", textAlign: "center" }}>
+          UI Components (Forms, Bottom Sheets, Gestures)
+        </div>
+      </div>
+      
+      <div style={{ marginTop: 16 }}>
+        <Bullet><b>State flows down:</b> The UI merely <i>displays</i> whatever is currently in the State List.</Bullet>
+        <Bullet><b>Events flow up:</b> When a user types in a form or swipes to delete, the UI does NOT change itself. Instead, it fires an <i>Event</i>.</Bullet>
+        <Bullet>The Event mutates the Source of Truth, which then automatically flows the new State back down to redraw the UI.</Bullet>
+      </div>
+    </Shell>
+  ),
+
+  // ─── SLIDE 8: The Golden Rule ───
+  () => (
+    <Shell tag="Concept" title="The Golden Rule of Declarative UI" notes="A huge mental hurdle for beginners. UI has no memory.">
+      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: "100%", gap: 20 }}>
+        <h2 style={{ fontSize: 32, color: PURPLE_DARK, margin: 0, textAlign: "center" }}>Your UI has NO memory.</h2>
+        
+        <div style={{ background: GRAY, padding: "24px", borderRadius: 12, width: "100%" }}>
+          <Bullet>A text field does <b>not</b> remember what you typed into it.</Bullet>
+          <Bullet>A toggle switch does <b>not</b> remember if it is currently turned on.</Bullet>
+          <Bullet>A list does <b>not</b> remember how many rows it has.</Bullet>
+        </div>
+        
+        <Info>{"They only display what the State tells them to display. If you type into a text box, but don't mutate the state variable attached to it, the text box will remain completely empty!"}</Info>
+      </div>
+    </Shell>
+  ),
+
+  // ─── SLIDE 6: Mobile Forms vs Web Forms ───
   () => (
     <Shell tag="Forms" title="Mobile Forms aren't Web Forms" notes="Mobile input is tedious. Typing on a glass screen is inherently worse than a physical keyboard. Therefore, good mobile UX minimizes typing. If something can be a toggle, a slider, or a segmented control, it should be!">
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginTop: 6 }}>
@@ -292,7 +427,7 @@ export const slides = [
           </div>
         </div>
       </div>
-      <Warn title="The Secret Reason">{"State hoisting (passing data between totally separate screens) is hard. By using a Bottom Sheet, the form and the list live in the same file. The form can easily add items to the list's state!"}</Warn>
+      <Warn title="The Unidirectional Advantage">{"State hoisting (passing data between totally separate screens) is hard. By using a Bottom Sheet, the form and the list live in the same scope. The form can cleanly mutate the list's state to Create data, perfectly demonstrating Unidirectional Data Flow!"}</Warn>
     </Shell>
   ),
 
@@ -350,7 +485,7 @@ export const slides = [
             { n: 2, t: "Add a toolbar / Floating Action Button" },
             { n: 3, t: "Open a Bottom Sheet on tap" },
             { n: 4, t: "Build an 'Add Album' form" },
-            { n: 5, t: "Save the form data back to the list" },
+            { n: 5, t: "Mutate the list state to Create a new album" },
           ].map(s => (
             <div key={s.n} style={{ display: "flex", gap: 8, margin: "5px 0", alignItems: "center" }}>
               <span style={{ background: TEAL, color: "#fff", borderRadius: "50%", width: 20, height: 20, fontSize: 10, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>{s.n}</span>
@@ -530,7 +665,7 @@ export const slides = [
 
   // ─── SLIDE 14: Swipe Actions (OSToggle merged) ───
   () => (
-    <Shell tag="Gestures" timer="10" title="Swipe to Delete" notes="Show how to delete items natively.">
+    <Shell tag="Gestures" timer="10" title="Swipe to Delete" notes="Show how to delete items natively by mutating our local state. This is the 'Delete' in CRUD.">
       <OSToggle
         android={
           <div style={{ display: "flex", gap: 10 }}>

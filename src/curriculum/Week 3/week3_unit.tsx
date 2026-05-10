@@ -123,19 +123,18 @@ function Overview() {
       <div className="callout-checkpoint" style={{ background: "#E8FCE8", padding: "10px 14px", borderRadius: 8, fontSize: 13, marginBottom: 12 }}>
         Don{"'"}t forget to fill out the {"✏️"} Session Survey at the end of each class session!
       </div>
-      <h1 style={{ fontSize: 20, fontWeight: 500, margin: "0 0 12px", color: "var(--color-text-primary)" }}>Unit 3: Lists, Forms, Sheets & Swipe Actions</h1>
-      <p style={{ fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 1.7, margin: "0 0 14px" }}>Almost every real app has a list — a feed, a catalogue, an inbox, a search results page. This week you learn how to build them with production-quality polish. Session 1 gives you a scrollable, searchable list with tap-to-detail navigation. Session 2 takes that foundation further with forms, modal bottom sheets, and swipe-to-dismiss — the interactive patterns you find in every production app.</p>
-      <div style={{ background: "var(--color-background-secondary)", border: "0.5px solid var(--color-border-tertiary)", borderRadius: 8, padding: "12px 16px", margin: "12px 0" }}>
-        <p style={{ color: "var(--color-text-primary)", margin: 0 }}><strong>{"⚡"} AI-Powered Advantage:</strong> This course relies heavily on AI to handle boilerplate and dense framework syntax. The goal is conceptual mastery — understanding what each pattern does and why — not memorizing verbose API signatures. Use AI to generate scaffolding, then read and verify what it produces.</p>
-      </div>
+      <h1 style={{ fontSize: 20, fontWeight: 500, margin: "0 0 12px", color: "var(--color-text-primary)" }}>Unit 3: Lists & Local Data Mutation (Forms & Sheets)</h1>
+      <p style={{ fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 1.7, margin: "0 0 14px" }}>Almost every real app has a list — a feed, a catalogue, an inbox, a search results page. This week you learn how to build them with production-quality polish. Session 1 gives you a scrollable, searchable list with tap-to-detail navigation. Session 2 takes that foundation further by exploring <strong>Local Data Mutation (Create & Delete)</strong> via forms, modal bottom sheets, and swipe-to-dismiss—teaching you the mechanics of Unidirectional Data Flow and how declarative UI reacts to state changes.</p>
+
       <h2 style={{ fontSize: 18, fontWeight: 600, margin: "24px 0 8px" }}>What you will learn</h2>
       <UL items={[
         "LazyColumn (Compose) and List (SwiftUI) — efficient scrolling lists",
         "Custom row layouts, unique tracking keys, and list-to-detail navigation wiring",
-        "Real-time search filtering and empty state handling (stretch)",
-        "Form fields and input validation — text fields, toggles, and pickers",
-        "Modal bottom sheets — showing supplemental content without losing context",
-        "Swipe-to-dismiss / swipe actions on list rows",
+        "State Mutation & Unidirectional Data Flow — how events trigger state changes and redraw the UI",
+        "Local Data CRUD — creating and deleting data in an app",
+        "Form fields and input validation — capturing user input defensively",
+        "Modal bottom sheets — triggering floating UI with local state",
+        "Swipe-to-dismiss — modifying list state via gestures",
         "Prompt engineering — using AI to implement complex interactive patterns",
       ]} />
       <div style={{ marginTop: 12, padding: "10px 14px", background: "#F9F0FF", borderRadius: 8, fontSize: 13, lineHeight: 1.6 }}>
@@ -159,7 +158,7 @@ function Overview() {
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginTop: 10 }}>
           {[
             { label: "Session 1", val: "LazyColumn / List basics, custom row layouts, and list-to-detail navigation wiring. Lab: build the album browser. Stretch: real-time search and empty state." },
-            { label: "Session 2", val: "Forms, modal bottom sheets, and swipe actions — the interactive patterns that turn a working list into a fully featured app." },
+            { label: "Session 2", val: "Local Data Mutation (Create & Delete) and Unidirectional Data Flow — mastering state updates using forms, bottom sheets, and swipe-to-dismiss." },
             { label: "Lab (each session)", val: "Session 1: build the album browser. Session 2: add a form, a bottom sheet, and swipe-to-dismiss to your album app." },
             { label: "Assignment 3", val: "Guided starter — same album browser structure, your own content and theme. Stretch: add a form or bottom sheet." },
           ].map(item => (
@@ -1205,8 +1204,8 @@ List(filtered) { album in
 function Session2Lab({ platform: _platform }: { platform: string }) {
   return (
     <div style={{ '--platform-accent': _platform === "Android" ? BL : GR } as React.CSSProperties}>
-      <h1 style={{ fontSize: 20, fontWeight: 500, margin: "0 0 6px", color: "var(--color-text-primary)" }}>Session 2 Lab: Forms, Sheets & Swipe Actions</h1>
-      <p style={{ fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 1.7, margin: "0 0 14px" }}>Coming soon: Learn how to bridge the gap between static lists and interactive data by building forms, bottom sheets, and native swipe gestures.</p>
+      <h1 style={{ fontSize: 20, fontWeight: 500, margin: "0 0 6px", color: "var(--color-text-primary)" }}>Session 2 Lab: Local Data Mutation (Forms & Sheets)</h1>
+      <p style={{ fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 1.7, margin: "0 0 14px" }}>Coming soon: Learn how to mutate state and understand Unidirectional Data Flow by building forms, bottom sheets, and native swipe gestures.</p>
     </div>
   );
 }
