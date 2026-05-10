@@ -1225,7 +1225,7 @@ function Session2Lab({ platform: _platform }: { platform: string }) {
         <VStep num={0} title="Open your AlbumBrowser project from Session 1">
           <p style={{ fontSize: 13, color: "var(--color-text-secondary)", margin: "0 0 8px" }}>Open the AlbumBrowser project you built in Session 1. If you did not finish Session 1, ask your TA for the starter code before continuing.</p>
           {_platform === "Android"
-            ? <Tip>No new dependencies needed — <IC>ModalBottomSheet</IC> and <IC>SwipeToDismissBox</IC> are both in Material3, which is included in every new Compose project. If you did not add the material-icons-extended dependency in Session 1, you may need it for the delete icon: <IC>implementation("androidx.compose.material:material-icons-extended")</IC></Tip>
+            ? <Tip>No new dependencies needed — <IC>ModalBottomSheet</IC> and <IC>SwipeToDismissBox</IC> are both in Material3, which is included in every new Compose project. If you did not add the material-icons-extended dependency in Session 1, you may need it for the delete icon: <IC>implementation("androidx.compose.material:material-icons-extended")</IC>. If you add it now, click <strong>Sync Now</strong> in the toolbar after saving the file.</Tip>
             : <Tip>No new dependencies needed — <IC>.sheet</IC> and <IC>.onDelete</IC> are built into SwiftUI.</Tip>}
           <Note>Right now <IC>sampleAlbums</IC> is a plain {_platform === "Android" ? "Kotlin list" : "Swift array"} defined outside any view. It can never change — the UI has no way to observe it. The first task is turning it into something the framework watches and reacts to.</Note>
         </VStep>
@@ -1336,7 +1336,7 @@ fun AlbumListScreen(onAlbumClicked: (Album) -> Unit = {}) {
 }`}</CodeB>
               )}
             </Section>
-            <Checkpoint num={1}>Run the app. It should look <strong>identical</strong> to Session 1 — all 8 albums visible, navigation working. Nothing visible changed yet, but the list is now observable state. Any mutation you make in the next steps will instantly appear on screen.</Checkpoint>
+            <Checkpoint num={1}>Run the app. It should look <strong>identical</strong> to Session 1 — all albums visible, navigation working. Nothing visible changed yet, but the list is now observable state. Any mutation you make in the next steps will instantly appear on screen.</Checkpoint>
           </VStep>
         </VStep>
 
@@ -1454,8 +1454,9 @@ fun AlbumListScreen(onAlbumClicked: (Album) -> Unit = {}) {
     }
 ) { innerPadding -> ... }`}</CodeB>
                 <Section title="💡 Hint: Red squiggle under Icons.Filled.Add">
-                  <p style={{ fontSize: 13, margin: "0 0 6px" }}>Press Alt+Enter (Option+Enter on Mac) to auto-import. If it does not appear in the list, add the extended icons dependency to <IC>build.gradle</IC>:</p>
+                  <p style={{ fontSize: 13, margin: "0 0 6px" }}>Press Alt+Enter (Option+Enter on Mac) to auto-import. If it does not appear in the list, add the extended icons dependency to <IC>build.gradle.kts</IC>:</p>
                   <CodeB accent={BL}>{`implementation("androidx.compose.material:material-icons-extended")`}</CodeB>
+                  <p style={{ fontSize: 13, margin: "8px 0 0" }}>After adding the line, click <strong>Sync Now</strong> in the toolbar at the top of the editor to download the library.</p>
                 </Section>
                 <Section title="✅ Check your work — show me the complete AlbumListScreen.kt so far">
                   <CodeB title="Kotlin — AlbumListScreen.kt (FAB added)" accent={BL}>{`@Composable
@@ -1547,14 +1548,27 @@ fun AlbumListScreen(onAlbumClicked: (Album) -> Unit = {}) {
           <VStep num="a" title={_platform === "Android" ? "Create AddAlbumSheet.kt with text fields" : "Create AddAlbumView.swift with text fields"}>
             <p style={{ fontSize: 13, margin: "0 0 8px" }}>
               {_platform === "Android"
-                ? <>Create a new file called <IC>AddAlbumSheet.kt</IC>. Define a <IC>{"@Composable"}</IC> function <IC>AddAlbumSheet</IC> that takes one parameter: <IC>{"onSave: (Album) -> Unit"}</IC>. This is a callback — the sheet does not know what to do with the new album; it just packages the user input and fires the callback. <IC>AlbumListScreen</IC> will receive it and mutate its state.</>
-                : <>Create a new file called <IC>AddAlbumView.swift</IC>. Define a <IC>struct AddAlbumView: View</IC> with one property: <IC>{"let onSave: (Album) -> Void"}</IC>. This view does not mutate state directly — it gathers input and fires the callback. <IC>AlbumListScreen</IC> will handle the mutation.</>}
+                ? <>In Android Studio, right-click your package folder in the Project panel → <strong>New → Kotlin Class/File → File</strong>. Name it <IC>AddAlbumSheet.kt</IC>. Then define a <IC>{"@Composable"}</IC> function <IC>AddAlbumSheet</IC> that takes one parameter: <IC>{"onSave: (Album) -> Unit"}</IC>. This is a callback — the sheet does not know what to do with the new album; it just packages the user input and fires the callback. <IC>AlbumListScreen</IC> will receive it and mutate its state.</>
+                : <>In Xcode, right-click your project group in the Navigator → <strong>New File → Swift File</strong> (not SwiftUI View). Name it <IC>AddAlbumView.swift</IC>. Then define a <IC>struct AddAlbumView: View</IC> with one property: <IC>{"let onSave: (Album) -> Void"}</IC>. This view does not mutate state directly — it gathers input and fires the callback. <IC>AlbumListScreen</IC> will handle the mutation.</>}
             </p>
-            <p style={{ fontSize: 13, margin: "0 0 8px" }}>
-              {_platform === "Android"
-                ? <>Inside <IC>AddAlbumSheet</IC>, declare four state variables — one for each field: <IC>title</IC>, <IC>artist</IC>, <IC>year</IC>, <IC>genre</IC>. Then add a <IC>Column</IC> with 24dp padding and <IC>fillMaxWidth()</IC> containing: a bold 18sp heading "Add Album", a 16dp <IC>Spacer</IC>, and four <IC>OutlinedTextField</IC>s each with <IC>fillMaxWidth()</IC> and a matching <IC>label</IC>. For the Year field, set <IC>keyboardOptions</IC> to show the number pad.</>
-                : <>Inside <IC>AddAlbumView</IC>, declare four <IC>{"@State"}</IC> properties for input and an <IC>{"@Environment(\\.dismiss)"}</IC> variable for the Cancel button. In the body, add a <IC>NavigationStack</IC> wrapping a <IC>Form</IC> with a <IC>{"Section(\"Album Details\")"}</IC> containing four <IC>TextField</IC>s. For the Year field, add <IC>.keyboardType(.numberPad)</IC>. Add <IC>.navigationTitle("Add Album")</IC> and <IC>.navigationBarTitleDisplayMode(.inline)</IC>.</>}
-            </p>
+            {_platform === "Android" ? (
+              <ul style={{ paddingLeft: 20, margin: "0 0 8px", lineHeight: 1.8, fontSize: 13 }}>
+                <li>Declare four state variables — one for each field: <IC>title</IC>, <IC>artist</IC>, <IC>year</IC>, <IC>genre</IC></li>
+                <li>Add a <IC>Column</IC> with 24dp padding and <IC>fillMaxWidth()</IC></li>
+                <li>Inside the Column: a bold 18sp <IC>Text("Add Album")</IC> heading, then a 16dp <IC>Spacer</IC></li>
+                <li>Four <IC>OutlinedTextField</IC>s, each with <IC>fillMaxWidth()</IC> and a matching <IC>label</IC></li>
+                <li>For the Year field, also add <IC>keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)</IC></li>
+              </ul>
+            ) : (
+              <ul style={{ paddingLeft: 20, margin: "0 0 8px", lineHeight: 1.8, fontSize: 13 }}>
+                <li>Declare four <IC>{"@State"}</IC> properties: <IC>title</IC>, <IC>artist</IC>, <IC>year</IC>, <IC>genre</IC></li>
+                <li>Declare <IC>{"@Environment(\\.dismiss) var dismiss"}</IC> — you will wire this to the Cancel button in sub-step b</li>
+                <li>In the body: a <IC>NavigationStack</IC> wrapping a <IC>Form</IC></li>
+                <li>Inside the Form: <IC>{"Section(\"Album Details\")"}</IC> containing four <IC>TextField</IC>s</li>
+                <li>For the Year field, add <IC>.keyboardType(.numberPad)</IC></li>
+                <li>Add <IC>.navigationTitle("Add Album")</IC> and <IC>.navigationBarTitleDisplayMode(.inline)</IC> to the Form</li>
+              </ul>
+            )}
             {_platform === "Android" ? (
               <Section title="💡 Show me the OutlinedTextField syntax">
                 <CodeB title="Kotlin — OutlinedTextField pattern" accent={BL}>{`OutlinedTextField(
@@ -1653,7 +1667,7 @@ fun AddAlbumSheet(onSave: (Album) -> Unit) {
           <VStep num="b" title="Add the Save button">
             <p style={{ fontSize: 13, margin: "0 0 8px" }}>
               {_platform === "Android"
-                ? <>Below the last <IC>OutlinedTextField</IC>, add a 16dp <IC>Spacer</IC> and then a full-width <IC>Button</IC> labelled "Save Album". In its <IC>onClick</IC>: build a new <IC>Album</IC> from the field values, then call <IC>onSave(newAlbum)</IC>. Use <IC>System.currentTimeMillis().toInt()</IC> for the id (guarantees uniqueness), <IC>{"year.toIntOrNull() ?: 2024"}</IC> to parse the year safely, and <IC>0</IC> / <IC>0.0</IC> as placeholder values for tracks and rating.</>
+                ? <>Below the last <IC>OutlinedTextField</IC>, add a 16dp <IC>Spacer</IC> and then a full-width <IC>Button</IC> labelled "Save Album". In its <IC>onClick</IC>: build a new <IC>Album</IC> from the field values, then call <IC>onSave(newAlbum)</IC>. Use <IC>{"(0..Int.MAX_VALUE).random()"}</IC> for the id (a random number in a safe Int range — unique enough for a single session), <IC>{"year.toIntOrNull() ?: 2024"}</IC> to parse the year safely, and <IC>0</IC> / <IC>0.0</IC> as placeholder values for tracks and rating.</>
                 : <>Add a <IC>.toolbar</IC> modifier to the <IC>Form</IC> with two toolbar items: a Cancel button using <IC>.cancellationAction</IC> placement that calls <IC>dismiss()</IC>, and a Save button using <IC>.confirmationAction</IC> that builds a new <IC>Album</IC> and calls <IC>onSave(newAlbum)</IC>. Use <IC>{"Int.random(in: 1000...9999)"}</IC> for the id, <IC>{"Int(year) ?? 2024"}</IC> to parse the year, and <IC>0</IC> / <IC>0.0</IC> for tracks and rating.</>}
             </p>
             <Section title={`✅ Check your work — show me the complete ${_platform === "Android" ? "AddAlbumSheet.kt" : "AddAlbumView.swift"}`}>
@@ -1693,7 +1707,7 @@ fun AddAlbumSheet(onSave: (Album) -> Unit) {
         Button(
             onClick = {
                 val newAlbum = Album(
-                    id     = System.currentTimeMillis().toInt(),
+                    id     = (0..Int.MAX_VALUE).random(),
                     title  = title,
                     artist = artist,
                     year   = year.toIntOrNull() ?: 2024,
@@ -1762,7 +1776,7 @@ fun AddAlbumSheet(onSave: (Album) -> Unit) {
             <p style={{ fontSize: 13, margin: "0 0 8px" }}>
               {_platform === "Android"
                 ? <>Back in <IC>AlbumListScreen.kt</IC>, add a <IC>ModalBottomSheet</IC> <strong>after the closing brace of the Scaffold block</strong>. Guard it with <IC>if (showSheet)</IC> so it only appears when triggered. Pass an <IC>onSave</IC> lambda that appends the new album to <IC>albums</IC> and sets <IC>showSheet = false</IC>.</>
-                : <>Back in <IC>AlbumListScreen.swift</IC>, add a <IC>.sheet(isPresented: $showingAddSheet)</IC> modifier to the outer <IC>ZStack</IC>, after <IC>.toolbar</IC>. In the sheet closure, create an <IC>AddAlbumView</IC> and pass an <IC>onSave</IC> closure that appends the album to <IC>albums</IC> and sets <IC>showingAddSheet = false</IC>.</>}
+                : <>Back in <IC>AlbumListScreen.swift</IC>, add a <IC>.sheet(isPresented: $showingAddSheet)</IC> modifier to the outer <IC>ZStack</IC>, after <IC>.toolbar</IC>. In the sheet closure, create an <IC>AddAlbumView</IC> and pass an <IC>onSave</IC> closure that appends the album to <IC>albums</IC> and sets <IC>showingAddSheet = false</IC>. Setting the binding to <IC>false</IC> is what dismisses the sheet — <IC>.sheet(isPresented:)</IC> watches the binding and slides the sheet away whenever it becomes false.</>}
             </p>
             {_platform === "Android" ? (
               <CodeB title="Kotlin — add after Scaffold { } in AlbumListScreen" accent={BL}>{`if (showSheet) {
