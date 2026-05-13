@@ -129,8 +129,32 @@ function Overview({ platform, setPlatform }) {
       <h2 style={{ fontSize: 20, fontWeight: 600, margin: "0 0 6px" }}>Unit 8: On-Device AI — Inference Without the Cloud</h2>
 
       <p style={{ fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 1.7, margin: "0 0 16px" }}>
-        {"Last week you called a cloud LLM from your app. This week you go offline. On-device AI runs entirely on the phone — no internet, no API key, no latency. You'll use the live camera to recognize objects and text in real time, then run a local generative model to analyze a photo from your gallery. Both sessions are AI-focused."}
+        {"Last week you called a cloud LLM from your app. This week you go offline. On-device AI runs entirely on the phone — no internet, no API key, no latency. Session 1 uses platform ML APIs to recognize objects and text from a live camera feed in real time. Session 2 goes deeper — you run a bundled generative model to analyze a photo from your gallery entirely on-device. Both sessions are AI-focused."}
       </p>
+
+      <div style={{ marginTop: 0, marginBottom: 16, padding: "14px", background: "#F9F0FF", borderRadius: 10, fontSize: 13, lineHeight: 1.7 }}>
+        <strong>{"🔀 Session 1 vs Session 2 — what's different"}</strong>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginTop: 10 }}>
+          {[
+            { label: "Session 1 — Platform ML APIs", items: ["Input: live camera frames", "Real-time recognition (objects & text)", "Uses OS-level APIs — ML Kit / Vision", "Model lives on the OS, not your app", "Low setup — API calls only"], color: TEAL_L, fg: TEAL_D },
+            { label: "Session 2 — Bundled generative model", items: ["Input: photo from camera roll", "On-device inference & structured output", "Uses Gemini Nano / Apple Intelligence", "Model runs on the device chip", "You control the model, not just the API"], color: PL, fg: PD },
+          ].map(function(col) {
+            return (
+              <div key={col.label} style={{ background: col.color, borderRadius: 8, padding: "10px 12px" }}>
+                <p style={{ fontSize: 11, fontWeight: 700, color: col.fg, margin: "0 0 6px", textTransform: "uppercase", letterSpacing: ".05em" }}>{col.label}</p>
+                {col.items.map(function(item) {
+                  return (
+                    <div key={item} style={{ display: "flex", gap: 6, margin: "4px 0" }}>
+                      <span style={{ color: col.fg, flexShrink: 0, fontSize: 11 }}>{"▸"}</span>
+                      <span style={{ fontSize: 11, color: col.fg, lineHeight: 1.4 }}>{item}</span>
+                    </div>
+                  );
+                })}
+              </div>
+            );
+          })}
+        </div>
+      </div>
 
       <PlatformToggle platform={platform} setPlatform={setPlatform} />
 
@@ -206,7 +230,7 @@ function Overview({ platform, setPlatform }) {
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginTop: 10 }}>
           {[
             { label: "Session 1", val: "Live camera feed with real-time ML overlay. Lab: build a scanner that labels objects and reads text in the viewfinder — no internet." },
-            { label: "Session 2", val: isAndroid ? "Gemini Nano on-device. Lab: analyze a photo from your gallery using a local generative model — airplane mode required to verify." : "Apple Intelligence on-device. Lab: analyze a photo using Vision + Apple Intelligence — airplane mode required to verify." },
+            { label: "Session 2", val: isAndroid ? "Bundled generative model (Gemini Nano). Lab: analyze a gallery photo using on-device inference — airplane mode required to verify." : "Bundled generative model (Apple Intelligence). Lab: analyze a gallery photo using on-device inference — airplane mode required to verify." },
             { label: "Capstone M3", val: "No submission — instructor check-in during Session 2 lab. Have your app running with core navigation + at least one network call working." },
             { label: "No standalone assignment", val: "M3 check-in replaces the weekly assignment. Use your lab time to make capstone progress after your check-in." },
           ].map(function(item) {

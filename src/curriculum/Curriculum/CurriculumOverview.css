@@ -24,7 +24,9 @@
 .m-assign .m-label { color: #534AB7; }
 .m-cap .m-label { color: #993C1D; }
 .m-text { font-size: 12px; color: var(--color-text-secondary); margin: 0; line-height: 1.4; }
-.track-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px; }
+.track-section { margin-top: 0; margin-bottom: 10px; }
+.track-section-label { font-size: 11px; font-weight: 500; color: var(--color-text-tertiary); text-transform: uppercase; letter-spacing: .04em; margin: 0 0 5px; }
+.track-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
 .track { border-radius: 8px; padding: 10px 12px; }
 .track-a { background: #E6F1FB; }
 .track-b { background: #EAF3DE; }

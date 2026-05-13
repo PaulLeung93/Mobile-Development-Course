@@ -115,10 +115,6 @@ export default function CurriculumOverview() {
 
       <div className="week-card">
         <div className="week-header"><span className="week-num">Week 6</span><p className="week-title">Architecture, MVVM & AI coding tools</p></div>
-        <div className="track-grid">
-          <div className="track track-a"><p className="t-label">Android</p><p className="t-detail">ViewModel + StateFlow, Hilt basics, project scaffolding in Android Studio</p></div>
-          <div className="track track-b"><p className="t-label">iOS</p><p className="t-detail">ObservableObject + @StateObject, project structure in Xcode, Swift concurrency</p></div>
-        </div>
         <div className="sessions">
           <div className="session">
             <p className="s-label">Session 1</p>
@@ -131,6 +127,13 @@ export default function CurriculumOverview() {
             <p className="s-lab"><b>Lab:</b> Use Claude to scaffold your capstone project boilerplate. Practice prompting for mobile-specific patterns. Live demo: Google Stitch MCP generating UI from a natural language description.</p>
           </div>
         </div>
+        <div className="track-section">
+          <p className="track-section-label">Platform-specific tools this week</p>
+          <div className="track-grid">
+            <div className="track track-a"><p className="t-label">Android</p><p className="t-detail">ViewModel + StateFlow, Hilt basics, project scaffolding in Android Studio</p></div>
+            <div className="track track-b"><p className="t-label">iOS</p><p className="t-detail">ObservableObject + @StateObject, project structure in Xcode, Swift concurrency</p></div>
+          </div>
+        </div>
         <div className="milestone m-cap">
           <span className="m-label">Capstone M1</span>
           <p className="m-text">Repo set up inside a GitHub Organization, branch protection on main, architecture scaffolded, at least one screen rendering real or mock data. Team roles defined.</p>
@@ -139,10 +142,6 @@ export default function CurriculumOverview() {
 
       <div className="week-card">
         <div className="week-header"><span className="week-num">Week 7</span><p className="week-title">Calling an LLM from a mobile app</p></div>
-        <div className="track-grid">
-          <div className="track track-a"><p className="t-label">Android</p><p className="t-detail">Cloud AI integration (Claude API), processing streaming responses</p></div>
-          <div className="track track-b"><p className="t-label">iOS</p><p className="t-detail">Cloud AI integration (Claude API), consuming async LLM streams</p></div>
-        </div>
         <div className="sessions">
           <div className="session">
             <p className="s-label">Session 1 <span className="tag-ai">AI feature</span></p>
@@ -155,6 +154,13 @@ export default function CurriculumOverview() {
             <p className="s-lab"><b>Lab:</b> Treat the mobile device as a rich input sensor by sending camera and gallery photos to Claude in a multimodal message.</p>
           </div>
         </div>
+        <div className="track-section">
+          <p className="track-section-label">Platform-specific tools this week</p>
+          <div className="track-grid">
+            <div className="track track-a"><p className="t-label">Android</p><p className="t-detail">Cloud AI integration (Claude API), processing streaming responses</p></div>
+            <div className="track track-b"><p className="t-label">iOS</p><p className="t-detail">Cloud AI integration (Claude API), consuming async LLM streams</p></div>
+          </div>
+        </div>
         <div className="milestone m-cap">
           <span className="m-label">Capstone M2</span>
           <p className="m-text">Core navigation complete, at least one networking call working end-to-end. Optional: incorporate an LLM feature if it fits your concept.</p>
@@ -163,20 +169,23 @@ export default function CurriculumOverview() {
 
       <div className="week-card">
         <div className="week-header"><span className="week-num">Week 8</span><p className="week-title">On-device AI — inference without the cloud</p></div>
-        <div className="track-grid">
-          <div className="track track-a"><p className="t-label">Android</p><p className="t-detail">ML Kit (text recognition, image labeling), Gemini Nano via Android AICore</p></div>
-          <div className="track track-b"><p className="t-label">iOS</p><p className="t-detail">Core ML + Vision framework, Create ML for simple custom models, Apple Intelligence APIs</p></div>
-        </div>
         <div className="sessions">
           <div className="session">
             <p className="s-label">Session 1 <span className="tag-ai">AI feature</span></p>
-            <p className="s-topic">On-device image & text recognition</p>
+            <p className="s-topic">On-device recognition with platform ML APIs</p>
             <p className="s-lab"><b>Lab:</b> Use the camera to recognise objects or text in real time — no internet required.</p>
           </div>
           <div className="session">
             <p className="s-label">Session 2 <span className="tag-ai">AI feature</span></p>
-            <p className="s-topic">Running a local model end-to-end</p>
+            <p className="s-topic">On-device inference with a bundled ML model</p>
             <p className="s-lab"><b>Lab:</b> Run a bundled classification model on a photo from the camera roll and display the structured result in the UI.</p>
+          </div>
+        </div>
+        <div className="track-section">
+          <p className="track-section-label">Platform-specific tools this week</p>
+          <div className="track-grid">
+            <div className="track track-a"><p className="t-label">Android</p><p className="t-detail">ML Kit (text recognition, image labeling), Gemini Nano via Android AICore</p></div>
+            <div className="track track-b"><p className="t-label">iOS</p><p className="t-detail">Core ML + Vision framework, Create ML for simple custom models, Apple Intelligence APIs</p></div>
           </div>
         </div>
         <div className="milestone m-cap">
@@ -189,10 +198,6 @@ export default function CurriculumOverview() {
 
       <div className="week-card">
         <div className="week-header"><span className="week-num">Week 9</span><p className="week-title">Agentic AI on mobile — when AI takes action</p></div>
-        <div className="track-grid">
-          <div className="track track-a"><p className="t-label">Android</p><p className="t-detail">Claude tool use with OkHttp/coroutines · AppFunctions API + Gemini Assistant</p></div>
-          <div className="track track-b"><p className="t-label">iOS</p><p className="t-detail">Claude tool use with URLSession/async-await · App Intents + Siri / Apple Intelligence</p></div>
-        </div>
         <div className="sessions">
           <div className="session">
             <p className="s-label">Session 1 <span className="tag-ai">AI feature</span></p>
@@ -203,6 +208,13 @@ export default function CurriculumOverview() {
             <p className="s-label">Session 2 <span className="tag-ai">AI feature</span></p>
             <p className="s-topic">App Capabilities for AI agents (AppFunctions / App Intents)</p>
             <p className="s-lab"><b>Lab:</b> Implement and register one capability so the platform's AI assistant can invoke it. Android: <code>@AppFunction</code>. iOS: <code>AppIntent</code> + Shortcuts.</p>
+          </div>
+        </div>
+        <div className="track-section">
+          <p className="track-section-label">Platform-specific tools this week</p>
+          <div className="track-grid">
+            <div className="track track-a"><p className="t-label">Android</p><p className="t-detail">Claude tool use with OkHttp/coroutines · AppFunctions API + Gemini Assistant</p></div>
+            <div className="track track-b"><p className="t-label">iOS</p><p className="t-detail">Claude tool use with URLSession/async-await · App Intents + Siri / Apple Intelligence</p></div>
           </div>
         </div>
         <div className="milestone m-cap">
