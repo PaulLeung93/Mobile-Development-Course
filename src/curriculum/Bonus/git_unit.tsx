@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-const TABS = ["Overview", "Capstone", "Lab", "Resources"];
+const TABS = ["Overview", "Capstone", "Lab", "Cheatsheet", "Resources"];
 
 const P_C = "#534AB7", PL = "#EEEDFE", PD = "#3C3489";
 const T_C = "#1D9E75", TL = "#E1F5EE", TD = "#0F6E56";
@@ -548,6 +548,169 @@ const Resources = () => (
   </div>
 );
 
+/* ══════════════════════ CHEATSHEET ════════════════════════════════════════════ */
+
+const ScenarioCard = ({ title, when, children }: { title: string; when: string; children: React.ReactNode }) => (
+  <div style={{ border: "0.5px solid var(--color-border-tertiary)", borderRadius: 10, padding: "14px 16px", background: "var(--color-background-primary)", marginBottom: 10 }}>
+    <div style={{ fontSize: 14, fontWeight: 600, color: "var(--color-text-primary)", marginBottom: 4 }}>{title}</div>
+    <p style={{ fontSize: 12, color: MUTED, margin: "0 0 10px", lineHeight: 1.5 }}><em>Use when:</em> {when}</p>
+    {children}
+  </div>
+);
+
+const CheatGroup = ({ heading, accent, children }: { heading: string; accent: string; children: React.ReactNode }) => (
+  <div style={{ marginBottom: 24 }}>
+    <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12 }}>
+      <div style={{ width: 3, height: 18, borderRadius: 2, background: accent }} />
+      <span style={{ fontSize: 13, fontWeight: 700 }}>{heading}</span>
+    </div>
+    {children}
+  </div>
+);
+
+const Cheatsheet = () => (
+  <div>
+    <h2 style={{ fontSize: 18, fontWeight: 600, margin: "0 0 4px" }}>Git Cheatsheet</h2>
+    <p style={{ fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 1.6, marginBottom: 20 }}>
+      Scenario-based reference for the Git operations you'll use most. Find your situation, copy the commands, and adjust names to fit your project.
+    </p>
+
+    <CheatGroup heading="Getting Started" accent={T_C}>
+      <ScenarioCard title="First-Time Setup" when="Setting up Git on a new machine or configuring your identity for the first time.">
+        <CodeB>{`git config --global user.name "Your Name"
+git config --global user.email "you@example.com"
+
+# Start a brand-new local repo
+git init
+
+# Or clone an existing remote repo
+git clone https://github.com/org/repo.git`}</CodeB>
+        <Tip>These <IC>--global</IC> settings apply to every repo on your machine. Run <IC>git config --list</IC> to confirm they're set.</Tip>
+      </ScenarioCard>
+
+      <ScenarioCard title="The Daily Loop" when="Making and saving your everyday changes.">
+        <CodeB>{`git status                          # see what's changed
+git add .                           # stage everything
+git add src/LoginScreen.js          # or stage a specific file
+git commit -m "feat: add login screen"
+git push                            # upload to remote`}</CodeB>
+        <Tip>Use commit prefixes to keep history readable: <IC>feat:</IC>, <IC>fix:</IC>, <IC>chore:</IC>, <IC>docs:</IC>.</Tip>
+      </ScenarioCard>
+
+      <ScenarioCard title="Checking Your Work" when="Before committing, or when you're unsure what has changed.">
+        <CodeB>{`git status                          # list changed and staged files
+git diff                            # show unstaged changes (line by line)
+git diff --staged                   # show staged changes
+git log --oneline                   # compact commit history
+git log --oneline --graph           # visual branch/merge graph`}</CodeB>
+      </ScenarioCard>
+    </CheatGroup>
+
+    <CheatGroup heading="Undoing Things" accent={AM_C}>
+      <ScenarioCard title="Unstage a File" when="You staged something you didn't mean to include in the next commit.">
+        <CodeB>{`git restore --staged file.js        # unstage, but keep your changes`}</CodeB>
+        <Tip>This doesn't delete your work — it just moves the file back to unstaged.</Tip>
+      </ScenarioCard>
+
+      <ScenarioCard title="Undo Your Last Commit (Not Yet Pushed)" when="You committed too soon, have a typo in the message, or need to rework the change.">
+        <CodeB>{`git reset --soft HEAD~1             # undo commit, keep changes staged
+git reset HEAD~1                    # undo commit, unstage changes (keep files)`}</CodeB>
+        <Warn>Only use <IC>reset</IC> on commits you haven't pushed yet. If it's already on the remote, use <IC>git revert</IC> instead.</Warn>
+      </ScenarioCard>
+
+      <ScenarioCard title="Undo a Pushed Commit (Safely)" when="You need to reverse a commit that's already on the remote branch.">
+        <CodeB>{`git revert HEAD                     # creates a new "undo" commit
+git push`}</CodeB>
+        <Tip><IC>revert</IC> is safe on shared branches — it adds a new commit rather than rewriting history, so teammates can pull without issues.</Tip>
+      </ScenarioCard>
+
+      <ScenarioCard title="Discard All Local Changes" when="You want to throw away all uncommitted changes and return to the last commit.">
+        <CodeB>{`git restore .                       # discard all unstaged changes
+git clean -fd                       # remove untracked files and folders`}</CodeB>
+        <Warn>This is permanent. Discarded changes cannot be recovered.</Warn>
+      </ScenarioCard>
+    </CheatGroup>
+
+    <CheatGroup heading="Branching" accent={P_C}>
+      <ScenarioCard title="Create & Switch Branches" when="Starting a new task, feature, or bug fix.">
+        <CodeB>{`git checkout -b feature/login-screen  # create + switch in one step
+git branch                            # list all local branches
+git checkout main                     # switch to main
+git branch -d feature/login-screen   # delete a merged branch
+git branch -D feature/login-screen   # force-delete (unmerged)`}</CodeB>
+      </ScenarioCard>
+
+      <ScenarioCard title="Start a New Feature (Full Flow)" when="Beginning any new task during a sprint — always follow this sequence.">
+        <CodeB>{`git checkout main
+git pull                              # start from the latest main
+
+git checkout -b feature/my-feature
+# ... make your changes ...
+
+git add .
+git commit -m "feat: describe the change"
+git push -u origin feature/my-feature
+# then open a pull request on GitHub`}</CodeB>
+        <Tip>Always branch off a fresh <IC>main</IC>. Never branch off a teammate's in-progress branch unless you're intentionally building on top of their work.</Tip>
+      </ScenarioCard>
+    </CheatGroup>
+
+    <CheatGroup heading="Working with Remotes" accent={BL}>
+      <ScenarioCard title="Sync Your Branch with the Latest Main" when="Teammates have merged PRs and you want their changes before opening your own PR.">
+        <CodeB>{`git checkout main
+git pull                              # update local main
+git checkout feature/my-feature
+git rebase main                       # replay your commits on top of updated main
+git push --force-with-lease           # required after rebase`}</CodeB>
+        <Tip><IC>--force-with-lease</IC> is safer than <IC>--force</IC> — it refuses to push if someone else has pushed to the branch since your last fetch.</Tip>
+      </ScenarioCard>
+
+      <ScenarioCard title="Review a Teammate's PR Locally" when="You're assigned to review a PR and want to build and test the app yourself.">
+        <CodeB>{`git fetch origin
+git checkout teammate-feature-branch  # switch to their branch
+# build + test the app
+
+# when done, return to your branch:
+git checkout feature/my-feature`}</CodeB>
+      </ScenarioCard>
+    </CheatGroup>
+
+    <CheatGroup heading="Oops Scenarios" accent={G}>
+      <ScenarioCard title="I Committed to main by Accident" when="You forgot to create a branch and committed directly to main — and haven't pushed yet.">
+        <CodeB>{`# Move your commits onto a new branch
+git checkout -b feature/my-feature
+
+# Rewind main to match the remote
+git checkout main
+git reset --hard origin/main`}</CodeB>
+        <Warn>Only safe <em>before</em> pushing. If you've already pushed to main, contact your team — you'll need to coordinate a revert.</Warn>
+      </ScenarioCard>
+
+      <ScenarioCard title="I Have a Merge Conflict" when="Git can't automatically merge two branches because the same lines were changed in both.">
+        <CodeB>{`# Conflict markers look like this inside the affected file:
+<<<<<<< HEAD
+your version of the code
+=======
+teammate's version of the code
+>>>>>>> feature/their-branch
+
+# Edit the file to keep what you want, remove the markers, then:
+git add conflicted-file.js
+git commit                          # complete the merge
+# or, if you're in a rebase:
+git rebase --continue`}</CodeB>
+        <Tip>VS Code's built-in <strong>Merge Editor</strong> (click "Resolve in Merge Editor" on the conflict banner) makes this much easier to visualize.</Tip>
+      </ScenarioCard>
+
+      <ScenarioCard title="I Need to Find Who Changed a Line" when="Debugging and you need to trace when a specific line was added or last modified.">
+        <CodeB>{`git blame file.js                   # shows author + commit for every line
+git log --follow file.js            # full history for a file, including renames
+git log -S "searchText" --oneline   # find which commit introduced a string`}</CodeB>
+      </ScenarioCard>
+    </CheatGroup>
+  </div>
+);
+
 /* ══════════════════════ MAIN ══════════════════════════════════════════════════ */
 export default function GitUnit() {
   const [tab, setTab] = useState("Overview");
@@ -572,6 +735,7 @@ export default function GitUnit() {
       {tab === "Overview" && <Overview />}
       {tab === "Capstone" && <Lab />}
       {tab === "Lab" && <Practice />}
+      {tab === "Cheatsheet" && <Cheatsheet />}
       {tab === "Resources" && <Resources />}
     </div>
   );
