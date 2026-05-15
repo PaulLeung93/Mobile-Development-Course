@@ -193,7 +193,48 @@ const slides = [
     </Shell>
   ),
 
-  // 5: Right tool for the job
+  // 5: What is key-value storage? — DataStore & UserDefaults defined
+  () => (
+    <Shell tag="Concept" timer="3" title="A second type of local storage" subtitle="DataStore (Android) · UserDefaults (iOS)" notes="Students just finished Session 1 where they learned Room and SwiftData for structured lists. Now introduce the lighter tool. The key contrast to land: a database is a spreadsheet — rows, columns, queries. A key-value store is a notepad — you write one thing down and read it back. That's it.">
+      <div style={{ background: GRAY, borderRadius: 8, padding: "10px 14px", marginBottom: 14 }}>
+        <p style={{ fontSize: 12, color: TEXT, margin: 0, lineHeight: 1.7 }}>
+          In Session 1 you used <strong>Room</strong> (Android) and <strong>SwiftData</strong> (iOS) to store structured lists of data — favourites, messages, records. But not all data is a list. Sometimes you just need to remember a single value: is dark mode on? Which tab was the user on last? Has onboarding been completed? For that, there's a lighter tool.
+        </p>
+      </div>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 14 }}>
+        <div style={{ border: `1.5px solid ${PURPLE_LIGHT}`, borderRadius: 10, overflow: "hidden" }}>
+          <div style={{ background: PURPLE, padding: "8px 14px" }}>
+            <p style={{ fontSize: 12, fontWeight: 700, color: "#fff", margin: 0 }}>DataStore Preferences</p>
+            <p style={{ fontSize: 11, color: "rgba(255,255,255,0.7)", margin: "2px 0 0" }}>Android</p>
+          </div>
+          <div style={{ padding: "12px 14px", background: PURPLE_LIGHT }}>
+            <p style={{ fontSize: 12, color: PURPLE_DARK, margin: "0 0 8px", lineHeight: 1.6 }}>
+              A key-value store that persists small values to disk automatically. You define typed keys (<code style={{ fontFamily: "monospace" }}>booleanPreferencesKey</code>, <code style={{ fontFamily: "monospace" }}>intPreferencesKey</code>), write values with a suspend function, and read them back as a Kotlin <strong>Flow</strong> — so your UI reacts automatically when a value changes.
+            </p>
+            <p style={{ fontSize: 11, color: PURPLE, margin: 0 }}>Replaces the older <code style={{ fontFamily: "monospace" }}>SharedPreferences</code> API, which was synchronous and error-prone.</p>
+          </div>
+        </div>
+        <div style={{ border: `1.5px solid ${TEAL_LIGHT}`, borderRadius: 10, overflow: "hidden" }}>
+          <div style={{ background: TEAL, padding: "8px 14px" }}>
+            <p style={{ fontSize: 12, fontWeight: 700, color: "#fff", margin: 0 }}>UserDefaults + @AppStorage</p>
+            <p style={{ fontSize: 11, color: "rgba(255,255,255,0.7)", margin: "2px 0 0" }}>iOS</p>
+          </div>
+          <div style={{ padding: "12px 14px", background: TEAL_LIGHT }}>
+            <p style={{ fontSize: 12, color: TEAL_DARK, margin: "0 0 8px", lineHeight: 1.6 }}>
+              A key-value store built into iOS that persists simple values to disk automatically. <strong>@AppStorage</strong> is the SwiftUI-native wrapper — declare it in any view and it behaves just like <code style={{ fontFamily: "monospace" }}>@State</code>, re-rendering the view whenever the stored value changes.
+            </p>
+            <p style={{ fontSize: 11, color: TEAL_DARK, margin: 0 }}>Has existed since iOS 2. @AppStorage (iOS 14+) is the modern way to use it in SwiftUI.</p>
+          </div>
+        </div>
+      </div>
+      <div style={{ background: PURPLE_LIGHT, borderRadius: 8, padding: "10px 14px" }}>
+        <p style={{ fontSize: 11, fontWeight: 600, color: PURPLE_DARK, margin: "0 0 2px" }}>Both work the same way</p>
+        <p style={{ fontSize: 11, color: PURPLE_DARK, margin: 0, lineHeight: 1.5 }}>Write a value with a key → the value persists to disk → read it back on next launch. On both platforms, reads are reactive — the UI updates automatically when the value changes.</p>
+      </div>
+    </Shell>
+  ),
+
+  // 6: Right tool for the job
   () => (
     <Shell tag="Concept" timer="4" title="Choosing the right storage tool" subtitle="Not everything needs a database" notes="The decision rule is simple — state it out loud before showing the examples. List of things that grows = database. Single setting or preference = key-value store. Run through the examples quickly.">
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 12 }}>
